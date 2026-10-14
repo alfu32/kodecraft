@@ -1,5 +1,6 @@
 pub mod display;
 pub mod folding;
+pub mod host;
 pub mod input;
 pub mod layout;
 pub mod loading;

@@ -86,12 +86,12 @@ def synchronize(task=None, status=None, check=False):
         dashboard.append(f"- **{task_id}** — [{title}]({path.relative_to(ROOT).as_posix()}#{task_id.lower()}--{re.sub(r'[^a-z0-9 -]', '', title.lower()).replace(' ', '-')})")
     if not active:
         dashboard.append("No task currently in progress.")
-    dashboard += ["", "## Task status", "", "| Task | Definition | Status | Evidence |", "|---|---|---|---|"]
+    dashboard += ["", "## Task status", "", "| Task | Definition | Status | Evidence |", "|------|---------------------------------------------------------------------------------------------------|-------------|------------------------------|"]
     for task_id in [row[1] for row in rows]:
         path, title, state, _ = entries[task_id]
         report = ROOT / f"docs/parity/{task_id}.md"
         evidence = f"[Report]({report.relative_to(ROOT).as_posix()})" if report.exists() else "—"
-        dashboard.append(f"| {task_id} | [{title}]({path.relative_to(ROOT).as_posix()}) | {state} | {evidence} |")
+        dashboard.append(f"| {task_id:>4} | [{(title + path.relative_to(ROOT).as_posix()):>95}) | {state:>11} | {evidence:>28} |")
     dashboard += ["", "Regenerate with `python3 scripts/tasks.py`; verify with `python3 scripts/tasks.py --check`.", "",
                   "Change a task with `python3 scripts/tasks.py F01 in-progress`. Prerequisites must be done before starting or completing dependent work.", ""]
     target = ROOT / "DASHBOARD.md"
