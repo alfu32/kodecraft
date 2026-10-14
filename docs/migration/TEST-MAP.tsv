@@ -1,0 +1,45 @@
+source_test_path	primary_task	additional_tasks
+src/test/kotlin/editor/app/ProjectFileScannerTest.kt	W01	
+src/test/kotlin/editor/app/ProjectSessionManagerTest.kt	W03	
+src/test/kotlin/editor/app/TtydAdapterTest.kt	Z01	Z03
+src/test/kotlin/editor/codeintel/CSemanticTest.kt	L04	L06,L07,L08,L12
+src/test/kotlin/editor/codeintel/CodeIntelServiceTest.kt	L09	L10,L11
+src/test/kotlin/editor/codeintel/H2SemanticStoreTest.kt	L05	L08
+src/test/kotlin/editor/codeintel/KotlinExpressionSemanticsTest.kt	L07	L11
+src/test/kotlin/editor/codeintel/KotlinSemanticVerticalSliceTest.kt	L01	L03,L06,L07,L11
+src/test/kotlin/editor/codeintel/SemanticHighlightingTest.kt	L02	L09,E11
+src/test/kotlin/editor/codeintel/SemanticInvalidationTest.kt	L08	
+src/test/kotlin/editor/codeintel/SemanticTestHarness.kt	L01	L12
+src/test/kotlin/editor/codeintel/TreeSitterSemanticAdapterTest.kt	L10	L12
+src/test/kotlin/editor/database/DataSourceRepositoryTest.kt	D01	
+src/test/kotlin/editor/database/JdbcDatabaseIntegrationTest.kt	D04	D05,D06,D09
+src/test/kotlin/editor/database/JdbcDriverRegistryTest.kt	D01	D03
+src/test/kotlin/editor/database/JdbcUrlTemplatesTest.kt	D01	
+src/test/kotlin/editor/database/MetadataCacheTest.kt	D06	
+src/test/kotlin/editor/database/SqlStatementLocatorTest.kt	D08	
+src/test/kotlin/editor/db/DbServerManagerTest.kt	L05	
+src/test/kotlin/editor/grammars/KeywordSyntaxProviderTest.kt	L02	
+src/test/kotlin/editor/grammars/RegexSyntaxProviderTest.kt	L02	
+src/test/kotlin/editor/lang/KotlinIdentifierOccurrenceIntegrationTest.kt	L03	L12
+src/test/kotlin/editor/lang/KotlinIdentifierPathScanTest.kt	L03	L12
+src/test/kotlin/editor/lang/KotlinIdentifierPipelineTest.kt	L03	
+src/test/kotlin/editor/lang/TypescriptIdentifierPathScanTest.kt	L10	L12
+src/test/kotlin/editor/lib/FileTreeTest.kt	W02	
+src/test/kotlin/editor/lib/JGitServiceTest.kt	G01	G02
+src/test/kotlin/editor/lib/KorimAsciiImageRendererTest.kt	V03	
+src/test/kotlin/editor/lib/ProjectFolderStatusTest.kt	W01	W02
+src/test/kotlin/editor/lib/TextBufferInputTest.kt	E02	E03,F04
+src/test/kotlin/editor/lib/TextBufferSearchTest.kt	E07	E04
+src/test/kotlin/editor/lib/TextBufferUndoTest.kt	E03	
+src/test/kotlin/editor/mime/DefaultMimeTypeDetectorTest.kt	V01	
+src/test/kotlin/editor/rest/RestCodeFormattingTest.kt	R07	
+src/test/kotlin/editor/rest/RestEditorViewTest.kt	E12	R06,R07
+src/test/kotlin/editor/rest/RestHttpTest.kt	R04	R05
+src/test/kotlin/editor/rest/RestModelTest.kt	R01	R03
+src/test/kotlin/editor/rest/RestResolverTest.kt	R02	
+src/test/kotlin/editor/ui/CodeEditorViewTest.kt	E05	E06,E07,E08,E09,E10,E11,E13
+src/test/kotlin/editor/ui/GitPanelViewTest.kt	G01	G02
+src/test/kotlin/editor/ui/HighlightEditsTest.kt	E11	
+src/test/kotlin/editor/ui/SearchReplaceBarTest.kt	E07	F05
+src/test/kotlin/react/AnsiCanvasRendererTest.kt	F04	
+src/test/kotlin/react/TabViewTest.kt	F05	

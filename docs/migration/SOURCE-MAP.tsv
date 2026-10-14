@@ -1,0 +1,128 @@
+source_path	lines	primary_task	additional_tasks
+src/main/kotlin/editor/app/Logger.kt	39	F03	
+src/main/kotlin/editor/app/Main.kt	3032	W05	F03,E12,W03,W04,L09,G03,D08,R08,Z01,Z02
+src/main/kotlin/editor/app/ProjectFileScanner.kt	226	W01	
+src/main/kotlin/editor/app/ProjectSession.kt	97	W03	
+src/main/kotlin/editor/app/TtydAdapter.kt	181	Z01	Z03
+src/main/kotlin/editor/codeintel/BlockTracker.kt	83	L09	L10
+src/main/kotlin/editor/codeintel/CodeIntelService.kt	1948	L09	L10,L11
+src/main/kotlin/editor/codeintel/DbCodeIntelStore.kt	290	L05	
+src/main/kotlin/editor/codeintel/EditorIntelligence.kt	147	F02	L09,P03
+src/main/kotlin/editor/codeintel/LspEditorIntelligence.kt	51	P03	
+src/main/kotlin/editor/codeintel/completion/CompletionPipeline.kt	176	L11	
+src/main/kotlin/editor/codeintel/frontend/CSemanticAdapter.kt	152	L04	
+src/main/kotlin/editor/codeintel/frontend/KotlinSemanticAdapter.kt	945	L03	
+src/main/kotlin/editor/codeintel/frontend/LanguageSemanticAdapter.kt	48	L01	L02
+src/main/kotlin/editor/codeintel/frontend/LegacySemanticDeltaFactory.kt	123	L10	
+src/main/kotlin/editor/codeintel/frontend/TreeSitterSemanticAdapter.kt	333	L10	
+src/main/kotlin/editor/codeintel/frontend/TreeSitterSemanticAdapters.kt	70	L10	
+src/main/kotlin/editor/codeintel/index/DependencyGraph.kt	29	L08	
+src/main/kotlin/editor/codeintel/index/H2SemanticStore.kt	637	L05	
+src/main/kotlin/editor/codeintel/index/SemanticIndex.kt	372	L01	L05,L08,L09
+src/main/kotlin/editor/codeintel/index/SemanticInvalidationPlanner.kt	78	L08	
+src/main/kotlin/editor/codeintel/ml/CompletionRanker.kt	38	L11	
+src/main/kotlin/editor/codeintel/model/SemanticModel.kt	315	L01	
+src/main/kotlin/editor/codeintel/resolver/ExpressionTypeResolver.kt	42	L07	
+src/main/kotlin/editor/codeintel/resolver/SemanticResolver.kt	690	L06	L07,L08
+src/main/kotlin/editor/codeintel/semantic/SemanticEnricher.kt	27	L12	L09,P03
+src/main/kotlin/editor/codeintel/semantic/SemanticTokens.kt	104	L09	E11
+src/main/kotlin/editor/database/DatabaseService.kt	159	D01	D02,D03,D04,D05,D06
+src/main/kotlin/editor/database/config/CredentialStore.kt	52	D01	
+src/main/kotlin/editor/database/config/DataSourceRepository.kt	51	D01	
+src/main/kotlin/editor/database/config/KodeDatabasePaths.kt	41	D01	
+src/main/kotlin/editor/database/connection/DatabaseConnectionManager.kt	133	D04	
+src/main/kotlin/editor/database/console/SqlConsoleManager.kt	106	D08	
+src/main/kotlin/editor/database/driver/JdbcDrivers.kt	644	D03	D01
+src/main/kotlin/editor/database/driver/JdbcUrlTemplates.kt	187	D01	D07
+src/main/kotlin/editor/database/metadata/DatabaseMetadata.kt	345	D06	
+src/main/kotlin/editor/database/model/DatabaseModels.kt	158	D01	D02
+src/main/kotlin/editor/database/query/SqlQuery.kt	256	D05	D08
+src/main/kotlin/editor/database/ui/DatabaseConnectionDialog.kt	592	D07	
+src/main/kotlin/editor/database/ui/DatabaseObjectMenu.kt	129	D07	
+src/main/kotlin/editor/database/ui/DatabasePanelView.kt	451	D07	
+src/main/kotlin/editor/database/ui/JdbcDriverDownloadDialog.kt	131	D03	D07
+src/main/kotlin/editor/database/ui/SqlResultPanel.kt	235	D08	
+src/main/kotlin/editor/database/ui/SqlSessionSaveDialog.kt	19	D08	
+src/main/kotlin/editor/database/ui/SqlStatementMenu.kt	89	D08	
+src/main/kotlin/editor/db/DbServerManager.kt	204	L05	
+src/main/kotlin/editor/grammars/KeywordSyntaxProvider.kt	251	L02	
+src/main/kotlin/editor/grammars/RegexGrammar.kt	65	L02	
+src/main/kotlin/editor/grammars/RegexSyntaxProvider.kt	171	L02	
+src/main/kotlin/editor/grammars/gramars.kt	24	L02	
+src/main/kotlin/editor/lang/TreeSitterSupport.kt	159	L02	E01
+src/main/kotlin/editor/lang/adapters/KotlinTsAdapter.kt	96	L03	
+src/main/kotlin/editor/lang/adapters/TypescriptTsAdapter.kt	135	L10	
+src/main/kotlin/editor/lang/base.kt	207	L02	E01
+src/main/kotlin/editor/lang/kotlin/KotlinLanguageAdapter.kt	210	L03	
+src/main/kotlin/editor/lang/typescript/TypescriptLanguageAdapter.kt	120	L10	
+src/main/kotlin/editor/lib/AsciiCore.kt	365	V03	
+src/main/kotlin/editor/lib/AsciiImageRenderer.kt	19	V03	
+src/main/kotlin/editor/lib/BixelAsciiImageRenderer.kt	31	V03	
+src/main/kotlin/editor/lib/BrailleAsciiImageRenderer.kt	29	V03	
+src/main/kotlin/editor/lib/BufferState.kt	24	W03	E03
+src/main/kotlin/editor/lib/ByteBuffer.kt	169	V02	
+src/main/kotlin/editor/lib/FileTree.kt	181	W02	
+src/main/kotlin/editor/lib/IByteBuffer.kt	52	V02	
+src/main/kotlin/editor/lib/IFileTree.kt	58	W02	
+src/main/kotlin/editor/lib/IGitService.kt	353	G01	G02,G03
+src/main/kotlin/editor/lib/ITextBuffer.kt	217	E01	E02,E03,E04,E06
+src/main/kotlin/editor/lib/ImageLoader.kt	28	V03	
+src/main/kotlin/editor/lib/KorimAsciiImageRenderer.kt	37	V03	
+src/main/kotlin/editor/lib/ProjectFolderStatus.kt	48	W01	W02
+src/main/kotlin/editor/lib/ProjectSearcher.kt	69	W04	
+src/main/kotlin/editor/lib/QuadxelAsciiImageRenderer.kt	31	V03	
+src/main/kotlin/editor/lib/SystemClipboard.kt	29	E04	
+src/main/kotlin/editor/lib/TextBuffer.kt	998	E01	E02,E03,E04,E07,W03
+src/main/kotlin/editor/lsp/LspCatalog.kt	440	P01	
+src/main/kotlin/editor/lsp/LspClient.kt	294	P02	
+src/main/kotlin/editor/lsp/LspService.kt	180	P02	P01,P03
+src/main/kotlin/editor/mime/DefaultMimeTypeDetector.kt	273	V01	
+src/main/kotlin/editor/mime/MimeTypeDetector.kt	30	V01	
+src/main/kotlin/editor/mime/MimeTypeResult.kt	33	V01	
+src/main/kotlin/editor/mime/SampleMimeTable.kt	306	V01	
+src/main/kotlin/editor/rest/http/RestHttp.kt	470	R04	R05,R08
+src/main/kotlin/editor/rest/model/RestEnvironmentCodec.kt	54	R01	R06,R08
+src/main/kotlin/editor/rest/model/RestModels.kt	224	R01	R06,R08
+src/main/kotlin/editor/rest/model/RestOpenApiImporter.kt	187	R03	
+src/main/kotlin/editor/rest/model/RestWorkspaceModel.kt	251	R01	R06,R08
+src/main/kotlin/editor/rest/resolve/RestResolver.kt	449	R02	
+src/main/kotlin/editor/rest/ui/HttpHeaderCatalog.kt	20	R07	
+src/main/kotlin/editor/rest/ui/RestCodeFormatting.kt	70	R07	
+src/main/kotlin/editor/rest/ui/RestEditorView.kt	1385	R07	R06,R08,E12
+src/main/kotlin/editor/rest/ui/RestKeyValueDialog.kt	166	R06	F05,E12
+src/main/kotlin/editor/rest/ui/RestPanelView.kt	770	R06	F05,E12
+src/main/kotlin/editor/ui/AboutView.kt	230	Z02	
+src/main/kotlin/editor/ui/BinaryHexView.kt	234	V02	
+src/main/kotlin/editor/ui/CodeEditorView.kt	2991	E05	E01,E02,E03,E04,E06,E07,E08,E09,E10,E11,E12,E13
+src/main/kotlin/editor/ui/DiffView.kt	27	G03	
+src/main/kotlin/editor/ui/FileTreeView.kt	497	W02	W03
+src/main/kotlin/editor/ui/FilesTabView.kt	212	W02	W03
+src/main/kotlin/editor/ui/FormFieldRenderer.kt	44	F05	
+src/main/kotlin/editor/ui/GitPanelView.kt	460	G02	G01,G03
+src/main/kotlin/editor/ui/HelpView.kt	123	Z02	
+src/main/kotlin/editor/ui/HighlightEdits.kt	41	E11	
+src/main/kotlin/editor/ui/ImageViewerView.kt	337	V03	
+src/main/kotlin/editor/ui/ModalDialog.kt	205	F05	
+src/main/kotlin/editor/ui/ProjectSearchDialog.kt	709	W04	E12
+src/main/kotlin/editor/ui/ProjectSettingsView.kt	223	W02	W01,L09
+src/main/kotlin/editor/ui/RescanProgressDialog.kt	86	W02	W01,L09
+src/main/kotlin/editor/ui/SearchReplaceBar.kt	303	E07	F05
+src/main/kotlin/editor/ui/SettingsView.kt	546	Z02	P01
+src/main/kotlin/editor/ui/SideBySideDiffView.kt	406	G03	
+src/main/kotlin/editor/ui/SliderControl.kt	98	F05	
+src/main/kotlin/editor/ui/SourceFolderPickerDialog.kt	237	W02	W01,L09
+src/main/kotlin/editor/ui/WorkspacePickerDialog.kt	235	W05	F05
+src/main/kotlin/react/AnsiCanvasRenderer.kt	753	F04	
+src/main/kotlin/react/CanvasRenderer.kt	114	F04	F05
+src/main/kotlin/react/ClippedCanvasRenderer.kt	66	F05	
+src/main/kotlin/react/Color.kt	21	F05	
+src/main/kotlin/react/Component.kt	28	F05	
+src/main/kotlin/react/ContentBox.kt	41	F05	
+src/main/kotlin/react/NoopRenderer.kt	44	F05	
+src/main/kotlin/react/StringSnapshotRenderer.kt	90	F05	
+src/main/kotlin/react/StyleSet.kt	98	F05	
+src/main/kotlin/react/StyleSheet.kt	114	F05	
+src/main/kotlin/react/TabView.kt	153	F05	
+src/main/kotlin/react/UIEvent.kt	48	F04	F05
+src/main/kotlin/react/util/WindowsConsole.kt	503	F04	
+src/main/kotlin/react/util/util.kt	36	F04	

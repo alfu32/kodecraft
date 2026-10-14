@@ -1,0 +1,77 @@
+[
+  {
+    "path": "codeintel/definitions.json",
+    "bytes": 19241,
+    "sha256": "895f55e91854c96553a24baee8fe24ac8849feeaf63d1e91c7ed033879fa39cc"
+  },
+  {
+    "path": "keyword-patterns.txt",
+    "bytes": 24310,
+    "sha256": "3fc51a7d750b3b15380313cb873beb58a25e6ce9bbc9fabf5f1655d9649a90a4"
+  },
+  {
+    "path": "lsp/servers.json",
+    "bytes": 7781,
+    "sha256": "a0202d7c44a911381c5a1082022602c2e8e2651d024d598c3e237b895db1cb35"
+  },
+  {
+    "path": "src/main/resources/database-jdbc-url-templates.json",
+    "bytes": 30871,
+    "sha256": "da00596520398dea3d4c5abd59244f82b7a1087caf3ba15d5a2d4a15ce218cd2"
+  },
+  {
+    "path": "src/main/resources/native/LICENSE-MIT.txt",
+    "bytes": 1075,
+    "sha256": "1768abf81bbaa709db4af5086f785b9cf4994cd1e0c3c7b88d5323cec631075d"
+  },
+  {
+    "path": "src/main/resources/native/linux/aarch64/ttyd.so",
+    "bytes": 591128,
+    "sha256": "173d454ed3c4943158b28be5f00effccd7f56422dcbe8b27ebd7ae0161b551ec"
+  },
+  {
+    "path": "src/main/resources/native/linux/x86_64/ttyd.so",
+    "bytes": 580088,
+    "sha256": "1ab398e85b905e106700db168f8c8c6e7d1c5bf278e7d59707ba89d0f1c1d3c6"
+  },
+  {
+    "path": "src/main/resources/native/macos/aarch64/ttyd.dylib",
+    "bytes": 684208,
+    "sha256": "1c799bb8f4aaa271984a5e3102b17166f9b99220342c9873e2746f12f7d90757"
+  },
+  {
+    "path": "src/main/resources/native/macos/x86_64/ttyd.dylib",
+    "bytes": 683152,
+    "sha256": "a9bd8b92872c9d93e96e3f4bbe47021ea854835490daa111f1588f2f4d78c911"
+  },
+  {
+    "path": "src/main/resources/native/windows/aarch64/ttyd.dll",
+    "bytes": 5269504,
+    "sha256": "1ba0e1f6e7d92eb7df96b16a9a1f1dfa11871c8a675350d9fdbc9b103dee5857"
+  },
+  {
+    "path": "src/main/resources/native/windows/aarch64/ttyd.lib",
+    "bytes": 1808,
+    "sha256": "5775152372191ca3e1c212ca6c0eb0f3499e13ab8fcbd40ae618dc05bb4128bc"
+  },
+  {
+    "path": "src/main/resources/native/windows/x86_64/ttyd.dll",
+    "bytes": 5808128,
+    "sha256": "41e0f4831e8853f1a778e76a64c0b371220426f1fe79fa7213182b4e34313e6b"
+  },
+  {
+    "path": "src/main/resources/native/windows/x86_64/ttyd.lib",
+    "bytes": 1808,
+    "sha256": "eda53aa10a17fe7ca242f577483b731f8c7ec50001c84632cea58a2c786d733a"
+  },
+  {
+    "path": "styles/app.css",
+    "bytes": 6144,
+    "sha256": "6dd0aea8050c5c80b7a75f79bdd499de1634a7a8f962b15921f6c55025e6b2b3"
+  },
+  {
+    "path": "token-colors.txt",
+    "bytes": 82,
+    "sha256": "8f8a1a15947973f51416ac5f5d295cc54e499ddf4af6d2166ea0c2267b2e0e90"
+  }
+]

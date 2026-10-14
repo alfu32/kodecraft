@@ -1,0 +1,920 @@
+[
+  {
+    "path": "src/test/kotlin/editor/app/ProjectFileScannerTest.kt",
+    "line": 14,
+    "test": "skipsDotGitAndIgnoredGlobs",
+    "owner": "W01"
+  },
+  {
+    "path": "src/test/kotlin/editor/app/ProjectFileScannerTest.kt",
+    "line": 38,
+    "test": "readsRootGitignoreAndExplicitFileAndFolderExclusions",
+    "owner": "W01"
+  },
+  {
+    "path": "src/test/kotlin/editor/app/ProjectFileScannerTest.kt",
+    "line": 72,
+    "test": "skipsUnreadableDirectories",
+    "owner": "W01"
+  },
+  {
+    "path": "src/test/kotlin/editor/app/ProjectSessionManagerTest.kt",
+    "line": 17,
+    "test": "detectsConfigAndSelectsOnlyConventionalSourceFolders",
+    "owner": "W03"
+  },
+  {
+    "path": "src/test/kotlin/editor/app/ProjectSessionManagerTest.kt",
+    "line": 31,
+    "test": "persistsDatabaseConnectionsAndSqlSessions",
+    "owner": "W03"
+  },
+  {
+    "path": "src/test/kotlin/editor/app/ProjectSessionManagerTest.kt",
+    "line": 55,
+    "test": "persistsRestCollectionAndUiState",
+    "owner": "W03"
+  },
+  {
+    "path": "src/test/kotlin/editor/app/TtydAdapterTest.kt",
+    "line": 9,
+    "test": "mapsOperatingSystemsToBundledTtydAssets",
+    "owner": "Z01"
+  },
+  {
+    "path": "src/test/kotlin/editor/app/TtydAdapterTest.kt",
+    "line": 21,
+    "test": "returnsNullForUnsupportedPlatform",
+    "owner": "Z01"
+  },
+  {
+    "path": "src/test/kotlin/editor/app/TtydAdapterTest.kt",
+    "line": 29,
+    "test": "bundledNativeLibrariesAreAvailableOnClasspath",
+    "owner": "Z01"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/CSemanticTest.kt",
+    "line": 16,
+    "test": "reResolvesConsumersAfterMovingAndChangingStructFields",
+    "owner": "L04"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/CSemanticTest.kt",
+    "line": 34,
+    "test": "resolvesTagAliasAndPointerMembersAcrossFilesAndReload",
+    "owner": "L04"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/CSemanticTest.kt",
+    "line": 73,
+    "test": "supportsAnonymousStructsAndSameSpellingTagAliases",
+    "owner": "L04"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/CodeIntelServiceTest.kt",
+    "line": 17,
+    "test": "completesMembersThroughEditorCompatibilityFacade",
+    "owner": "L09"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/CodeIntelServiceTest.kt",
+    "line": 53,
+    "test": "indexesDeclarationsAndUsagesPerLine",
+    "owner": "L09"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/CodeIntelServiceTest.kt",
+    "line": 90,
+    "test": "workspaceAndVersionGating",
+    "owner": "L09"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/CodeIntelServiceTest.kt",
+    "line": 143,
+    "test": "loadsPatternsFromJsonRegistry",
+    "owner": "L09"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/CodeIntelServiceTest.kt",
+    "line": 190,
+    "test": "externalDefinitionsOverrideResource",
+    "owner": "L09"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/CodeIntelServiceTest.kt",
+    "line": 225,
+    "test": "usagesIncludeOtherFiles",
+    "owner": "L09"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/CodeIntelServiceTest.kt",
+    "line": 261,
+    "test": "regexExtractorDetectsDeclarationsAndSkipsKeywords",
+    "owner": "L09"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/H2SemanticStoreTest.kt",
+    "line": 21,
+    "test": "readersKeepPreviousSnapshotDuringBackgroundPublication",
+    "owner": "L05"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/H2SemanticStoreTest.kt",
+    "line": 53,
+    "test": "reusesSnapshotUntilSemanticRevisionChanges",
+    "owner": "L05"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/H2SemanticStoreTest.kt",
+    "line": 60,
+    "test": "reloadsPreindexedSemanticFacts",
+    "owner": "L05"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/H2SemanticStoreTest.kt",
+    "line": 85,
+    "test": "collapsesDuplicateStableSymbolsBeforePersistence",
+    "owner": "L05"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/H2SemanticStoreTest.kt",
+    "line": 99,
+    "test": "collapsesDuplicateExpressionTypeRangesBeforePersistence",
+    "owner": "L05"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/H2SemanticStoreTest.kt",
+    "line": 122,
+    "test": "reResolvesCrossFileInferenceAfterPersistentReload",
+    "owner": "L05"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/H2SemanticStoreTest.kt",
+    "line": 153,
+    "test": "persistsDependenciesAndResolutionGenerationsAcrossReload",
+    "owner": "L05"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/H2SemanticStoreTest.kt",
+    "line": 190,
+    "test": "implementationOnlyPersistenceUpdateKeepsDependentRelations",
+    "owner": "L05"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/H2SemanticStoreTest.kt",
+    "line": 221,
+    "test": "rebuildsNullableGenericTypesFromPersistedSemanticFacts",
+    "owner": "L05"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinExpressionSemanticsTest.kt",
+    "line": 13,
+    "test": "completesChainedPropertiesAndMethodCalls",
+    "owner": "L07"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinExpressionSemanticsTest.kt",
+    "line": 53,
+    "test": "typesParenthesizedAndCastReceivers",
+    "owner": "L07"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinExpressionSemanticsTest.kt",
+    "line": 70,
+    "test": "propagatesTypesThroughReferencesAndAssignments",
+    "owner": "L07"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinExpressionSemanticsTest.kt",
+    "line": 98,
+    "test": "mergesConflictingAssignmentsInsteadOfChoosingTheLastType",
+    "owner": "L07"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinExpressionSemanticsTest.kt",
+    "line": 125,
+    "test": "infersPrimitiveLiteralTypes",
+    "owner": "L07"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinExpressionSemanticsTest.kt",
+    "line": 143,
+    "test": "doesNotResolveMembersByWorkspaceTextWhenReceiverTypeIsUnknown",
+    "owner": "L07"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinExpressionSemanticsTest.kt",
+    "line": 163,
+    "test": "preservesGenericAndNullableTypeShapeForMemberLookup",
+    "owner": "L07"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinExpressionSemanticsTest.kt",
+    "line": 184,
+    "test": "filtersMembersUsingThisSuperAndVisibility",
+    "owner": "L07"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinSemanticVerticalSliceTest.kt",
+    "line": 13,
+    "test": "infersCallResultAndCompletesReceiverMembers",
+    "owner": "L01"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinSemanticVerticalSliceTest.kt",
+    "line": 44,
+    "test": "resolvesTypesAndMembersAcrossFilesIndependentOfIndexOrder",
+    "owner": "L01"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinSemanticVerticalSliceTest.kt",
+    "line": 70,
+    "test": "includesInheritedMembersInReceiverCompletion",
+    "owner": "L01"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinSemanticVerticalSliceTest.kt",
+    "line": 97,
+    "test": "definitionAndReferencesUseResolvedSymbolIdentity",
+    "owner": "L01"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinSemanticVerticalSliceTest.kt",
+    "line": 113,
+    "test": "oldSnapshotRemainsStableAfterPublishingNewFileVersion",
+    "owner": "L01"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinSemanticVerticalSliceTest.kt",
+    "line": 125,
+    "test": "publicSurfaceHashIgnoresLocalImplementationChanges",
+    "owner": "L01"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/KotlinSemanticVerticalSliceTest.kt",
+    "line": 154,
+    "test": "visibleSymbolsRespectNestedScopeAndDeclarationOrder",
+    "owner": "L01"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/SemanticHighlightingTest.kt",
+    "line": 13,
+    "test": "refreshesCachedTokensWhenOnlyAReferencedFileChanges",
+    "owner": "L02"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/SemanticHighlightingTest.kt",
+    "line": 34,
+    "test": "combinesTreeSitterLexicalTokensWithResolvedSymbolKinds",
+    "owner": "L02"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/SemanticHighlightingTest.kt",
+    "line": 72,
+    "test": "compatibilityFacadeReturnsSemanticAndMultilineLexicalScopes",
+    "owner": "L02"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/SemanticHighlightingTest.kt",
+    "line": 109,
+    "test": "normalizesTreeSitterUtf8RangesBeforeRenderingSemanticTokens",
+    "owner": "L02"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/SemanticHighlightingTest.kt",
+    "line": 131,
+    "test": "reusesKotlinParserStateAcrossEditedDocumentVersions",
+    "owner": "L02"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/SemanticInvalidationTest.kt",
+    "line": 19,
+    "test": "implementationOnlyEditDoesNotReResolveDependentFile",
+    "owner": "L08"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/SemanticInvalidationTest.kt",
+    "line": 47,
+    "test": "exportedSurfaceEditReResolvesTransitiveDependents",
+    "owner": "L08"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/SemanticInvalidationTest.kt",
+    "line": 71,
+    "test": "newDefinitionWakesAPreviouslyUnresolvedFile",
+    "owner": "L08"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/SemanticInvalidationTest.kt",
+    "line": 94,
+    "test": "removedDefinitionClearsDependentResolution",
+    "owner": "L08"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/SemanticInvalidationTest.kt",
+    "line": 124,
+    "test": "dependentClosureTerminatesForCycles",
+    "owner": "L08"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/TreeSitterSemanticAdapterTest.kt",
+    "line": 11,
+    "test": "firstAdapterBatchProducesSemanticDeltas",
+    "owner": "L10"
+  },
+  {
+    "path": "src/test/kotlin/editor/codeintel/TreeSitterSemanticAdapterTest.kt",
+    "line": 33,
+    "test": "secondAdapterBatchProducesSemanticDeltas",
+    "owner": "L10"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/DataSourceRepositoryTest.kt",
+    "line": 14,
+    "test": "persistsDefinitionsWithoutPassword",
+    "owner": "D01"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/JdbcDatabaseIntegrationTest.kt",
+    "line": 21,
+    "test": "connectsExecutesAndIntrospectsH2",
+    "owner": "D04"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/JdbcDatabaseIntegrationTest.kt",
+    "line": 62,
+    "test": "returnsSqlErrorsAsResults",
+    "owner": "D04"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/JdbcDatabaseIntegrationTest.kt",
+    "line": 91,
+    "test": "supportsUpdateCountsAndRollback",
+    "owner": "D04"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/JdbcDriverRegistryTest.kt",
+    "line": 10,
+    "test": "resolvesKnownDriverByUrl",
+    "owner": "D01"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/JdbcDriverRegistryTest.kt",
+    "line": 19,
+    "test": "loadsVisibleH2DriverThroughDriverAbstraction",
+    "owner": "D01"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/JdbcDriverRegistryTest.kt",
+    "line": 28,
+    "test": "resolvesAliasesToOneSharedDriverArtifact",
+    "owner": "D01"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/JdbcDriverRegistryTest.kt",
+    "line": 40,
+    "test": "exposesCustomJdbcSourceWithoutInventingAnArtifact",
+    "owner": "D01"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/JdbcUrlTemplatesTest.kt",
+    "line": 14,
+    "test": "catalogCoversEveryBuiltInDriverAndResolvesAliases",
+    "owner": "D01"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/JdbcUrlTemplatesTest.kt",
+    "line": 29,
+    "test": "recentsAreMruBoundedExactAndPersistedByFamily",
+    "owner": "D01"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/JdbcUrlTemplatesTest.kt",
+    "line": 46,
+    "test": "sensitiveUrlsAreRejectedButSafeParametersAreRemembered",
+    "owner": "D01"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/JdbcUrlTemplatesTest.kt",
+    "line": 58,
+    "test": "aliasesAndSparkShareRecentFamilies",
+    "owner": "D01"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/MetadataCacheTest.kt",
+    "line": 14,
+    "test": "invalidatesIndividualRequestsAndDataSources",
+    "owner": "D06"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/SqlStatementLocatorTest.kt",
+    "line": 11,
+    "test": "ignoresSemicolonsInsideStringsAndComments",
+    "owner": "D08"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/SqlStatementLocatorTest.kt",
+    "line": 39,
+    "test": "locatesStatementContainingCaret",
+    "owner": "D08"
+  },
+  {
+    "path": "src/test/kotlin/editor/database/SqlStatementLocatorTest.kt",
+    "line": 48,
+    "test": "selectionOverridesCaret",
+    "owner": "D08"
+  },
+  {
+    "path": "src/test/kotlin/editor/db/DbServerManagerTest.kt",
+    "line": 42,
+    "test": "startsAndCreatesDatabaseFiles",
+    "owner": "L05"
+  },
+  {
+    "path": "src/test/kotlin/editor/db/DbServerManagerTest.kt",
+    "line": 58,
+    "test": "supportsExplicitInMemoryMode",
+    "owner": "L05"
+  },
+  {
+    "path": "src/test/kotlin/editor/grammars/KeywordSyntaxProviderTest.kt",
+    "line": 7,
+    "test": "extractsRustKeywordAlternativesForCompletion",
+    "owner": "L02"
+  },
+  {
+    "path": "src/test/kotlin/editor/grammars/KeywordSyntaxProviderTest.kt",
+    "line": 17,
+    "test": "classifiesJsxKeywordsTagsAttributesAndClassNamesSeparately",
+    "owner": "L02"
+  },
+  {
+    "path": "src/test/kotlin/editor/grammars/KeywordSyntaxProviderTest.kt",
+    "line": 31,
+    "test": "separatesXmlTagNamesFromAttributesAndCssSelectors",
+    "owner": "L02"
+  },
+  {
+    "path": "src/test/kotlin/editor/grammars/RegexSyntaxProviderTest.kt",
+    "line": 14,
+    "test": "parses tokens with qualifier and content",
+    "owner": "L02"
+  },
+  {
+    "path": "src/test/kotlin/editor/grammars/RegexSyntaxProviderTest.kt",
+    "line": 34,
+    "test": "uses language definitions loaded from directory and extension index",
+    "owner": "L02"
+  },
+  {
+    "path": "src/test/kotlin/editor/lang/KotlinIdentifierOccurrenceIntegrationTest.kt",
+    "line": 14,
+    "test": "extractsOccurrencesFromProjectSources",
+    "owner": "L03"
+  },
+  {
+    "path": "src/test/kotlin/editor/lang/KotlinIdentifierPathScanTest.kt",
+    "line": 14,
+    "test": "scansIdentifierPathsInProjectSources",
+    "owner": "L03"
+  },
+  {
+    "path": "src/test/kotlin/editor/lang/KotlinIdentifierPipelineTest.kt",
+    "line": 11,
+    "test": "extractsScopedDeclarationsAndUsages",
+    "owner": "L03"
+  },
+  {
+    "path": "src/test/kotlin/editor/lang/TypescriptIdentifierPathScanTest.kt",
+    "line": 14,
+    "test": "scansIdentifierPathsInTypescriptCorpus",
+    "owner": "L10"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/FileTreeTest.kt",
+    "line": 12,
+    "test": "hidesKodeMetadataFilesAndDirectory",
+    "owner": "W02"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/JGitServiceTest.kt",
+    "line": 12,
+    "test": "statusHandlesBlobsAboveJgitBigFileThreshold",
+    "owner": "G01"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/KorimAsciiImageRendererTest.kt",
+    "line": 31,
+    "test": "renders ascii from image file",
+    "owner": "V03"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/ProjectFolderStatusTest.kt",
+    "line": 8,
+    "test": "classifiesIgnoredSourceAndExcludedFolders",
+    "owner": "W01"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferInputTest.kt",
+    "line": 9,
+    "test": "acceptsTerminalVariantsForEnter",
+    "owner": "E02"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferSearchTest.kt",
+    "line": 9,
+    "test": "updateSearchTracksMatchesAcrossLines",
+    "owner": "E07"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferSearchTest.kt",
+    "line": 24,
+    "test": "findNextCyclesThroughMatches",
+    "owner": "E07"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferSearchTest.kt",
+    "line": 38,
+    "test": "replaceCurrentAndAllUpdateMatches",
+    "owner": "E07"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferSearchTest.kt",
+    "line": 55,
+    "test": "replaceHonorsRegexGroups",
+    "owner": "E07"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferSearchTest.kt",
+    "line": 66,
+    "test": "savingClearsDirtyFlag",
+    "owner": "E07"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferSearchTest.kt",
+    "line": 86,
+    "test": "invalidRegexReportsError",
+    "owner": "E07"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferSearchTest.kt",
+    "line": 98,
+    "test": "searchResultsRefreshAfterEditing",
+    "owner": "E07"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferUndoTest.kt",
+    "line": 10,
+    "test": "undo and redo insertion",
+    "owner": "E03"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferUndoTest.kt",
+    "line": 28,
+    "test": "undo delete merges lines",
+    "owner": "E03"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferUndoTest.kt",
+    "line": 40,
+    "test": "redo is cleared after new edit following undo",
+    "owner": "E03"
+  },
+  {
+    "path": "src/test/kotlin/editor/lib/TextBufferUndoTest.kt",
+    "line": 54,
+    "test": "backspace at end of buffer stays in bounds",
+    "owner": "E03"
+  },
+  {
+    "path": "src/test/kotlin/editor/mime/DefaultMimeTypeDetectorTest.kt",
+    "line": 13,
+    "test": "detect filename by extension",
+    "owner": "V01"
+  },
+  {
+    "path": "src/test/kotlin/editor/mime/DefaultMimeTypeDetectorTest.kt",
+    "line": 22,
+    "test": "detect bytes by signature",
+    "owner": "V01"
+  },
+  {
+    "path": "src/test/kotlin/editor/mime/DefaultMimeTypeDetectorTest.kt",
+    "line": 34,
+    "test": "detect file uses signature when extension missing",
+    "owner": "V01"
+  },
+  {
+    "path": "src/test/kotlin/editor/mime/DefaultMimeTypeDetectorTest.kt",
+    "line": 49,
+    "test": "register new extension",
+    "owner": "V01"
+  },
+  {
+    "path": "src/test/kotlin/editor/mime/DefaultMimeTypeDetectorTest.kt",
+    "line": 58,
+    "test": "fallback identifies likely text",
+    "owner": "V01"
+  },
+  {
+    "path": "src/test/kotlin/editor/mime/DefaultMimeTypeDetectorTest.kt",
+    "line": 68,
+    "test": "detect file prefers content based fallback for unknown extensions",
+    "owner": "V01"
+  },
+  {
+    "path": "src/test/kotlin/editor/mime/DefaultMimeTypeDetectorTest.kt",
+    "line": 82,
+    "test": "detects shell script from a bash shebang without an extension",
+    "owner": "V01"
+  },
+  {
+    "path": "src/test/kotlin/editor/mime/DefaultMimeTypeDetectorTest.kt",
+    "line": 91,
+    "test": "detects shell script from a direct sh shebang in a file",
+    "owner": "V01"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestCodeFormattingTest.kt",
+    "line": 10,
+    "test": "mapsContentTypesToEditorLanguages",
+    "owner": "R07"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestCodeFormattingTest.kt",
+    "line": 17,
+    "test": "prettyPrintingCanBeToggledWithoutChangingInvalidContent",
+    "owner": "R07"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestEditorViewTest.kt",
+    "line": 20,
+    "test": "environmentEditorReceivesTypingAndClipboardEvents",
+    "owner": "E12"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestEditorViewTest.kt",
+    "line": 53,
+    "test": "focusedHeadersEditorKeepsArrowKeysWhenTransactionResponseIsVisible",
+    "owner": "E12"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestHttpTest.kt",
+    "line": 16,
+    "test": "executesRequestsCapturesDuplicateHeadersAndCarriesCookies",
+    "owner": "R04"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestHttpTest.kt",
+    "line": 46,
+    "test": "reportsResponsePreviewTruncation",
+    "owner": "R04"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestHttpTest.kt",
+    "line": 66,
+    "test": "ignoresTransportManagedHeadersInsteadOfFailingRequestConstruction",
+    "owner": "R04"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestHttpTest.kt",
+    "line": 97,
+    "test": "readsSseEventsAndCanPublishIncrementalUpdates",
+    "owner": "R04"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestModelTest.kt",
+    "line": 20,
+    "test": "storesEscapedEnvironmentValuesAndManagesActiveEnvironment",
+    "owner": "R01"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestModelTest.kt",
+    "line": 37,
+    "test": "createsRenamesDuplicatesAndMovesPostmanItems",
+    "owner": "R01"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestModelTest.kt",
+    "line": 52,
+    "test": "preservesUnknownPostmanFieldsAcrossImportAndExport",
+    "owner": "R01"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestModelTest.kt",
+    "line": 79,
+    "test": "importsOpenApiJsonIntoTheRequestedFolder",
+    "owner": "R01"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestModelTest.kt",
+    "line": 106,
+    "test": "importsOpenApiYaml",
+    "owner": "R01"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestResolverTest.kt",
+    "line": 20,
+    "test": "resolvesNestedVariablesPathVariablesAndInheritedBearerAuth",
+    "owner": "R02"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestResolverTest.kt",
+    "line": 54,
+    "test": "rejectsCyclesAndUnsupportedAuthenticationBeforeNetworkActivity",
+    "owner": "R02"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestResolverTest.kt",
+    "line": 70,
+    "test": "resolvesApiKeyIntoQueryAndRejectsDisabledVariables",
+    "owner": "R02"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestResolverTest.kt",
+    "line": 115,
+    "test": "inheritsCollectionAndFolderHeadersAndLetsRequestOverrideThem",
+    "owner": "R02"
+  },
+  {
+    "path": "src/test/kotlin/editor/rest/RestResolverTest.kt",
+    "line": 141,
+    "test": "environmentVariablesOverrideCollectionVariablesAndSseUrlsNormalize",
+    "owner": "R02"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 28,
+    "test": "externalSuggestionsCanRequireExplicitCtrlSpace",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 43,
+    "test": "suggestionPopupScrollsAndSelectsEntriesBeyondVisibleRows",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 78,
+    "test": "pageKeysTraverseWrappedRowsWithinOneLogicalLine",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 93,
+    "test": "pageKeysMoveCursorAndViewportByVisibleRows",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 109,
+    "test": "wheelMovesThreeRowsAndAltWheelMovesNine",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 124,
+    "test": "ctrlFPrefillsSearchWithEscapedSelection",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 138,
+    "test": "completionDoesNotDeleteReceiverDotWhenPrefixIsEmpty",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 150,
+    "test": "completionReplacesOnlyTheTypedIdentifierPrefix",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 162,
+    "test": "overlappingSyntaxTokensNeverCreateOverlappingDrawSegments",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 191,
+    "test": "cKeywordHighlightingPreservesPunctuationAndSourceText",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 210,
+    "test": "tabsRenderAtFourColumnStopsWithoutShiftingTokens",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 224,
+    "test": "braceBlocksCanBeCollapsedFromTheGutter",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 246,
+    "test": "controlCharactersUseSingleCursorStepEscapes",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 259,
+    "test": "nonBmpAndWideRunesUseExplicitEscapesInTheCellRenderer",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 268,
+    "test": "logicalCursorStepsTreatTabAndControlAsOneCharacterEach",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 281,
+    "test": "cSemanticTokensStayWithinIdentifierSpans",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 299,
+    "test": "definitionPopupPagesTargetsAndNavigatesSelectedProjectRelativeFile",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 345,
+    "test": "ctrlClickFallsBackToSourceIdentifierWhenSemanticTokensAreNotReady",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 369,
+    "test": "usagePopupCapturesWheelAndKeyboardAndShowsAllReferencesThroughOffset",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 422,
+    "test": "outsideClickDismissesDefinitionBeforeNextAnimationFrame",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+    "line": 441,
+    "test": "usagePathsCollapseDirectoriesAndPreserveFilename",
+    "owner": "E05"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/GitPanelViewTest.kt",
+    "line": 14,
+    "test": "statusFailureDoesNotCrashPanelStartupOrRender",
+    "owner": "G01"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/HighlightEditsTest.kt",
+    "line": 11,
+    "test": "discardsTokensWhenTypingJoinsAnIdentifierAtItsBoundary",
+    "owner": "E11"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/HighlightEditsTest.kt",
+    "line": 17,
+    "test": "shiftsUnchangedTokensAcrossInsertedLinesAndTabs",
+    "owner": "E11"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/HighlightEditsTest.kt",
+    "line": 26,
+    "test": "dropsEditedTokensAndRemapsAgainAfterDeletion",
+    "owner": "E11"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/SearchReplaceBarTest.kt",
+    "line": 14,
+    "test": "preservesUppercaseInputInFindField",
+    "owner": "E07"
+  },
+  {
+    "path": "src/test/kotlin/editor/ui/SearchReplaceBarTest.kt",
+    "line": 28,
+    "test": "clickingReplaceFieldMovesFocusAndCapturesInput",
+    "owner": "E07"
+  },
+  {
+    "path": "src/test/kotlin/react/AnsiCanvasRendererTest.kt",
+    "line": 10,
+    "test": "decodesPageDownCsiWithoutWaitingForAnotherInputByte",
+    "owner": "F04"
+  },
+  {
+    "path": "src/test/kotlin/react/TabViewTest.kt",
+    "line": 9,
+    "test": "renderDoesNotCrashWhenTabsOverflowAvailableWidth",
+    "owner": "F05"
+  }
+]

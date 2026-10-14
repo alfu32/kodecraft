@@ -1,0 +1,943 @@
+[
+  {
+    "id": "UX-001",
+    "input": "Empty file/document",
+    "expected": "One editable logical line, cursor at start; no indexing/render panic",
+    "owners": [
+      "E01"
+    ]
+  },
+  {
+    "id": "UX-002",
+    "input": "Type printable characters with Shift",
+    "expected": "Preserve actual character case; insert at caret; update dirty marker and revision",
+    "owners": [
+      "E03"
+    ]
+  },
+  {
+    "id": "UX-003",
+    "input": "Enter / Return / CR / LF key variants",
+    "expected": "One newline plus current line's leading spaces/tabs; consistent in embedded editors",
+    "owners": [
+      "F04",
+      "E03"
+    ]
+  },
+  {
+    "id": "UX-004",
+    "input": "Multiline paste over forward/reverse selection",
+    "expected": "Replace selected range once, preserve prefix/suffix, place caret after inserted text",
+    "owners": [
+      "E03",
+      "E04"
+    ]
+  },
+  {
+    "id": "UX-005",
+    "input": "Backspace within line / at line start",
+    "expected": "Delete preceding character, or join preceding line; no-op at document start",
+    "owners": [
+      "E03"
+    ]
+  },
+  {
+    "id": "UX-006",
+    "input": "Delete within line / at line end",
+    "expected": "Delete next character, or join next line; no-op at document end",
+    "owners": [
+      "E03"
+    ]
+  },
+  {
+    "id": "UX-007",
+    "input": "Delete/backspace/cut with selection",
+    "expected": "Delete complete normalized range, join boundary lines, clear selection",
+    "owners": [
+      "E02",
+      "E03"
+    ]
+  },
+  {
+    "id": "UX-008",
+    "input": "Left/Right",
+    "expected": "Move within line and across line boundaries; never split UTF-8",
+    "owners": [
+      "E02"
+    ]
+  },
+  {
+    "id": "UX-009",
+    "input": "Up/Down",
+    "expected": "Preserve original logical-line navigation and clamp to short lines; top goes to first-line start, bottom to last-line end",
+    "owners": [
+      "E02"
+    ]
+  },
+  {
+    "id": "UX-010",
+    "input": "Home/End",
+    "expected": "Logical line start/end; Shift extends from anchor",
+    "owners": [
+      "E02"
+    ]
+  },
+  {
+    "id": "UX-011",
+    "input": "Ctrl+Left/Right",
+    "expected": "Preserve source word-boundary rules for identifiers, punctuation, whitespace, and line boundaries",
+    "owners": [
+      "E02"
+    ]
+  },
+  {
+    "id": "UX-012",
+    "input": "Shift+Arrows / Ctrl+Shift+Arrows",
+    "expected": "Extend/reverse selection without losing anchor; moving without expansion clears it",
+    "owners": [
+      "E02"
+    ]
+  },
+  {
+    "id": "UX-013",
+    "input": "Ctrl+A",
+    "expected": "Entire text selected, including multiline boundaries; empty document safe",
+    "owners": [
+      "E02"
+    ]
+  },
+  {
+    "id": "UX-014",
+    "input": "Alt+U / Alt+R",
+    "expected": "Undo/redo text and cursor/anchor state; new edit clears redo",
+    "owners": [
+      "E03"
+    ]
+  },
+  {
+    "id": "UX-015",
+    "input": "Undo after newline, multiline paste, replace-all, completion",
+    "expected": "Each intentional compound edit is atomic; restores exact content",
+    "owners": [
+      "E03",
+      "E07",
+      "E09"
+    ]
+  },
+  {
+    "id": "UX-016",
+    "input": "Undo/redo when history empty or at EOF",
+    "expected": "No panic, no phantom dirty edit, cursor remains valid",
+    "owners": [
+      "E03"
+    ]
+  },
+  {
+    "id": "UX-017",
+    "input": "Tab/control/supplementary characters",
+    "expected": "Logical positions refer to source characters, not the multiple display cells used by escapes",
+    "owners": [
+      "E01",
+      "E02",
+      "E05"
+    ]
+  },
+  {
+    "id": "UX-018",
+    "input": "Clone/snapshot/restored state",
+    "expected": "Independent mutable views/history; immutable worker snapshot remains stable",
+    "owners": [
+      "E01",
+      "W03"
+    ]
+  },
+  {
+    "id": "UX-019",
+    "input": "Ctrl+C/X/V and Alt+C/X/V",
+    "expected": "Copy/cut selected text, paste at caret; read-only cuts/pastes rejected; shared clipboard in all hosts",
+    "owners": [
+      "E04",
+      "E12"
+    ]
+  },
+  {
+    "id": "UX-020",
+    "input": "Clipboard unavailable / SSH / browser terminal",
+    "expected": "Internal fallback works; bracketed paste accepted; copying does not freeze input waiting for a terminal query",
+    "owners": [
+      "E04",
+      "F04"
+    ]
+  },
+  {
+    "id": "UX-021",
+    "input": "Open a text file",
+    "expected": "Async load, correct path/MIME/language/grammar header, initial cursor/scroll, repaint on completion",
+    "owners": [
+      "E04",
+      "V01"
+    ]
+  },
+  {
+    "id": "UX-022",
+    "input": "Open file B before A finishes",
+    "expected": "A's result never replaces B; workspace switch likewise invalidates A",
+    "owners": [
+      "E04",
+      "F03"
+    ]
+  },
+  {
+    "id": "UX-023",
+    "input": "Read fails or file disappears",
+    "expected": "Visible error; do not silently present an empty file that can overwrite the original",
+    "owners": [
+      "E04"
+    ]
+  },
+  {
+    "id": "UX-024",
+    "input": "Ctrl+S on file document",
+    "expected": "Save intended snapshot; clear dirty only for that revision; save failure remains dirty and visible",
+    "owners": [
+      "E04"
+    ]
+  },
+  {
+    "id": "UX-025",
+    "input": "Ctrl+S on virtual/read-only document",
+    "expected": "Route to host's defined save/export action or report unavailable; never write a label as a filesystem path",
+    "owners": [
+      "E12"
+    ]
+  },
+  {
+    "id": "UX-026",
+    "input": "Switch files/viewers and return",
+    "expected": "Retain document text, cursor, selection, history, scroll, and language state",
+    "owners": [
+      "W03",
+      "W05"
+    ]
+  },
+  {
+    "id": "UX-027",
+    "input": "Restart with unsaved state",
+    "expected": "Restore dirty text, undo/redo, position and view state from session",
+    "owners": [
+      "W03"
+    ]
+  },
+  {
+    "id": "UX-028",
+    "input": "On-disk mtime newer than saved session",
+    "expected": "Apply documented stale-state handling; retain recoverable dirty content instead of silently destroying it",
+    "owners": [
+      "W03"
+    ]
+  },
+  {
+    "id": "UX-029",
+    "input": "File target supplied at startup",
+    "expected": "Open requested file; its parent is root; do not replace it with last session's active file",
+    "owners": [
+      "W05"
+    ]
+  },
+  {
+    "id": "UX-030",
+    "input": "Rename/delete/move an open file",
+    "expected": "Reconcile document identity, recent entries, index and save target; surface missing-file state",
+    "owners": [
+      "W02",
+      "W03"
+    ]
+  },
+  {
+    "id": "UX-031",
+    "input": "File changes while buffer dirty / save fails",
+    "expected": "Keep recoverable user content; explicit conflict/error state, no hidden overwrite",
+    "owners": [
+      "E04",
+      "W02"
+    ]
+  },
+  {
+    "id": "UX-032",
+    "input": "LF/CRLF/BOM/last newline/no final newline",
+    "expected": "Preserve documented file format; no extra newline introduced by repeated load/save",
+    "owners": [
+      "E04"
+    ]
+  },
+  {
+    "id": "UX-033",
+    "input": "Normal render",
+    "expected": "Dirty marker, path, MIME, language/grammar label, line numbers and gutter align",
+    "owners": [
+      "E05"
+    ]
+  },
+  {
+    "id": "UX-034",
+    "input": "Long logical line",
+    "expected": "Soft wrapping with a single source/cell map shared by drawing and hit testing",
+    "owners": [
+      "E05"
+    ]
+  },
+  {
+    "id": "UX-035",
+    "input": "PageUp/PageDown on wrapped line",
+    "expected": "Move cursor and viewport by visible rows; retain column within wrapped segment",
+    "owners": [
+      "E05",
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-036",
+    "input": "Shift+PageUp/PageDown",
+    "expected": "Same visual-row movement while extending selection",
+    "owners": [
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-037",
+    "input": "Mouse wheel / Alt+wheel",
+    "expected": "Scroll 3 / 9 visual rows per step, clamp, and preserve cursor until another navigation action",
+    "owners": [
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-038",
+    "input": "Cursor leaves viewport by navigation/edit",
+    "expected": "Scroll just enough to reveal it; obey header/search heights",
+    "owners": [
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-039",
+    "input": "Open/close search bar",
+    "expected": "Two-row find/replace area shrinks/restores editor viewport; no coordinate drift",
+    "owners": [
+      "E07"
+    ]
+  },
+  {
+    "id": "UX-040",
+    "input": "Resize narrow/tiny terminal or splitter",
+    "expected": "Recompute wrap/gutter/minimap/popups safely; zero content rows/columns do not underflow",
+    "owners": [
+      "E05",
+      "F05"
+    ]
+  },
+  {
+    "id": "UX-041",
+    "input": "Tab in source",
+    "expected": "Display `",
+    "owners": [
+      "-->` in four cells with tab style; all four map to one logical source tab"
+    ]
+  },
+  {
+    "id": "UX-042",
+    "input": "Control/wide/non-BMP/combining scalar",
+    "expected": "Existing escaped presentation, safe clipping; typed/pasted raw content survives save",
+    "owners": [
+      "E01",
+      "E05"
+    ]
+  },
+  {
+    "id": "UX-043",
+    "input": "Overlapping lexical and semantic spans",
+    "expected": "No overlapping draw segments, duplicated punctuation, shifted source, or invalid byte slicing",
+    "owners": [
+      "E11"
+    ]
+  },
+  {
+    "id": "UX-044",
+    "input": "Selection, search, hover, warning, transient overlays",
+    "expected": "Deliberate precedence; selection remains clear over tokens; warnings/transient SQL highlight remain visible",
+    "owners": [
+      "E11",
+      "E12"
+    ]
+  },
+  {
+    "id": "UX-045",
+    "input": "Semantic job finishes without new input",
+    "expected": "Repaint immediately; no keypress required",
+    "owners": [
+      "F03",
+      "E11"
+    ]
+  },
+  {
+    "id": "UX-046",
+    "input": "Type while semantic job pending",
+    "expected": "Shift unchanged spans, discard edited/intersecting spans, then replace with current result",
+    "owners": [
+      "E11"
+    ]
+  },
+  {
+    "id": "UX-047",
+    "input": "Only a referenced file changes",
+    "expected": "Semantic highlights/completion refresh for affected dependent editor",
+    "owners": [
+      "L08",
+      "L09",
+      "E11"
+    ]
+  },
+  {
+    "id": "UX-048",
+    "input": "Focus leaves editor",
+    "expected": "Correct cursor/selection/focus appearance; keystrokes go to actual focused target",
+    "owners": [
+      "F05",
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-049",
+    "input": "Click source text",
+    "expected": "Focus editor, leave search-field focus, set caret using wrapped row and rendered-column mapping",
+    "owners": [
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-050",
+    "input": "Drag selection in either direction",
+    "expected": "Anchor on press, extend on move, stop on release; bounds clamp and header clicks do not edit",
+    "owners": [
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-051",
+    "input": "Click inside a tab/escape or after line end",
+    "expected": "Deterministic valid source boundary; same location used for edit/navigation/highlight",
+    "owners": [
+      "E01",
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-052",
+    "input": "Mouse modifiers inside nested panels",
+    "expected": "Preserve Ctrl/Alt/Shift/meta and translate coordinates exactly once",
+    "owners": [
+      "F05",
+      "E06",
+      "E12"
+    ]
+  },
+  {
+    "id": "UX-053",
+    "input": "Drag across pane boundaries then release",
+    "expected": "Mouse capture belongs to original drag until release; another pane must not keep dragging",
+    "owners": [
+      "F05",
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-054",
+    "input": "Click brace-block gutter marker",
+    "expected": "Toggle matching multiline fold; ignore braces in strings and comments",
+    "owners": [
+      "E08"
+    ]
+  },
+  {
+    "id": "UX-055",
+    "input": "Python/YAML/Bash/PowerShell/Ruby indentation fold",
+    "expected": "Preserve existing detection rules and empty-line handling; nested blocks deterministic",
+    "owners": [
+      "E08"
+    ]
+  },
+  {
+    "id": "UX-056",
+    "input": "Collapsed region render/click ellipsis",
+    "expected": "First-line + ` ... ` + last-line summary; ellipsis and marker both expand",
+    "owners": [
+      "E08"
+    ]
+  },
+  {
+    "id": "UX-057",
+    "input": "Navigate into hidden line",
+    "expected": "Expand containing folds until caret is visible; preserve text and selection",
+    "owners": [
+      "E08",
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-058",
+    "input": "Edit/remove a fold region or reload file",
+    "expected": "Invalidate stale fold anchors; no hidden unrelated lines or obsolete region retained",
+    "owners": [
+      "E08"
+    ]
+  },
+  {
+    "id": "UX-059",
+    "input": "Braille minimap",
+    "expected": "Source-shape preview centered on caret; highlight caret block; hide below 40 total columns",
+    "owners": [
+      "E08"
+    ]
+  },
+  {
+    "id": "UX-060",
+    "input": "Click minimap",
+    "expected": "Jump to represented source block/line, update caret and viewport; verify zero/one-based boundary",
+    "owners": [
+      "E08"
+    ]
+  },
+  {
+    "id": "UX-061",
+    "input": "Minimap with search/wrap/folds/resizing",
+    "expected": "Click positions stay consistent; minimap width follows existing clamp (8–20 columns, roughly one-third)",
+    "owners": [
+      "E08"
+    ]
+  },
+  {
+    "id": "UX-062",
+    "input": "Ctrl+F with/without selection",
+    "expected": "Open/focus find field; prefill escaped selected text when present; preserve existing query otherwise",
+    "owners": [
+      "E07"
+    ]
+  },
+  {
+    "id": "UX-063",
+    "input": "Type/edit find/replace text",
+    "expected": "Preserve uppercase; Left/Right/Home/End/Backspace/Delete and clipboard operate on focused field",
+    "owners": [
+      "E07",
+      "F05"
+    ]
+  },
+  {
+    "id": "UX-064",
+    "input": "Tab / mouse field click",
+    "expected": "Switch between find and replace; bounded field, explicit in-field caret and focus styling",
+    "owners": [
+      "E07"
+    ]
+  },
+  {
+    "id": "UX-065",
+    "input": "Enter",
+    "expected": "Find next, cycle through matches, select/reveal current match",
+    "owners": [
+      "E07"
+    ]
+  },
+  {
+    "id": "UX-066",
+    "input": "Ctrl+Enter",
+    "expected": "Find all; show all match spans and count",
+    "owners": [
+      "E07"
+    ]
+  },
+  {
+    "id": "UX-067",
+    "input": "Ctrl+R / Ctrl+Shift+R",
+    "expected": "Replace current / all using capture groups (`$1`, `$2`, etc.); one undo unit per action",
+    "owners": [
+      "E07",
+      "E03"
+    ]
+  },
+  {
+    "id": "UX-068",
+    "input": "Invalid regex",
+    "expected": "Error styling/message and no destructive replacement; editing fixes error without reopening",
+    "owners": [
+      "E07"
+    ]
+  },
+  {
+    "id": "UX-069",
+    "input": "Multiline regex match",
+    "expected": "Highlight correct segments on each logical/wrapped line",
+    "owners": [
+      "E07",
+      "E11"
+    ]
+  },
+  {
+    "id": "UX-070",
+    "input": "Empty/zero-width/no-match regex",
+    "expected": "No infinite loop; preserve source's exclusion of zero-width search highlights and define replacements consistently",
+    "owners": [
+      "E07"
+    ]
+  },
+  {
+    "id": "UX-071",
+    "input": "Edit/undo/redo while search state active",
+    "expected": "Refresh count/spans/active index; never apply a stale match range",
+    "owners": [
+      "E07"
+    ]
+  },
+  {
+    "id": "UX-072",
+    "input": "Click `[x]`",
+    "expected": "Close bar and restore editor focus/space; preserve buffer-owned search state",
+    "owners": [
+      "E07"
+    ]
+  },
+  {
+    "id": "UX-073",
+    "input": "Alt+F project search",
+    "expected": "Centered modal, file-regex filter seeded from extension, result list above full embedded editor",
+    "owners": [
+      "W04"
+    ]
+  },
+  {
+    "id": "UX-074",
+    "input": "Select search hit via keys/mouse/wheel",
+    "expected": "Correct active/marked hit, syntax colors, match highlight, centered editor location",
+    "owners": [
+      "W04"
+    ]
+  },
+  {
+    "id": "UX-075",
+    "input": "Drag result/editor divider; edit/save result",
+    "expected": "Both regions resize and keep focus; Ctrl+S updates file and recents",
+    "owners": [
+      "W04",
+      "E12"
+    ]
+  },
+  {
+    "id": "UX-076",
+    "input": "Search/filter error, no results, unreadable file",
+    "expected": "Bounded feedback; editor remains usable; no stale hits from previous query",
+    "owners": [
+      "W04"
+    ]
+  },
+  {
+    "id": "UX-077",
+    "input": "Ctrl+Space / terminal NUL variant",
+    "expected": "Open context completion list; empty result closes it cleanly",
+    "owners": [
+      "F04",
+      "E09"
+    ]
+  },
+  {
+    "id": "UX-078",
+    "input": "Completion sources",
+    "expected": "External host suggestions first; provider results with details; dedup labels; cap baseline list at 50",
+    "owners": [
+      "E09",
+      "L09"
+    ]
+  },
+  {
+    "id": "UX-079",
+    "input": "No semantic result outside member context",
+    "expected": "Local identifier fallback; no unrelated local/workspace fallback after a receiver dot",
+    "owners": [
+      "E09",
+      "L07"
+    ]
+  },
+  {
+    "id": "UX-080",
+    "input": "External provider auto-show disabled",
+    "expected": "Suggestions appear only on explicit request; REST/header contexts keep their configured behavior",
+    "owners": [
+      "E09",
+      "E12"
+    ]
+  },
+  {
+    "id": "UX-081",
+    "input": "Completion Up/Down/Page/Home/End",
+    "expected": "Selected item stays visible through list scrolling; long list entries remain reachable",
+    "owners": [
+      "E09"
+    ]
+  },
+  {
+    "id": "UX-082",
+    "input": "Completion Enter or row click",
+    "expected": "Insert selected suggestion, replace only typed prefix, preserve `.`/`?.`/receiver and suffix",
+    "owners": [
+      "E09"
+    ]
+  },
+  {
+    "id": "UX-083",
+    "input": "Completion wheel/scrollbar click",
+    "expected": "Scroll inside popup; valid hit bounds and selection; wheel outside follows editor behavior",
+    "owners": [
+      "E09"
+    ]
+  },
+  {
+    "id": "UX-084",
+    "input": "Completion Escape/outside click/edit/scroll",
+    "expected": "Dismiss at correct time; outside click consumed, no accidental edit beneath it",
+    "owners": [
+      "E09",
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-085",
+    "input": "Ctrl-click reference",
+    "expected": "Navigate to definition using source identifier fallback if semantic coloring is not ready",
+    "owners": [
+      "E10",
+      "L09",
+      "P03"
+    ]
+  },
+  {
+    "id": "UX-086",
+    "input": "Ctrl-click declaration",
+    "expected": "Show every returned reference in usage popup, with project-relative compact path and line snippet",
+    "owners": [
+      "E10"
+    ]
+  },
+  {
+    "id": "UX-087",
+    "input": "Hover an identifier 500 ms",
+    "expected": "Bounded syntax-colored Definition preview; timer fires even without more mouse movement",
+    "owners": [
+      "E10",
+      "F03"
+    ]
+  },
+  {
+    "id": "UX-088",
+    "input": "Hover preview multiple targets",
+    "expected": "`<< n/T >>` arrows with exact hit boxes and hover feedback; clamp target index",
+    "owners": [
+      "E10"
+    ]
+  },
+  {
+    "id": "UX-089",
+    "input": "Click preview location",
+    "expected": "Navigate selected target at correct line/column; one-based label and project-relative filename",
+    "owners": [
+      "E10"
+    ]
+  },
+  {
+    "id": "UX-090",
+    "input": "Preview source missing",
+    "expected": "Show `source unavailable`, retain target navigation and controls",
+    "owners": [
+      "E10"
+    ]
+  },
+  {
+    "id": "UX-091",
+    "input": "Preview source current unsaved file",
+    "expected": "Use current buffer; declaration-range preview, line fallback, maximum 24 source lines",
+    "owners": [
+      "E10"
+    ]
+  },
+  {
+    "id": "UX-092",
+    "input": "Move from identifier into popup",
+    "expected": "Popup owns pointer events; editor selection/hover must not steal them",
+    "owners": [
+      "E10",
+      "E06"
+    ]
+  },
+  {
+    "id": "UX-093",
+    "input": "Usage Up/Down/Page/Home/End/Enter",
+    "expected": "Select/page all results and navigate; viewport follows selection",
+    "owners": [
+      "E10"
+    ]
+  },
+  {
+    "id": "UX-094",
+    "input": "Usage wheel/scrollbar track/drag",
+    "expected": "Capture wheel while usage popup is open; track click repositions then drag starts from new offset",
+    "owners": [
+      "E10"
+    ]
+  },
+  {
+    "id": "UX-095",
+    "input": "Usage popup other typing",
+    "expected": "Consume keys while it is active; do not edit underlying buffer",
+    "owners": [
+      "E10"
+    ]
+  },
+  {
+    "id": "UX-096",
+    "input": "Definition-only popup keyboard",
+    "expected": "Escape dismisses; other keys retain original editor routing; distinguish from usage popup capture",
+    "owners": [
+      "E10"
+    ]
+  },
+  {
+    "id": "UX-097",
+    "input": "Outside click / Escape",
+    "expected": "Dismiss all relevant popup state immediately, including before next repaint; no click-through",
+    "owners": [
+      "E09",
+      "E10"
+    ]
+  },
+  {
+    "id": "UX-098",
+    "input": "Popup near right/bottom edge or tiny viewport",
+    "expected": "Clip/reposition controls and source preview; keep valid scrolling and navigation",
+    "owners": [
+      "E09",
+      "E10"
+    ]
+  },
+  {
+    "id": "UX-099",
+    "input": "Late definition/completion response",
+    "expected": "Drop result after cursor/context/revision/workspace changes; do not resurrect dismissed popup",
+    "owners": [
+      "E09",
+      "E10",
+      "F03"
+    ]
+  },
+  {
+    "id": "UX-100",
+    "input": "Project-search preview editor",
+    "expected": "Full selection, movement, typing, clipboard, search, save and syntax behavior",
+    "owners": [
+      "E12",
+      "W04"
+    ]
+  },
+  {
+    "id": "UX-101",
+    "input": "SQL console",
+    "expected": "Same editor; selection/current statement/all execution; transient SQL target highlight; results stay independently focusable",
+    "owners": [
+      "E12",
+      "D08"
+    ]
+  },
+  {
+    "id": "UX-102",
+    "input": "REST body/headers/environment editors",
+    "expected": "Same editing, modifier propagation and clipboard; header completion and duplicate warnings",
+    "owners": [
+      "E12",
+      "R06",
+      "R07"
+    ]
+  },
+  {
+    "id": "UX-103",
+    "input": "REST response/raw/transaction and Git historical previews",
+    "expected": "Read-only mutation guard covers all paths; navigation, selection, copy and scrolling work",
+    "owners": [
+      "E12",
+      "G03",
+      "R07"
+    ]
+  },
+  {
+    "id": "UX-104",
+    "input": "Header editor focused while transaction/result visible",
+    "expected": "Arrow keys move editor caret; response/result pane must not steal them",
+    "owners": [
+      "E12",
+      "R07",
+      "D08"
+    ]
+  },
+  {
+    "id": "UX-105",
+    "input": "Dialog field → OK → Cancel",
+    "expected": "Distinct keyboard/mouse targets, visible bounds/caret and focus; buttons do not edit field",
+    "owners": [
+      "F05"
+    ]
+  },
+  {
+    "id": "UX-106",
+    "input": "SQL/REST Ctrl+Enter vs search Ctrl+Enter",
+    "expected": "Focused find bar gets find-all; owning console/request executes only when host owns the key",
+    "owners": [
+      "F05",
+      "E12",
+      "D08",
+      "R07"
+    ]
+  },
+  {
+    "id": "UX-107",
+    "input": "Ctrl+T shell escape and return",
+    "expected": "Suspend terminal input, release raw/mouse/alternate mode; resume/redraw with editor state intact",
+    "owners": [
+      "F04",
+      "Z01"
+    ]
+  },
+  {
+    "id": "UX-108",
+    "input": "Global Ctrl+Q / workspace change",
+    "expected": "Persist pending session state and dispose jobs/hosts; dirty content remains recoverable",
+    "owners": [
+      "W03",
+      "W05"
+    ]
+  },
+  {
+    "id": "UX-109",
+    "input": "Background index/Git/HTTP/SQL refresh",
+    "expected": "No typing stalls, cursor jump, focus theft, or invalidated selection",
+    "owners": [
+      "F03",
+      "E13"
+    ]
+  },
+  {
+    "id": "UX-110",
+    "input": "Source roots/exclusions or index clear/rebuild",
+    "expected": "Progress/status distinguish scanning from resolution/publication; editor remains usable",
+    "owners": [
+      "W01",
+      "L09",
+      "Z02"
+    ]
+  }
+]

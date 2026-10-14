@@ -1,0 +1,1114 @@
+{
+  "baseline": "7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+  "suites": [
+    {
+      "name": "editor.app.ProjectFileScannerTest",
+      "timestamp": "2026-10-14T19:26:28.642Z",
+      "tests": [
+        {
+          "name": "readsRootGitignoreAndExplicitFileAndFolderExclusions()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "skipsUnreadableDirectories()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "skipsDotGitAndIgnoredGlobs()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.app.ProjectSessionManagerTest",
+      "timestamp": "2026-10-14T19:26:28.715Z",
+      "tests": [
+        {
+          "name": "persistsDatabaseConnectionsAndSqlSessions()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "persistsRestCollectionAndUiState()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "detectsConfigAndSelectsOnlyConventionalSourceFolders()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.app.TtydAdapterTest",
+      "timestamp": "2026-10-14T19:26:28.783Z",
+      "tests": [
+        {
+          "name": "bundledNativeLibrariesAreAvailableOnClasspath()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "mapsOperatingSystemsToBundledTtydAssets()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "returnsNullForUnsupportedPlatform()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.codeintel.CSemanticTest",
+      "timestamp": "2026-10-14T19:26:28.790Z",
+      "tests": [
+        {
+          "name": "reResolvesConsumersAfterMovingAndChangingStructFields()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "supportsAnonymousStructsAndSameSpellingTagAliases()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "resolvesTagAliasAndPointerMembersAcrossFilesAndReload()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.codeintel.CodeIntelServiceTest",
+      "timestamp": "2026-10-14T19:26:29.021Z",
+      "tests": [
+        {
+          "name": "loadsPatternsFromJsonRegistry()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "completesMembersThroughEditorCompatibilityFacade()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "usagesIncludeOtherFiles()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "indexesDeclarationsAndUsagesPerLine()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "workspaceAndVersionGating()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "externalDefinitionsOverrideResource()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "regexExtractorDetectsDeclarationsAndSkipsKeywords()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.codeintel.H2SemanticStoreTest",
+      "timestamp": "2026-10-14T19:26:29.189Z",
+      "tests": [
+        {
+          "name": "reloadsPreindexedSemanticFacts()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rebuildsNullableGenericTypesFromPersistedSemanticFacts()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "persistsDependenciesAndResolutionGenerationsAcrossReload()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "readersKeepPreviousSnapshotDuringBackgroundPublication()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "reResolvesCrossFileInferenceAfterPersistentReload()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "collapsesDuplicateStableSymbolsBeforePersistence()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "collapsesDuplicateExpressionTypeRangesBeforePersistence()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "reusesSnapshotUntilSemanticRevisionChanges()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "implementationOnlyPersistenceUpdateKeepsDependentRelations()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.codeintel.KotlinExpressionSemanticsTest",
+      "timestamp": "2026-10-14T19:26:29.307Z",
+      "tests": [
+        {
+          "name": "mergesConflictingAssignmentsInsteadOfChoosingTheLastType()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "doesNotResolveMembersByWorkspaceTextWhenReceiverTypeIsUnknown()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "preservesGenericAndNullableTypeShapeForMemberLookup()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "propagatesTypesThroughReferencesAndAssignments()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "infersPrimitiveLiteralTypes()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "completesChainedPropertiesAndMethodCalls()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "typesParenthesizedAndCastReceivers()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "filtersMembersUsingThisSuperAndVisibility()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.codeintel.KotlinSemanticVerticalSliceTest",
+      "timestamp": "2026-10-14T19:26:29.394Z",
+      "tests": [
+        {
+          "name": "includesInheritedMembersInReceiverCompletion()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "infersCallResultAndCompletesReceiverMembers()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "oldSnapshotRemainsStableAfterPublishingNewFileVersion()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "publicSurfaceHashIgnoresLocalImplementationChanges()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "resolvesTypesAndMembersAcrossFilesIndependentOfIndexOrder()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "visibleSymbolsRespectNestedScopeAndDeclarationOrder()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "definitionAndReferencesUseResolvedSymbolIdentity()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.codeintel.SemanticHighlightingTest",
+      "timestamp": "2026-10-14T19:26:29.435Z",
+      "tests": [
+        {
+          "name": "reusesKotlinParserStateAcrossEditedDocumentVersions()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "compatibilityFacadeReturnsSemanticAndMultilineLexicalScopes()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "combinesTreeSitterLexicalTokensWithResolvedSymbolKinds()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "refreshesCachedTokensWhenOnlyAReferencedFileChanges()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "normalizesTreeSitterUtf8RangesBeforeRenderingSemanticTokens()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.codeintel.SemanticInvalidationTest",
+      "timestamp": "2026-10-14T19:26:29.461Z",
+      "tests": [
+        {
+          "name": "removedDefinitionClearsDependentResolution()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "newDefinitionWakesAPreviouslyUnresolvedFile()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "dependentClosureTerminatesForCycles()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "exportedSurfaceEditReResolvesTransitiveDependents()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "implementationOnlyEditDoesNotReResolveDependentFile()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.codeintel.TreeSitterSemanticAdapterTest",
+      "timestamp": "2026-10-14T19:26:29.485Z",
+      "tests": [
+        {
+          "name": "firstAdapterBatchProducesSemanticDeltas()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "secondAdapterBatchProducesSemanticDeltas()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.database.DataSourceRepositoryTest",
+      "timestamp": "2026-10-14T19:26:29.601Z",
+      "tests": [
+        {
+          "name": "persistsDefinitionsWithoutPassword()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.database.JdbcDatabaseIntegrationTest",
+      "timestamp": "2026-10-14T19:26:29.611Z",
+      "tests": [
+        {
+          "name": "returnsSqlErrorsAsResults()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "supportsUpdateCountsAndRollback()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "connectsExecutesAndIntrospectsH2()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.database.JdbcDriverRegistryTest",
+      "timestamp": "2026-10-14T19:26:29.665Z",
+      "tests": [
+        {
+          "name": "exposesCustomJdbcSourceWithoutInventingAnArtifact()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "resolvesAliasesToOneSharedDriverArtifact()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "resolvesKnownDriverByUrl()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "loadsVisibleH2DriverThroughDriverAbstraction()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.database.JdbcUrlTemplatesTest",
+      "timestamp": "2026-10-14T19:26:29.667Z",
+      "tests": [
+        {
+          "name": "recentsAreMruBoundedExactAndPersistedByFamily()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "aliasesAndSparkShareRecentFamilies()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "sensitiveUrlsAreRejectedButSafeParametersAreRemembered()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "catalogCoversEveryBuiltInDriverAndResolvesAliases()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.database.MetadataCacheTest",
+      "timestamp": "2026-10-14T19:26:29.681Z",
+      "tests": [
+        {
+          "name": "invalidatesIndividualRequestsAndDataSources()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.database.SqlStatementLocatorTest",
+      "timestamp": "2026-10-14T19:26:29.682Z",
+      "tests": [
+        {
+          "name": "ignoresSemicolonsInsideStringsAndComments()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "locatesStatementContainingCaret()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "selectionOverridesCaret()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.db.DbServerManagerTest",
+      "timestamp": "2026-10-14T19:26:29.686Z",
+      "tests": [
+        {
+          "name": "supportsExplicitInMemoryMode()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "startsAndCreatesDatabaseFiles()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.grammars.KeywordSyntaxProviderTest",
+      "timestamp": "2026-10-14T19:26:29.734Z",
+      "tests": [
+        {
+          "name": "separatesXmlTagNamesFromAttributesAndCssSelectors()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "extractsRustKeywordAlternativesForCompletion()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "classifiesJsxKeywordsTagsAttributesAndClassNamesSeparately()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.grammars.RegexSyntaxProviderTest",
+      "timestamp": "2026-10-14T19:26:29.738Z",
+      "tests": [
+        {
+          "name": "uses language definitions loaded from directory and extension index()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "parses tokens with qualifier and content()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.lang.KotlinIdentifierOccurrenceIntegrationTest",
+      "timestamp": "2026-10-14T19:26:29.753Z",
+      "tests": [
+        {
+          "name": "extractsOccurrencesFromProjectSources()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.lang.KotlinIdentifierPathScanTest",
+      "timestamp": "2026-10-14T19:26:44.436Z",
+      "tests": [
+        {
+          "name": "scansIdentifierPathsInProjectSources()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.lang.KotlinIdentifierPipelineTest",
+      "timestamp": "2026-10-14T19:27:01.369Z",
+      "tests": [
+        {
+          "name": "extractsScopedDeclarationsAndUsages()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.lang.TypescriptIdentifierPathScanTest",
+      "timestamp": "2026-10-14T19:27:01.373Z",
+      "tests": [
+        {
+          "name": "scansIdentifierPathsInTypescriptCorpus()",
+          "status": "failed",
+          "failure": "java.nio.file.NoSuchFileException: samples/.corpus/typescript"
+        }
+      ],
+      "failures": 1,
+      "errors": 0
+    },
+    {
+      "name": "editor.lib.FileTreeTest",
+      "timestamp": "2026-10-14T19:27:01.377Z",
+      "tests": [
+        {
+          "name": "hidesKodeMetadataFilesAndDirectory()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.lib.JGitServiceTest",
+      "timestamp": "2026-10-14T19:27:01.380Z",
+      "tests": [
+        {
+          "name": "statusHandlesBlobsAboveJgitBigFileThreshold()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.lib.KorimAsciiImageRendererTest",
+      "timestamp": "2026-10-14T19:27:01.582Z",
+      "tests": [
+        {
+          "name": "renders ascii from image file()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.lib.ProjectFolderStatusTest",
+      "timestamp": "2026-10-14T19:27:02.329Z",
+      "tests": [
+        {
+          "name": "classifiesIgnoredSourceAndExcludedFolders()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.lib.TextBufferInputTest",
+      "timestamp": "2026-10-14T19:27:02.334Z",
+      "tests": [
+        {
+          "name": "acceptsTerminalVariantsForEnter()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.lib.TextBufferSearchTest",
+      "timestamp": "2026-10-14T19:27:02.338Z",
+      "tests": [
+        {
+          "name": "replaceCurrentAndAllUpdateMatches()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "updateSearchTracksMatchesAcrossLines()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "findNextCyclesThroughMatches()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "invalidRegexReportsError()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "replaceHonorsRegexGroups()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "searchResultsRefreshAfterEditing()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "savingClearsDirtyFlag()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.lib.TextBufferUndoTest",
+      "timestamp": "2026-10-14T19:27:02.342Z",
+      "tests": [
+        {
+          "name": "redo is cleared after new edit following undo()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "undo and redo insertion()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "undo delete merges lines()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "backspace at end of buffer stays in bounds()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.mime.DefaultMimeTypeDetectorTest",
+      "timestamp": "2026-10-14T19:27:02.351Z",
+      "tests": [
+        {
+          "name": "register new extension()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "detect bytes by signature()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "detect filename by extension()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "fallback identifies likely text()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "detects shell script from a bash shebang without an extension()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "detects shell script from a direct sh shebang in a file()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "detect file uses signature when extension missing()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "detect file prefers content based fallback for unknown extensions()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.rest.RestCodeFormattingTest",
+      "timestamp": "2026-10-14T19:27:02.373Z",
+      "tests": [
+        {
+          "name": "prettyPrintingCanBeToggledWithoutChangingInvalidContent()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "mapsContentTypesToEditorLanguages()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.rest.RestEditorViewTest",
+      "timestamp": "2026-10-14T19:27:02.376Z",
+      "tests": [
+        {
+          "name": "environmentEditorReceivesTypingAndClipboardEvents()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "focusedHeadersEditorKeepsArrowKeysWhenTransactionResponseIsVisible()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.rest.RestHttpTest",
+      "timestamp": "2026-10-14T19:27:02.435Z",
+      "tests": [
+        {
+          "name": "ignoresTransportManagedHeadersInsteadOfFailingRequestConstruction()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "executesRequestsCapturesDuplicateHeadersAndCarriesCookies()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "readsSseEventsAndCanPublishIncrementalUpdates()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "reportsResponsePreviewTruncation()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.rest.RestModelTest",
+      "timestamp": "2026-10-14T19:27:02.574Z",
+      "tests": [
+        {
+          "name": "preservesUnknownPostmanFieldsAcrossImportAndExport()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "storesEscapedEnvironmentValuesAndManagesActiveEnvironment()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "importsOpenApiYaml()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "importsOpenApiJsonIntoTheRequestedFolder()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "createsRenamesDuplicatesAndMovesPostmanItems()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.rest.RestResolverTest",
+      "timestamp": "2026-10-14T19:27:02.599Z",
+      "tests": [
+        {
+          "name": "inheritsCollectionAndFolderHeadersAndLetsRequestOverrideThem()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejectsCyclesAndUnsupportedAuthenticationBeforeNetworkActivity()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "resolvesApiKeyIntoQueryAndRejectsDisabledVariables()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "resolvesNestedVariablesPathVariablesAndInheritedBearerAuth()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "environmentVariablesOverrideCollectionVariablesAndSseUrlsNormalize()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.ui.CodeEditorViewTest",
+      "timestamp": "2026-10-14T19:27:02.604Z",
+      "tests": [
+        {
+          "name": "controlCharactersUseSingleCursorStepEscapes()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "nonBmpAndWideRunesUseExplicitEscapesInTheCellRenderer()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "pageKeysTraverseWrappedRowsWithinOneLogicalLine()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "wheelMovesThreeRowsAndAltWheelMovesNine()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "cKeywordHighlightingPreservesPunctuationAndSourceText()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "braceBlocksCanBeCollapsedFromTheGutter()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "ctrlClickFallsBackToSourceIdentifierWhenSemanticTokensAreNotReady()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "ctrlFPrefillsSearchWithEscapedSelection()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "usagePathsCollapseDirectoriesAndPreserveFilename()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "usagePopupCapturesWheelAndKeyboardAndShowsAllReferencesThroughOffset()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "definitionPopupPagesTargetsAndNavigatesSelectedProjectRelativeFile()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "completionReplacesOnlyTheTypedIdentifierPrefix()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "outsideClickDismissesDefinitionBeforeNextAnimationFrame()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "cSemanticTokensStayWithinIdentifierSpans()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "logicalCursorStepsTreatTabAndControlAsOneCharacterEach()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "pageKeysMoveCursorAndViewportByVisibleRows()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "completionDoesNotDeleteReceiverDotWhenPrefixIsEmpty()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "overlappingSyntaxTokensNeverCreateOverlappingDrawSegments()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "externalSuggestionsCanRequireExplicitCtrlSpace()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "tabsRenderAtFourColumnStopsWithoutShiftingTokens()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "suggestionPopupScrollsAndSelectsEntriesBeyondVisibleRows()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.ui.GitPanelViewTest",
+      "timestamp": "2026-10-14T19:27:02.646Z",
+      "tests": [
+        {
+          "name": "statusFailureDoesNotCrashPanelStartupOrRender()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.ui.HighlightEditsTest",
+      "timestamp": "2026-10-14T19:27:02.654Z",
+      "tests": [
+        {
+          "name": "dropsEditedTokensAndRemapsAgainAfterDeletion()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "discardsTokensWhenTypingJoinsAnIdentifierAtItsBoundary()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "shiftsUnchangedTokensAcrossInsertedLinesAndTabs()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "editor.ui.SearchReplaceBarTest",
+      "timestamp": "2026-10-14T19:27:02.656Z",
+      "tests": [
+        {
+          "name": "clickingReplaceFieldMovesFocusAndCapturesInput()",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "preservesUppercaseInputInFindField()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "react.TabViewTest",
+      "timestamp": "2026-10-14T19:27:02.658Z",
+      "tests": [
+        {
+          "name": "renderDoesNotCrashWhenTabsOverflowAvailableWidth()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "react.renderer.AnsiCanvasRendererTest",
+      "timestamp": "2026-10-14T19:27:02.661Z",
+      "tests": [
+        {
+          "name": "decodesPageDownCsiWithoutWaitingForAnotherInputByte()",
+          "status": "passed",
+          "failure": null
+        }
+      ],
+      "failures": 0,
+      "errors": 0
+    }
+  ]
+}

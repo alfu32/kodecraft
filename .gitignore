@@ -1,0 +1,6 @@
+/target/
+/.kode/
+/.kode.json
+/.kode-rs/
+/.kode-rs.json
+*.log

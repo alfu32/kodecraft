@@ -1,0 +1,1 @@
+{"info": {"title": "Synthetic", "version": "1"}, "paths": {"/items/{id}": {"get": {"operationId": "getItem", "parameters": [{"name": "id", "in": "path", "required": true, "type": "string"}], "responses": {"200": {"description": "ok"}}}}}, "swagger": "2.0", "host": "127.0.0.1", "schemes": ["http"], "basePath": "/api"}

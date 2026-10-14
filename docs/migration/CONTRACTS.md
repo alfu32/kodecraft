@@ -1,0 +1,178 @@
+# Shared implementation contracts
+
+F02 establishes identities, coordinates, commands, immutable document snapshots,
+intelligence DTOs/providers, clipboard/document I/O boundaries and typed errors in
+`kode-core`. The remaining sections specify behavior for their owning tasks. A task may refine a signature, but must update
+this document and its consumers before changing semantics.
+
+The workspace uses the latest Rust stable channel at the user's request rather
+than pinning a toolchain release; evidence records the exact tested version.
+`Cargo.lock` fixes application dependencies. `TextRange::validate` checks both
+UTF-8 scalar boundaries against a document. Reverse selections retain anchor/head
+while `Selection::range` produces their normalized half-open edit range.
+
+## Dependency direction and ownership
+
+- `kode-core`: shared identifiers, text coordinates, document snapshots, editor
+  commands, normalized navigation/completion DTOs, text and byte models.
+- `kode-platform`: host services; can depend on core, never on UI or feature crates.
+- `kode-workspace`, `kode-syntax`, `kode-git`, `kode-rest`, `kode-database`, and
+  `kode-lsp`: depend on core and needed platform facilities, never on UI.
+- `kode-intelligence`: depends on core and syntax; owns semantic persistence.
+- `kode-tui`: reusable widgets/editor and panels; consumes feature services. Keep
+  orchestration in `app/`, feature panels in their own subdirectories.
+- `kode`: CLI, resource discovery, runtime construction, and application launch.
+
+Keep editor logic split into `document`, `commands`, `layout`, `input`, `search`,
+`folding`, `minimap`, `overlays`, and `popups`. Do not create another 3,000-line
+editor file or put Git/SQL/REST rules into the editor widget.
+
+## Identifiers and text coordinates
+
+```rust
+// Sketch: concrete serde derives/constructors are F02/E01 work.
+struct WorkspaceGeneration(u64);
+struct DocumentId(u64);
+struct Revision(u64);
+struct RequestId(u64);
+struct ByteOffset(usize);          // boundary in UTF-8 source text
+struct CharOffset(usize);          // Unicode scalar index, Ropey adapter only
+struct LineIndex(usize);           // zero based
+struct Utf16Column(u32);           // legacy/LSP adapter only
+struct CellColumn(u16);            // terminal layout only
+struct TextRange { start: ByteOffset, end: ByteOffset } // half open
+struct Selection { anchor: ByteOffset, head: ByteOffset }
+struct JobTag {
+    workspace: WorkspaceGeneration,
+    request: RequestId,
+    document: Option<(DocumentId, Revision)>,
+}
+enum DocumentOrigin {
+    File(PathBuf),
+    Virtual { owner: String, key: String, label: String },
+}
+```
+
+Canonical source spans are UTF-8 byte ranges at valid scalar boundaries. Convert
+to Ropey's scalar indices at its boundary. Layout supplies forward and inverse
+maps for source bytes ↔ logical lines ↔ rendered cells/rows. Tree-sitter gets byte
+offsets and byte columns; LSP gets its negotiated encoding (UTF-16 default).
+
+The editor's compatibility display renders a tab as `|-->` (four cells), and
+non-renderable/wide/non-BMP/combining scalars as the existing explicit escapes.
+Raw text is unchanged. Do not silently replace that presentation with native wide
+glyphs or tab stops; the source/test disagreement is recorded in EDITOR-UX.md.
+Surrogate-interior legacy positions are clamped to a documented valid boundary;
+Rust must never create invalid UTF-8 to reproduce a Kotlin indexing defect.
+
+Store an anchor and head so reverse selections remain distinguishable. A normalized
+range is derived for edits; normalizing must not erase the direction. Show line
+numbers and user-facing locations as one based, but keep internal indexes zero based.
+
+## Document and editor API
+
+`Document` owns Ropey text, origin, language, current revision, saved revision,
+newline/BOM metadata, and edit history. An `EditorViewState` owns cursor/selection,
+preferred navigation column if applicable, scroll position in visual rows, folded
+regions, search state, popup state, and focus. Multiple views of a file should use
+the same document identity; per-view scroll/focus remains independent. Virtual
+documents get distinct identities even when their labels match.
+
+Required operations:
+
+| Contract | Inputs | Outputs / rules |
+|---|---|---|
+| `apply_edit` | document ID, expected revision, range, inserted text, edit kind | New revision and edit delta; reject stale edit. Group a replacement/paste/completion as one undo action. |
+| `snapshot` | document ID | Immutable text/revision/origin; safe to send to workers. |
+| `execute_editor_command` | view state, command, document, editor services | State changes plus effects; no raw terminal or filesystem access. |
+| `layout` | snapshot, viewport size, folding, display policy | Visible rows plus source/cell maps shared by render and input. |
+| `render` | layout, overlay spans, view state, Ratatui buffer | Cell output only. No file reads, parser work, network calls, or SQL. |
+| `hit_test` | layout, local cell position | Text position, gutter/fold/minimap/popup/control hit, or outside. |
+| `open_document` | origin, request ID | Asynchronous load result; late loads are discarded. |
+| `save_document` | origin, snapshot, expected disk identity | Result for the saved revision; a newer edit remains dirty. Virtual saves go to their host. |
+| `export_view_state` | document and view | Versioned persisted state; history and dirty text retained. |
+
+Commands include character/word/line/page movement with selection extension,
+insert text/newline, delete backward/forward, select all, copy/cut/paste, undo/redo,
+save, find/replace, folding, completion and navigation actions. Terminal key names
+are decoded once into commands, preserving raw character case and modifiers.
+
+`EditorHost` supplies `read_only`, `save_target`, `language`, `completion_provider`,
+`intelligence_provider`, `on_change`, `on_navigate`, `warning_lines`, and
+`transient_highlight`. The host may intercept its documented shortcuts, such as
+SQL/REST execution, only after focused child controls and popups get their defined
+priority. Read-only checks occur at the edit boundary, covering keyboard, mouse,
+replacement, completion, programmatic insertion, paste, and history actions.
+
+## Event and effect model
+
+The application owns `AppState` and consumes terminal events, timers, child-process
+status, and typed worker results. Reducers return effects: schedule work, open/save,
+request navigation, update clipboard, persist, or request repaint.
+
+Every worker operation has a cancellation token and a `JobTag`. Before publication,
+check workspace generation, document identity/revision where relevant, and current
+request ID. Some semantic results also depend on an index revision. Disposing an
+owner cancels its jobs. A dropped future is not proof a JDBC query stopped.
+
+Use bounded queues. Coalesce repaint, progress, and superseded document jobs.
+Stream large results in bounded batches; cap previews with a visible truncation
+state. Never drop a save completion or failure just to relieve queue pressure.
+Use a separate control path for cancellation/shutdown. Define queue capacities in
+F03 with fixtures for saturation and shutdown.
+
+Only one component consumes an input event. Order: top modal → active captured
+popup/drag → focused child/editor → containing panel → unhandled global binding.
+See the exception details for usage, suggestion, and definition popups in the UX
+contract; they do not all capture every key identically.
+
+## Feature service contracts
+
+| Service | Public operations and owned output |
+|---|---|
+| Workspace | discover/open, tree entries/refresh, create/rename/delete, source-root/exclusion updates, scans, file search, session load/save |
+| Syntax | language registry, lexical spans, parser update, grammar availability; no UI colors in semantic facts |
+| Intelligence | index/update/remove files, immutable snapshot, definitions, references, completions, semantic tokens, status, clear/rebuild index |
+| LSP | catalog/install/start/stop, open/change/save/close documents, definitions/references/completion and supported enrichment |
+| Git | status, branches/current branch/checkout, commits, staged/worktree diffs, files/content at commit, stage/unstage/commit/tag |
+| REST | collection edit/import/export, resolve/preview request, execute/cancel/stream, cookies, ordered collection run |
+| Database | datasource config and credentials, driver install/status, connect/test/disconnect, metadata, execute/cancel, autocommit/commit/rollback |
+
+Errors are typed at domain boundaries and rendered in the owning panel. Preserve
+SQLSTATE/vendor code, HTTP status versus transport failure, Git failure context,
+parse errors, and missing-resource information. A failed operation never yields a
+fake successful empty result. Logs go to a file/stderr capture, never the TUI canvas.
+
+## Intelligence publication
+
+`FileSemanticDelta` holds file facts: symbols, scopes, occurrences, imports, types,
+expression hints, lexical spans, relations, and file dependencies. Use the exact
+facts needed by `SemanticModel.kt`; extraction and resolution are different stages.
+Resolution builds an immutable `SemanticSnapshot`, published atomically only after
+the corresponding persistence transaction succeeds. Readers retain their previous
+snapshot while a new one is built. Record content revision, semantic revision,
+public surface hash, and resolution generation separately.
+
+`NavigationTarget` includes document/path, identifier range, optional declaration
+range, language, symbol kind, and missing-source state. `CompletionItem` includes
+label, insertion text, detail, kind, replacement range, and source; define a fallback
+replacement range using only the typed identifier prefix. Unknown receiver types
+must not fall back to unrelated workspace members.
+
+## Persistence and resources
+
+`ProjectSessionV1` in `.kode-rs.json` contains version, recent files, open document
+and view snapshots, roots/exclusions, and feature state blocks. W03 owns the exact
+schema and legacy import. Prefer atomic replace with a recoverable previous state;
+flush on orderly shutdown after the normal three-second debounce.
+
+Use `.kode-rs/index.sqlite` for the rebuildable internal index. Retain the old
+`.kode/db` untouched. Existing datasource/credentials/driver directories are import
+sources; preserve driver references and unknown fields. Default Rust user config
+is a separate `kode-rs` directory, with explicit legacy import and overrides.
+
+Resource precedence: explicit CLI/config override → `KODE_RS_HOME` → executable
+resource directory → compiled defaults. Recognize legacy `KODE_HOME` as a documented
+fallback when no Rust-specific override exists. Compile a usable default theme,
+keyword catalog, and MIME table into the executable. Optional installed resources
+must not depend on the current working directory.

@@ -1,0 +1,36 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+default-members = ["crates/kode"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT"
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive", "rc"] }
+serde_json = { version = "1.0", features = ["preserve_order", "arbitrary_precision"] }
+thiserror = "2.0"
+clap = { version = "4.5", features = ["derive"] }
+ratatui = { version = "=0.30.2", default-features = false, features = ["crossterm", "layout-cache"] }
+crossterm = "=0.29.0"
+
+kode = { path = "crates/kode" }
+kode-core = { path = "crates/kode-core" }
+kode-platform = { path = "crates/kode-platform" }
+kode-workspace = { path = "crates/kode-workspace" }
+kode-syntax = { path = "crates/kode-syntax" }
+kode-intelligence = { path = "crates/kode-intelligence" }
+kode-lsp = { path = "crates/kode-lsp" }
+kode-git = { path = "crates/kode-git" }
+kode-rest = { path = "crates/kode-rest" }
+kode-database = { path = "crates/kode-database" }
+kode-tui = { path = "crates/kode-tui" }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = "warn"

@@ -1,0 +1,90 @@
+# Task index
+
+65 implementation tasks. Status is recorded in each task definition and synchronized with [the dashboard](../../DASHBOARD.md).
+
+Pick a task only when all its listed prerequisites have implementation evidence. The card owns its outputs; shared contracts are in [CONTRACTS.md](CONTRACTS.md). Source and test ownership are in [SOURCE-MAP.tsv](SOURCE-MAP.tsv) and [TEST-MAP.tsv](TEST-MAP.tsv).
+
+First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime boundaries. After those, use dependency readiness; do not infer readiness from a milestone number.
+
+| ID | Task card | Prerequisites | Status |
+|---|---|---|---|
+| F01 | [Freeze behavior and fixtures](tasks/01-foundation.md) | — | [done](../parity/F01.md) |
+| F02 | [Cargo workspace and shared types](tasks/01-foundation.md) | F01 | [done](../parity/F02.md) |
+| F03 | [Jobs, processes, paths, logging and shutdown](tasks/01-foundation.md) | F02 | in-progress |
+| F04 | [Terminal lifecycle and normalized input](tasks/01-foundation.md) | F02, F03 | todo |
+| F05 | [Common widgets, style mapping, layout and focus](tasks/01-foundation.md) | F04 | todo |
+| E01 | [Rope document and coordinate conversions](tasks/02-editor.md) | F02 | todo |
+| E02 | [Movement and selection commands](tasks/02-editor.md) | E01 | todo |
+| E03 | [Editing, auto-indent, undo and redo](tasks/02-editor.md) | E02 | todo |
+| E04 | [File I/O, save state and clipboard](tasks/02-editor.md) | E03, F03 | todo |
+| E05 | [Visual layout and editor cell rendering](tasks/02-editor.md) | E02, F05 | todo |
+| E06 | [Editor input, hit testing, scrolling and focus](tasks/02-editor.md) | E03, E05, F04 | todo |
+| E07 | [Regex find/replace and search bar](tasks/02-editor.md) | E03, E05, E06, F05 | todo |
+| E08 | [Folding and Braille minimap](tasks/02-editor.md) | E05, E06 | todo |
+| E09 | [Completion popup and insertion](tasks/02-editor.md) | E03, E05, E06 | todo |
+| E10 | [Definitions, usages and hover preview](tasks/02-editor.md) | E05, E06, F03 | todo |
+| E11 | [Highlight overlays and edit remapping](tasks/02-editor.md) | E05, E07, L02, L09 | todo |
+| E12 | [Reusable editor hosts and virtual/read-only documents](tasks/02-editor.md) | E04, E07, E08, F05 | todo |
+| E13 | [Complete editor interaction qualification](tasks/02-editor.md) | E09, E10, E11, E12, W04, W05, P03, D08, R07, G03 | todo |
+| W01 | [Source roots, exclusions and project scanning](tasks/03-workspace.md) | F03 | todo |
+| W02 | [File tree, file actions, refresh and project panel](tasks/03-workspace.md) | W01, F05, E04 | todo |
+| W03 | [Legacy session import and Rust persistence](tasks/03-workspace.md) | E03, F03 | todo |
+| W04 | [Project search modal and embedded editor](tasks/03-workspace.md) | W01, E07, E12, F05, V01 | todo |
+| W05 | [CLI targets and workspace application shell](tasks/03-workspace.md) | F04, F05, W02, W03, E12, V01 | todo |
+| V01 | [MIME/language detection and routing](tasks/04-viewers.md) | F02, F03 | todo |
+| V02 | [Byte buffer and hex viewer](tasks/04-viewers.md) | F05, V01, E04 | todo |
+| V03 | [Image decoding and colored cell modes](tasks/04-viewers.md) | F03, F05, V01 | todo |
+| G01 | [Repository discovery and read operations](tasks/05-git.md) | F03 | todo |
+| G02 | [Stage, unstage, commit, checkout and tags](tasks/05-git.md) | G01, E12, F05 | todo |
+| G03 | [Diff views and restoring worktree chunks](tasks/05-git.md) | G02, E05, E12, V01 | todo |
+| L01 | [Semantic facts, identifiers and immutable snapshots](tasks/06-intelligence.md) | F02, E01 | todo |
+| L02 | [Keyword highlighting and incremental parser registry](tasks/06-intelligence.md) | E01, F03 | todo |
+| L03 | [Kotlin semantic extraction](tasks/06-intelligence.md) | L01, L02 | todo |
+| L04 | [C semantic extraction](tasks/06-intelligence.md) | L01, L02 | todo |
+| L05 | [SQLite semantic store and atomic publication](tasks/06-intelligence.md) | L01, F03 | todo |
+| L06 | [Names, scopes, imports and symbol resolution](tasks/06-intelligence.md) | L03, L04 | todo |
+| L07 | [Expression types and receiver member lookup](tasks/06-intelligence.md) | L06 | todo |
+| L08 | [Dependency invalidation and incremental generations](tasks/06-intelligence.md) | L07 | todo |
+| L09 | [Background index coordinator and editor facade](tasks/06-intelligence.md) | L05, L08, L10, L11, W01, F03 | todo |
+| L10 | [Other language adapters and heuristic fallback](tasks/06-intelligence.md) | L01, L02, L06 | todo |
+| L11 | [Completion providers and deterministic ranking](tasks/06-intelligence.md) | L07, L02 | todo |
+| L12 | [Language and persistence parity qualification](tasks/06-intelligence.md) | L09, L10 | todo |
+| P01 | [Server catalog, discovery and installation](tasks/07-lsp.md) | F03, F05 | todo |
+| P02 | [LSP client transport and lifecycle](tasks/07-lsp.md) | P01, E01, F03 | todo |
+| P03 | [Editor enrichment and provider fallback](tasks/07-lsp.md) | P02, L09, E09, E10 | todo |
+| R01 | [Lossless collection and environment model](tasks/08-rest.md) | F02 | todo |
+| R02 | [Variables, auth, headers, URLs and request bodies](tasks/08-rest.md) | R01, F03 | todo |
+| R03 | [Postman and OpenAPI import/export](tasks/08-rest.md) | R01 | todo |
+| R04 | [HTTP execution, cookies and cancellation](tasks/08-rest.md) | R02, F03 | todo |
+| R05 | [SSE and WebSocket execution](tasks/08-rest.md) | R04 | todo |
+| R06 | [REST tree, environments and management dialogs](tasks/08-rest.md) | R01, R03, F05, E12, W03 | todo |
+| R07 | [Request/response editors and complete REST UX](tasks/08-rest.md) | R02, R04, R05, R06, E09, E12, L02 | todo |
+| R08 | [Collection runner, persistence and REST qualification](tasks/08-rest.md) | R07, W03, W05 | todo |
+| D01 | [Database models, settings, credentials and URL catalogs](tasks/09-database.md) | F02, F03 | todo |
+| D02 | [Protocol, Java bootstrap and Rust process supervisor](tasks/09-database.md) | D01, F03 | todo |
+| D03 | [Driver install, Maven resolution and classloaders](tasks/09-database.md) | D02, F05 | todo |
+| D04 | [Connections, testing and transaction control](tasks/09-database.md) | D03 | todo |
+| D05 | [SQL execution, results and independent cancellation](tasks/09-database.md) | D04 | todo |
+| D06 | [Lazy metadata and cache invalidation](tasks/09-database.md) | D04 | todo |
+| D07 | [Database explorer, connection and driver dialogs](tasks/09-database.md) | D01, D03, D04, D06, F05, W03 | todo |
+| D08 | [SQL editor, statement targeting and result panel](tasks/09-database.md) | D05, D07, E12, E09, L02 | todo |
+| D09 | [End-to-end external JDBC qualification](tasks/09-database.md) | D08, W03, W05 | todo |
+| Z01 | [Shell suspension and browser terminal serve mode](tasks/10-delivery.md) | W05, F04, F03 | todo |
+| Z02 | [Settings, help, about and operational status](tasks/10-delivery.md) | W05, L09, P01, D07, F05 | todo |
+| Z03 | [Reproducible build and distribution](tasks/10-delivery.md) | Z01, Z02, D02 | todo |
+| Z04 | [Full functional parity and release qualification](tasks/10-delivery.md) | E13, L12, W05, V02, V03, G03, D09, R08, Z03 | todo |
+
+## Execution checkpoints
+
+- Establish a usable editor shell first: F01–F05, E01–E08, E12, W01–W03, W05, V01.
+- Build native intelligence independently once core contracts exist: L01–L12; attach E09–E11 and P01–P03.
+- Complete workspace search, viewers and Git: W04, V02–V03, G01–G03.
+- Complete both integration modules: D01–D09 and R01–R08.
+- Qualify the shared editor after all real hosts are attached: E13.
+- Finish shell/browser mode, settings, packages and full parity: Z01–Z04.
+
+Independent tasks can be assigned separately after their contracts are ready. This is a dependency plan, not an instruction to spawn agents automatically.
+
+## Completion record
+
+When implementation begins, update `todo` to `in-progress`, `done`, or `blocked`, and link the evidence report. Record blockers explicitly. Reconcile task prerequisites whenever a shared contract changes. See [HANDOFF.md](HANDOFF.md) for the report template.

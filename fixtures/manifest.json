@@ -1,0 +1,243 @@
+{
+  "baseline": "7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+  "fixtures": [
+    {
+      "path": "editor/empty.txt",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected": "Exact original bytes survive load/save; scalar-boundary navigation; immutable snapshots"
+    },
+    {
+      "path": "editor/no-final-newline.txt",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "21066d108d5319ecb5a1fc4454f42ef22fc5f1c7df49c31d90294950e0ea8b2c",
+      "expected": "Exact original bytes survive load/save; scalar-boundary navigation; immutable snapshots"
+    },
+    {
+      "path": "editor/lf.txt",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "c3f9c8c283a2b1f2f1896f27a01cbe3cddc0c9d93f752e4639035a0f5b36f6e8",
+      "expected": "Exact original bytes survive load/save; scalar-boundary navigation; immutable snapshots"
+    },
+    {
+      "path": "editor/crlf.txt",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "6f4792b265fe72790b344fd3ef5294701d9d087bed9fce815c0f4bbad6d2ed87",
+      "expected": "Exact original bytes survive load/save; scalar-boundary navigation; immutable snapshots"
+    },
+    {
+      "path": "editor/bom.txt",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "42c1e65b2c948bb754efb6ac171319d6e97ecb3d9afd4f20bd91b3ded25183c0",
+      "expected": "Exact original bytes survive load/save; scalar-boundary navigation; immutable snapshots"
+    },
+    {
+      "path": "editor/unicode.txt",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "5b28c524af970cb33973533d47366278831993f39af151758884ff6d2081daaa",
+      "expected": "Exact original bytes survive load/save; scalar-boundary navigation; immutable snapshots"
+    },
+    {
+      "path": "editor/long-line.txt",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "d69e68988157833272305aaf21f453c800346e8a3640db6578e260215542e5d4",
+      "expected": "Exact original bytes survive load/save; scalar-boundary navigation; immutable snapshots"
+    },
+    {
+      "path": "editor/many-lines.txt",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "b90ce2c5650f20882ee67791841be927fd121163e7c5a5df4d790ab450c87960",
+      "expected": "Exact original bytes survive load/save; scalar-boundary navigation; immutable snapshots"
+    },
+    {
+      "path": "editor/display.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "e76f388d3d2bd1ab73ea58d83248b021a5763dc5316e91ec636c14f42612319c",
+      "expected": "Escaped compatibility display; one logical step per scalar"
+    },
+    {
+      "path": "sessions/legacy-v6.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "e1519b15b602b13ef97a8b024eb0c583d6c325c3d5bbb16c16180a2d55b6abf4",
+      "expected": "UTF-16 cursor 3 → UTF-8 byte 5; reverse selection, dirty history, unknown fields preserved"
+    },
+    {
+      "path": "rest/collection-v21.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "14a9eaa8e0cb5b3b19db7e34881e028e5c149d84e11e8de42b39723a276c4557",
+      "expected": "Semantic lossless round trip including order, duplicates, scripts, unknown numbers and examples"
+    },
+    {
+      "path": "rest/environment.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "6423abdc685b89d0fda11e5ff16f909e970b3ae8fc420dffc49ab4db777633c2",
+      "expected": "Enabled flags and unknown fields preserved"
+    },
+    {
+      "path": "rest/openapi-2.0.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "94c2e787e76c5d30eb406714be263e0d81f8f45760ce7b2309ed6580c0a7948e",
+      "expected": "Convert GET operation and required path parameter into Postman request"
+    },
+    {
+      "path": "rest/openapi-2.0.yaml",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "cf76c95c2537c56574c16e540e06fb766d82d31831693c15e409a2cefe65c2d9",
+      "expected": "JSON/YAML import parity; source schema retained"
+    },
+    {
+      "path": "rest/openapi-3.0.3.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "8e414fb060294be2279b54cb87029c9d419e24cefd46a4994dd070c41335834f",
+      "expected": "Convert GET operation and required path parameter into Postman request"
+    },
+    {
+      "path": "rest/openapi-3.0.3.yaml",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "28022005e971fb3359aa5974a6711d70e90adc3ff5e58642c28812f52dbc83e6",
+      "expected": "JSON/YAML import parity; source schema retained"
+    },
+    {
+      "path": "rest/openapi-3.1.0.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "32719574d59714f77632fa3439e0a274f4f226ade0a503d7b33607342aaee940",
+      "expected": "Convert GET operation and required path parameter into Postman request"
+    },
+    {
+      "path": "rest/openapi-3.1.0.yaml",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "bb05f4210c877a77136cf0375d915253b16cf5ce599a3e13e8f84e54a54d19c7",
+      "expected": "JSON/YAML import parity; source schema retained"
+    },
+    {
+      "path": "languages/kotlin/model.kt",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "e9073af4a7ab2ae46eaee13b6f33f1f8af948e024d3e5259ca612efa0b8ae9b9",
+      "expected": "Cross-file return inference, constructor fields and inherited members"
+    },
+    {
+      "path": "languages/kotlin/use.kt",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "dae663f47c39eca3c532603443ecb9198452a45225498a8ae5ea953fe672783d",
+      "expected": "Receiver lookup; usages resolve to declarations independent of parse order"
+    },
+    {
+      "path": "languages/c/model.h",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "8f13a5d6c6e9c1b89c211b4478445ad66ebee98d0ea419882b804d99fc1f4575",
+      "expected": "Tag/typedef identity and pointer members"
+    },
+    {
+      "path": "languages/c/use.c",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "dbd037e3679abd681836dde64968164c2518356921323fdf1e2e638141874b3c",
+      "expected": "Cross-file pointer member resolution"
+    },
+    {
+      "path": "jdbc/statements.sql",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "7d55b3794a7f1a00023d7dc7454def01ca90d378d7caaa41c093344202c0c4fd",
+      "expected": "SQL locator ignores quoted/comment semicolons"
+    },
+    {
+      "path": "viewers/binary.bin",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880",
+      "expected": "Byte viewer covers all values without lossy text decoding"
+    },
+    {
+      "path": "viewers/rgba.svg",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "6411f729e80626774fd61d87622a57abcfb740b5af32840b1128b5c6c9cbc8cb",
+      "expected": "SVG rasterizes to four red pixels"
+    },
+    {
+      "path": "viewers/rgba.png",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "c7d7eb2751d9944715619b5414e5558464acee942716c5b403b1bded575090ae",
+      "expected": "2×2; red top row, blue bottom row; alpha retained"
+    },
+    {
+      "path": "reference/database-jdbc-url-templates.json",
+      "origin": "../kode/src/main/resources/database-jdbc-url-templates.json at 7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+      "license": "MIT",
+      "sha256": "da00596520398dea3d4c5abd59244f82b7a1087caf3ba15d5a2d4a15ce218cd2",
+      "expected": "All shipped entries retained; same source baseline"
+    },
+    {
+      "path": "reference/keyword-patterns.txt",
+      "origin": "../kode/keyword-patterns.txt at 7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+      "license": "MIT",
+      "sha256": "3fc51a7d750b3b15380313cb873beb58a25e6ce9bbc9fabf5f1655d9649a90a4",
+      "expected": "All shipped entries retained; same source baseline"
+    },
+    {
+      "path": "reference/token-colors.txt",
+      "origin": "../kode/token-colors.txt at 7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+      "license": "MIT",
+      "sha256": "8f8a1a15947973f51416ac5f5d295cc54e499ddf4af6d2166ea0c2267b2e0e90",
+      "expected": "All shipped entries retained; same source baseline"
+    },
+    {
+      "path": "reference/codeintel/definitions.json",
+      "origin": "../kode/codeintel/definitions.json at 7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+      "license": "MIT",
+      "sha256": "895f55e91854c96553a24baee8fe24ac8849feeaf63d1e91c7ed033879fa39cc",
+      "expected": "All shipped entries retained; same source baseline"
+    },
+    {
+      "path": "reference/lsp/servers.json",
+      "origin": "../kode/lsp/servers.json at 7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+      "license": "MIT",
+      "sha256": "a0202d7c44a911381c5a1082022602c2e8e2651d024d598c3e237b895db1cb35",
+      "expected": "All shipped entries retained; same source baseline"
+    },
+    {
+      "path": "reference/styles/app.css",
+      "origin": "../kode/styles/app.css at 7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+      "license": "MIT",
+      "sha256": "6dd0aea8050c5c80b7a75f79bdd499de1634a7a8f962b15921f6c55025e6b2b3",
+      "expected": "All shipped entries retained; same source baseline"
+    },
+    {
+      "path": "reference/LICENSE-KODE.txt",
+      "origin": "../kode/LICENSE.md at 7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+      "license": "MIT",
+      "sha256": "1fe84a681cd92aa1cefa8b61f4867c0e36d56d0c839410f949e8f5b080efc72f",
+      "expected": "Retain source license with copied catalogs"
+    },
+    {
+      "path": "editor/event-sequences.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "21b4d7958ed1781a243c3f60a5b23ba382f7a4487545c305b899228eeb9a7de1",
+      "expected": "Named reference sequences; owners add precise state/cell assertions during implementation"
+    }
+  ]
+}

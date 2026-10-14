@@ -1,0 +1,1407 @@
+{
+  "commit": "7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+  "files": [
+    {
+      "path": "src/main/kotlin/editor/app/Logger.kt",
+      "sha256": "0da509a4c3b2117cafbdb22af73784a92454d3d867d61d8a88dca38dc1c1d384",
+      "lines": 39,
+      "owner": "F03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/app/Main.kt",
+      "sha256": "4be59f8f3257fcf85b76fdefbef9cfcbdfc99818eff60ec78c8ee69903278378",
+      "lines": 3032,
+      "owner": "W05",
+      "additional": [
+        "F03",
+        "E12",
+        "W03",
+        "W04",
+        "L09",
+        "G03",
+        "D08",
+        "R08",
+        "Z01",
+        "Z02"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/app/ProjectFileScanner.kt",
+      "sha256": "2150812c0b6cb73e5446948236087e7c9183b9d2c92f030265ce2e0352e3da8b",
+      "lines": 226,
+      "owner": "W01",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/app/ProjectSession.kt",
+      "sha256": "6e0bf2134bbb0fff317fd59558da055748301dae2eb1b8220bda2c368c859470",
+      "lines": 97,
+      "owner": "W03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/app/TtydAdapter.kt",
+      "sha256": "dce9c6779f19e3df83ad454d11f45df98889751d2e1af57495a5efe1d821c326",
+      "lines": 181,
+      "owner": "Z01",
+      "additional": [
+        "Z03"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/BlockTracker.kt",
+      "sha256": "974c15cea8577c9acac8048157d601aead45f9d341129375b18033bbeb5cfe1e",
+      "lines": 83,
+      "owner": "L09",
+      "additional": [
+        "L10"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/CodeIntelService.kt",
+      "sha256": "156013db0997322bdd0fab312855b074e81cd9336e4d73623f725f20169f5272",
+      "lines": 1948,
+      "owner": "L09",
+      "additional": [
+        "L10",
+        "L11"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/DbCodeIntelStore.kt",
+      "sha256": "5d023cb8287232017b9eaab60b366f2c11bb988c8837099655b4cbddf20f0a5b",
+      "lines": 290,
+      "owner": "L05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/EditorIntelligence.kt",
+      "sha256": "49ac52c7558c71cebeaa6f8c69236fa2f190767b1ccddef17da5dfa5961df334",
+      "lines": 147,
+      "owner": "F02",
+      "additional": [
+        "L09",
+        "P03"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/LspEditorIntelligence.kt",
+      "sha256": "4cedea0562356d1bf714ce64877c50eb0c8bc7de7ca10402d320ebf11de4aea8",
+      "lines": 51,
+      "owner": "P03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/completion/CompletionPipeline.kt",
+      "sha256": "d22d213216a01dfc2c72805c17281f4840d09dbfc3e6ee77a6ce65f48b1026ba",
+      "lines": 176,
+      "owner": "L11",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/frontend/CSemanticAdapter.kt",
+      "sha256": "7ae246461d80b9524177341761eab284a698cb4dc2ec7eb9554c3f1adc0303a4",
+      "lines": 152,
+      "owner": "L04",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/frontend/KotlinSemanticAdapter.kt",
+      "sha256": "4fcf15df70d9240c0ec71c4186d62b190e7255f02574264bd4718ea005519721",
+      "lines": 945,
+      "owner": "L03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/frontend/LanguageSemanticAdapter.kt",
+      "sha256": "58da2ae52460451967e97f8499fc868ab86d19a3499e008ba4ec45346bde7e21",
+      "lines": 48,
+      "owner": "L01",
+      "additional": [
+        "L02"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/frontend/LegacySemanticDeltaFactory.kt",
+      "sha256": "6aa37836cbff1836c978c9b11422248a23cfb71973c7918553b034551c8e13dd",
+      "lines": 123,
+      "owner": "L10",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/frontend/TreeSitterSemanticAdapter.kt",
+      "sha256": "6f5d848792b578383b796329c4ae5fe9a8bddf23434149524363709beacfabd6",
+      "lines": 333,
+      "owner": "L10",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/frontend/TreeSitterSemanticAdapters.kt",
+      "sha256": "f7422e93098b7325b30af3acac82283a6dd6e4b6dc7ee02ccd0ccf6e47976461",
+      "lines": 70,
+      "owner": "L10",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/index/DependencyGraph.kt",
+      "sha256": "aff73700f0c0dffa8d1194da7ac118452d4ef366c8a2659e212e0a5e1d2c8204",
+      "lines": 29,
+      "owner": "L08",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/index/H2SemanticStore.kt",
+      "sha256": "05a4a517d7b4666a8c5cbbab7281ce993af17494fbf2fee656faca1160b78489",
+      "lines": 637,
+      "owner": "L05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/index/SemanticIndex.kt",
+      "sha256": "b053ad38f523a83730a797fcacbc4441dc7e81df73e61443b539fa6440fc1c4d",
+      "lines": 372,
+      "owner": "L01",
+      "additional": [
+        "L05",
+        "L08",
+        "L09"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/index/SemanticInvalidationPlanner.kt",
+      "sha256": "4d4197b098940a278508062d9eae9d7879b21b7c78436e8d302ced32db423132",
+      "lines": 78,
+      "owner": "L08",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/ml/CompletionRanker.kt",
+      "sha256": "fb510abc1dc5a949578a9e19ed17318f9bebaa644f88d1394c704f7619d7b408",
+      "lines": 38,
+      "owner": "L11",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/model/SemanticModel.kt",
+      "sha256": "8260a57ec818af4efa5c899655f7d05b968b9684c753ab1acf7d9d4958d55836",
+      "lines": 315,
+      "owner": "L01",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/resolver/ExpressionTypeResolver.kt",
+      "sha256": "6ce5ebc88cec5462068ba5c9d6c864ccbf2157489a4f9612ab38145f956c7ae9",
+      "lines": 42,
+      "owner": "L07",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/resolver/SemanticResolver.kt",
+      "sha256": "7f1ba8fa88216865140c9f042f5e2a19c6e9a21d6136e5ffa184fbeff9f6cb48",
+      "lines": 690,
+      "owner": "L06",
+      "additional": [
+        "L07",
+        "L08"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/semantic/SemanticEnricher.kt",
+      "sha256": "c07c6fac9e3b2c20187a5a6f8883967f645dd468079fd51c13d8d283f5cb7fa4",
+      "lines": 27,
+      "owner": "L12",
+      "additional": [
+        "L09",
+        "P03"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/codeintel/semantic/SemanticTokens.kt",
+      "sha256": "883ed8cffa982fa73f403b7c0b4b15e8660c79f983d9b38d911790fc11d9ea51",
+      "lines": 104,
+      "owner": "L09",
+      "additional": [
+        "E11"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/database/DatabaseService.kt",
+      "sha256": "5aabf1652fe8825396320f609b918e67a0ef372da7f88bc0f7efa2de3e476862",
+      "lines": 159,
+      "owner": "D01",
+      "additional": [
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D06"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/database/config/CredentialStore.kt",
+      "sha256": "fbf2a66459356f736b2a933597c6d7813c0e9f303c5a4a1afe8c052e0166026b",
+      "lines": 52,
+      "owner": "D01",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/database/config/DataSourceRepository.kt",
+      "sha256": "3a956416aec4d02788815df22ce1e214ee81cf01111c5c9576e0df508f663c05",
+      "lines": 51,
+      "owner": "D01",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/database/config/KodeDatabasePaths.kt",
+      "sha256": "f069ed4956f8b3b79caeabbad782f840a4e60403c280a58b4f287bebc53fc599",
+      "lines": 41,
+      "owner": "D01",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/database/connection/DatabaseConnectionManager.kt",
+      "sha256": "1bb901c76ea6e0c8d0f326c680c024a07e423343228c42776e9489ecd441cbc1",
+      "lines": 133,
+      "owner": "D04",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/database/console/SqlConsoleManager.kt",
+      "sha256": "74d9d5956fe4cec9b9d35772933ecbb1c173eda3cb9e6651261637ec40052a8d",
+      "lines": 106,
+      "owner": "D08",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/database/driver/JdbcDrivers.kt",
+      "sha256": "67b97829caa1ef9ffcd7e29ddb12caad4a17043ddbce0a2bb884cfbaf73d9dee",
+      "lines": 644,
+      "owner": "D03",
+      "additional": [
+        "D01"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/database/driver/JdbcUrlTemplates.kt",
+      "sha256": "892911c532fc2a88019008071b7058e67feac8ea276aeb64f775188c5230ee47",
+      "lines": 187,
+      "owner": "D01",
+      "additional": [
+        "D07"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/database/metadata/DatabaseMetadata.kt",
+      "sha256": "746401ad6178887a7fbcb062778518646191e27d452146546951565bc08dc8f8",
+      "lines": 345,
+      "owner": "D06",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/database/model/DatabaseModels.kt",
+      "sha256": "032ebf6df8f2320d85aa4300d37610b695462ca833df66e1600f59acebe1568f",
+      "lines": 158,
+      "owner": "D01",
+      "additional": [
+        "D02"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/database/query/SqlQuery.kt",
+      "sha256": "a8450d0184e2c65d3ed9f6fa023edc208036735e8bf005fc58f215d943e43d25",
+      "lines": 256,
+      "owner": "D05",
+      "additional": [
+        "D08"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/database/ui/DatabaseConnectionDialog.kt",
+      "sha256": "3537dc6f594eca6411c7498a295abbaa9095495af6ac21fdac33436fd41c64ba",
+      "lines": 592,
+      "owner": "D07",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/database/ui/DatabaseObjectMenu.kt",
+      "sha256": "54c83b6d400f047ccf5a292e6c3e332e02052990df5b3e8e1afa6b61622faea4",
+      "lines": 129,
+      "owner": "D07",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/database/ui/DatabasePanelView.kt",
+      "sha256": "8175162a9f964ec51d511ef940dec2e8ccae904e81fb4c92ae5671d7c8fdbd93",
+      "lines": 451,
+      "owner": "D07",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/database/ui/JdbcDriverDownloadDialog.kt",
+      "sha256": "914094d4930da46fc4dc6928c61bf2335c48bb01298532201dc1bde7630b5dfc",
+      "lines": 131,
+      "owner": "D03",
+      "additional": [
+        "D07"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/database/ui/SqlResultPanel.kt",
+      "sha256": "bb17f728e0b31d8df45ef9a45ae41ffe9c72b74a2b0446772becc22af613daf1",
+      "lines": 235,
+      "owner": "D08",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/database/ui/SqlSessionSaveDialog.kt",
+      "sha256": "0b1a5945f6a86221c0134b7796f27621ff3e1d7e9bdce78c5dec52228feb4b30",
+      "lines": 19,
+      "owner": "D08",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/database/ui/SqlStatementMenu.kt",
+      "sha256": "09b1f4768cfab6b501e5b8ed5c727e73d4aff58ba636f0797213417897ca7c08",
+      "lines": 89,
+      "owner": "D08",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/db/DbServerManager.kt",
+      "sha256": "de5260d87d1e6966d5f9ea96cb03bf2137fb40d481d07c9c9cf15f8d062e1bbc",
+      "lines": 204,
+      "owner": "L05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/grammars/KeywordSyntaxProvider.kt",
+      "sha256": "50ad868f87586a45ed4e20d2f87f6da9a01a9587ae35ba07be49ac86fa0aada2",
+      "lines": 251,
+      "owner": "L02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/grammars/RegexGrammar.kt",
+      "sha256": "d0630d155e7ac77b17d1d92df3cdc84e491ccb8caf4343b52755feddbe81fa94",
+      "lines": 65,
+      "owner": "L02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/grammars/RegexSyntaxProvider.kt",
+      "sha256": "4a4741dd40242081e86a31b77ff60462ae0308b418ff76b6811fd73698dd6b0f",
+      "lines": 171,
+      "owner": "L02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/grammars/gramars.kt",
+      "sha256": "012d3ab921185e04c6eba57b780d811ec272cb3df57beb6da612869a06dd4842",
+      "lines": 24,
+      "owner": "L02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lang/TreeSitterSupport.kt",
+      "sha256": "3f95fab7162aa3a88dd57492ab5f6defa825e52dbf59a237c9bc707a5ccb2cc9",
+      "lines": 159,
+      "owner": "L02",
+      "additional": [
+        "E01"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/lang/adapters/KotlinTsAdapter.kt",
+      "sha256": "404493d06ba1a2a572cf136a5eb551b7b51f4c5c7b91933c88b6eb4c37ea1efc",
+      "lines": 96,
+      "owner": "L03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lang/adapters/TypescriptTsAdapter.kt",
+      "sha256": "c6aebfc5bec085cc431a571fdb9c786741fb5f4767c1ac7587afb22f1a61345c",
+      "lines": 135,
+      "owner": "L10",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lang/base.kt",
+      "sha256": "d9eaa02a5eec4e2d79f99454757d80e675a0bbee620743713adbb5d9c63d2d1f",
+      "lines": 207,
+      "owner": "L02",
+      "additional": [
+        "E01"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/lang/kotlin/KotlinLanguageAdapter.kt",
+      "sha256": "d1004de9dd763b4be80117b53f6f4acfc2a4ae4a0f215204b506f5add9fb72e1",
+      "lines": 210,
+      "owner": "L03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lang/typescript/TypescriptLanguageAdapter.kt",
+      "sha256": "806cf0aa3abc93fc8d5ca0a79812b494ca07dd733b945ed881af0330c02869af",
+      "lines": 120,
+      "owner": "L10",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/AsciiCore.kt",
+      "sha256": "b7a3f4f6365af2e30cd7aea3c602b979493914424b012d1c27dec4e4201c1bae",
+      "lines": 365,
+      "owner": "V03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/AsciiImageRenderer.kt",
+      "sha256": "6ad49e5add7051efee729de11eeaabac6d0b7ef0348f17be5a30a68cc3299688",
+      "lines": 19,
+      "owner": "V03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/BixelAsciiImageRenderer.kt",
+      "sha256": "61ba2f784a75d9870ebbfc8652df74fefd7b90e9267b9c9ff489f536539a7502",
+      "lines": 31,
+      "owner": "V03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/BrailleAsciiImageRenderer.kt",
+      "sha256": "ff7b6cbdc7d7c030c96a060966f2e9686d3dd89b31da65d943687c66513f8372",
+      "lines": 29,
+      "owner": "V03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/BufferState.kt",
+      "sha256": "ba3b61f78d38768b1c41dddb32a65e8ce680c07bb2f6739e72039c0b6127d5e5",
+      "lines": 24,
+      "owner": "W03",
+      "additional": [
+        "E03"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/ByteBuffer.kt",
+      "sha256": "d96eb3490dba4a1d8e05fcb625289627a61a4d32346b3ca18348db78b2b1effa",
+      "lines": 169,
+      "owner": "V02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/FileTree.kt",
+      "sha256": "39eb11699f1af99b880570ab130d7623bcac590f7168cc222a394a6397777ecd",
+      "lines": 181,
+      "owner": "W02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/IByteBuffer.kt",
+      "sha256": "74425513328d98f15299a630fc2ddd226d06445feb83460d29c79187c1373f1b",
+      "lines": 52,
+      "owner": "V02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/IFileTree.kt",
+      "sha256": "5e316d8bf96be123cb11621db38075a638f46321857b7f36065a1e262f55a3d0",
+      "lines": 58,
+      "owner": "W02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/IGitService.kt",
+      "sha256": "a1885cfd139daec98ade358b36c70985bc6596382915a525de9b4b406f07fa65",
+      "lines": 353,
+      "owner": "G01",
+      "additional": [
+        "G02",
+        "G03"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/ITextBuffer.kt",
+      "sha256": "a3378708e2def804a62edbd2f8aa84b4c43d23f0cda3f8a4c4b7b672dc5e2f8e",
+      "lines": 217,
+      "owner": "E01",
+      "additional": [
+        "E02",
+        "E03",
+        "E04",
+        "E06"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/ImageLoader.kt",
+      "sha256": "b68be3352ff9e7080603911f59b524829975de75516026985b34cf3be2fb7883",
+      "lines": 28,
+      "owner": "V03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/KorimAsciiImageRenderer.kt",
+      "sha256": "5dbd1d50ece25e556757296fb4ae63ed8d7d5b31b80ee049dcdbf7e49376dcf0",
+      "lines": 37,
+      "owner": "V03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/ProjectFolderStatus.kt",
+      "sha256": "5a8602608493b804b55bfbd5e955f001d66b0660d6fd373d42f9ebc410f01898",
+      "lines": 48,
+      "owner": "W01",
+      "additional": [
+        "W02"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/ProjectSearcher.kt",
+      "sha256": "1ba5ddd7d461371da93296594da4296a2c580c0a9281b8ef335d44c1d0f45fd9",
+      "lines": 69,
+      "owner": "W04",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/QuadxelAsciiImageRenderer.kt",
+      "sha256": "c450abf5b53fbb04708948d7e1ea589445310aaebdf897ffec163bb839deb399",
+      "lines": 31,
+      "owner": "V03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/SystemClipboard.kt",
+      "sha256": "0de2a40893f2576adad7ed939fcb48fb2ab374875e594cc7ccd9abf0cc3c73a0",
+      "lines": 29,
+      "owner": "E04",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lib/TextBuffer.kt",
+      "sha256": "054f71f6702ed06329e84df29723a19bf0eaa02be7c5b75cb6f2550b9af29dda",
+      "lines": 998,
+      "owner": "E01",
+      "additional": [
+        "E02",
+        "E03",
+        "E04",
+        "E07",
+        "W03"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/lsp/LspCatalog.kt",
+      "sha256": "49f8bb694ccd756c2c1a7ce8135785782427aca6ce3401e52c6d6455fd4cc9a0",
+      "lines": 440,
+      "owner": "P01",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lsp/LspClient.kt",
+      "sha256": "8278ef13b76c46fe4cf1863598bf312e4ec41899e6e96f4dff356a6e2ec011b6",
+      "lines": 294,
+      "owner": "P02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/lsp/LspService.kt",
+      "sha256": "ecfadc47e4aae51f8631e8aa8495627fd4f9cf733acd2aa370cd5f3a80cd88f6",
+      "lines": 180,
+      "owner": "P02",
+      "additional": [
+        "P01",
+        "P03"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/mime/DefaultMimeTypeDetector.kt",
+      "sha256": "1ced7f10416c5bca2dc185401b752e6be97c35892246b774b830f50d573e1bff",
+      "lines": 273,
+      "owner": "V01",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/mime/MimeTypeDetector.kt",
+      "sha256": "d678af5f5b079a0e411f688c4ec2356ae0e892de77c37d276f4181ea3ba12bd2",
+      "lines": 30,
+      "owner": "V01",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/mime/MimeTypeResult.kt",
+      "sha256": "1e1ddd408ccb35ef491879a54096598b6e0bb7fa35f5b1ddecdde0d14e97086b",
+      "lines": 33,
+      "owner": "V01",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/mime/SampleMimeTable.kt",
+      "sha256": "f5188b714c6e75ae2400bbca933122de954e32cbb77fef25b0137c650041dfd5",
+      "lines": 306,
+      "owner": "V01",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/rest/http/RestHttp.kt",
+      "sha256": "8af5167f87a589d2f12145b0f8773ccc62e0a351ccd29516ac59fc8d79bc08d9",
+      "lines": 470,
+      "owner": "R04",
+      "additional": [
+        "R05",
+        "R08"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/rest/model/RestEnvironmentCodec.kt",
+      "sha256": "eab026b0994c0b5bf3a5a18985f9f4fb5efbcb00664b1d4619c899fe26be25b6",
+      "lines": 54,
+      "owner": "R01",
+      "additional": [
+        "R06",
+        "R08"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/rest/model/RestModels.kt",
+      "sha256": "f703e42c78f137a83adc81c459330974f424ad4d2cbf2ae4bfe94b27a98e4527",
+      "lines": 224,
+      "owner": "R01",
+      "additional": [
+        "R06",
+        "R08"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/rest/model/RestOpenApiImporter.kt",
+      "sha256": "c96743fba4ad2347037c4e12278fdaa91b070ee960a66ccc16ab9ec320448742",
+      "lines": 187,
+      "owner": "R03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/rest/model/RestWorkspaceModel.kt",
+      "sha256": "33ccc4c8c9a0f23a138ed93658468351a2cc29c40454f987768df3e29048518a",
+      "lines": 251,
+      "owner": "R01",
+      "additional": [
+        "R06",
+        "R08"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/rest/resolve/RestResolver.kt",
+      "sha256": "56995e7fd678decad6de70cf599356bea04c91a453890379dc03406e35ba899b",
+      "lines": 449,
+      "owner": "R02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/rest/ui/HttpHeaderCatalog.kt",
+      "sha256": "a2240baedcc0c23b1422d4f1beda7e602c528528cf71f16c94daf7c7e932dd2f",
+      "lines": 20,
+      "owner": "R07",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/rest/ui/RestCodeFormatting.kt",
+      "sha256": "0df55bb41ad7ce94c76489006c6e5218f2d48e8307ca48c1771d6df016a3439b",
+      "lines": 70,
+      "owner": "R07",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/rest/ui/RestEditorView.kt",
+      "sha256": "42398fdcd466f06983dd3665cfec788c69a80e5cf8baf753e0cd70a9f0dbce00",
+      "lines": 1385,
+      "owner": "R07",
+      "additional": [
+        "R06",
+        "R08",
+        "E12"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/rest/ui/RestKeyValueDialog.kt",
+      "sha256": "5b909184688fad42bdc115585ab24695b3d50d6480bb0f0ac42f60f32d8f13e5",
+      "lines": 166,
+      "owner": "R06",
+      "additional": [
+        "F05",
+        "E12"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/rest/ui/RestPanelView.kt",
+      "sha256": "6706dd9293a1f1b8fd3a1ea52551ecb3125180cb9ae1b9d253fe5d63cc1e6a62",
+      "lines": 770,
+      "owner": "R06",
+      "additional": [
+        "F05",
+        "E12"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/AboutView.kt",
+      "sha256": "77645723963ea6b5eab6eddd9f34a198314166394f81df4de0f03219ff8ece59",
+      "lines": 230,
+      "owner": "Z02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/BinaryHexView.kt",
+      "sha256": "d1d1ea64089e266191ea515499fbb6737eab31ac4438e20a587a26b167435b63",
+      "lines": 234,
+      "owner": "V02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/CodeEditorView.kt",
+      "sha256": "04f9fb26fbf706f05fca24b7b50beeca3e366e5a10c462184ac2d3020e403f6a",
+      "lines": 2991,
+      "owner": "E05",
+      "additional": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E12",
+        "E13"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/DiffView.kt",
+      "sha256": "789f36e38a26c45daa25de65b44dab35af7d972338e2d3629a4d7c6c4eacab02",
+      "lines": 27,
+      "owner": "G03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/FileTreeView.kt",
+      "sha256": "997e713495e6c5bcf57e3450a7bd506b5f8b78515069dd205e72f8f61f7d02c4",
+      "lines": 497,
+      "owner": "W02",
+      "additional": [
+        "W03"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/FilesTabView.kt",
+      "sha256": "a832b1ec5c46e7623e821589bf621dc77f8600f5fcb4236190d23f375cce3979",
+      "lines": 212,
+      "owner": "W02",
+      "additional": [
+        "W03"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/FormFieldRenderer.kt",
+      "sha256": "65550b5ddf11297374f33fb134c6321dff2882050c1db98f7f3bf63e11010458",
+      "lines": 44,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/GitPanelView.kt",
+      "sha256": "d3bcf2290d946433efdafe9b5bc1813a4e50dcd38addad7927ab0f24f5ca913f",
+      "lines": 460,
+      "owner": "G02",
+      "additional": [
+        "G01",
+        "G03"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/HelpView.kt",
+      "sha256": "09ff89d0c066f67c25665ca72257cec60ebf9c6baf9112ad1cd84b2b8644c4c9",
+      "lines": 123,
+      "owner": "Z02",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/HighlightEdits.kt",
+      "sha256": "847904be09de12e9f774880ebf2f34a7c06e8ee6edff3a57a691a33666fc805c",
+      "lines": 41,
+      "owner": "E11",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/ImageViewerView.kt",
+      "sha256": "4cffc38a8098e3562db1ea7bc47ccd9eaf972d1f8d5997f2b36034a14750d802",
+      "lines": 337,
+      "owner": "V03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/ModalDialog.kt",
+      "sha256": "8b919f379d5b47e638fb94517bee4f0a572249325c883eda3dbdaac819f613ad",
+      "lines": 205,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/ProjectSearchDialog.kt",
+      "sha256": "bef5696e9582a72b3bc51374132dde68dd2e32c2dd8ee458b3510b7bafee407d",
+      "lines": 709,
+      "owner": "W04",
+      "additional": [
+        "E12"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/ProjectSettingsView.kt",
+      "sha256": "165d8419b8cd89bcaae20acf06d1a8dc5ae0e2c3eebbf24d63b37c8a4f851703",
+      "lines": 223,
+      "owner": "W02",
+      "additional": [
+        "W01",
+        "L09"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/RescanProgressDialog.kt",
+      "sha256": "9a7aa2f04df46c013259d58c88fbfd1bf86d51dbcdc3ac953180ba1c170645d4",
+      "lines": 86,
+      "owner": "W02",
+      "additional": [
+        "W01",
+        "L09"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/SearchReplaceBar.kt",
+      "sha256": "6fdd8ffbf7bce9b095e3fb4998d8aa12e3d4ed0ca4322815e5fb8b08795b841a",
+      "lines": 303,
+      "owner": "E07",
+      "additional": [
+        "F05"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/SettingsView.kt",
+      "sha256": "0cf3785194cf7f97318786b84d28484f6f76cf584620e248dfaa28dc9d2dd072",
+      "lines": 546,
+      "owner": "Z02",
+      "additional": [
+        "P01"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/SideBySideDiffView.kt",
+      "sha256": "811bee3d4e410161b97b971813e82b07a4c1f18b2e2afa50a6138b092bd1a620",
+      "lines": 406,
+      "owner": "G03",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/SliderControl.kt",
+      "sha256": "95eaaee7cd007d17dbb3d4a1c41235107f16dabc0141f8b8fbab0c1138312ce2",
+      "lines": 98,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/SourceFolderPickerDialog.kt",
+      "sha256": "9c4c00ddebab2dde9dd9eaaa004034a743693ad6231d557b4bcbd043af94fa63",
+      "lines": 237,
+      "owner": "W02",
+      "additional": [
+        "W01",
+        "L09"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/editor/ui/WorkspacePickerDialog.kt",
+      "sha256": "df6bdcfb90764321879766ebfac186e4d14160f85fcda96a0508eac715e359eb",
+      "lines": 235,
+      "owner": "W05",
+      "additional": [
+        "F05"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/react/AnsiCanvasRenderer.kt",
+      "sha256": "ba5db531a36977ace42deb95e920b0555a9876b3fc44c655faac049b97429046",
+      "lines": 753,
+      "owner": "F04",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/react/CanvasRenderer.kt",
+      "sha256": "181cb58780f25d158b3a98195b742fb798c858355c4467501ed4c111f67c2e74",
+      "lines": 114,
+      "owner": "F04",
+      "additional": [
+        "F05"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/react/ClippedCanvasRenderer.kt",
+      "sha256": "47c0cd70eae78db6ef77fd93d058d6456c788d45099c19bb61a0ebceb4df2921",
+      "lines": 66,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/react/Color.kt",
+      "sha256": "30f3d47c837689aa13f7be5be8cf4d02bc9a9fad01166416f4ce07c5091e6c10",
+      "lines": 21,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/react/Component.kt",
+      "sha256": "be3e49638e12e8d30a3c765820289846b572bfa4dea2ea63cacf37671aa74213",
+      "lines": 28,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/react/ContentBox.kt",
+      "sha256": "2d9485efa2785cdbb770ac26c66f22f9bd04884df4d4fb4e83fd6bb869bdcd03",
+      "lines": 41,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/react/NoopRenderer.kt",
+      "sha256": "dfecb7245b240107f7cd3928d1c544c5e5b5327a6f10c8240e68d0a45f8653c8",
+      "lines": 44,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/react/StringSnapshotRenderer.kt",
+      "sha256": "22c60099b98fec6581f1586c0164275ead82f9637790e4defd2149df0d7dcc53",
+      "lines": 90,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/react/StyleSet.kt",
+      "sha256": "8d2d32e5aec0a4a95a0aa26722d2a6a036199611013f5f5aa49e362e55968717",
+      "lines": 98,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/react/StyleSheet.kt",
+      "sha256": "bedf9b5892b4c0796ef3255168d14cd720658eb1292882e79f580e428c1509a5",
+      "lines": 114,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/react/TabView.kt",
+      "sha256": "ab7dec3cf06ad2a9564903b3b69904f95ca9cb89b195487509f8097b002da54e",
+      "lines": 153,
+      "owner": "F05",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/react/UIEvent.kt",
+      "sha256": "ff19d80784c8480ef9099c641899067fa669d26a1f4880973a47f5efc34e35c9",
+      "lines": 48,
+      "owner": "F04",
+      "additional": [
+        "F05"
+      ]
+    },
+    {
+      "path": "src/main/kotlin/react/util/WindowsConsole.kt",
+      "sha256": "d4ad9fd676dc51cf8c135cd7bc1158826cbb09f294e81c1fb03c7d3cb53b6f04",
+      "lines": 503,
+      "owner": "F04",
+      "additional": []
+    },
+    {
+      "path": "src/main/kotlin/react/util/util.kt",
+      "sha256": "90bc9af3298b71fb3248cfb578cc1ff122b8410555dd90cb0f3c882041a45c8c",
+      "lines": 36,
+      "owner": "F04",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/app/ProjectFileScannerTest.kt",
+      "sha256": "f596eaa09ca1462096b8bd675fb6d6951d9676114e4cf2b75f1b9a5ed8c5befa",
+      "lines": 97,
+      "owner": "W01",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/app/ProjectSessionManagerTest.kt",
+      "sha256": "60368860d52ee73fc38a9b48655acd8228038b600ff5c1ec42a35d00c95f9c60",
+      "lines": 65,
+      "owner": "W03",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/app/TtydAdapterTest.kt",
+      "sha256": "2381a3c0213ab27e58b1591e57b7a93692e83b48d074bf551e00dddb082e806a",
+      "lines": 43,
+      "owner": "Z01",
+      "additional": [
+        "Z03"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/codeintel/CSemanticTest.kt",
+      "sha256": "8d87968c77d16691f7a541353fc64c17e3fa910f846b8f7578d61b9ecc5ec8e6",
+      "lines": 88,
+      "owner": "L04",
+      "additional": [
+        "L06",
+        "L07",
+        "L08",
+        "L12"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/codeintel/CodeIntelServiceTest.kt",
+      "sha256": "bc0e42b6f84d1901bc19aa5681cee9e9bf54a71c1cf3e15422f1d8affa3f12a5",
+      "lines": 311,
+      "owner": "L09",
+      "additional": [
+        "L10",
+        "L11"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/codeintel/H2SemanticStoreTest.kt",
+      "sha256": "1a333571dfbb64f726a49d884811f928147e7fafdb1676fd449d4fbe6a958591",
+      "lines": 255,
+      "owner": "L05",
+      "additional": [
+        "L08"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/codeintel/KotlinExpressionSemanticsTest.kt",
+      "sha256": "ff5643e17a33487e454d4587d22fdcfc2a63ac2911d5344639194c87a87cbc5b",
+      "lines": 258,
+      "owner": "L07",
+      "additional": [
+        "L11"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/codeintel/KotlinSemanticVerticalSliceTest.kt",
+      "sha256": "0017d227b47e416e345b022067e2f382c27ece7b8e7d457b3ad5979fa5b33736",
+      "lines": 175,
+      "owner": "L01",
+      "additional": [
+        "L03",
+        "L06",
+        "L07",
+        "L11"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/codeintel/SemanticHighlightingTest.kt",
+      "sha256": "241b2ffa42f4eae062ffd55ec76f00786358ce3d0fa6ec62a855cc1960d0a768",
+      "lines": 158,
+      "owner": "L02",
+      "additional": [
+        "L09",
+        "E11"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/codeintel/SemanticInvalidationTest.kt",
+      "sha256": "e424b3354df3eb1f10593f2070f3ef176250ea74aefb43cf5c1dcf1450fdbf5a",
+      "lines": 142,
+      "owner": "L08",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/codeintel/SemanticTestHarness.kt",
+      "sha256": "5fb4c019c1fd884d39160896636b02fa07da34e647a995f4fdaa66b16322f738",
+      "lines": 64,
+      "owner": "L01",
+      "additional": [
+        "L12"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/codeintel/TreeSitterSemanticAdapterTest.kt",
+      "sha256": "77cf09941e8d7e5fe5317d2de0e3f4f3cfcaacdd884779fbf61ad94c784fbdd7",
+      "lines": 49,
+      "owner": "L10",
+      "additional": [
+        "L12"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/database/DataSourceRepositoryTest.kt",
+      "sha256": "3d4a84d11706debe81aee03407ed11f632ce80604850f7210c80cc0e9cf02197",
+      "lines": 37,
+      "owner": "D01",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/database/JdbcDatabaseIntegrationTest.kt",
+      "sha256": "1cb2a7c3c317afa1d3f2ff64a164e7e331c443f5074640d5a33e978c99ebe73d",
+      "lines": 163,
+      "owner": "D04",
+      "additional": [
+        "D05",
+        "D06",
+        "D09"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/database/JdbcDriverRegistryTest.kt",
+      "sha256": "a8b6a7fa074c3bfd9512fda962a65b9e9dea46ca242c174fcf43543735cde81e",
+      "lines": 47,
+      "owner": "D01",
+      "additional": [
+        "D03"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/database/JdbcUrlTemplatesTest.kt",
+      "sha256": "0ed22f8048f224d0cbeae1935f4a66bb77168796fa310753c9221e0c4d88c949",
+      "lines": 71,
+      "owner": "D01",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/database/MetadataCacheTest.kt",
+      "sha256": "d06d46568ea8d6028a637e1ad3cc72032317546ff6b16b281e3744c36ec2bb20",
+      "lines": 40,
+      "owner": "D06",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/database/SqlStatementLocatorTest.kt",
+      "sha256": "f1fd34284ca32cad374c8e57d786507c3109b6eb0f0fefcf239a05a9ae1e2349",
+      "lines": 54,
+      "owner": "D08",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/db/DbServerManagerTest.kt",
+      "sha256": "c070017519296dd01d346ddada0aaed7608cee78a37f3652e3a100fe84387f55",
+      "lines": 70,
+      "owner": "L05",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/grammars/KeywordSyntaxProviderTest.kt",
+      "sha256": "a5bb5c3ad40a8a0abb86f47eb7ef3a3ea780a21f634a5ec508ed355a43b40598",
+      "lines": 46,
+      "owner": "L02",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/grammars/RegexSyntaxProviderTest.kt",
+      "sha256": "df3641efd9b64648810563089065b72b145e7bc2eda122a15519a67b66301317",
+      "lines": 63,
+      "owner": "L02",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/lang/KotlinIdentifierOccurrenceIntegrationTest.kt",
+      "sha256": "0f4b2990a4276e99332780067d814d26e2b6cde85a0c60b8cd16c04927bcf337",
+      "lines": 43,
+      "owner": "L03",
+      "additional": [
+        "L12"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/lang/KotlinIdentifierPathScanTest.kt",
+      "sha256": "bfe02280472f247affd6aa2b71b49476dae4463a612faa3118220680361d11f9",
+      "lines": 116,
+      "owner": "L03",
+      "additional": [
+        "L12"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/lang/KotlinIdentifierPipelineTest.kt",
+      "sha256": "19fd98039ea45a649049f3b271f593e575760bca6acfbbe40c807eebd0423786",
+      "lines": 46,
+      "owner": "L03",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/lang/TypescriptIdentifierPathScanTest.kt",
+      "sha256": "37df8f09234397c83feabd6f3d63b0dc05b98dabe4e1cb9c14f10d700888aefb",
+      "lines": 144,
+      "owner": "L10",
+      "additional": [
+        "L12"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/lib/FileTreeTest.kt",
+      "sha256": "d75a478d036f960bc6ef0cc37e2ac3ea8dfee2983d708a3ffc7ac891a5fb8c22",
+      "lines": 27,
+      "owner": "W02",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/lib/JGitServiceTest.kt",
+      "sha256": "4c42862f654c1f60059a91aa5cee11a18657be083be99a2805b51b8beff9cf91",
+      "lines": 45,
+      "owner": "G01",
+      "additional": [
+        "G02"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/lib/KorimAsciiImageRendererTest.kt",
+      "sha256": "142fa1cdf40b2338fc1dc9c122f5752b66761518351eb9861ea4e0ffc52a8f66",
+      "lines": 66,
+      "owner": "V03",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/lib/ProjectFolderStatusTest.kt",
+      "sha256": "dcb4d6997fa6fb3018eca47dc2c55df7b8ad13f043365856212b790c307cd105",
+      "lines": 33,
+      "owner": "W01",
+      "additional": [
+        "W02"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/lib/TextBufferInputTest.kt",
+      "sha256": "a0afc194ff7b1eabf750ff878bbd2f017e99f8dd5af52f2f667584ed891c3d50",
+      "lines": 24,
+      "owner": "E02",
+      "additional": [
+        "E03",
+        "F04"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/lib/TextBufferSearchTest.kt",
+      "sha256": "b1549bbd9cf2be3fc646c50beb62733024e0e65b6e2a0271a0f45fb89dbed6fa",
+      "lines": 112,
+      "owner": "E07",
+      "additional": [
+        "E04"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/lib/TextBufferUndoTest.kt",
+      "sha256": "f4fffdcaa7d9c13e02f06456affe067838984831771af550db86db99a4f6b549",
+      "lines": 63,
+      "owner": "E03",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/mime/DefaultMimeTypeDetectorTest.kt",
+      "sha256": "38ba635de96ba400af2583656534b1e4d9b27bc10984c366ec9cec00b6d4ab42",
+      "lines": 103,
+      "owner": "V01",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/rest/RestCodeFormattingTest.kt",
+      "sha256": "67ecda26afe57455f004d9557c5815731d031a47c44ac415f3c7b5b62256a5ea",
+      "lines": 24,
+      "owner": "R07",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/rest/RestEditorViewTest.kt",
+      "sha256": "6b7641eddc670ea71536936fab3ffe99843c7cceb7da28cd983b162bcc589c37",
+      "lines": 95,
+      "owner": "E12",
+      "additional": [
+        "R06",
+        "R07"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/rest/RestHttpTest.kt",
+      "sha256": "d6bf9faebae495719deb1208e17ae8efe27dd06a79e76367565ba2decd31d294",
+      "lines": 143,
+      "owner": "R04",
+      "additional": [
+        "R05"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/rest/RestModelTest.kt",
+      "sha256": "b4aebb2200adf7c475b6068becef82c7bc2c19592ffb9e9f5b5a580f1e3ed42e",
+      "lines": 125,
+      "owner": "R01",
+      "additional": [
+        "R03"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/rest/RestResolverTest.kt",
+      "sha256": "1ff0eb8d995b4a27d34fe1a7af7bc4b58e19a978cc579dda443842f216b881c6",
+      "lines": 171,
+      "owner": "R02",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/ui/CodeEditorViewTest.kt",
+      "sha256": "006a5fdbbee4f4b173580dad3f080b3f983c2b7080ffc2a1c60b51acf9efd1df",
+      "lines": 501,
+      "owner": "E05",
+      "additional": [
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E13"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/ui/GitPanelViewTest.kt",
+      "sha256": "a7e7cd6830bba6e8f8ebf7955c5f4f965d6d96328f0e1c2168515b8b226b5e0a",
+      "lines": 46,
+      "owner": "G01",
+      "additional": [
+        "G02"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/editor/ui/HighlightEditsTest.kt",
+      "sha256": "08814c6b3ed96de050a4fe410ed4be27a46d9aafb59d4a3c25cc34047e97d8c6",
+      "lines": 34,
+      "owner": "E11",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/editor/ui/SearchReplaceBarTest.kt",
+      "sha256": "3307248b982b8549df0f3f44d5953766a45f356129f6038a04be89f18f50a4c9",
+      "lines": 46,
+      "owner": "E07",
+      "additional": [
+        "F05"
+      ]
+    },
+    {
+      "path": "src/test/kotlin/react/AnsiCanvasRendererTest.kt",
+      "sha256": "e55d064b26c0a9cf513ae578c0bc9ebc635b839c717c8f2a0328627abfe5934b",
+      "lines": 25,
+      "owner": "F04",
+      "additional": []
+    },
+    {
+      "path": "src/test/kotlin/react/TabViewTest.kt",
+      "sha256": "56670e172163db42f9fc30e71b3b64e9a4299d9593ba6fc0ee6eaea83fc4a635",
+      "lines": 24,
+      "owner": "F05",
+      "additional": []
+    }
+  ]
+}
