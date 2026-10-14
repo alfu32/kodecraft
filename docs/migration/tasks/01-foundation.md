@@ -36,7 +36,8 @@ for all later task checks; it does not require porting production code.
 **Read:** `editor/lib/ITextBuffer.kt`, `IByteBuffer.kt`, `BufferState.kt`,
 `editor/codeintel/EditorIntelligence.kt` and CONTRACTS.md.
 
-1. Create the planned crate graph and fixed stable toolchain; select compatible
+1. Create the planned crate graph and latest stable toolchain (the user's explicit
+   implementation preference; record the exact tested release); select compatible
    crate versions and minimal features from CRATES.md. Commit the lockfile when
    implementation is committed; document native libgit2/SQLite/Tree-sitter needs.
 2. Define newtypes, half-open ranges, document origins, job tags, editor commands,
@@ -51,7 +52,7 @@ for all later task checks; it does not require porting production code.
 
 ## F03 — Jobs, processes, paths, logging and shutdown
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** F02. **Owns:** `kode-platform/src/{jobs,process,paths,logging}.rs`,
 `kode-tui/src/app/{events,effects}.rs`.
@@ -71,7 +72,7 @@ for all later task checks; it does not require porting production code.
 
 ## F04 — Terminal lifecycle and normalized input
 
-**Status:** todo
+**Status:** done
 
 **Depends:** F02, F03. **Owns:** `kode-tui/src/terminal/`, `input/terminal.rs`.
 **Read:** `react/AnsiCanvasRenderer.kt`, `react/UIEvent.kt`, `react/util/*.kt`,
@@ -91,7 +92,7 @@ for all later task checks; it does not require porting production code.
 
 ## F05 — Common widgets, style mapping, layout and focus
 
-**Status:** todo
+**Status:** done
 
 **Depends:** F04. **Owns:** `kode-tui/src/{widgets,theme,focus,layout}/`.
 **Read:** `react/{Component,ContentBox,TabView,ClippedCanvasRenderer,StyleSheet,StyleSet,Color}.kt`,

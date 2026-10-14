@@ -4,3 +4,4 @@
 /.kode-rs/
 /.kode-rs.json
 *.log
+.idea

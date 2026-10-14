@@ -1,0 +1,26 @@
+[package]
+name = "kode"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+kode-core.workspace = true
+kode-platform.workspace = true
+kode-workspace.workspace = true
+kode-syntax.workspace = true
+kode-intelligence.workspace = true
+kode-lsp.workspace = true
+kode-git.workspace = true
+kode-rest.workspace = true
+kode-database.workspace = true
+kode-tui.workspace = true
+clap.workspace = true
+
+[[bin]]
+name = "kode"
+path = "src/main.rs"

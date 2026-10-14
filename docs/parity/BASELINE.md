@@ -87,6 +87,13 @@ hex-digit editing/saving workflow is not established by the source.
 
 ## Regeneration
 
+Additional input audit during E04: the Linux ANSI source maps raw Tab (0x09) to
+Ctrl+I, while dialog and direct-buffer handlers expect Tab or the literal tab.
+Crossterm normalization deliberately supplies one consistent Tab event: dialogs
+traverse focus and the editor's existing literal-tab insertion path is accessible.
+This is an intentional correction to the decoder/handler mismatch, not a claim
+that raw Linux Tab was already reliable in the Kotlin baseline.
+
 `python3 scripts/baseline.py inventory` validates source/test allocation and hashes.
 `python3 scripts/baseline.py fixtures` regenerates only dedicated migration
 fixtures. `python3 scripts/baseline.py results` captures the last Kotlin test XML.

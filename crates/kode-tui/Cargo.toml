@@ -1,0 +1,25 @@
+[package]
+name = "kode-tui"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+kode-core.workspace = true
+kode-platform.workspace = true
+kode-workspace.workspace = true
+kode-syntax.workspace = true
+kode-intelligence.workspace = true
+kode-lsp.workspace = true
+kode-git.workspace = true
+kode-rest.workspace = true
+kode-database.workspace = true
+ratatui.workspace = true
+crossterm.workspace = true
+tokio.workspace = true
+serde_json.workspace = true
+unicode-width.workspace = true

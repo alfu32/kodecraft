@@ -1,0 +1,1688 @@
+[
+  {
+    "language": "abap",
+    "extension": ".abap",
+    "mime": "text/abap",
+    "category": "TEXT"
+  },
+  {
+    "language": "actionscript-3",
+    "extension": ".as",
+    "mime": "text/actionscript-3",
+    "category": "TEXT"
+  },
+  {
+    "language": "ada",
+    "extension": ".adb",
+    "mime": "text/ada",
+    "category": "TEXT"
+  },
+  {
+    "language": "angular-html",
+    "extension": ".html",
+    "mime": "text/angular-html",
+    "category": "TEXT"
+  },
+  {
+    "language": "angular-ts",
+    "extension": ".ts",
+    "mime": "text/angular-ts",
+    "category": "TEXT"
+  },
+  {
+    "language": "apache",
+    "extension": ".conf",
+    "mime": "text/apache",
+    "category": "TEXT"
+  },
+  {
+    "language": "apex",
+    "extension": ".cls",
+    "mime": "text/apex",
+    "category": "TEXT"
+  },
+  {
+    "language": "apl",
+    "extension": ".apl",
+    "mime": "text/apl",
+    "category": "TEXT"
+  },
+  {
+    "language": "applescript",
+    "extension": ".applescript",
+    "mime": "text/applescript",
+    "category": "TEXT"
+  },
+  {
+    "language": "ara",
+    "extension": ".ara",
+    "mime": "text/ara",
+    "category": "TEXT"
+  },
+  {
+    "language": "asciidoc",
+    "extension": ".adoc",
+    "mime": "text/asciidoc",
+    "category": "TEXT"
+  },
+  {
+    "language": "asm",
+    "extension": ".asm",
+    "mime": "text/asm",
+    "category": "TEXT"
+  },
+  {
+    "language": "astro",
+    "extension": ".astro",
+    "mime": "text/astro",
+    "category": "TEXT"
+  },
+  {
+    "language": "awk",
+    "extension": ".awk",
+    "mime": "text/awk",
+    "category": "TEXT"
+  },
+  {
+    "language": "ballerina",
+    "extension": ".bal",
+    "mime": "text/ballerina",
+    "category": "TEXT"
+  },
+  {
+    "language": "bat",
+    "extension": ".bat",
+    "mime": "text/bat",
+    "category": "TEXT"
+  },
+  {
+    "language": "beancount",
+    "extension": ".beancount",
+    "mime": "text/beancount",
+    "category": "TEXT"
+  },
+  {
+    "language": "berry",
+    "extension": ".be",
+    "mime": "text/berry",
+    "category": "TEXT"
+  },
+  {
+    "language": "bibtex",
+    "extension": ".bib",
+    "mime": "text/bibtex",
+    "category": "TEXT"
+  },
+  {
+    "language": "bicep",
+    "extension": ".bicep",
+    "mime": "text/bicep",
+    "category": "TEXT"
+  },
+  {
+    "language": "blade",
+    "extension": ".blade.php",
+    "mime": "text/blade",
+    "category": "TEXT"
+  },
+  {
+    "language": "bsl",
+    "extension": ".bsl",
+    "mime": "text/bsl",
+    "category": "TEXT"
+  },
+  {
+    "language": "cadence",
+    "extension": ".cdc",
+    "mime": "text/cadence",
+    "category": "TEXT"
+  },
+  {
+    "language": "cairo",
+    "extension": ".cairo",
+    "mime": "text/cairo",
+    "category": "TEXT"
+  },
+  {
+    "language": "clarity",
+    "extension": ".clar",
+    "mime": "text/clarity",
+    "category": "TEXT"
+  },
+  {
+    "language": "clojure",
+    "extension": ".clj",
+    "mime": "text/clojure",
+    "category": "TEXT"
+  },
+  {
+    "language": "cmake",
+    "extension": ".cmake",
+    "mime": "text/cmake",
+    "category": "TEXT"
+  },
+  {
+    "language": "cobol",
+    "extension": ".cob",
+    "mime": "text/cobol",
+    "category": "TEXT"
+  },
+  {
+    "language": "codeowners",
+    "extension": ".codeowners",
+    "mime": "text/codeowners",
+    "category": "TEXT"
+  },
+  {
+    "language": "codeql",
+    "extension": ".ql",
+    "mime": "text/codeql",
+    "category": "TEXT"
+  },
+  {
+    "language": "coffee",
+    "extension": ".coffee",
+    "mime": "text/coffee",
+    "category": "TEXT"
+  },
+  {
+    "language": "common-lisp",
+    "extension": ".lisp",
+    "mime": "text/common-lisp",
+    "category": "TEXT"
+  },
+  {
+    "language": "coq",
+    "extension": ".v",
+    "mime": "text/coq",
+    "category": "TEXT"
+  },
+  {
+    "language": "cpp",
+    "extension": ".cpp",
+    "mime": "text/cpp",
+    "category": "TEXT"
+  },
+  {
+    "language": "cplus",
+    "extension": ".cp",
+    "mime": "text/cplus",
+    "category": "TEXT"
+  },
+  {
+    "language": "crystal",
+    "extension": ".cr",
+    "mime": "text/crystal",
+    "category": "TEXT"
+  },
+  {
+    "language": "c",
+    "extension": ".c",
+    "mime": "text/c",
+    "category": "TEXT"
+  },
+  {
+    "language": "c",
+    "extension": ".h",
+    "mime": "text/c",
+    "category": "TEXT"
+  },
+  {
+    "language": "cpp",
+    "extension": ".hh",
+    "mime": "text/cpp",
+    "category": "TEXT"
+  },
+  {
+    "language": "cpp",
+    "extension": ".hpp",
+    "mime": "text/cpp",
+    "category": "TEXT"
+  },
+  {
+    "language": "cpp",
+    "extension": ".hxx",
+    "mime": "text/cpp",
+    "category": "TEXT"
+  },
+  {
+    "language": "csharp",
+    "extension": ".cs",
+    "mime": "text/csharp",
+    "category": "TEXT"
+  },
+  {
+    "language": "css",
+    "extension": ".css",
+    "mime": "text/css",
+    "category": "TEXT"
+  },
+  {
+    "language": "csv",
+    "extension": ".csv",
+    "mime": "text/csv",
+    "category": "TEXT"
+  },
+  {
+    "language": "cue",
+    "extension": ".cue",
+    "mime": "text/cue",
+    "category": "TEXT"
+  },
+  {
+    "language": "cypher",
+    "extension": ".cypher",
+    "mime": "text/cypher",
+    "category": "TEXT"
+  },
+  {
+    "language": "dart",
+    "extension": ".dart",
+    "mime": "text/dart",
+    "category": "TEXT"
+  },
+  {
+    "language": "dax",
+    "extension": ".dax",
+    "mime": "text/dax",
+    "category": "TEXT"
+  },
+  {
+    "language": "desktop",
+    "extension": ".desktop",
+    "mime": "text/desktop",
+    "category": "TEXT"
+  },
+  {
+    "language": "diff",
+    "extension": ".diff",
+    "mime": "text/diff",
+    "category": "TEXT"
+  },
+  {
+    "language": "docker",
+    "extension": ".dockerfile",
+    "mime": "text/docker",
+    "category": "TEXT"
+  },
+  {
+    "language": "dotenv",
+    "extension": ".env",
+    "mime": "text/dotenv",
+    "category": "TEXT"
+  },
+  {
+    "language": "dream-maker",
+    "extension": ".dm",
+    "mime": "text/dream-maker",
+    "category": "TEXT"
+  },
+  {
+    "language": "d",
+    "extension": ".d",
+    "mime": "text/d",
+    "category": "TEXT"
+  },
+  {
+    "language": "edge",
+    "extension": ".edge",
+    "mime": "text/edge",
+    "category": "TEXT"
+  },
+  {
+    "language": "elixir",
+    "extension": ".ex",
+    "mime": "text/elixir",
+    "category": "TEXT"
+  },
+  {
+    "language": "elm",
+    "extension": ".elm",
+    "mime": "text/elm",
+    "category": "TEXT"
+  },
+  {
+    "language": "emacs-lisp",
+    "extension": ".el",
+    "mime": "text/emacs-lisp",
+    "category": "TEXT"
+  },
+  {
+    "language": "erb",
+    "extension": ".erb",
+    "mime": "text/erb",
+    "category": "TEXT"
+  },
+  {
+    "language": "erlang",
+    "extension": ".erl",
+    "mime": "text/erlang",
+    "category": "TEXT"
+  },
+  {
+    "language": "fennel",
+    "extension": ".fnl",
+    "mime": "text/fennel",
+    "category": "TEXT"
+  },
+  {
+    "language": "fish",
+    "extension": ".fish",
+    "mime": "text/fish",
+    "category": "TEXT"
+  },
+  {
+    "language": "fluent",
+    "extension": ".ftl",
+    "mime": "text/fluent",
+    "category": "TEXT"
+  },
+  {
+    "language": "fortran-fixed-form",
+    "extension": ".f",
+    "mime": "text/fortran-fixed-form",
+    "category": "TEXT"
+  },
+  {
+    "language": "fortran-free-form",
+    "extension": ".f90",
+    "mime": "text/fortran-free-form",
+    "category": "TEXT"
+  },
+  {
+    "language": "fsharp",
+    "extension": ".fs",
+    "mime": "text/fsharp",
+    "category": "TEXT"
+  },
+  {
+    "language": "gdresource",
+    "extension": ".tres",
+    "mime": "text/gdresource",
+    "category": "TEXT"
+  },
+  {
+    "language": "gdscript",
+    "extension": ".gd",
+    "mime": "text/gdscript",
+    "category": "TEXT"
+  },
+  {
+    "language": "gdshader",
+    "extension": ".gdshader",
+    "mime": "text/gdshader",
+    "category": "TEXT"
+  },
+  {
+    "language": "genie",
+    "extension": ".gs",
+    "mime": "text/genie",
+    "category": "TEXT"
+  },
+  {
+    "language": "gherkin",
+    "extension": ".feature",
+    "mime": "text/gherkin",
+    "category": "TEXT"
+  },
+  {
+    "language": "gleam",
+    "extension": ".gleam",
+    "mime": "text/gleam",
+    "category": "TEXT"
+  },
+  {
+    "language": "glimmer-js",
+    "extension": ".gjs",
+    "mime": "text/glimmer-js",
+    "category": "TEXT"
+  },
+  {
+    "language": "glimmer-ts",
+    "extension": ".gts",
+    "mime": "text/glimmer-ts",
+    "category": "TEXT"
+  },
+  {
+    "language": "glsl",
+    "extension": ".glsl",
+    "mime": "text/glsl",
+    "category": "TEXT"
+  },
+  {
+    "language": "gnuplot",
+    "extension": ".gp",
+    "mime": "text/gnuplot",
+    "category": "TEXT"
+  },
+  {
+    "language": "go",
+    "extension": ".go",
+    "mime": "text/go",
+    "category": "TEXT"
+  },
+  {
+    "language": "groovy",
+    "extension": ".gradle.build",
+    "mime": "text/groovy",
+    "category": "TEXT"
+  },
+  {
+    "language": "graphql",
+    "extension": ".graphql",
+    "mime": "text/graphql",
+    "category": "TEXT"
+  },
+  {
+    "language": "groovy",
+    "extension": ".groovy",
+    "mime": "text/groovy",
+    "category": "TEXT"
+  },
+  {
+    "language": "hack",
+    "extension": ".hack",
+    "mime": "text/hack",
+    "category": "TEXT"
+  },
+  {
+    "language": "haml",
+    "extension": ".haml",
+    "mime": "text/haml",
+    "category": "TEXT"
+  },
+  {
+    "language": "handlebars",
+    "extension": ".hbs",
+    "mime": "text/handlebars",
+    "category": "TEXT"
+  },
+  {
+    "language": "haskell",
+    "extension": ".hs",
+    "mime": "text/haskell",
+    "category": "TEXT"
+  },
+  {
+    "language": "haxe",
+    "extension": ".hx",
+    "mime": "text/haxe",
+    "category": "TEXT"
+  },
+  {
+    "language": "hcl",
+    "extension": ".hcl",
+    "mime": "text/hcl",
+    "category": "TEXT"
+  },
+  {
+    "language": "hjson",
+    "extension": ".hjson",
+    "mime": "text/hjson",
+    "category": "TEXT"
+  },
+  {
+    "language": "hlsl",
+    "extension": ".hlsl",
+    "mime": "text/hlsl",
+    "category": "TEXT"
+  },
+  {
+    "language": "html",
+    "extension": ".html",
+    "mime": "text/html",
+    "category": "TEXT"
+  },
+  {
+    "language": "http",
+    "extension": ".http",
+    "mime": "text/http",
+    "category": "TEXT"
+  },
+  {
+    "language": "hurl",
+    "extension": ".hurl",
+    "mime": "text/hurl",
+    "category": "TEXT"
+  },
+  {
+    "language": "hxml",
+    "extension": ".hxml",
+    "mime": "text/hxml",
+    "category": "TEXT"
+  },
+  {
+    "language": "hy",
+    "extension": ".hy",
+    "mime": "text/hy",
+    "category": "TEXT"
+  },
+  {
+    "language": "imba",
+    "extension": ".imba",
+    "mime": "text/imba",
+    "category": "TEXT"
+  },
+  {
+    "language": "ini",
+    "extension": ".ini",
+    "mime": "text/ini",
+    "category": "TEXT"
+  },
+  {
+    "language": "java",
+    "extension": ".java",
+    "mime": "text/java",
+    "category": "TEXT"
+  },
+  {
+    "language": "javascript",
+    "extension": ".js",
+    "mime": "text/javascript",
+    "category": "TEXT"
+  },
+  {
+    "language": "jinja",
+    "extension": ".jinja",
+    "mime": "text/jinja",
+    "category": "TEXT"
+  },
+  {
+    "language": "jison",
+    "extension": ".jison",
+    "mime": "text/jison",
+    "category": "TEXT"
+  },
+  {
+    "language": "json5",
+    "extension": ".json5",
+    "mime": "text/json5",
+    "category": "TEXT"
+  },
+  {
+    "language": "jsonc",
+    "extension": ".jsonc",
+    "mime": "text/jsonc",
+    "category": "TEXT"
+  },
+  {
+    "language": "jsonl",
+    "extension": ".jsonl",
+    "mime": "text/jsonl",
+    "category": "TEXT"
+  },
+  {
+    "language": "jsonnet",
+    "extension": ".jsonnet",
+    "mime": "text/jsonnet",
+    "category": "TEXT"
+  },
+  {
+    "language": "json",
+    "extension": ".json",
+    "mime": "text/json",
+    "category": "TEXT"
+  },
+  {
+    "language": "jssm",
+    "extension": ".jssm",
+    "mime": "text/jssm",
+    "category": "TEXT"
+  },
+  {
+    "language": "jsx",
+    "extension": ".jsx",
+    "mime": "text/jsx",
+    "category": "TEXT"
+  },
+  {
+    "language": "julia",
+    "extension": ".jl",
+    "mime": "text/julia",
+    "category": "TEXT"
+  },
+  {
+    "language": "kdl",
+    "extension": ".kdl",
+    "mime": "text/kdl",
+    "category": "TEXT"
+  },
+  {
+    "language": "kotlin",
+    "extension": ".kt",
+    "mime": "text/kotlin",
+    "category": "TEXT"
+  },
+  {
+    "language": "kotlin-script",
+    "extension": ".kts",
+    "mime": "text/kotlin-script",
+    "category": "TEXT"
+  },
+  {
+    "language": "kusto",
+    "extension": ".kql",
+    "mime": "text/kusto",
+    "category": "TEXT"
+  },
+  {
+    "language": "latex",
+    "extension": ".tex",
+    "mime": "text/latex",
+    "category": "TEXT"
+  },
+  {
+    "language": "lean",
+    "extension": ".lean",
+    "mime": "text/lean",
+    "category": "TEXT"
+  },
+  {
+    "language": "less",
+    "extension": ".less",
+    "mime": "text/less",
+    "category": "TEXT"
+  },
+  {
+    "language": "liquid",
+    "extension": ".liquid",
+    "mime": "text/liquid",
+    "category": "TEXT"
+  },
+  {
+    "language": "llvm",
+    "extension": ".ll",
+    "mime": "text/llvm",
+    "category": "TEXT"
+  },
+  {
+    "language": "logo",
+    "extension": ".logo",
+    "mime": "text/logo",
+    "category": "TEXT"
+  },
+  {
+    "language": "log",
+    "extension": ".log",
+    "mime": "text/log",
+    "category": "TEXT"
+  },
+  {
+    "language": "lua",
+    "extension": ".lua",
+    "mime": "text/lua",
+    "category": "TEXT"
+  },
+  {
+    "language": "luau",
+    "extension": ".luau",
+    "mime": "text/luau",
+    "category": "TEXT"
+  },
+  {
+    "language": "make",
+    "extension": ".Makefile",
+    "mime": "text/make",
+    "category": "TEXT"
+  },
+  {
+    "language": "make",
+    "extension": ".mk",
+    "mime": "text/make",
+    "category": "TEXT"
+  },
+  {
+    "language": "markdown",
+    "extension": ".md",
+    "mime": "text/markdown",
+    "category": "TEXT"
+  },
+  {
+    "language": "marko",
+    "extension": ".marko",
+    "mime": "text/marko",
+    "category": "TEXT"
+  },
+  {
+    "language": "matlab",
+    "extension": ".m",
+    "mime": "text/matlab",
+    "category": "TEXT"
+  },
+  {
+    "language": "mdc",
+    "extension": ".mdc",
+    "mime": "text/mdc",
+    "category": "TEXT"
+  },
+  {
+    "language": "mdx",
+    "extension": ".mdx",
+    "mime": "text/mdx",
+    "category": "TEXT"
+  },
+  {
+    "language": "mermaid",
+    "extension": ".mmd",
+    "mime": "text/mermaid",
+    "category": "TEXT"
+  },
+  {
+    "language": "mipsasm",
+    "extension": ".s",
+    "mime": "text/mipsasm",
+    "category": "TEXT"
+  },
+  {
+    "language": "mojo",
+    "extension": ".mojo",
+    "mime": "text/mojo",
+    "category": "TEXT"
+  },
+  {
+    "language": "move",
+    "extension": ".move",
+    "mime": "text/move",
+    "category": "TEXT"
+  },
+  {
+    "language": "narrat",
+    "extension": ".narrat",
+    "mime": "text/narrat",
+    "category": "TEXT"
+  },
+  {
+    "language": "nextflow",
+    "extension": ".nf",
+    "mime": "text/nextflow",
+    "category": "TEXT"
+  },
+  {
+    "language": "nginx",
+    "extension": ".conf",
+    "mime": "text/nginx",
+    "category": "TEXT"
+  },
+  {
+    "language": "nim",
+    "extension": ".nim",
+    "mime": "text/nim",
+    "category": "TEXT"
+  },
+  {
+    "language": "nix",
+    "extension": ".nix",
+    "mime": "text/nix",
+    "category": "TEXT"
+  },
+  {
+    "language": "nushell",
+    "extension": ".nu",
+    "mime": "text/nushell",
+    "category": "TEXT"
+  },
+  {
+    "language": "objective-cpp",
+    "extension": ".mm",
+    "mime": "text/objective-cpp",
+    "category": "TEXT"
+  },
+  {
+    "language": "objective-c",
+    "extension": ".m",
+    "mime": "text/objective-c",
+    "category": "TEXT"
+  },
+  {
+    "language": "ocaml",
+    "extension": ".ml",
+    "mime": "text/ocaml",
+    "category": "TEXT"
+  },
+  {
+    "language": "openscad",
+    "extension": ".scad",
+    "mime": "text/openscad",
+    "category": "TEXT"
+  },
+  {
+    "language": "pascal",
+    "extension": ".pas",
+    "mime": "text/pascal",
+    "category": "TEXT"
+  },
+  {
+    "language": "perl",
+    "extension": ".pl",
+    "mime": "text/perl",
+    "category": "TEXT"
+  },
+  {
+    "language": "php",
+    "extension": ".php",
+    "mime": "text/php",
+    "category": "TEXT"
+  },
+  {
+    "language": "pkl",
+    "extension": ".pkl",
+    "mime": "text/pkl",
+    "category": "TEXT"
+  },
+  {
+    "language": "plsql",
+    "extension": ".pls",
+    "mime": "text/plsql",
+    "category": "TEXT"
+  },
+  {
+    "language": "polar",
+    "extension": ".polar",
+    "mime": "text/polar",
+    "category": "TEXT"
+  },
+  {
+    "language": "po",
+    "extension": ".po",
+    "mime": "text/po",
+    "category": "TEXT"
+  },
+  {
+    "language": "postcss",
+    "extension": ".pcss",
+    "mime": "text/postcss",
+    "category": "TEXT"
+  },
+  {
+    "language": "powerquery",
+    "extension": ".pq",
+    "mime": "text/powerquery",
+    "category": "TEXT"
+  },
+  {
+    "language": "powershell",
+    "extension": ".ps1",
+    "mime": "text/powershell",
+    "category": "TEXT"
+  },
+  {
+    "language": "prisma",
+    "extension": ".prisma",
+    "mime": "text/prisma",
+    "category": "TEXT"
+  },
+  {
+    "language": "prolog",
+    "extension": ".prolog",
+    "mime": "text/prolog",
+    "category": "TEXT"
+  },
+  {
+    "language": "proto",
+    "extension": ".proto",
+    "mime": "text/proto",
+    "category": "TEXT"
+  },
+  {
+    "language": "pug",
+    "extension": ".pug",
+    "mime": "text/pug",
+    "category": "TEXT"
+  },
+  {
+    "language": "puppet",
+    "extension": ".pp",
+    "mime": "text/puppet",
+    "category": "TEXT"
+  },
+  {
+    "language": "purescript",
+    "extension": ".purs",
+    "mime": "text/purescript",
+    "category": "TEXT"
+  },
+  {
+    "language": "python",
+    "extension": ".py",
+    "mime": "text/python",
+    "category": "TEXT"
+  },
+  {
+    "language": "qmldir",
+    "extension": ".qmldir",
+    "mime": "text/qmldir",
+    "category": "TEXT"
+  },
+  {
+    "language": "qml",
+    "extension": ".qml",
+    "mime": "text/qml",
+    "category": "TEXT"
+  },
+  {
+    "language": "qss",
+    "extension": ".qss",
+    "mime": "text/qss",
+    "category": "TEXT"
+  },
+  {
+    "language": "racket",
+    "extension": ".rkt",
+    "mime": "text/racket",
+    "category": "TEXT"
+  },
+  {
+    "language": "raku",
+    "extension": ".raku",
+    "mime": "text/raku",
+    "category": "TEXT"
+  },
+  {
+    "language": "razor",
+    "extension": ".cshtml",
+    "mime": "text/razor",
+    "category": "TEXT"
+  },
+  {
+    "language": "regexp",
+    "extension": ".regexp",
+    "mime": "text/regexp",
+    "category": "TEXT"
+  },
+  {
+    "language": "reg",
+    "extension": ".reg",
+    "mime": "text/reg",
+    "category": "TEXT"
+  },
+  {
+    "language": "rel",
+    "extension": ".rel",
+    "mime": "text/rel",
+    "category": "TEXT"
+  },
+  {
+    "language": "riscv",
+    "extension": ".s",
+    "mime": "text/riscv",
+    "category": "TEXT"
+  },
+  {
+    "language": "rosmsg",
+    "extension": ".msg",
+    "mime": "text/rosmsg",
+    "category": "TEXT"
+  },
+  {
+    "language": "r",
+    "extension": ".r",
+    "mime": "text/r",
+    "category": "TEXT"
+  },
+  {
+    "language": "rst",
+    "extension": ".rst",
+    "mime": "text/rst",
+    "category": "TEXT"
+  },
+  {
+    "language": "ruby",
+    "extension": ".rb",
+    "mime": "text/ruby",
+    "category": "TEXT"
+  },
+  {
+    "language": "rust",
+    "extension": ".rs",
+    "mime": "text/rust",
+    "category": "TEXT"
+  },
+  {
+    "language": "sas",
+    "extension": ".sas",
+    "mime": "text/sas",
+    "category": "TEXT"
+  },
+  {
+    "language": "sass",
+    "extension": ".sass",
+    "mime": "text/sass",
+    "category": "TEXT"
+  },
+  {
+    "language": "scala",
+    "extension": ".scala",
+    "mime": "text/scala",
+    "category": "TEXT"
+  },
+  {
+    "language": "scheme",
+    "extension": ".scm",
+    "mime": "text/scheme",
+    "category": "TEXT"
+  },
+  {
+    "language": "scss",
+    "extension": ".scss",
+    "mime": "text/scss",
+    "category": "TEXT"
+  },
+  {
+    "language": "sdbl",
+    "extension": ".sdbl",
+    "mime": "text/sdbl",
+    "category": "TEXT"
+  },
+  {
+    "language": "shaderlab",
+    "extension": ".shader",
+    "mime": "text/shaderlab",
+    "category": "TEXT"
+  },
+  {
+    "language": "shellscript",
+    "extension": ".sh",
+    "mime": "text/shellscript",
+    "category": "TEXT"
+  },
+  {
+    "language": "shellsession",
+    "extension": ".shellsession",
+    "mime": "text/shellsession",
+    "category": "TEXT"
+  },
+  {
+    "language": "smalltalk",
+    "extension": ".st",
+    "mime": "text/smalltalk",
+    "category": "TEXT"
+  },
+  {
+    "language": "solidity",
+    "extension": ".sol",
+    "mime": "text/solidity",
+    "category": "TEXT"
+  },
+  {
+    "language": "soy",
+    "extension": ".soy",
+    "mime": "text/soy",
+    "category": "TEXT"
+  },
+  {
+    "language": "sparql",
+    "extension": ".rq",
+    "mime": "text/sparql",
+    "category": "TEXT"
+  },
+  {
+    "language": "splunk",
+    "extension": ".spl",
+    "mime": "text/splunk",
+    "category": "TEXT"
+  },
+  {
+    "language": "sql",
+    "extension": ".sql",
+    "mime": "text/sql",
+    "category": "TEXT"
+  },
+  {
+    "language": "ssh-config",
+    "extension": ".sshconfig",
+    "mime": "text/ssh-config",
+    "category": "TEXT"
+  },
+  {
+    "language": "stata",
+    "extension": ".do",
+    "mime": "text/stata",
+    "category": "TEXT"
+  },
+  {
+    "language": "stylus",
+    "extension": ".styl",
+    "mime": "text/stylus",
+    "category": "TEXT"
+  },
+  {
+    "language": "svelte",
+    "extension": ".svelte",
+    "mime": "text/svelte",
+    "category": "TEXT"
+  },
+  {
+    "language": "swift",
+    "extension": ".swift",
+    "mime": "text/swift",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".service",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".socket",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".target",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".timer",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".path",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".mount",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".automount",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".swap",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".slice",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".scope",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".busname",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".container",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".volume",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".network",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".image",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".build",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".pod",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".kube",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".artifact",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "systemd",
+    "extension": ".conf",
+    "mime": "text/systemd",
+    "category": "TEXT"
+  },
+  {
+    "language": "system-verilog",
+    "extension": ".sv",
+    "mime": "text/system-verilog",
+    "category": "TEXT"
+  },
+  {
+    "language": "talonscript",
+    "extension": ".talon",
+    "mime": "text/talonscript",
+    "category": "TEXT"
+  },
+  {
+    "language": "tasl",
+    "extension": ".tasl",
+    "mime": "text/tasl",
+    "category": "TEXT"
+  },
+  {
+    "language": "tcl",
+    "extension": ".tcl",
+    "mime": "text/tcl",
+    "category": "TEXT"
+  },
+  {
+    "language": "templ",
+    "extension": ".templ",
+    "mime": "text/templ",
+    "category": "TEXT"
+  },
+  {
+    "language": "terraform",
+    "extension": ".tf",
+    "mime": "text/terraform",
+    "category": "TEXT"
+  },
+  {
+    "language": "tex",
+    "extension": ".tex",
+    "mime": "text/tex",
+    "category": "TEXT"
+  },
+  {
+    "language": "text",
+    "extension": ".txt",
+    "mime": "text/text",
+    "category": "TEXT"
+  },
+  {
+    "language": "toml",
+    "extension": ".toml",
+    "mime": "text/toml",
+    "category": "TEXT"
+  },
+  {
+    "language": "ts-tags",
+    "extension": ".tags",
+    "mime": "text/ts-tags",
+    "category": "TEXT"
+  },
+  {
+    "language": "tsv",
+    "extension": ".tsv",
+    "mime": "text/tsv",
+    "category": "TEXT"
+  },
+  {
+    "language": "tsx",
+    "extension": ".tsx",
+    "mime": "text/tsx",
+    "category": "TEXT"
+  },
+  {
+    "language": "turtle",
+    "extension": ".ttl",
+    "mime": "text/turtle",
+    "category": "TEXT"
+  },
+  {
+    "language": "twig",
+    "extension": ".twig",
+    "mime": "text/twig",
+    "category": "TEXT"
+  },
+  {
+    "language": "typescript",
+    "extension": ".ts",
+    "mime": "text/typescript",
+    "category": "TEXT"
+  },
+  {
+    "language": "typespec",
+    "extension": ".tsp",
+    "mime": "text/typespec",
+    "category": "TEXT"
+  },
+  {
+    "language": "typst",
+    "extension": ".typ",
+    "mime": "text/typst",
+    "category": "TEXT"
+  },
+  {
+    "language": "vala",
+    "extension": ".vala",
+    "mime": "text/vala",
+    "category": "TEXT"
+  },
+  {
+    "language": "vb",
+    "extension": ".vb",
+    "mime": "text/vb",
+    "category": "TEXT"
+  },
+  {
+    "language": "verilog",
+    "extension": ".v",
+    "mime": "text/verilog",
+    "category": "TEXT"
+  },
+  {
+    "language": "vhdl",
+    "extension": ".vhdl",
+    "mime": "text/vhdl",
+    "category": "TEXT"
+  },
+  {
+    "language": "viml",
+    "extension": ".vim",
+    "mime": "text/viml",
+    "category": "TEXT"
+  },
+  {
+    "language": "v",
+    "extension": ".v",
+    "mime": "text/v",
+    "category": "TEXT"
+  },
+  {
+    "language": "vue-html",
+    "extension": ".html",
+    "mime": "text/vue-html",
+    "category": "TEXT"
+  },
+  {
+    "language": "vue",
+    "extension": ".vue",
+    "mime": "text/vue",
+    "category": "TEXT"
+  },
+  {
+    "language": "vue-vine",
+    "extension": ".vine",
+    "mime": "text/vue-vine",
+    "category": "TEXT"
+  },
+  {
+    "language": "vyper",
+    "extension": ".vy",
+    "mime": "text/vyper",
+    "category": "TEXT"
+  },
+  {
+    "language": "wasm",
+    "extension": ".wasm",
+    "mime": "text/wasm",
+    "category": "TEXT"
+  },
+  {
+    "language": "wenyan",
+    "extension": ".wy",
+    "mime": "text/wenyan",
+    "category": "TEXT"
+  },
+  {
+    "language": "wgsl",
+    "extension": ".wgsl",
+    "mime": "text/wgsl",
+    "category": "TEXT"
+  },
+  {
+    "language": "wikitext",
+    "extension": ".wiki",
+    "mime": "text/wikitext",
+    "category": "TEXT"
+  },
+  {
+    "language": "wit",
+    "extension": ".wit",
+    "mime": "text/wit",
+    "category": "TEXT"
+  },
+  {
+    "language": "wolfram",
+    "extension": ".wl",
+    "mime": "text/wolfram",
+    "category": "TEXT"
+  },
+  {
+    "language": "xml",
+    "extension": ".xml",
+    "mime": "text/xml",
+    "category": "TEXT"
+  },
+  {
+    "language": "xsl",
+    "extension": ".xsl",
+    "mime": "text/xsl",
+    "category": "TEXT"
+  },
+  {
+    "language": "yaml",
+    "extension": ".yaml",
+    "mime": "text/yaml",
+    "category": "TEXT"
+  },
+  {
+    "language": "zenscript",
+    "extension": ".zs",
+    "mime": "text/zenscript",
+    "category": "TEXT"
+  },
+  {
+    "language": "zig",
+    "extension": ".zig",
+    "mime": "text/zig",
+    "category": "TEXT"
+  },
+  {
+    "language": "svg",
+    "extension": ".svg",
+    "mime": "image/svg+xml",
+    "category": "TEXT"
+  },
+  {
+    "language": "png",
+    "extension": ".png",
+    "mime": "image/png",
+    "category": "IMAGE"
+  },
+  {
+    "language": "jpg",
+    "extension": ".jpg",
+    "mime": "image/jpeg",
+    "category": "IMAGE"
+  },
+  {
+    "language": "jpeg",
+    "extension": ".jpeg",
+    "mime": "image/jpeg",
+    "category": "IMAGE"
+  },
+  {
+    "language": "gif",
+    "extension": ".gif",
+    "mime": "image/gif",
+    "category": "IMAGE"
+  },
+  {
+    "language": "bmp",
+    "extension": ".bmp",
+    "mime": "image/bmp",
+    "category": "IMAGE"
+  },
+  {
+    "language": "webp",
+    "extension": ".webp",
+    "mime": "image/webp",
+    "category": "IMAGE"
+  },
+  {
+    "language": "pdf",
+    "extension": ".pdf",
+    "mime": "application/pdf",
+    "category": "BINARY"
+  },
+  {
+    "language": "zip",
+    "extension": ".zip",
+    "mime": "application/zip",
+    "category": "BINARY"
+  },
+  {
+    "language": "gz",
+    "extension": ".gz",
+    "mime": "application/gzip",
+    "category": "BINARY"
+  },
+  {
+    "language": "tar",
+    "extension": ".tar",
+    "mime": "application/x-tar",
+    "category": "BINARY"
+  },
+  {
+    "language": "rar",
+    "extension": ".rar",
+    "mime": "application/vnd.rar",
+    "category": "BINARY"
+  },
+  {
+    "language": "7z",
+    "extension": ".7z",
+    "mime": "application/x-7z-compressed",
+    "category": "BINARY"
+  },
+  {
+    "language": "wasm",
+    "extension": ".wasm",
+    "mime": "application/wasm",
+    "category": "BINARY"
+  },
+  {
+    "language": "mp3",
+    "extension": "mp3",
+    "mime": "audio/mpeg",
+    "category": "BINARY"
+  },
+  {
+    "language": "wav",
+    "extension": "wav",
+    "mime": "audio/wav",
+    "category": "BINARY"
+  },
+  {
+    "language": "ogg",
+    "extension": "ogg",
+    "mime": "audio/ogg",
+    "category": "BINARY"
+  },
+  {
+    "language": "mp4",
+    "extension": "mp4",
+    "mime": "video/mp4",
+    "category": "BINARY"
+  },
+  {
+    "language": "webm",
+    "extension": "webm",
+    "mime": "video/webm",
+    "category": "BINARY"
+  },
+  {
+    "language": "mov",
+    "extension": "mov",
+    "mime": "video/quicktime",
+    "category": "BINARY"
+  },
+  {
+    "language": "avi",
+    "extension": "avi",
+    "mime": "video/x-msvideo",
+    "category": "BINARY"
+  },
+  {
+    "language": "jar",
+    "extension": "jar",
+    "mime": "application/java-archive",
+    "category": "BINARY"
+  },
+  {
+    "language": "apk",
+    "extension": "apk",
+    "mime": "application/vnd.android.package-archive",
+    "category": "BINARY"
+  },
+  {
+    "language": "epub",
+    "extension": "epub",
+    "mime": "application/epub+zip",
+    "category": "BINARY"
+  },
+  {
+    "language": "doc",
+    "extension": "doc",
+    "mime": "application/msword",
+    "category": "BINARY"
+  },
+  {
+    "language": "docx",
+    "extension": "docx",
+    "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "category": "BINARY"
+  },
+  {
+    "language": "ppt",
+    "extension": "ppt",
+    "mime": "application/vnd.ms-powerpoint",
+    "category": "BINARY"
+  },
+  {
+    "language": "pptx",
+    "extension": "pptx",
+    "mime": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "category": "BINARY"
+  },
+  {
+    "language": "xls",
+    "extension": "xls",
+    "mime": "application/vnd.ms-excel",
+    "category": "BINARY"
+  },
+  {
+    "language": "xlsx",
+    "extension": "xlsx",
+    "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "category": "BINARY"
+  }
+]

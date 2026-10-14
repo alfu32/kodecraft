@@ -6,7 +6,7 @@ must be reusable in file, search, SQL and REST hosts.
 
 ## E01 — Rope document and coordinate conversions
 
-**Status:** todo
+**Status:** done
 
 **Depends:** F02. **Owns:** `kode-core/src/document/{text,positions,snapshot}.rs`.
 **Read:** `editor/lib/{ITextBuffer,TextBuffer,BufferState}.kt`,
@@ -26,7 +26,7 @@ must be reusable in file, search, SQL and REST hosts.
 
 ## E02 — Movement and selection commands
 
-**Status:** todo
+**Status:** done
 
 **Depends:** E01. **Owns:** `kode-core/src/editor/{movement,selection}.rs`.
 **Read:** `TextBuffer.kt` cursor/selection/word-boundary helpers and `ITextBuffer.kt`.
@@ -43,7 +43,7 @@ must be reusable in file, search, SQL and REST hosts.
 
 ## E03 — Editing, auto-indent, undo and redo
 
-**Status:** todo
+**Status:** done
 
 **Depends:** E02. **Owns:** `kode-core/src/editor/{edit,history}.rs`.
 **Read:** `TextBuffer.kt` mutate/history/newline/delete/restore helpers;
@@ -63,7 +63,7 @@ must be reusable in file, search, SQL and REST hosts.
 
 ## E04 — File I/O, save state and clipboard
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** E03, F03. **Owns:** `kode-core/src/document/{encoding,save}.rs`,
 `kode-platform/src/clipboard.rs`, `kode-tui/src/editor/loading.rs`.

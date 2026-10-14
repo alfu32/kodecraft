@@ -90,7 +90,7 @@ Proposed workspace:
 ```text
 Cargo.toml                         # workspace dependencies and resolver
 Cargo.lock                        # committed application dependency resolution
-rust-toolchain.toml                # tested stable toolchain, fixed at F02
+rust-toolchain.toml                # latest stable per user; exact tested version in reports
 crates/kode/                       # binary; CLI and application composition
 crates/kode-core/                  # coordinates, buffers, commands, DTOs
 crates/kode-platform/              # clipboard, resources, process support

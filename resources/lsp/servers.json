@@ -1,0 +1,248 @@
+{
+  "servers": [
+    {
+      "id": "rust-analyzer",
+      "name": "rust-analyzer",
+      "languages": ["rust"],
+      "homepage": "https://rust-analyzer.github.io/",
+      "license": "Apache-2.0 / MIT",
+      "preferredCommand": ["rust-analyzer"],
+      "versions": [
+        {
+          "version": "2024-09-23",
+          "downloads": [
+            {
+              "os": "linux",
+              "arch": "x86_64",
+              "url": "https://github.com/rust-lang/rust-analyzer/releases/download/2024-09-23/rust-analyzer-x86_64-unknown-linux-gnu.gz"
+            },
+            {
+              "os": "macos",
+              "arch": "arm64",
+              "url": "https://github.com/rust-lang/rust-analyzer/releases/download/2024-09-23/rust-analyzer-aarch64-apple-darwin.gz"
+            },
+            {
+              "os": "macos",
+              "arch": "x86_64",
+              "url": "https://github.com/rust-lang/rust-analyzer/releases/download/2024-09-23/rust-analyzer-x86_64-apple-darwin.gz"
+            },
+            {
+              "os": "windows",
+              "arch": "x86_64",
+              "url": "https://github.com/rust-lang/rust-analyzer/releases/download/2024-09-23/rust-analyzer-x86_64-pc-windows-msvc.zip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gopls",
+      "name": "gopls",
+      "languages": ["go"],
+      "homepage": "https://pkg.go.dev/golang.org/x/tools/gopls",
+      "license": "BSD-3-Clause",
+      "preferredCommand": ["gopls"],
+      "versions": [
+        {
+          "version": "0.16.2",
+          "downloads": [
+            {
+              "os": "linux",
+              "arch": "x86_64",
+              "url": "https://github.com/golang/tools/releases/download/gopls%2Fv0.16.2/gopls_linux_amd64.tar.gz"
+            },
+            {
+              "os": "macos",
+              "arch": "arm64",
+              "url": "https://github.com/golang/tools/releases/download/gopls%2Fv0.16.2/gopls_darwin_arm64.tar.gz"
+            },
+            {
+              "os": "windows",
+              "arch": "x86_64",
+              "url": "https://github.com/golang/tools/releases/download/gopls%2Fv0.16.2/gopls_windows_amd64.zip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pylsp",
+      "name": "Python LSP Server",
+      "languages": ["python"],
+      "homepage": "https://github.com/python-lsp/python-lsp-server",
+      "license": "MIT",
+      "preferredCommand": ["pylsp"],
+      "versions": [
+        {
+          "version": "manual",
+          "downloads": []
+        }
+      ]
+    },
+    {
+      "id": "lua-language-server",
+      "name": "Lua Language Server",
+      "languages": ["lua"],
+      "homepage": "https://github.com/LuaLS/lua-language-server",
+      "license": "MIT",
+      "preferredCommand": ["lua-language-server"],
+      "versions": [
+        {
+          "version": "3.7.0",
+          "downloads": [
+            {
+              "os": "linux",
+              "arch": "x86_64",
+              "url": "https://github.com/LuaLS/lua-language-server/releases/download/3.7.0/lua-language-server-3.7.0-linux-x64.tar.gz"
+            },
+            {
+              "os": "macos",
+              "arch": "arm64",
+              "url": "https://github.com/LuaLS/lua-language-server/releases/download/3.7.0/lua-language-server-3.7.0-darwin-arm64.tar.gz"
+            },
+            {
+              "os": "windows",
+              "arch": "x86_64",
+              "url": "https://github.com/LuaLS/lua-language-server/releases/download/3.7.0/lua-language-server-3.7.0-win32-x64.zip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jdtls",
+      "name": "Eclipse JDT Language Server",
+      "languages": ["java"],
+      "homepage": "https://projects.eclipse.org/projects/eclipse.jdt.ls",
+      "license": "EPL-2.0",
+      "preferredCommand": ["jdtls"],
+      "versions": [
+        {
+          "version": "1.33.0",
+          "downloads": [
+            {
+          "os": "linux",
+          "arch": "x86_64",
+          "url": "https://download.eclipse.org/jdtls/milestones/1.33.0/jdt-language-server-1.33.0-202409121444.tar.gz",
+          "command": ["bin/jdtls"]
+        },
+        {
+          "os": "macos",
+          "arch": "x86_64",
+          "url": "https://download.eclipse.org/jdtls/milestones/1.33.0/jdt-language-server-1.33.0-202409121444.tar.gz",
+          "command": ["bin/jdtls"]
+        },
+        {
+          "os": "macos",
+          "arch": "arm64",
+          "url": "https://download.eclipse.org/jdtls/milestones/1.33.0/jdt-language-server-1.33.0-202409121444.tar.gz",
+          "command": ["bin/jdtls"]
+        },
+        {
+          "os": "windows",
+          "arch": "x86_64",
+              "url": "https://download.eclipse.org/jdtls/milestones/1.33.0/jdt-language-server-1.33.0-202409121444.zip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kotlin-language-server",
+      "name": "Kotlin Language Server",
+      "languages": ["kotlin"],
+      "homepage": "https://github.com/fwcd/kotlin-language-server",
+      "license": "MIT",
+      "preferredCommand": ["server/bin/kotlin-language-server"],
+      "versions": [
+        {
+          "version": "1.3.3",
+          "downloads": [
+            {
+              "os": "any",
+              "arch": "any",
+              "url": "https://github.com/fwcd/kotlin-language-server/releases/download/1.3.3/server.zip",
+              "command": ["server/bin/kotlin-language-server"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "typescript-language-server",
+      "name": "TypeScript Language Server",
+      "languages": [
+        "javascript",
+        "typescript",
+        "javascriptreact",
+        "typescriptreact",
+        "jsx",
+        "tsx"
+      ],
+      "homepage": "https://github.com/typescript-language-server/typescript-language-server",
+      "license": "MIT",
+      "preferredCommand": ["typescript-language-server", "--stdio"],
+      "versions": [
+        {
+          "version": "5.1.3",
+          "installInstructions": {
+            "npm": "npm install -g typescript-language-server@5.1.3 typescript@5.9.3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vscode-langservers-extracted",
+      "name": "VSCode LangServers Extracted",
+      "languages": ["html", "css", "json"],
+      "homepage": "https://github.com/hrsh7th/vscode-langservers-extracted",
+      "license": "MIT",
+      "preferredCommand": ["vscode-html-language-server", "--stdio"],
+      "versions": [
+        {
+          "version": "4.10.0",
+          "installInstructions": {
+            "npm": "npm install -g vscode-langservers-extracted@4.10.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vscode-css-language-server",
+      "name": "VSCode CSS Language Server",
+      "languages": ["css", "scss", "less"],
+      "homepage": "https://github.com/hrsh7th/vscode-langservers-extracted",
+      "license": "MIT",
+      "preferredCommand": ["vscode-css-language-server", "--stdio"],
+      "versions": [
+        {
+          "version": "4.10.0",
+          "installInstructions": {
+            "npm": "npm install -g vscode-langservers-extracted@4.10.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "clangd",
+      "name": "clangd",
+      "languages": ["c", "cpp", "objective-c", "objective-cpp"],
+      "homepage": "https://clangd.llvm.org/",
+      "license": "Apache-2.0",
+      "preferredCommand": ["clangd"],
+      "versions": [
+        {
+          "version": "21.1.0",
+          "installInstructions": {
+            "download": "Download prebuilt binaries from https://releases.llvm.org/21.1.0/",
+            "packageManagers": {
+              "apt": "apt install clangd-21",
+              "brew": "brew install llvm@21"
+            }
+          }
+        }
+      ]
+    }
+
+  ]
+}

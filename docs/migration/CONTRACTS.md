@@ -78,6 +78,14 @@ regions, search state, popup state, and focus. Multiple views of a file should u
 the same document identity; per-view scroll/focus remains independent. Virtual
 documents get distinct identities even when their labels match.
 
+E01 supplies `Document::snapshot() -> TextSnapshot`, an O(1) immutable Ropey clone
+with typed slice/line/chunk/coordinate access. Its portable intelligence DTO is
+created with `to_service_snapshot()`; UTF-8 text materialization is lazy and shared
+once per revision. Ropey is configured with LF-only line recognition so standalone
+CR and Unicode separators do not silently change Kode's logical line count.
+Raw source CRLF is retained; `line_content`/`line_end` exclude CRLF for UI movement,
+while source scalar/UTF-16 columns retain byte round trips within the raw line.
+
 Required operations:
 
 | Contract | Inputs | Outputs / rules |
@@ -96,6 +104,15 @@ Commands include character/word/line/page movement with selection extension,
 insert text/newline, delete backward/forward, select all, copy/cut/paste, undo/redo,
 save, find/replace, folding, completion and navigation actions. Terminal key names
 are decoded once into commands, preserving raw character case and modifiers.
+
+E03 routes all document mutation through `apply_transaction`: ranges refer to the
+original revision, are validated together and applied from right to left, and
+commit as one new revision/undo action. `apply_edit` uses that same guarded path.
+Read-only capability also rejects history and history import. Runtime history
+retains at most 200 transactions/64 MiB of changed text; discarded entries are
+reported in `EditOutcome`. Versioned history export keeps at most 30 states on
+each stack within a shared 64 MiB history-text budget, records omitted counts,
+and preserves current/saved text. Import reports any capacity trimming explicitly.
 
 `EditorHost` supplies `read_only`, `save_target`, `language`, `completion_provider`,
 `intelligence_provider`, `on_change`, `on_navigate`, `warning_lines`, and
@@ -116,6 +133,15 @@ request ID. Some semantic results also depend on an index revision. Disposing an
 owner cancels its jobs. A dropped future is not proof a JDBC query stopped.
 
 Use bounded queues. Coalesce repaint, progress, and superseded document jobs.
+F03 supplies `Scheduler<T>` with 64 completion slots, 32 asynchronous slots and
+4 blocking slots, plus independent owner/workspace cancellation. Critical
+completions (especially saves/failures) wait for delivery; orderly shutdown drains
+them while joining every worker. Blocking closures must check their cancellation
+token at safe checkpoints; once launched they are joined rather than detached.
+`WorkerScheduler<T>`, `Clock` and `ProcessFactory` are injectable test boundaries.
+Repaint uses a coalescing watch channel; progress holds at most 64 owner values
+with 512-character messages. Application `ResultGate` filters exact request,
+workspace, document and revision identities, including dismissed popups.
 Stream large results in bounded batches; cap previews with a visible truncation
 state. Never drop a save completion or failure just to relieve queue pressure.
 Use a separate control path for cancellation/shutdown. Define queue capacities in
