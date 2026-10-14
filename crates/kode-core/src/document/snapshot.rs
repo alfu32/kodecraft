@@ -71,6 +71,9 @@ impl TextSnapshot {
     pub fn chars(&self) -> ropey::iter::Chars<'_> {
         self.rope.chars()
     }
+    pub fn lines(&self) -> ropey::iter::Lines<'_> {
+        self.rope.lines()
+    }
     pub fn byte_to_char(&self, byte: ByteOffset) -> Result<CharOffset> {
         positions::validate_byte(&self.rope, byte)
     }

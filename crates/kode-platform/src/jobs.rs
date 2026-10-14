@@ -40,6 +40,7 @@ pub struct Completion<T> {
 
 pub type JobFuture<T> = Pin<Box<dyn Future<Output = Result<T>> + Send + 'static>>;
 pub type JobFactory<T> = Box<dyn FnOnce(CancellationToken) -> JobFuture<T> + Send + 'static>;
+pub type BlockingJobFactory<T> = Box<dyn FnOnce(CancellationToken) -> Result<T> + Send + 'static>;
 
 /// Inject this boundary into feature coordinators to replay jobs deterministically.
 pub trait WorkerScheduler<T: Send + 'static> {
@@ -49,6 +50,13 @@ pub trait WorkerScheduler<T: Send + 'static> {
         tag: JobTag,
         delivery: Delivery,
         work: JobFactory<T>,
+    ) -> Result<()>;
+    fn schedule_blocking(
+        &mut self,
+        owner: OwnerId,
+        tag: JobTag,
+        delivery: Delivery,
+        work: BlockingJobFactory<T>,
     ) -> Result<()>;
     fn dispose_owner(&mut self, owner: OwnerId);
     fn dispose_workspace(&mut self, workspace: WorkspaceGeneration);
@@ -320,6 +328,15 @@ impl<T: Send + 'static> WorkerScheduler<T> for Scheduler<T> {
     }
     fn dispose_owner(&mut self, owner: OwnerId) {
         self.cancel_owner(owner);
+    }
+    fn schedule_blocking(
+        &mut self,
+        owner: OwnerId,
+        tag: JobTag,
+        delivery: Delivery,
+        work: BlockingJobFactory<T>,
+    ) -> Result<()> {
+        self.submit_blocking(owner, tag, delivery, work)
     }
     fn dispose_workspace(&mut self, workspace: WorkspaceGeneration) {
         self.cancel_workspace(workspace);

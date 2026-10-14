@@ -65,6 +65,13 @@
       "expected": "Escaped compatibility display; one logical step per scalar"
     },
     {
+      "path": "editor/search-java21.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "c2e705d9759030e9f8eb912c35b7e9640d2817bb370fc5d7df6fc5f2d77d217f",
+      "expected": "Java 21 synthetic regex UTF-16 ranges, excluding source-invisible zero-width matches; regenerate with scripts/JavaSearchFixture.java"
+    },
+    {
       "path": "sessions/legacy-v6.json",
       "origin": "Synthetic migration fixture; CC0-1.0",
       "license": "CC0-1.0",

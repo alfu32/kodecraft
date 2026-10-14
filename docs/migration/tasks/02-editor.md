@@ -63,7 +63,7 @@ must be reusable in file, search, SQL and REST hosts.
 
 ## E04 — File I/O, save state and clipboard
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** E03, F03. **Owns:** `kode-core/src/document/{encoding,save}.rs`,
 `kode-platform/src/clipboard.rs`, `kode-tui/src/editor/loading.rs`.
@@ -84,7 +84,7 @@ must be reusable in file, search, SQL and REST hosts.
 
 ## E05 — Visual layout and editor cell rendering
 
-**Status:** todo
+**Status:** done
 
 **Depends:** E02, F05. **Owns:** `kode-tui/src/editor/{layout,render,display}.rs`.
 **Read:** `CodeEditorView.kt:309–613,1906–1958,2230–2296,2863–2991`;
@@ -103,7 +103,7 @@ must be reusable in file, search, SQL and REST hosts.
 
 ## E06 — Editor input, hit testing, scrolling and focus
 
-**Status:** todo
+**Status:** done
 
 **Depends:** E03, E05, F04. **Owns:** `kode-tui/src/editor/input.rs`.
 **Read:** `CodeEditorView.kt:614–869,1715–1776`; page/wheel/focus regressions.
@@ -121,7 +121,7 @@ must be reusable in file, search, SQL and REST hosts.
 
 ## E07 — Regex find/replace and search bar
 
-**Status:** todo
+**Status:** done
 
 **Depends:** E03, E05, E06, F05. **Owns:** `kode-core/src/editor/search.rs`,
 `kode-tui/src/editor/search_bar.rs`.
@@ -142,7 +142,7 @@ must be reusable in file, search, SQL and REST hosts.
 
 ## E08 — Folding and Braille minimap
 
-**Status:** todo
+**Status:** done
 
 **Depends:** E05, E06. **Owns:** `kode-tui/src/editor/{folding,minimap}.rs`.
 **Read:** `CodeEditorView.kt:1961–2039,2230–2465`; folding tests.
@@ -159,7 +159,7 @@ must be reusable in file, search, SQL and REST hosts.
 
 ## E09 — Completion popup and insertion
 
-**Status:** todo
+**Status:** done
 
 **Depends:** E03, E05, E06. **Owns:** `kode-tui/src/editor/popups/completion.rs`.
 **Read:** `CodeEditorView.kt:1040–1166,1273–1302,1566–1715,2579–2648`;
@@ -179,7 +179,7 @@ completion-related `CodeEditorViewTest` cases.
 
 ## E10 — Definitions, usages and hover preview
 
-**Status:** todo
+**Status:** done
 
 **Depends:** E05, E06, F03. **Owns:** `kode-tui/src/editor/popups/{definition,usages}.rs`.
 **Read:** `CodeEditorView.kt:869–1040,1166–1273,1302–1715,2502–2579,2649–2862`.
@@ -216,7 +216,7 @@ completion-related `CodeEditorViewTest` cases.
 
 ## E12 — Reusable editor hosts and virtual/read-only documents
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** E04, E07, E08, F05. **Owns:** `kode-tui/src/editor/{host,mod}.rs`.
 **Read:** public CodeEditorView hooks; ProjectSearchDialog, SqlConsoleManager,

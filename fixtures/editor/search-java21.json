@@ -1,0 +1,31 @@
+[
+{"text":"a\u000D\u000Ab\u000DCD E F\u000A","query":"(?m)^.$","ranges_utf16":[[0,1],[3,4],[5,6],[7,8],[9,10],[11,12]]},
+{"text":"abc\u000D\u000A","query":"abc$","ranges_utf16":[[0,3]]},
+{"text":"abc\u000D\u000Anext","query":"abc$","ranges_utf16":[]},
+{"text":"a\u000Db\u000A","query":"(?d).","ranges_utf16":[[0,1],[1,2],[2,3]]},
+{"text":"a\u000D\u000Ab","query":"(?s)a..b","ranges_utf16":[[0,4]]},
+{"text":"a\u000D\u000Ab","query":"\\R","ranges_utf16":[[1,3]]},
+{"text":"a\u000D\u000Ab","query":"a\\Z","ranges_utf16":[]},
+{"text":"aA bB","query":"(?i:a)b","ranges_utf16":[]},
+{"text":"aAb aAB","query":"(?i:aa)b","ranges_utf16":[[0,3]]},
+{"text":"kKK","query":"(?i)k","ranges_utf16":[[0,1],[1,2]]},
+{"text":"kKK","query":"(?iu)k","ranges_utf16":[[0,1],[1,2],[2,3]]},
+{"text":"aAzZ","query":"(?i)[a-z]+","ranges_utf16":[[0,4]]},
+{"text":"ab中_12𝟚","query":"\\w+","ranges_utf16":[[0,2],[3,6]]},
+{"text":"1𝟚","query":"\\d+","ranges_utf16":[[0,1]]},
+{"text":"1𝟚","query":"(?U)\\d+","ranges_utf16":[[0,3]]},
+{"text":"aé1","query":"\\p{Alpha}+","ranges_utf16":[[0,1]]},
+{"text":"aé1","query":"\\p{L}+","ranges_utf16":[[0,2]]},
+{"text":"x A.*B x","query":"\\QA.*B\\E","ranges_utf16":[[2,6]]},
+{"text":"😀A","query":"\\x{1F600}\\u0041","ranges_utf16":[[0,3]]},
+{"text":"abab abac","query":"(ab)\\1","ranges_utf16":[[0,4]]},
+{"text":"abab abac","query":"(?<word>ab)\\k<word>","ranges_utf16":[[0,4]]},
+{"text":"one two oneone","query":"(?<=one)one","ranges_utf16":[[11,14]]},
+{"text":"foo bar foo","query":"foo(?= bar)","ranges_utf16":[[0,3]]},
+{"text":"abcde","query":"[a-z&&[^bc]]","ranges_utf16":[[0,1],[3,4],[4,5]]},
+{"text":"a\u0009b c","query":"\\h","ranges_utf16":[[1,2],[3,4]]},
+{"text":"é aé aéa","query":"\\b[a-z]+\\b","ranges_utf16":[[2,3],[5,6],[7,8]]},
+{"text":"ab","query":"a*","ranges_utf16":[[0,1]]},
+{"text":"bbb","query":"(?:)","ranges_utf16":[]},
+{"text":"a\u000Ab","query":"a\\nb","ranges_utf16":[[0,3]]}
+]

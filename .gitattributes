@@ -1,0 +1,2 @@
+# Acceptance fixtures include exact CRLF/BOM and binary bytes.
+fixtures/** -text

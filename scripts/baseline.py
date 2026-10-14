@@ -104,6 +104,10 @@ def fixtures():
                        "many-lines.txt": "line\n" * 100000}.items():
         put("editor/" + name, data, "Exact original bytes survive load/save; scalar-boundary navigation; immutable snapshots")
     put("editor/display.json", json.dumps({"input": "a\t\u0001😀中é", "display": "a|-->\\x01\\x1F600\\x4E2De\\x0301", "tab_width": 4}), "Escaped compatibility display; one logical step per scalar")
+    oracle = FIXTURES / "editor/search-java21.json"
+    if oracle.exists():
+        put("editor/search-java21.json", oracle.read_bytes(),
+            "Java 21 synthetic regex UTF-16 ranges, excluding source-invisible zero-width matches; regenerate with scripts/JavaSearchFixture.java")
     state = {"version": 6, "recentFiles": [], "sourceRoots": ["src"], "scanExclusions": ["src/generated"],
              "openEditors": [{"path": "src/example.kt", "buffer": {"lines": ["a😀b", "dirty"],
               "cursor": {"line": 0, "column": 3}, "anchor": {"line": 0, "column": 1},

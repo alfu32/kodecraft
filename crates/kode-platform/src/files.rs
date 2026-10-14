@@ -131,6 +131,31 @@ impl DocumentIo for NativeDocumentIo {
         let bytes = encode(&snapshot.text, snapshot.format);
         let mut temporary = tempfile::NamedTempFile::new_in(&parent)
             .map_err(|source| io_error("create atomic save", path, source))?;
+        #[cfg(unix)]
+        if expected.is_some() {
+            use nix::unistd::{Gid, Uid, fchown};
+            use std::os::unix::fs::MetadataExt;
+            let original = fs::metadata(&target)
+                .map_err(|source| io_error("stat save ownership", path, source))?;
+            let staged = temporary
+                .as_file()
+                .metadata()
+                .map_err(|source| io_error("stat temporary ownership", path, source))?;
+            if original.uid() != staged.uid() || original.gid() != staged.gid() {
+                fchown(
+                    temporary.as_file(),
+                    Some(Uid::from_raw(original.uid())),
+                    Some(Gid::from_raw(original.gid())),
+                )
+                .map_err(|error| {
+                    io_error(
+                        "preserve save ownership",
+                        path,
+                        std::io::Error::from_raw_os_error(error as i32),
+                    )
+                })?;
+            }
+        }
         if let Some(permissions) = permissions {
             temporary
                 .as_file()

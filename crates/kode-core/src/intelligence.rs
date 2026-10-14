@@ -35,6 +35,9 @@ pub struct NavigationTarget {
     pub path: PathBuf,
     pub document: Option<DocumentId>,
     pub identifier_range: TextRange,
+    /// Portable line/UTF-16 fallback when source bytes are unavailable (e.g. LSP).
+    #[serde(default)]
+    pub location: Option<crate::document::Utf16Position>,
     pub declaration_range: Option<TextRange>,
     pub language: Option<String>,
     pub kind: Option<SymbolKind>,

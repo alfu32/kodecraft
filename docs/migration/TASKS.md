@@ -16,15 +16,15 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | E01 | [Rope document and coordinate conversions](tasks/02-editor.md) | F02 | [done](../parity/E01.md) |
 | E02 | [Movement and selection commands](tasks/02-editor.md) | E01 | [done](../parity/E02.md) |
 | E03 | [Editing, auto-indent, undo and redo](tasks/02-editor.md) | E02 | [done](../parity/E03.md) |
-| E04 | [File I/O, save state and clipboard](tasks/02-editor.md) | E03, F03 | in-progress |
-| E05 | [Visual layout and editor cell rendering](tasks/02-editor.md) | E02, F05 | todo |
-| E06 | [Editor input, hit testing, scrolling and focus](tasks/02-editor.md) | E03, E05, F04 | todo |
-| E07 | [Regex find/replace and search bar](tasks/02-editor.md) | E03, E05, E06, F05 | todo |
-| E08 | [Folding and Braille minimap](tasks/02-editor.md) | E05, E06 | todo |
-| E09 | [Completion popup and insertion](tasks/02-editor.md) | E03, E05, E06 | todo |
-| E10 | [Definitions, usages and hover preview](tasks/02-editor.md) | E05, E06, F03 | todo |
+| E04 | [File I/O, save state and clipboard](tasks/02-editor.md) | E03, F03 | [done](../parity/E04.md) |
+| E05 | [Visual layout and editor cell rendering](tasks/02-editor.md) | E02, F05 | [done](../parity/E05.md) |
+| E06 | [Editor input, hit testing, scrolling and focus](tasks/02-editor.md) | E03, E05, F04 | [done](../parity/E06.md) |
+| E07 | [Regex find/replace and search bar](tasks/02-editor.md) | E03, E05, E06, F05 | [done](../parity/E07.md) |
+| E08 | [Folding and Braille minimap](tasks/02-editor.md) | E05, E06 | [done](../parity/E08.md) |
+| E09 | [Completion popup and insertion](tasks/02-editor.md) | E03, E05, E06 | [done](../parity/E09.md) |
+| E10 | [Definitions, usages and hover preview](tasks/02-editor.md) | E05, E06, F03 | [done](../parity/E10.md) |
 | E11 | [Highlight overlays and edit remapping](tasks/02-editor.md) | E05, E07, L02, L09 | todo |
-| E12 | [Reusable editor hosts and virtual/read-only documents](tasks/02-editor.md) | E04, E07, E08, F05 | todo |
+| E12 | [Reusable editor hosts and virtual/read-only documents](tasks/02-editor.md) | E04, E07, E08, F05 | in-progress |
 | E13 | [Complete editor interaction qualification](tasks/02-editor.md) | E09, E10, E11, E12, W04, W05, P03, D08, R07, G03 | todo |
 | W01 | [Source roots, exclusions and project scanning](tasks/03-workspace.md) | F03 | todo |
 | W02 | [File tree, file actions, refresh and project panel](tasks/03-workspace.md) | W01, F05, E04 | todo |

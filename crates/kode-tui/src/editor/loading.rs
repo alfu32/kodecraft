@@ -1,8 +1,62 @@
 //! Main-thread load and save lifecycle; I/O/decoding run in platform workers.
 use crate::app::events::ResultGate;
+use kode_core::services::DocumentIo;
 use kode_core::{
     DocumentId, DocumentOrigin, DomainError, JobTag, RequestId, Result, WorkspaceGeneration,
 };
+use kode_platform::jobs::{Delivery, OwnerId, WorkerScheduler};
+use std::sync::Arc;
+
+pub fn schedule_load(
+    scheduler: &mut dyn WorkerScheduler<PreparedDocument>,
+    owner: OwnerId,
+    tag: JobTag,
+    id: DocumentId,
+    origin: DocumentOrigin,
+    language: Option<String>,
+    io: Arc<dyn DocumentIo>,
+) -> Result<()> {
+    scheduler.schedule_blocking(
+        owner,
+        tag,
+        Delivery::Cancellable,
+        Box::new(move |cancel| {
+            if cancel.is_cancelled() {
+                return Err(DomainError::Cancelled);
+            }
+            let loaded = io.load(&origin, tag)?;
+            if cancel.is_cancelled() {
+                return Err(DomainError::Cancelled);
+            }
+            prepare(loaded, id, language)
+        }),
+    )
+}
+pub fn schedule_save(
+    scheduler: &mut dyn WorkerScheduler<DiskIdentity>,
+    owner: OwnerId,
+    job: SaveJob,
+    io: Arc<dyn DocumentIo>,
+) -> Result<()> {
+    scheduler.schedule_blocking(
+        owner,
+        job.tag,
+        Delivery::Critical,
+        Box::new(move |cancel| {
+            if cancel.is_cancelled() {
+                return Err(DomainError::Cancelled);
+            }
+            let DocumentOrigin::File(path) = &job.snapshot.origin else {
+                return Err(DomainError::NoSaveTarget);
+            };
+            io.save(
+                path,
+                &job.snapshot.to_service_snapshot(),
+                job.expected_disk.as_ref(),
+            )
+        }),
+    )
+}
 use kode_core::{
     document::{Document, TextSnapshot, encoding::decode},
     services::{DiskIdentity, LoadedDocument},

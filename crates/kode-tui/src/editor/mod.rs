@@ -1,1 +1,9 @@
+pub mod display;
+pub mod folding;
+pub mod input;
+pub mod layout;
 pub mod loading;
+pub mod minimap;
+pub mod popups;
+pub mod render;
+pub mod search_bar;

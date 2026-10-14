@@ -78,8 +78,8 @@ def synchronize(task=None, status=None, check=False):
     dashboard = ["# Implementation dashboard", "",
                  "Full Kode → Rust migration. Counts are derived from the status in every task definition.", "",
                  "| To do | In progress | Done | Blocked | Total |",
-                 "|---:|---:|---:|---:|---:|",
-                 f"| {counts['todo']} | {counts['in-progress']} | {counts['done']} | {counts['blocked']} | {len(entries)} |", "",
+                 "|------:|------------:|-----:|--------:|------:|",
+                 f"| {counts['todo']:>5} | {counts['in-progress']:>11} | {counts['done']:>4} | {counts['blocked']:>7} | {len(entries):>5} |", "",
                  "## Ongoing tasks", ""]
     active = [(k, v) for k, v in entries.items() if v[2] == "in-progress"]
     for task_id, (path, title, _, _) in active:

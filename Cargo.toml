@@ -20,11 +20,14 @@ tokio = { version = "1.53", features = ["rt-multi-thread", "macros", "sync", "ti
 tokio-util = { version = "0.7", features = ["rt"] }
 futures-util = { version = "0.3", default-features = false, features = ["std", "async-await"] }
 tempfile = "3.27"
-nix = { version = "0.30", default-features = false, features = ["signal", "process"] }
+nix = { version = "0.30", default-features = false, features = ["signal", "process", "fs", "user"] }
 unicode-width = "0.2.2"
 ropey = { version = "=1.6.1", default-features = false, features = ["simd"] }
 sha2 = "=0.10.9"
 arboard = { version = "=3.6.1", default-features = false }
+unicode-general-category = "=0.6.0"
+regex = "=1.13.1"
+fancy-regex = "=0.19.2"
 
 kode = { path = "crates/kode" }
 kode-core = { path = "crates/kode-core" }

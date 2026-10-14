@@ -193,3 +193,34 @@ fn late_copy_jobs_cannot_overwrite_newer_local_copy_and_external_clipboard_is_re
     *native.lock().unwrap() = "outside change".into();
     assert_eq!(clipboard.read().unwrap(), "outside change");
 }
+
+#[test]
+fn a_slow_native_read_cannot_replace_a_new_copy_epoch() {
+    use std::sync::Barrier;
+    struct Delayed {
+        entered: Arc<Barrier>,
+        released: Arc<Barrier>,
+    }
+    impl NativeClipboard for Delayed {
+        fn get_text(&mut self) -> std::result::Result<String, String> {
+            self.entered.wait();
+            self.released.wait();
+            Ok("old external".into())
+        }
+        fn set_text(&mut self, _: &str) -> std::result::Result<(), String> {
+            Ok(())
+        }
+    }
+    let entered = Arc::new(Barrier::new(2));
+    let released = Arc::new(Barrier::new(2));
+    let clipboard = Arc::new(ClipboardService::new(Box::new(Delayed {
+        entered: entered.clone(),
+        released: released.clone(),
+    })));
+    let worker_clipboard = clipboard.clone();
+    let reader = std::thread::spawn(move || worker_clipboard.read().unwrap());
+    entered.wait();
+    clipboard.remember("new copy").unwrap();
+    released.wait();
+    assert_eq!(reader.join().unwrap(), "new copy");
+}

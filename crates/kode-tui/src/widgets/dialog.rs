@@ -12,7 +12,7 @@ use crossterm::event::MouseButton;
 use ratatui::{
     buffer::Buffer,
     layout::{Position, Rect},
-    widgets::{Block, Borders, Widget},
+    widgets::{Block, Borders, Clear, Widget},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -125,6 +125,7 @@ impl TextDialog {
         if layout.modal.is_empty() {
             return None;
         }
+        Clear.render(layout.modal, buffer);
         Block::default()
             .title(self.title.as_str())
             .borders(Borders::ALL)

@@ -69,6 +69,13 @@ Store an anchor and head so reverse selections remain distinguishable. A normali
 range is derived for edits; normalizing must not erase the direction. Show line
 numbers and user-facing locations as one based, but keep internal indexes zero based.
 
+Request/document allocators supply globally unique process identities. Independent
+load/index/save gates must not each restart their own request counter, since they
+share one worker queue. E04 also adds `FileFormat` to portable document snapshots:
+strict UTF-8, an explicit BOM flag and observed LF/CRLF/mixed style, with raw
+newline bytes retained. File save identities include canonical target path,
+length, timestamp and SHA-256, preserving symlink target identity.
+
 ## Document and editor API
 
 `Document` owns Ropey text, origin, language, current revision, saved revision,
@@ -121,6 +128,15 @@ SQL/REST execution, only after focused child controls and popups get their defin
 priority. Read-only checks occur at the edit boundary, covering keyboard, mouse,
 replacement, completion, programmatic insertion, paste, and history actions.
 
+`DocumentLoader` gates worker-prepared documents and exposes typed load failures.
+`SaveController` serializes saves per document and coalesces later requested
+snapshots. Its critical completion path accepts an older saved revision while
+keeping later text dirty; it must not use preview-style revision rejection.
+Load/save scheduling goes through the injectable bounded blocking-worker interface.
+Virtual host saves route through the owner; native document I/O rejects virtual
+origins regardless of their label. Clipboard copies remember local text/epoch
+immediately; native I/O is serialized in workers and cannot overwrite a newer epoch.
+
 ## Event and effect model
 
 The application owns `AppState` and consumes terminal events, timers, child-process
@@ -153,6 +169,49 @@ See the exception details for usage, suggestion, and definition popups in the UX
 contract; they do not all capture every key identically.
 
 ## Feature service contracts
+
+Editor layout is cached by document identity/revision, text width and collapsed
+folds. Raw scalar byte ranges map to fixed tab/escape display runs; whole fitting
+runs wrap atomically and oversized runs clip. Drawing and hits share this map.
+Only prepared visible cells are painted. Caret at a full-row EOF preserves source
+punctuation, and wide BMP emoji/enclosing marks use escapes to avoid cell drift.
+
+Editor input owns per-document caret/scroll/focus state and mouse capture; a
+release outside or terminal focus loss releases the original owner. Hooks receive
+the unmodified event and shared absolute geometry. Logical arrows are separate
+from visual paging. Clipboard effects carry raw text and delayed paste tickets
+validated against request/document/revision/selection/focus before insertion.
+Host composition remembers copies immediately and runs native I/O in workers.
+
+Search scans immutable snapshots in bounded workers and publishes only current
+workspace/request/document/revision/query results while its bar is open. Native
+clipboard operations are effects with field paste identity guards. Replacement
+uses Kode's custom numeric `$n` expansion and one grouped edit; empty matches
+are excluded consistently. Unsupported Java syntax and resource limits report
+explicit errors; see `docs/parity/E07.md` for the supported translation boundary.
+
+Fold analysis is worker-prepared and revision-checked. Collapsed anchors cannot
+hide text after edits/reload; navigation reveals every containing fold. Summary
+cells/ellipsis and minimap source blocks share the input/render geometry. The
+minimap uses raw UTF-16 source shape, four lines per block, and stores zero-based
+targets explicitly. Host hook composition forwards fold-state/reveal methods and
+reconciles asynchronous search/navigation before painting.
+
+Completion requests retain document/revision/caret/selection and dismissal
+identity. Host suggestions precede provider entries, labels deduplicate, and
+only empty semantic results outside member context permit local fallback.
+Provider replacement ranges/insertion text are authoritative; host/local fallback
+replaces just the typed prefix. Accept is one guarded edit. Hook composition must
+forward context changes after core input, focus disposal and explicit/automatic
+completion effects; expensive provider work runs in bounded workers.
+
+Navigation target DTOs carry optional line/UTF-16 metadata for unavailable-source
+labels. Definition/usage jobs capture snapshot, identifier and selection; completed
+popups retain context until dismissal. Preview reads/styles/width calculation run
+in workers, current unsaved source uses its captured snapshot, and declaration
+previews cap at 24 lines. The host calls the 500 ms hover deadline from its timer,
+drains navigation effects, forwards popup mouse capture and reconciles resulting
+navigation. Usage popups capture keys/wheel; definition-only popups capture Escape.
 
 | Service | Public operations and owned output |
 |---|---|

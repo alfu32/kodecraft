@@ -159,11 +159,25 @@ fn progress_coalesces_is_bounded_and_uses_injected_clock() {
 
 #[tokio::test]
 async fn coordinator_can_inject_a_deterministic_worker_scheduler() {
-    use kode_platform::jobs::{CancellationToken, JobFactory, WorkerScheduler};
+    use kode_platform::jobs::{BlockingJobFactory, CancellationToken, JobFactory, WorkerScheduler};
     struct FakeScheduler {
         pending: Vec<JobFactory<u64>>,
     }
     impl WorkerScheduler<u64> for FakeScheduler {
+        fn schedule_blocking(
+            &mut self,
+            owner: OwnerId,
+            tag: JobTag,
+            delivery: Delivery,
+            work: BlockingJobFactory<u64>,
+        ) -> kode_core::Result<()> {
+            self.schedule(
+                owner,
+                tag,
+                delivery,
+                Box::new(move |token| Box::pin(async move { work(token) })),
+            )
+        }
         fn schedule(
             &mut self,
             _: OwnerId,

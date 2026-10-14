@@ -12,6 +12,11 @@ use ratatui::{
 pub fn draw_text(area: Rect, buffer: &mut Buffer, text: &str, style: Style) {
     let area = area.intersection(buffer.area);
     if !area.is_empty() {
+        for y in area.y..area.bottom() {
+            for x in area.x..area.right() {
+                buffer[(x, y)].reset();
+            }
+        }
         buffer.set_style(area, style);
         buffer.set_stringn(area.x, area.y, text, area.width as usize, style);
     }

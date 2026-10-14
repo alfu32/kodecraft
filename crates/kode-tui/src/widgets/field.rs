@@ -6,7 +6,7 @@ use crossterm::event::MouseButton;
 use ratatui::{
     buffer::Buffer,
     layout::{Position, Rect},
-    style::Modifier,
+    style::{Modifier, Style},
 };
 use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};
 
@@ -24,6 +24,8 @@ pub struct TextField {
     pub cursor: usize,
     pub anchor: Option<usize>,
     pub masked: bool,
+    pub framed: bool,
+    pub style: Option<Style>,
     pub read_only: bool,
     pub max_chars: usize,
 }
@@ -35,6 +37,8 @@ impl TextField {
             cursor,
             anchor: None,
             masked: false,
+            framed: true,
+            style: None,
             read_only: false,
             max_chars: 16384,
         }
@@ -201,7 +205,7 @@ impl TextField {
         if !area.contains(Position::new(x, y)) || area.is_empty() {
             return false;
         }
-        let inner = if area.width >= 3 {
+        let inner = if self.framed && area.width >= 3 {
             Rect::new(area.x + 1, area.y, area.width - 2, 1)
         } else {
             Rect::new(area.x, area.y, area.width, 1)
@@ -231,17 +235,23 @@ impl TextField {
         theme: &Theme,
         focused: bool,
     ) -> Option<Position> {
-        let area = area.intersection(buffer.area);
+        let area =
+            Rect::new(area.x, area.y, area.width, area.height.min(1)).intersection(buffer.area);
         if area.is_empty() {
             return None;
         }
-        let style = theme.style(if focused {
-            "code-search-field-active"
-        } else {
-            "code-search-field"
+        for x in area.x..area.right() {
+            buffer[(x, area.y)].reset();
+        }
+        let style = self.style.unwrap_or_else(|| {
+            theme.style(if focused {
+                "code-search-field-active"
+            } else {
+                "code-search-field"
+            })
         });
         buffer.set_style(area, style);
-        let inner = if area.width >= 3 {
+        let inner = if self.framed && area.width >= 3 {
             buffer[(area.x, area.y)].set_symbol("[");
             buffer[(area.right() - 1, area.y)].set_symbol("]");
             Rect::new(area.x + 1, area.y, area.width - 2, 1)

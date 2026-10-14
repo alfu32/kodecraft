@@ -87,6 +87,11 @@ hex-digit editing/saving workflow is not established by the source.
 
 ## Regeneration
 
+Additional rendering audit during E05: enclosing marks and some wide BMP emoji
+are not covered by the source's hand-written width helper. Rust escapes these
+to keep each terminal cell stable. A caret at a full wrap/EOF boundary preserves
+the last source glyph rather than replacing punctuation with a cursor space.
+
 Additional input audit during E04: the Linux ANSI source maps raw Tab (0x09) to
 Ctrl+I, while dialog and direct-buffer handlers expect Tab or the literal tab.
 Crossterm normalization deliberately supplies one consistent Tab event: dialogs

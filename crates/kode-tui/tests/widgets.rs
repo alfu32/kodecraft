@@ -134,6 +134,25 @@ fn field_window_caret_and_selected_controls_have_expected_cells() {
 }
 
 #[test]
+fn modal_and_fields_clear_their_surface_when_drawn_over_existing_content() {
+    let theme = Theme::compiled();
+    let area = Rect::new(0, 0, 80, 24);
+    let mut buffer = Buffer::empty(area);
+    for cell in &mut buffer.content {
+        cell.set_symbol("Z");
+    }
+    let mut dialog = TextDialog::new("Name".into(), "a".into());
+    dialog.render(area, &mut buffer, &theme);
+    let layout = dialog.layout(area);
+    assert_eq!(
+        buffer[(layout.modal.x + 1, layout.modal.y + 4)].symbol(),
+        " "
+    );
+    assert_eq!(buffer[(layout.field.x + 2, layout.field.y)].symbol(), " ");
+    assert_eq!(buffer[(0, 0)].symbol(), "Z");
+}
+
+#[test]
 fn dialog_fields_buttons_and_focus_have_distinct_bounds_at_all_sizes() {
     let theme = Theme::compiled();
     for (width, height) in [(80, 24), (120, 40), (20, 6), (1, 1)] {

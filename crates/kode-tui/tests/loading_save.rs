@@ -195,3 +195,54 @@ fn clipboard_shortcuts_support_ctrl_alt_case_and_leave_host_ctrl_enter_available
         None
     );
 }
+
+#[tokio::test]
+async fn real_file_load_and_save_run_through_bounded_workers_and_main_thread_controllers() {
+    use kode_platform::{
+        files::NativeDocumentIo,
+        jobs::{MonotonicClock, Notifications, OwnerId, Scheduler},
+    };
+    use kode_tui::editor::loading::{PreparedDocument, schedule_load, schedule_save};
+    use std::sync::Arc;
+    let temp = tempfile::tempdir().unwrap();
+    let path = temp.path().join("worker.txt");
+    std::fs::write(&path, b"\xef\xbb\xbfhello\r\nworld").unwrap();
+    let notifications = Notifications::new(Arc::new(MonotonicClock::default()));
+    let mut loads = Scheduler::<PreparedDocument>::new(notifications.clone());
+    let mut loader = DocumentLoader::new(WorkspaceGeneration(1));
+    let id = DocumentId::fresh().unwrap();
+    let tag = loader.begin(id, DocumentOrigin::File(path.clone()));
+    schedule_load(
+        &mut loads,
+        OwnerId(1),
+        tag,
+        id,
+        DocumentOrigin::File(path.clone()),
+        None,
+        Arc::new(NativeDocumentIo),
+    )
+    .unwrap();
+    let complete = loads.next().await.unwrap();
+    assert!(loader.complete(complete.tag, complete.result));
+    let mut prepared = loader.ready.take().unwrap();
+    let end = ByteOffset(prepared.document.snapshot().len_bytes());
+    prepared
+        .document
+        .apply_edit(Revision(0), TextRange::caret(end), "!", EditKind::Typing)
+        .unwrap();
+    let mut saves = SaveController::new(WorkspaceGeneration(1), prepared.disk_identity);
+    let job = saves.request(&prepared.document).unwrap().unwrap();
+    let mut workers = Scheduler::<DiskIdentity>::new(notifications);
+    schedule_save(&mut workers, OwnerId(1), job, Arc::new(NativeDocumentIo)).unwrap();
+    let complete = workers.next().await.unwrap();
+    saves
+        .complete(complete.tag, complete.result, &mut prepared.document)
+        .unwrap();
+    assert_eq!(
+        std::fs::read(&path).unwrap(),
+        b"\xef\xbb\xbfhello\r\nworld!"
+    );
+    assert!(!prepared.document.is_dirty());
+    assert!(loads.shutdown().await.is_empty());
+    assert!(workers.shutdown().await.is_empty());
+}
