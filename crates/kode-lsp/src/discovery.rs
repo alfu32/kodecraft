@@ -194,7 +194,13 @@ impl DiscoveryOptions {
         ];
         args.extend_from_slice(&command[1..]);
         let cwd = if install_dir.is_dir() {
-            Some(install_dir)
+            Some(
+                if let Some(subdir) = manifest.and_then(|m| m.unpack_subdir.as_deref()) {
+                    install_dir.join(relative_path(subdir)?)
+                } else {
+                    install_dir
+                },
+            )
         } else if self.install_root.is_dir() {
             Some(self.install_root.clone())
         } else {
