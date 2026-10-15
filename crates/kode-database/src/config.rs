@@ -103,6 +103,32 @@ pub(crate) fn ensure_root(root: &Path) -> Result<()> {
 pub(crate) struct ConfigLock {
     _file: fs::File,
 }
+impl Drop for ConfigLock {
+    fn drop(&mut self) {
+        // A concurrent process spawn can briefly inherit this open description
+        // before exec closes CLOEXEC descriptors. Closing only our descriptor
+        // would leave its flock alive in that child. Release the owned lock
+        // explicitly before close; never unlink the shared lock pathname.
+        let _ = self._file.unlock();
+    }
+}
+#[cfg(test)]
+mod lock_tests {
+    use super::*;
+    #[test]
+    fn releasing_a_writer_does_not_wait_for_an_inherited_open_description() {
+        let directory = tempfile::tempdir().unwrap();
+        let owner = ConfigLock::acquire(directory.path()).unwrap();
+        let inherited = owner._file.try_clone().unwrap();
+        assert!(ConfigLock::acquire(directory.path()).is_err());
+        drop(owner);
+        let next = ConfigLock::acquire(directory.path()).unwrap();
+        drop(inherited);
+        assert!(ConfigLock::acquire(directory.path()).is_err());
+        drop(next);
+        assert!(ConfigLock::acquire(directory.path()).is_ok());
+    }
+}
 impl ConfigLock {
     pub(crate) fn acquire(root: &Path) -> Result<Self> {
         ensure_root(root)?;

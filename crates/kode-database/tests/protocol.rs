@@ -1,6 +1,63 @@
 use kode_database::bridge::protocol::*;
 use serde_json::{Value, json};
 use tokio::io::{AsyncWriteExt, duplex};
+#[test]
+fn every_documented_method_has_a_shared_wire_fixture_and_schema_definition() {
+    let schema: Value = serde_json::from_slice(include_bytes!(
+        "../../../protocol/jdbc-v1/operations.schema.json"
+    ))
+    .unwrap();
+    let fixtures: Value = serde_json::from_slice(include_bytes!(
+        "../../../protocol/jdbc-v1/operation-fixtures.json"
+    ))
+    .unwrap();
+    let mut covered = std::collections::BTreeSet::new();
+    for value in fixtures["valid"].as_array().unwrap() {
+        let frame = encode(value).unwrap();
+        assert_eq!(decode(&frame[4..]).unwrap(), *value);
+        let method = value["method"].as_str().unwrap();
+        let definition = schema["x-methods"][method].as_str().unwrap();
+        assert!(schema["$defs"].get(definition).is_some());
+        covered.insert(method);
+    }
+    assert_eq!(
+        covered,
+        schema["x-methods"]
+            .as_object()
+            .unwrap()
+            .keys()
+            .map(String::as_str)
+            .collect()
+    );
+}
+#[test]
+fn shared_query_fixtures_keep_null_empty_binary_unicode_and_decimal_strings_distinct() {
+    use kode_database::bridge::wire::{Cell, QueryEvent, QueryFinal, QueryNotification};
+    let fixture: Value = serde_json::from_slice(include_bytes!(
+        "../../../protocol/jdbc-v1/query-fixtures.json"
+    ))
+    .unwrap();
+    for (sequence, value) in fixture["events"].as_array().unwrap().iter().enumerate() {
+        let event: QueryNotification = serde_json::from_value(value.clone()).unwrap();
+        assert_eq!(event.sequence, sequence as u64);
+        let envelope = json!({"jsonrpc":"2.0","method":"query.event","params":serde_json::to_value(&event).unwrap()});
+        assert_eq!(decode(&encode(&envelope).unwrap()[4..]).unwrap(), envelope);
+        if let QueryEvent::Rows { rows, .. } = event.event {
+            assert_eq!(rows[0][0], Cell::Null);
+            assert!(matches!(&rows[1][0],Cell::Text {text,..} if text.is_empty()));
+            assert!(matches!(&rows[0][1],Cell::Binary {base64,..} if base64=="AP8="));
+            assert!(
+                matches!(&rows[2][0],Cell::Text {text,..} if text=="12345678901234567890.000000000000000001")
+            );
+        }
+    }
+    let final_result: QueryFinal = serde_json::from_value(fixture["final"].clone()).unwrap();
+    assert!(final_result.transaction_usable);
+    assert_eq!(
+        serde_json::to_value(final_result).unwrap(),
+        fixture["final"]
+    );
+}
 #[tokio::test]
 async fn shared_fixtures_fragmented_adjacent_frames_and_utf8_byte_lengths_roundtrip() {
     let fixture: Value =

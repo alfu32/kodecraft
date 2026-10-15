@@ -9,6 +9,10 @@
   "invalid": [
     [], {"jsonrpc":"1.0","id":"x","result":null}, {"jsonrpc":"2.0","id":1,"result":null},
     {"jsonrpc":"2.0","id":"x"}, {"jsonrpc":"2.0","id":"x","result":null,"error":{"code":1,"message":"bad"}},
-    {"jsonrpc":"2.0","method":"ping","params":[]}, {"jsonrpc":"2.0","id":"x","error":{"message":"bad"}}
+    {"jsonrpc":"2.0","method":"ping","params":[]}, {"jsonrpc":"2.0","id":"x","error":{"message":"bad"}},
+    {"jsonrpc":"2.0","id":"","result":null},
+    {"jsonrpc":"2.0","id":"control\u0085","result":null},
+    {"jsonrpc":"2.0","id":"x","method":"ping","params":null},
+    {"jsonrpc":"2.0","id":"x","error":{"code":9223372036854775808,"message":"out of range"}}
   ]
 }

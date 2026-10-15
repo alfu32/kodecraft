@@ -9,11 +9,16 @@
     <jackson.version>2.21.4</jackson.version>
   </properties>
   <dependencies>
+    <!-- Preserve the source's visible/bundled H2 driver and on-disk compatibility.
+         Explicit installed classpaths remain isolated and can select other versions. -->
+    <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><version>2.2.224</version></dependency>
+    <dependency><groupId>org.apache.maven.resolver</groupId><artifactId>maven-resolver-supplier-mvn3</artifactId><version>2.0.23</version></dependency>
+    <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-nop</artifactId><version>2.0.17</version></dependency>
     <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson.version}</version></dependency>
     <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.11.4</version><scope>test</scope></dependency>
   </dependencies>
   <build>
-    <finalName>kode-jdbc-bridge</finalName>
+    <finalName>kode-jdbc-bridge-core</finalName>
     <plugins>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-resources-plugin</artifactId><version>3.3.1</version></plugin>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.14.1</version></plugin>
@@ -24,11 +29,12 @@
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-shade-plugin</artifactId><version>3.6.1</version>
         <executions><execution><phase>package</phase><goals><goal>shade</goal></goals>
           <configuration>
+            <finalName>kode-jdbc-bridge</finalName>
             <createDependencyReducedPom>false</createDependencyReducedPom>
             <relocations><relocation><pattern>com.fasterxml.jackson</pattern><shadedPattern>kode.jdbc.shaded.jackson</shadedPattern></relocation></relocations>
-            <filters><filter><artifact>*:*</artifact><excludes><exclude>META-INF/*.SF</exclude><exclude>META-INF/*.DSA</exclude><exclude>META-INF/*.RSA</exclude></excludes></filter></filters>
+            <filters><filter><artifact>*:*</artifact><excludes><exclude>META-INF/*.SF</exclude><exclude>META-INF/*.DSA</exclude><exclude>META-INF/*.RSA</exclude><exclude>module-info.class</exclude><exclude>META-INF/versions/*/module-info.class</exclude></excludes></filter></filters>
             <transformers>
-              <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"><mainClass>kode.jdbc.Main</mainClass></transformer>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"><mainClass>kode.jdbc.Main</mainClass><manifestEntries><Multi-Release>true</Multi-Release></manifestEntries></transformer>
               <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
               <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
               <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer"/>

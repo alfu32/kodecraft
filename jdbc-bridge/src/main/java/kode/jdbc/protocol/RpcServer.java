@@ -43,6 +43,8 @@ public final class RpcServer implements AutoCloseable {
     private final ThreadPoolExecutor controls = pool("jdbc-control", 2, 16);
     private final CountDownLatch done = new CountDownLatch(1);
     private final AtomicBoolean stopped = new AtomicBoolean();
+    private final AtomicBoolean closed = new AtomicBoolean();
+    private final java.util.List<AutoCloseable> closeActions=new java.util.ArrayList<>();
     private final DataInputStream input;
     private final Outbound output;
     private final String epoch = UUID.randomUUID().toString();
@@ -64,6 +66,7 @@ public final class RpcServer implements AutoCloseable {
             || methods.putIfAbsent(name, new Method(control,handler)) != null) throw new IllegalStateException("Duplicate or late method registration");
     }
     public static CompletionStage<JsonNode> result(JsonNode value) { return CompletableFuture.completedFuture(value); }
+    public void onClose(AutoCloseable action){if(started||closeActions.size()>=16)throw new IllegalStateException("Late or excessive close action");closeActions.add(action);}
     public int serve() throws InterruptedException {
         started = true; output.start();
         reader = Thread.ofPlatform().daemon(true).name("jdbc-protocol-reader").start(this::readLoop);
@@ -78,6 +81,7 @@ public final class RpcServer implements AutoCloseable {
                 ObjectNode message = frame.value();
                 if (!message.has("method") || !message.has("id")) throw new FrameCodec.ProtocolException("Client messages must be requests");
                 String id = message.get("id").textValue(), method = message.get("method").textValue();
+                if (active.containsKey(id)) throw new FrameCodec.ProtocolException("Duplicate active request ID");
                 ObjectNode params = message.has("params") ? (ObjectNode) message.get("params") : FrameCodec.JSON.createObjectNode();
                 if (method.equals("hello")) { hello(id, params); continue; }
                 if (!initialized) { error(id,-32002,"Hello must be the first request",null,true); continue; }
@@ -155,9 +159,11 @@ public final class RpcServer implements AutoCloseable {
         output.send(response,priority,stopped::get);
     }
     @Override public void close() {
+        if(!closed.compareAndSet(false,true))return;
         stopped.set(true); workers.shutdownNow(); controls.shutdownNow();
         try { workers.awaitTermination(500,TimeUnit.MILLISECONDS); controls.awaitTermination(500,TimeUnit.MILLISECONDS); }
         catch (InterruptedException failure) { Thread.currentThread().interrupt(); }
+        for(int index=closeActions.size()-1;index>=0;index--)try{closeActions.get(index).close();}catch(Exception failure){System.err.println("JDBC component close failed ("+failure.getClass().getSimpleName()+")");}
         output.close();
         try { input.close(); } catch (Exception ignored) { }
     }

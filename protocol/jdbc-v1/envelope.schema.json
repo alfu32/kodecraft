@@ -5,10 +5,10 @@
   "required": ["jsonrpc"],
   "properties": {
     "jsonrpc": {"const": "2.0"},
-    "id": {"type": "string", "minLength": 1, "maxLength": 128},
-    "method": {"type": "string", "minLength": 1, "maxLength": 128},
+    "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern":"^[^\u0000-\u001f\u007f-\u009f]+$"},
+    "method": {"type": "string", "minLength": 1, "maxLength": 128, "pattern":"^[^\u0000-\u001f\u007f-\u009f]+$"},
     "params": {"type": "object"},
-    "error": {"type": "object", "required": ["code", "message"], "properties": {"code": {"type": "integer"}, "message": {"type": "string"}}}
+    "error": {"type": "object", "required": ["code", "message"], "properties": {"code": {"type": "integer", "minimum":-9223372036854775808,"maximum":9223372036854775807}, "message": {"type": "string"}}}
   },
   "oneOf": [
     {"required": ["method"], "not": {"anyOf": [{"required": ["result"]}, {"required": ["error"]}]}},

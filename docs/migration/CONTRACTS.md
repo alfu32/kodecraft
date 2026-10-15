@@ -860,3 +860,49 @@ feature JSON. Unsafe payloads fail visibly with original files intact; they are 
 silently stripped or exported. Typed datasource/project export also enforces the
 policy. D07 owns database import/dialog integration and explicit correction of
 unsupported credential-bearing definitions; D02–D09 own JDBC process/execution UX.
+
+## External JDBC bootstrap and process supervision
+
+D02 implements the [v1 wire contract](../../protocol/jdbc-v1/README.md), envelope
+and operation schemas, shared Rust/Java fixtures and query value DTOs. Numeric,
+decimal and temporal previews remain strings, binary remains base64, and SQL NULL
+is a separate cell kind. Feature services enforce method semantics in D03–D06;
+a listed schema does not advertise a capability before its handler exists.
+
+The Java 21 helper is a separate shaded JAR with pinned, relocated Jackson. It
+captures protocol stdout and redirects System.out to stderr before constructing
+the server or loading a driver. Input reading, ordinary dispatch, control dispatch
+and frame writing are independent and bounded. Cancellation acknowledgements have
+priority; a query's final response shares its events' FIFO. Full ordinary output
+queues wait with cancellation checks; control overflow disconnects visibly.
+
+`bridge::runtime::Runtime` is constructed without I/O. Its first explicit get
+checks Java (configured executable/KODE_JAVA, JAVA_HOME, then PATH), requires 21+,
+finds KODE_JDBC_HELPER or the packaged `jdbc/kode-jdbc-bridge.jar`, and validates
+hello before exposing Running. One workspace owner reuses one helper. Startup,
+probe, writer, reader, stderr drainage and reaping are owned even when a future is
+dropped. Workspace shutdown joins startup and live actors. Explicit restart creates
+a new epoch; no SQL, commit or rollback is ever replayed after failure.
+
+Rust reserves control request slots/bytes separately from ordinary work. IDs are
+fresh within an epoch; stale replies cannot satisfy later calls. A queued request
+can atomically become abandoned before writing. Once writing may have begun,
+failed/cancelled/timed-out mutating requests have unknownOutcome unless the helper
+explicitly proves they did not start. Dropping a wait cannot prove JDBC stopped:
+query.cancel/driver.cancel operate independently by operation ID. Typed SQL result
+and transaction services own final outcome interpretation in D04–D05.
+
+The reader drains independently of rendering, retains bounded notifications, and
+disconnects explicitly on notification overflow while keeping the received preview.
+Query consumers must drain independently of paint; progress can be coalesced by its
+owner. Public errors and Debug never include request bodies or remote error data.
+Remote structured data is available only through an explicit feature decoder path.
+The 64 KiB stderr tail is suppressed in public diagnostics because drivers and JVM
+launchers cannot be trusted to redact their own output. Shutdown has bounded grace,
+then kills/reaps the owned process group through F03. Native process-tree behavior
+on Windows/macOS and actual JDBC/vendor interactions remain D09/Z04 qualification.
+
+Database configuration guards explicitly unlock before closing. A briefly inherited
+or duplicated open description must not retain a completed writer's flock, and
+closing that old duplicate must not release the next writer's lock. Lock paths
+remain persistent; guards never unlink another writer's lock file.

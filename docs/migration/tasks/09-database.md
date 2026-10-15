@@ -28,7 +28,7 @@ in JdbcDrivers.kt; DataSourceRepositoryTest/JdbcUrlTemplatesTest/JdbcDriverRegis
 
 ## D02 — Protocol, Java bootstrap and Rust process supervisor
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** D01, F03. **Owns:** `protocol/jdbc-v1/`, `kode-database/src/bridge/`,
 `jdbc-bridge/pom.xml`, Java `protocol/` and `Main`.
@@ -49,7 +49,7 @@ in JdbcDrivers.kt; DataSourceRepositoryTest/JdbcUrlTemplatesTest/JdbcDriverRegis
 
 ## D03 — Driver install, Maven resolution and classloaders
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** D02, F05. **Owns:** Java `drivers/`, Rust bridge driver client and install
 manifests; `kode-tui/src/panels/database/driver_install.rs`.

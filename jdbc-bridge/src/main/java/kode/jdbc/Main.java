@@ -7,13 +7,18 @@ import java.nio.charset.StandardCharsets;
 import kode.jdbc.protocol.RpcServer;
 
 public final class Main {
-    public static void main(String[] args) {
+    static RpcServer createServer() {
         // Retain the actual stdout solely for framed protocol bytes, before any
         // JSON library or driver can initialize and print ordinary System.out.
         var protocol = new FileOutputStream(FileDescriptor.out);
         System.setOut(new PrintStream(System.err,true,StandardCharsets.UTF_8));
+        var server=new RpcServer(System.in,protocol);
+        kode.jdbc.drivers.DriverService.fromEnvironment().register(server);
+        return server;
+    }
+    public static void main(String[] args) {
         int status = 2;
-        try (var server = new RpcServer(System.in,protocol)) {
+        try (var server = createServer()) {
             status = server.serve();
         } catch (Exception failure) {
             System.err.println("JDBC helper stopped ("+failure.getClass().getSimpleName()+")");

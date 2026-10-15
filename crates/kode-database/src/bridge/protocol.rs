@@ -74,12 +74,11 @@ pub fn validate(value: &Value) -> Result<()> {
         if id.is_none() || object.contains_key("result") == object.contains_key("error") {
             return Err(failure("response needs an ID and exactly one result/error"));
         }
-        if let Some(error) = object.get("error") {
-            if error.get("code").and_then(Value::as_i64).is_none()
-                || error.get("message").and_then(Value::as_str).is_none()
-            {
-                return Err(failure("malformed JSON-RPC error"));
-            }
+        if let Some(error) = object.get("error")
+            && (error.get("code").and_then(Value::as_i64).is_none()
+                || error.get("message").and_then(Value::as_str).is_none())
+        {
+            return Err(failure("malformed JSON-RPC error"));
         }
     }
     Ok(())

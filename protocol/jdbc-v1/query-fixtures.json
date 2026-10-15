@@ -1,0 +1,11 @@
+{
+  "events":[
+    {"executionId":"synthetic-execution","sequence":0,"event":{"type":"started"}},
+    {"executionId":"synthetic-execution","sequence":1,"event":{"type":"resultSetStart","resultSetId":"result-a","columns":[{"label":"naïve 😀","jdbcType":12,"typeName":"VARCHAR","nullable":true},{"label":"payload","jdbcType":-3,"typeName":"VARBINARY","nullable":true}]}},
+    {"executionId":"synthetic-execution","sequence":2,"event":{"type":"rows","resultSetId":"result-a","rows":[[{"kind":"null"},{"kind":"binary","base64":"AP8="}],[{"kind":"text","text":""},{"kind":"binary","base64":""}],[{"kind":"text","text":"12345678901234567890.000000000000000001"},{"kind":"text","text":"é界😀\r\n","truncated":true}]]}},
+    {"executionId":"synthetic-execution","sequence":3,"event":{"type":"resultSetEnd","resultSetId":"result-a","limited":true,"incomplete":false}},
+    {"executionId":"synthetic-execution","sequence":4,"event":{"type":"updateCount","count":9223372036854775807}},
+    {"executionId":"synthetic-execution","sequence":5,"event":{"type":"warning","error":{"message":"Synthetic warning","sqlState":"01000","vendorCode":7,"chained":[{"message":"Synthetic chained warning","sqlState":null,"vendorCode":8}]}}}
+  ],
+  "final":{"executionId":"synthetic-execution","outcome":"completed","elapsedMs":4,"transactionUsable":true,"previewIncomplete":false,"error":null}
+}

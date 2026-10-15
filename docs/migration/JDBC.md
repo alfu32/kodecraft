@@ -47,7 +47,7 @@ negotiates `protocolVersion: 1` and reports helper build and Java versions.
 {"jsonrpc":"2.0","method":"query.event","params":{"executionId":"execution-a","sequence":1,"event":{"type":"resultSetStart","resultSetId":"result-a","columns":[{"label":"1","jdbcType":4,"typeName":"INTEGER","nullable":false}]}}}
 {"jsonrpc":"2.0","method":"query.event","params":{"executionId":"execution-a","sequence":2,"event":{"type":"rows","resultSetId":"result-a","rows":[[{"kind":"text","text":"1"}]]}}}
 {"jsonrpc":"2.0","method":"query.event","params":{"executionId":"execution-a","sequence":3,"event":{"type":"resultSetEnd","resultSetId":"result-a","limited":false}}}
-{"jsonrpc":"2.0","id":"rpc-7","result":{"executionId":"execution-a","outcome":"completed","elapsedMs":4}}
+{"jsonrpc":"2.0","id":"rpc-7","result":{"executionId":"execution-a","outcome":"completed","elapsedMs":4,"transactionUsable":true,"previewIncomplete":false}}
 ```
 
 D02 formalizes these examples as schemas and round-trip fixtures in

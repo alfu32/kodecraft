@@ -61,8 +61,8 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | R07 | [Request/response editors and complete REST UX](tasks/08-rest.md) | R02, R04, R05, R06, E09, E12, L02 | todo |
 | R08 | [Collection runner, persistence and REST qualification](tasks/08-rest.md) | R07, W03, W05 | todo |
 | D01 | [Database models, settings, credentials and URL catalogs](tasks/09-database.md) | F02, F03 | [done](../parity/D01.md) |
-| D02 | [Protocol, Java bootstrap and Rust process supervisor](tasks/09-database.md) | D01, F03 | in-progress |
-| D03 | [Driver install, Maven resolution and classloaders](tasks/09-database.md) | D02, F05 | todo |
+| D02 | [Protocol, Java bootstrap and Rust process supervisor](tasks/09-database.md) | D01, F03 | [done](../parity/D02.md) |
+| D03 | [Driver install, Maven resolution and classloaders](tasks/09-database.md) | D02, F05 | in-progress |
 | D04 | [Connections, testing and transaction control](tasks/09-database.md) | D03 | todo |
 | D05 | [SQL execution, results and independent cancellation](tasks/09-database.md) | D04 | todo |
 | D06 | [Lazy metadata and cache invalidation](tasks/09-database.md) | D04 | todo |

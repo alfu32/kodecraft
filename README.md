@@ -14,6 +14,12 @@ remaining release tasks continue in dependency order.
 The Rust application will remain a TUI. JDBC will run in an **external JVM**;
 the Rust process will not embed a JVM.
 
+The external JDBC protocol/bootstrap/supervisor is available as a backend. Build
+and test it with `bash scripts/test-jdbc-bridge.sh` using Java 21 and Maven; the
+packaged helper needs only Java at runtime. `KODE_JAVA` selects Java and
+`KODE_JDBC_HELPER` selects the helper JAR. Ordinary editor startup requires neither.
+Driver loading, SQL execution and database panels remain tracked implementation tasks.
+
 Ctrl+Space requests completion and Ctrl-click follows definitions/usages.
 The Project panel provides `r` rescan, `b` rebuild index and `c` clear index.
 Indexing runs on bounded workers, uses unsaved buffers and persists its cache in
