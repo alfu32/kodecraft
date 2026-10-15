@@ -28,7 +28,7 @@ scope, lexical classification and resolved types.
 
 ## L02 — Keyword highlighting and incremental parser registry
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** E01, F03. **Owns:** `kode-syntax/src/`, the F02
 `resources/{keyword-patterns,token-colors}.txt` catalogs, and
@@ -51,7 +51,7 @@ token-colors.txt, KeywordSyntaxProviderTest and RegexSyntaxProviderTest.
 
 ## L03 — Kotlin semantic extraction
 
-**Status:** todo
+**Status:** done
 
 **Depends:** L01, L02. **Owns:** `kode-intelligence/src/frontend/kotlin/`.
 **Read:** `frontend/KotlinSemanticAdapter.kt`, `lang/adapters/KotlinTsAdapter.kt`,
@@ -70,7 +70,7 @@ token-colors.txt, KeywordSyntaxProviderTest and RegexSyntaxProviderTest.
 
 ## L04 — C semantic extraction
 
-**Status:** todo
+**Status:** done
 
 **Depends:** L01, L02. **Owns:** `kode-intelligence/src/frontend/c/`.
 **Read:** `frontend/CSemanticAdapter.kt`, CSemanticTest and C semantic token tests.
@@ -88,7 +88,7 @@ token-colors.txt, KeywordSyntaxProviderTest and RegexSyntaxProviderTest.
 
 ## L05 — SQLite semantic store and atomic publication
 
-**Status:** todo
+**Status:** done
 
 **Depends:** L01, F03. **Owns:** `kode-intelligence/src/store/`, SQL schema migrations.
 **Read:** `index/H2SemanticStore.kt`, `DbCodeIntelStore.kt`, `DbServerManager.kt`;
@@ -108,7 +108,7 @@ H2SemanticStoreTest and DbServerManagerTest.
 
 ## L06 — Names, scopes, imports and symbol resolution
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** L03, L04. **Owns:** `kode-intelligence/src/resolver/{names,scopes,imports,relations}.rs`.
 **Read:** `resolver/SemanticResolver.kt`, SemanticIndex visibleSymbols/isAccessible;

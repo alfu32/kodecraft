@@ -354,3 +354,52 @@ conflicting IDs. Range queries preserve nested overlaps. SnapshotPublisher swaps
 prepared Arc snapshots with increasing revisions; it does not itself persist or
 resolve facts. L05/L08/L09 must gate publication after transaction success and
 current workspace/document/index tags. Readers may retain old snapshots safely.
+
+L02 `GrammarRegistry` supplies pinned native grammars and metadata; `ParserSession`
+owns reusable mutable parser state on a worker. Its immutable `ParsedDocument`
+retains source/tree/lexical spans/diagnostics with workspace and document revision.
+All offsets and InputEdit columns are raw UTF-8 bytes (rows count LF); CRLF and BOM
+are retained. Reuse requires the same workspace, document identity and origin.
+Adapters consume the selected grammar's recorded node/field fixtures, never
+assumed JVM binding node names. They emit unresolved facts for later resolution.
+
+`SyntaxSession` combines keyword resources and native lexical spans. Reports carry
+the exact JobTag and visible grammar/fallback status. L09/E11 must validate current
+workspace/request/document/revision before attaching results and show fallback
+status; neither input handling nor drawing may parse. Syntax work uses F03 bounded
+blocking jobs, cancellation, input/node/time limits. Parser errors retain useful
+partial trees; unavailable grammars retain keyword highlighting.
+
+L03 `KotlinSemanticAdapter::extract_parsed` consumes an immutable L02 Kotlin tree
+and emits a source-validated L01 delta. Its convenience `extract` owns one mutable
+parser per document worker; L09 must bound/evict adapters and gate completed facts.
+Only declaration occurrences resolve during extraction. Member receiver links,
+raw generic/nullable type names and inference hints pass to L06/L07. Completion
+contexts retain raw byte receiver ranges; invalid scalar offsets return errors.
+
+L04 `CSemanticAdapter` shares the immutable-tree/delta boundary. C unresolved type
+names preserve tag prefixes and pointer stars, including synthesized anonymous tag
+names; their range identifies the AST type specifier. L06/L07 must distinguish tag
+and ordinary namespaces, exclude an alias's own identity when binding its target,
+and normalize pointer decorations for the source's shared receiver model. No
+preprocessing/include I/O happens in extraction. Receiver occurrence links denote
+the receiver value/callee rather than call arguments or index operands.
+
+L05 `StoreWorker::start/rebuild` opens the native cache on a dedicated thread.
+`StoreClient` exposes snapshot reads plus bounded tagged load/commit/clear tickets;
+SQLite connections never leave that thread. Await worker shutdown when disposing a
+workspace. Accepted writes drain even when their reply receiver is dropped.
+Commit accepts a prepared monotonic SemanticSnapshot and optional complete
+compatibility replacement. Omission keeps compatibility only for unchanged source
+content. Persistence canonicalizes duplicates, commits changes atomically, then
+publishes; same-revision identical facts reuse the current Arc. A competing writer
+requires reload. L09 must reject stale producer work before submission and gate
+ticket results against the active workspace/document/index revision.
+
+The cache has an application marker, schema version and grammar/byte-model format
+signature. Only an identified owned cache may rebuild automatically; foreign or
+unidentified corrupt files remain untouched. Typed errors permit L09 to select a
+visible in-memory fallback. Compatibility facts retain native byte ranges plus
+explicit zero-based lines/UTF-16 columns and source syntax metadata. They are native
+cache records, not an implicit import of the old H2 database. Snapshot validation
+checks referenced type records/symbols and raw hint/import/type scope ownership.

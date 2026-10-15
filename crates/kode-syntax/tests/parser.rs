@@ -42,6 +42,8 @@ fn kotlin_and_c_parse_real_unicode_fields_and_incremental_edits_equal_fresh_tree
             before.root_node().to_sexp()
         );
         for (from, to) in [
+            ("Café", "Cafè"),
+            ("😀", "😁"),
             ("name", "title"),
             ("return", "/* 😀 */ return"),
             ("2", "300"),

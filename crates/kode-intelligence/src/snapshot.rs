@@ -531,6 +531,11 @@ impl Default for SnapshotPublisher {
     }
 }
 impl SnapshotPublisher {
+    pub fn from_snapshot(snapshot: SemanticSnapshot) -> Self {
+        Self {
+            current: RwLock::new(snapshot),
+        }
+    }
     pub fn load(&self) -> Result<SemanticSnapshot> {
         self.current
             .read()

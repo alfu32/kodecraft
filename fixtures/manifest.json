@@ -268,6 +268,13 @@
       "expected": "Receiver lookup; usages resolve to declarations independent of parse order"
     },
     {
+      "path": "languages/kotlin/extraction.kt",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "a6aa4a9210967739be849274094ed7a158cae7d67a9329940f5af12c50e8b0f5",
+      "expected": "L03 actual Kotlin AST extraction: Unicode byte ranges, imports, scopes, generics, visibility, hints and receiver identity"
+    },
+    {
       "path": "languages/c/model.h",
       "origin": "Synthetic migration fixture; CC0-1.0",
       "license": "CC0-1.0",
@@ -280,6 +287,20 @@
       "license": "CC0-1.0",
       "sha256": "dbd037e3679abd681836dde64968164c2518356921323fdf1e2e638141874b3c",
       "expected": "Cross-file pointer member resolution"
+    },
+    {
+      "path": "languages/c/extraction.c",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "665195802cf3d1634fe68aa1d40d0647b5d29bf15f0c20d45b69a7c83ac455a0",
+      "expected": "L04 actual C AST extraction: tag/typedef identity, anonymous structs, pointer types, declarations and receiver links"
+    },
+    {
+      "path": "languages/c/extraction.h",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "34ae11b4f16c2a629198919c4cc485cb25ba4323b7acdef96d90d808185e0164",
+      "expected": "L04 actual C AST extraction: tag/typedef identity, anonymous structs, pointer types, declarations and receiver links"
     },
     {
       "path": "jdbc/statements.sql",

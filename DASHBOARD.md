@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    39 |           1 |   25 |       0 |    65 |
+|    35 |           1 |   29 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **L02** — [Keyword highlighting and incremental parser registry](docs/migration/tasks/06-intelligence.md#l02--keyword-highlighting-and-incremental-parser-registry)
+- **L06** — [Names, scopes, imports and symbol resolution](docs/migration/tasks/06-intelligence.md#l06--names-scopes-imports-and-symbol-resolution)
 
 ## Task status
 
@@ -44,11 +44,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | G02  | [Stage, unstage, commit, checkout and tags](docs/migration/tasks/05-git.md)                     | todo        | —                            |
 | G03  | [Diff views and restoring worktree chunks](docs/migration/tasks/05-git.md)                      | todo        | —                            |
 | L01  | [Semantic facts, identifiers and immutable snapshots](docs/migration/tasks/06-intelligence.md)  | done        | [Report](docs/parity/L01.md) |
-| L02  | [Keyword highlighting and incremental parser registry](docs/migration/tasks/06-intelligence.md) | in-progress | —                            |
-| L03  | [Kotlin semantic extraction](docs/migration/tasks/06-intelligence.md)                           | todo        | —                            |
-| L04  | [C semantic extraction](docs/migration/tasks/06-intelligence.md)                                | todo        | —                            |
-| L05  | [SQLite semantic store and atomic publication](docs/migration/tasks/06-intelligence.md)         | todo        | —                            |
-| L06  | [Names, scopes, imports and symbol resolution](docs/migration/tasks/06-intelligence.md)         | todo        | —                            |
+| L02  | [Keyword highlighting and incremental parser registry](docs/migration/tasks/06-intelligence.md) | done        | [Report](docs/parity/L02.md) |
+| L03  | [Kotlin semantic extraction](docs/migration/tasks/06-intelligence.md)                           | done        | [Report](docs/parity/L03.md) |
+| L04  | [C semantic extraction](docs/migration/tasks/06-intelligence.md)                                | done        | [Report](docs/parity/L04.md) |
+| L05  | [SQLite semantic store and atomic publication](docs/migration/tasks/06-intelligence.md)         | done        | [Report](docs/parity/L05.md) |
+| L06  | [Names, scopes, imports and symbol resolution](docs/migration/tasks/06-intelligence.md)         | in-progress | —                            |
 | L07  | [Expression types and receiver member lookup](docs/migration/tasks/06-intelligence.md)          | todo        | —                            |
 | L08  | [Dependency invalidation and incremental generations](docs/migration/tasks/06-intelligence.md)  | todo        | —                            |
 | L09  | [Background index coordinator and editor facade](docs/migration/tasks/06-intelligence.md)       | todo        | —                            |

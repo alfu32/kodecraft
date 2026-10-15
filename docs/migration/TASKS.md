@@ -38,11 +38,11 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | G02 | [Stage, unstage, commit, checkout and tags](tasks/05-git.md) | G01, E12, F05 | todo |
 | G03 | [Diff views and restoring worktree chunks](tasks/05-git.md) | G02, E05, E12, V01 | todo |
 | L01 | [Semantic facts, identifiers and immutable snapshots](tasks/06-intelligence.md) | F02, E01 | [done](../parity/L01.md) |
-| L02 | [Keyword highlighting and incremental parser registry](tasks/06-intelligence.md) | E01, F03 | in-progress |
-| L03 | [Kotlin semantic extraction](tasks/06-intelligence.md) | L01, L02 | todo |
-| L04 | [C semantic extraction](tasks/06-intelligence.md) | L01, L02 | todo |
-| L05 | [SQLite semantic store and atomic publication](tasks/06-intelligence.md) | L01, F03 | todo |
-| L06 | [Names, scopes, imports and symbol resolution](tasks/06-intelligence.md) | L03, L04 | todo |
+| L02 | [Keyword highlighting and incremental parser registry](tasks/06-intelligence.md) | E01, F03 | [done](../parity/L02.md) |
+| L03 | [Kotlin semantic extraction](tasks/06-intelligence.md) | L01, L02 | [done](../parity/L03.md) |
+| L04 | [C semantic extraction](tasks/06-intelligence.md) | L01, L02 | [done](../parity/L04.md) |
+| L05 | [SQLite semantic store and atomic publication](tasks/06-intelligence.md) | L01, F03 | [done](../parity/L05.md) |
+| L06 | [Names, scopes, imports and symbol resolution](tasks/06-intelligence.md) | L03, L04 | in-progress |
 | L07 | [Expression types and receiver member lookup](tasks/06-intelligence.md) | L06 | todo |
 | L08 | [Dependency invalidation and incremental generations](tasks/06-intelligence.md) | L07 | todo |
 | L09 | [Background index coordinator and editor facade](tasks/06-intelligence.md) | L05, L08, L10, L11, W01, F03 | todo |

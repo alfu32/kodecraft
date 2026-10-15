@@ -159,8 +159,17 @@ def fixtures():
         put(f"rest/openapi-{version}.yaml", ('swagger: "2.0"\n' if version == "2.0" else f'openapi: "{version}"\n') + 'info: {title: Synthetic, version: "1"}\npaths:\n  /items:\n    get:\n      responses:\n        "200": {description: ok}\n', "JSON/YAML import parity; source schema retained")
     put("languages/kotlin/model.kt", "package demo\nopen class Parent { val inherited: String = \"x\" }\nclass Customer(val name: String) : Parent()\nfun create(): Customer = Customer(\"Ada\")\n", "Cross-file return inference, constructor fields and inherited members")
     put("languages/kotlin/use.kt", "package demo\nfun use() { val customer = create(); println(customer.name); println(customer.inherited) }\n", "Receiver lookup; usages resolve to declarations independent of parse order")
+    extraction = FIXTURES / "languages/kotlin/extraction.kt"
+    if extraction.exists():
+        put("languages/kotlin/extraction.kt", extraction.read_bytes(),
+            "L03 actual Kotlin AST extraction: Unicode byte ranges, imports, scopes, generics, visibility, hints and receiver identity")
     put("languages/c/model.h", "typedef struct Customer { int value; } Customer;\nCustomer *create(void);\n", "Tag/typedef identity and pointer members")
     put("languages/c/use.c", '#include "model.h"\nint use(Customer *customer) { return customer->value; }\n', "Cross-file pointer member resolution")
+    for suffix in ["c", "h"]:
+        extraction = FIXTURES / f"languages/c/extraction.{suffix}"
+        if extraction.exists():
+            put(f"languages/c/extraction.{suffix}", extraction.read_bytes(),
+                "L04 actual C AST extraction: tag/typedef identity, anonymous structs, pointer types, declarations and receiver links")
     put("jdbc/statements.sql", "select ';' as quoted; -- comment ;\nselect 2;\n/* ; */ select 3;", "SQL locator ignores quoted/comment semicolons")
     put("viewers/binary.bin", bytes(range(256)), "Byte viewer covers all values without lossy text decoding")
     put("viewers/rgba.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2"><rect width="2" height="2" fill="red"/></svg>', "SVG rasterizes to four red pixels")

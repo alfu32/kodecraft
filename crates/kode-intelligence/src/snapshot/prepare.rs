@@ -73,7 +73,7 @@ pub(super) fn normalize(project: &mut ResolvedSemanticProject) -> Result<()> {
     unique(&mut project.occurrences, |r| r.id, "occurrence")?;
     let mut paths = BTreeMap::new();
     for (id, delta) in &project.deltas {
-        if id != &delta.file.id {
+        if id != &delta.file.id || *id != crate::ids::SemanticIds::file(&delta.file.path) {
             return Err(invalid("file map key does not match its record"));
         }
         if paths.insert(&delta.file.path, *id).is_some() {
@@ -154,6 +154,13 @@ pub(super) fn normalize(project: &mut ResolvedSemanticProject) -> Result<()> {
         {
             return Err(invalid("symbol owner is absent"));
         }
+        if [symbol.declared_type_id, symbol.inferred_type_id]
+            .into_iter()
+            .flatten()
+            .any(|id| !project.types.contains_key(&id))
+        {
+            return Err(invalid("symbol refers to an absent type record"));
+        }
     }
     for occurrence in &project.occurrences {
         if !scopes
@@ -185,6 +192,46 @@ pub(super) fn normalize(project: &mut ResolvedSemanticProject) -> Result<()> {
         if id != &ty.id {
             return Err(invalid("type map key does not match its record"));
         }
+        validate_type(&ty.r#ref, &symbols)?;
+    }
+    for delta in project.deltas.values() {
+        for import in &delta.imports {
+            if !scopes
+                .get(&import.scope_id)
+                .is_some_and(|scope| scope.file_id == delta.file.id)
+            {
+                return Err(invalid("import scope is absent or foreign"));
+            }
+        }
+        for ty in &delta.unresolved_types {
+            if !symbols
+                .get(&ty.owner_symbol_id)
+                .is_some_and(|symbol| symbol.file_id == delta.file.id)
+                || !scopes
+                    .get(&ty.scope_id)
+                    .is_some_and(|scope| scope.file_id == delta.file.id)
+            {
+                return Err(invalid("unresolved type owner/scope is absent or foreign"));
+            }
+        }
+        for hint in &delta.type_hints {
+            if !symbols
+                .get(&hint.target_symbol_id)
+                .is_some_and(|symbol| symbol.file_id == delta.file.id)
+                || !scopes
+                    .get(&hint.scope_id)
+                    .is_some_and(|scope| scope.file_id == delta.file.id)
+            {
+                return Err(invalid("type hint target/scope is absent or foreign"));
+            }
+        }
+    }
+    if project
+        .resolution_generations
+        .keys()
+        .any(|id| !file_exists(*id))
+    {
+        return Err(invalid("resolution generation file is absent"));
     }
     for dependency in &project.dependencies {
         if !file_exists(dependency.from_file_id) || !file_exists(dependency.to_file_id) {
@@ -198,6 +245,7 @@ pub(super) fn normalize(project: &mut ResolvedSemanticProject) -> Result<()> {
         if !file_exists(expression.file_id) {
             return Err(invalid("expression file is absent"));
         }
+        validate_type(&expression.r#type, &symbols)?;
         SourceRange::new(expression.range.start, expression.range.end)?;
         if expression.range.is_empty() {
             continue;
@@ -233,5 +281,42 @@ pub(super) fn normalize(project: &mut ResolvedSemanticProject) -> Result<()> {
         .dependencies
         .sort_by_key(|r| (r.from_file_id, r.to_file_id, r.kind, r.generation));
     project.dependencies.dedup();
+    Ok(())
+}
+fn validate_type(
+    ty: &TypeRef,
+    symbols: &BTreeMap<crate::ids::SymbolId, &SymbolRecord>,
+) -> Result<()> {
+    let mut pending = vec![(ty, 0)];
+    let mut visited = 0;
+    while let Some((ty, depth)) = pending.pop() {
+        visited += 1;
+        if depth > 64 || visited > 100_000 {
+            return Err(invalid("semantic type shape exceeds work limits"));
+        }
+        match ty {
+            TypeRef::Named { symbol_id } if !symbols.contains_key(symbol_id) => {
+                return Err(invalid("named type symbol is absent"));
+            }
+            TypeRef::Generic { base, arguments } => {
+                pending.push((base, depth + 1));
+                pending.extend(arguments.iter().map(|ty| (ty, depth + 1)));
+            }
+            TypeRef::Nullable { inner } => pending.push((inner, depth + 1)),
+            TypeRef::Union { alternatives } => {
+                pending.extend(alternatives.iter().map(|ty| (ty, depth + 1)))
+            }
+            TypeRef::Function {
+                parameters,
+                returns,
+            } => {
+                pending.extend(parameters.iter().map(|ty| (ty, depth + 1)));
+                if let Some(returns) = returns {
+                    pending.push((returns, depth + 1));
+                }
+            }
+            _ => {}
+        }
+    }
     Ok(())
 }

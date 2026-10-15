@@ -173,6 +173,22 @@ fn duplicate_identity_collapse_conflicts_scope_cycles_and_foreign_facts_are_expl
     facts.symbols[1].name = "conflicting identity".into();
     assert!(ResolvedSemanticProject::from_deltas([facts]).is_err());
     let mut facts = delta("Class");
+    facts.symbols[0].declared_type_id = Some(TypeId(999));
+    assert!(ResolvedSemanticProject::from_deltas([facts]).is_err());
+    let mut project = ResolvedSemanticProject::from_deltas([delta("Class")]).unwrap();
+    let ty = TypeRef::named(SymbolId(999));
+    let id = SemanticIds::type_ref(&ty);
+    project.types.insert(
+        id,
+        TypeRecord {
+            id,
+            r#ref: ty,
+            confidence: Confidence::default(),
+            knowledge_level: TypeKnowledgeLevel::CrossFileResolved,
+        },
+    );
+    assert!(SemanticSnapshot::new(1, project).is_err());
+    let mut facts = delta("Class");
     facts.scopes[0].parent_id = Some(facts.scopes[0].id);
     assert!(ResolvedSemanticProject::from_deltas([facts]).is_err());
     let mut facts = delta("Class");
