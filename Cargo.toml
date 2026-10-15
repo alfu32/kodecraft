@@ -24,6 +24,7 @@ nix = { version = "0.30", default-features = false, features = ["signal", "proce
 unicode-width = "0.2.2"
 ropey = { version = "=1.6.1", default-features = false, features = ["simd"] }
 sha2 = "=0.10.9"
+base64 = "=0.23.1"
 arboard = { version = "=3.6.1", default-features = false }
 unicode-general-category = "=0.6.0"
 regex = "=1.13.1"

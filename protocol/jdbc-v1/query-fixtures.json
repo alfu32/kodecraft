@@ -7,5 +7,5 @@
     {"executionId":"synthetic-execution","sequence":4,"event":{"type":"updateCount","count":9223372036854775807}},
     {"executionId":"synthetic-execution","sequence":5,"event":{"type":"warning","error":{"message":"Synthetic warning","sqlState":"01000","vendorCode":7,"chained":[{"message":"Synthetic chained warning","sqlState":null,"vendorCode":8}]}}}
   ],
-  "final":{"executionId":"synthetic-execution","outcome":"completed","elapsedMs":4,"transactionUsable":true,"previewIncomplete":false,"error":null}
+  "final":{"executionId":"synthetic-execution","outcome":"completed","elapsedMs":4,"transactionUsable":true,"eventCount":6,"previewIncomplete":false,"error":null}
 }

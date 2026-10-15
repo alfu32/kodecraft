@@ -12,6 +12,9 @@ connections = {}
 attempts = {}
 cancelled_attempts = set()
 connection_lock = threading.Lock()
+cancelled_queries = set()
+query_waits = {}
+query_modes = {}
 def connection_info(params):
     return {'connectionId':str(uuid.uuid4()),'dataSourceId':params['dataSourceId'],'capabilities':{'transactions':True,'savepoints':True,'catalogs':True,'schemas':True},'productName':'Synthetic','productVersion':'1','driverName':'Fixture','driverVersion':'1','autoCommit':params.get('autoCommit',True),'readOnly':params.get('readOnly',False),'catalog':params.get('catalog'),'schema':params.get('schema'),'contextRevision':1,'stateRevision':1,'transactionUsable':True}
 def send(value, fragmented=False):
@@ -31,6 +34,10 @@ def perform(message):
     elif method == 'test.block':
         finished.wait(30); result(id,{'outcome':'cancelled'})
     elif method == 'query.cancel':
+        execution=params.get('executionId','')
+        if query_modes.get(execution)=='fixture:unsupported': result(id,{'status':'unsupported'});return
+        cancelled_queries.add(execution)
+        if execution in query_waits: query_waits[execution].set()
         finished.set(); result(id,{'status':'requested'})
     elif method == 'test.crash':
         sys.stderr.write('synthetic-password-marker' * 10000);sys.stderr.flush();os._exit(7)
@@ -87,6 +94,27 @@ def perform(message):
             for key in ('catalog','schema','autoCommit','readOnly'):
                 if key in params: state[key]=params[key]
             state['contextRevision']+=1;state['stateRevision']+=1;result(id,state)
+    elif method == 'query.execute':
+        execution=params['executionId'];sql=params['sql'];wait=threading.Event();query_waits[execution]=wait;query_modes[execution]=sql
+        with connection_lock:
+            pair=connections.get(params['connectionId'])
+        if pair is None:
+            send({'jsonrpc':'2.0','id':id,'error':{'code':-32021,'message':'Stale connection','data':{'notStarted':True}}});return
+        state=pair[0]
+        if execution in cancelled_queries:
+            result(id,{'executionId':execution,'outcome':'cancelled','elapsedMs':1,'transactionUsable':True,'previewIncomplete':True,'eventCount':0,'connectionState':state});return
+        def event(sequence,value): send({'jsonrpc':'2.0','method':'query.event','params':{'executionId':execution,'sequence':sequence,'event':value}})
+        event(0,{'type':'started'});event(1,{'type':'resultSetStart','resultSetId':execution+'-r','columns':[{'label':'value','jdbcType':12,'typeName':'VARCHAR','nullable':True}]})
+        event(9 if sql=='fixture:bad-sequence' else 2,{'type':'rows','resultSetId':execution+'-r','rows':[[{'kind':'text','text':'synthetic-private-row'}],[{'kind':'null'}],[{'kind':'text','text':''}]]})
+        if sql in ('fixture:block','fixture:crash-pending','fixture:unsupported'): wait.wait(20)
+        cancelled=execution in cancelled_queries
+        if not cancelled: event(3,{'type':'resultSetEnd','resultSetId':execution+'-r','limited':False,'incomplete':False})
+        state=dict(state);state['stateRevision']+=1
+        result(id,{'executionId':execution,'outcome':'cancelled' if cancelled else 'completed','elapsedMs':1,'transactionUsable':True,'previewIncomplete':cancelled,'eventCount':3 if cancelled else 4,'connectionState':state})
+        if sql=='fixture:final-exit': sys.stdout.buffer.flush();os._exit(0)
+    elif method == 'test.release-queries':
+        for wait in query_waits.values(): wait.set()
+        result(id,{'released':True})
     else: send({'jsonrpc':'2.0','id':id,'error':{'code':-32601,'message':'Unknown method'}})
 while True:
     header=sys.stdin.buffer.read(4)
@@ -99,7 +127,7 @@ while True:
         if mode in ('poison','zero','oversize','truncated'):
             raw={'poison':b'driver-stdout','zero':b'\0\0\0\0','oversize':struct.pack('>I',8388609),'truncated':b'\0\0\0\x08{'}[mode]
             sys.stdout.buffer.write(raw);sys.stdout.buffer.flush();sys.exit(2)
-        send({'jsonrpc':'2.0','id':id,'result':{'protocolVersion':99 if mode=='wrong-version' else 1,'helperVersion':'fixture','javaVersion':'21.0.9','helperEpoch':epoch,'maxFrameBytes':8388608,'capabilities':['hello','ping','shutdown','query.cancel']}},True)
+        send({'jsonrpc':'2.0','id':id,'result':{'protocolVersion':99 if mode=='wrong-version' else 1,'helperVersion':'fixture','javaVersion':'21.0.9','helperEpoch':epoch,'maxFrameBytes':8388608,'capabilities':['hello','ping','shutdown','query.cancel','query.execute']}},True)
         if mode=='slow-reader': time.sleep(0.5)
     elif method=='ping': result(id,{'status':'ok','helperEpoch':epoch})
     elif method=='shutdown': result(id,{'closing':True});break

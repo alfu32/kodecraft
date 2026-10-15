@@ -26,13 +26,22 @@ impl std::fmt::Debug for Cell {
         })
     }
 }
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Column {
     pub label: String,
     pub jdbc_type: i32,
     pub type_name: String,
     pub nullable: bool,
+}
+impl std::fmt::Debug for Column {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // A JDBC label may be the original SQL expression, including a literal.
+        f.debug_struct("Column")
+            .field("jdbc_type", &self.jdbc_type)
+            .field("nullable", &self.nullable)
+            .finish_non_exhaustive()
+    }
 }
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -102,6 +111,8 @@ pub struct QueryFinal {
     pub outcome: Outcome,
     pub elapsed_ms: u64,
     pub transaction_usable: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub event_count: Option<u64>,
     #[serde(default)]
     pub preview_incomplete: bool,
     #[serde(default)]

@@ -988,3 +988,41 @@ by epoch/connection/context revision and invalidates on unknown context/failure.
 D07 must await `Connections.definition_changed` before saving even an equal
 definition, because private values may change under an unchanged reference.
 Composition supplies process-state repaint notifications; paint never starts Java.
+
+## JDBC query streaming and cancellation
+
+D05 owns Java `queries/{QueryService,CellPreview}` and native `execution::{Executor,
+Snapshot,Preview,ResultSet,Options}`. SQL work uses D04 Session ownership, including
+statement creation/execution, result iteration, warnings, value conversion and
+closure. Statement.cancel runs independently against the registered execution's
+own statement; its lifetime and loader extend through the cancel call. Owners wait
+before reusing the connection so a late cancel cannot target the next query.
+Requested/unsupported/alreadyFinished acknowledges control only; the original
+execution final is authoritative. Hanging cancellation offers explicit disconnect
+or helper restart. Neither cancellation nor process death implies rollback.
+
+Notifications preserve execution ID/sequence and typed nullable text/binary cells.
+JDBC large update counts remain i64; decimals/temporal values remain strings.
+Result batches split by rows/encoded bytes, cells/rows/metadata have explicit bounds
+and LOB/XML/array previews close/free on the owner. Later SQL failure retains prior
+received results, warnings and bounded SQLSTATE/vendor/chained errors. Detailed
+bounds and fallback semantics are in `protocol/jdbc-v1/README.md`.
+
+Final `eventCount` is a notification barrier. Native collection waits for those
+events even if the RPC future wakes first or the helper exits after its valid
+final. Query notifications have a dedicated consumer, not a paint-time drain.
+The native state machine validates order/shapes/bounds; malformed events fail
+visibly with existing rows retained. Per-preview/global retention limits remain
+charged across immutable clones; exhaustion requests cancellation and marks an
+explicit incomplete/limited preview. Cell contents and SQL errors never enter
+Debug/Display diagnostics. Actual query values remain available to result UI.
+
+`Executor::execute` captures SQL and shared datasource session, publishes identity,
+chunks and cancellation status, and waits for its own final. Dropping the UI wait
+routes cancellation; executor shutdown drains its native tasks. Explicit cancel
+retry keeps that identity. Helper loss/stale session never reconnects or replays.
+Owner connectionState/stateRevision updates native transaction/context state only
+for the matching current epoch/ID; unknown context invalidates use. D06 owns cache
+invalidation after relevant executions. D08 owns SQL targeting, retained editor
+text and result presentation; no JDBC terminal UI is claimed by this backend.
+Workspace disposal shuts down the executor before Connections/runtime teardown.

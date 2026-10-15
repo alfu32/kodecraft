@@ -21,8 +21,10 @@ packaged helper needs only Java at runtime. `KODE_JAVA` selects Java and
 Driver resolution/loading now supports Maven, local multi-JAR and manual vendor
 sources, versioned install manifests and isolated loaders. The backend supports
 temporary connection tests, shared datasource connections, context changes and
-commit/rollback through serialized JDBC owners. SQL execution and database panels
-remain tracked implementation tasks.
+commit/rollback through serialized JDBC owners. SQL execution streams typed,
+bounded previews and supports independent cancellation; helper failure retains
+received rows and never replays SQL. Database panels and consoles remain tracked
+implementation tasks.
 
 Ctrl+Space requests completion and Ctrl-click follows definitions/usages.
 The Project panel provides `r` rescan, `b` rebuild index and `c` clear index.

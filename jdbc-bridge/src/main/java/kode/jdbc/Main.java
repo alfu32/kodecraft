@@ -15,7 +15,9 @@ public final class Main {
         var server=new RpcServer(System.in,protocol);
         var drivers=kode.jdbc.drivers.DriverService.fromEnvironment();
         drivers.register(server);
-        new kode.jdbc.connections.ConnectionService(drivers.loaders).register(server);
+        var connections=new kode.jdbc.connections.ConnectionService(drivers.loaders);
+        connections.register(server);
+        new kode.jdbc.queries.QueryService(connections).register(server);
         return server;
     }
     public static void main(String[] args) {

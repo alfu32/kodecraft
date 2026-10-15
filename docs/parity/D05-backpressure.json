@@ -1,0 +1,20 @@
+{
+  "engine": "H2 2.2.224",
+  "protocol": 1,
+  "osPipeCapacity": 65536,
+  "bufferedBytesBeforeCancel": 63411,
+  "osPipeWritableBeforeCancel": false,
+  "pipeWasFull": true,
+  "cancelStatus": "requested",
+  "framesThroughCancelAck": 4,
+  "eventsBeforeFinal": 9,
+  "finalEventCount": 9,
+  "receivedRows": 217,
+  "outcome": "cancelled",
+  "previewIncomplete": true,
+  "nextQueryCompleted": true,
+  "childReaped": true,
+  "exitCode": 0,
+  "rawStderrSuppressed": true,
+  "passed": 1
+}

@@ -6,5 +6,6 @@ pub mod config;
 pub mod connections;
 pub mod credentials;
 pub mod drivers;
+pub mod execution;
 pub mod model;
 pub mod security;

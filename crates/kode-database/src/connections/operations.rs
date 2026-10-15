@@ -1,7 +1,7 @@
 use super::*;
 const OPERATION_TIMEOUT: Duration = Duration::from_secs(60);
 const CLOSE_TIMEOUT: Duration = Duration::from_secs(5);
-fn info(value: Value, client: &Client, source: &str) -> Result<SessionInfo> {
+pub(super) fn info(value: Value, client: &Client, source: &str) -> Result<SessionInfo> {
     let mut info: SessionInfo = serde_json::from_value(value)
         .map_err(|_| error(Failure::Protocol, "Invalid JDBC connection response"))?;
     if info.connection_id.is_empty()

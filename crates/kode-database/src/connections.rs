@@ -247,6 +247,78 @@ impl Connections {
     pub fn runtime(&self) -> &Runtime {
         &self.owner.shared.runtime
     }
+    pub(crate) fn execution_completed(
+        &self,
+        session: &SessionInfo,
+        result: &crate::bridge::wire::QueryFinal,
+        state: Option<&Value>,
+    ) {
+        let mut entries = self.owner.shared.entries.lock().expect("connection state");
+        let Some(entry) = entries.get_mut(&session.data_source_id).filter(|entry| {
+            entry.snapshot.phase == Phase::Connected
+                && entry.snapshot.session.as_ref().is_some_and(|current| {
+                    current.connection_id == session.connection_id
+                        && current.helper_epoch == session.helper_epoch
+                })
+        }) else {
+            return;
+        };
+        if let Some(state) = state
+            && let Some(client) = entry.client.as_ref()
+            && let Ok(info) = operations::info(state.clone(), client, &session.data_source_id)
+        {
+            if info.connection_id == session.connection_id
+                && entry
+                    .snapshot
+                    .session
+                    .as_ref()
+                    .is_some_and(|current| current.state_revision <= info.state_revision)
+            {
+                entry.snapshot.session = Some(info);
+            }
+        } else if let Some(current) = entry.snapshot.session.as_mut() {
+            current.transaction_usable &= result.transaction_usable;
+            if state
+                .and_then(|state| state.get("stateRevision"))
+                .and_then(Value::as_u64)
+                .is_none_or(|revision| revision >= current.state_revision)
+                && state
+                    .and_then(|state| state.get("contextUnknown"))
+                    .and_then(Value::as_bool)
+                    == Some(true)
+            {
+                current.context_unknown = true;
+                current.transaction_usable = false;
+                entry.snapshot.phase = Phase::Error;
+                current.context_revision = current.context_revision.max(
+                    state
+                        .and_then(|state| state.get("contextRevision"))
+                        .and_then(Value::as_u64)
+                        .unwrap_or_default(),
+                );
+            }
+        }
+        entry.snapshot.revision = entry.snapshot.revision.saturating_add(1);
+    }
+    pub(crate) fn execution_failed(&self, session: &SessionInfo, failure: BridgeError) {
+        let mut entries = self.owner.shared.entries.lock().expect("connection state");
+        if let Some(entry) = entries.get_mut(&session.data_source_id).filter(|entry| {
+            entry.snapshot.session.as_ref().is_some_and(|current| {
+                current.connection_id == session.connection_id
+                    && current.helper_epoch == session.helper_epoch
+            })
+        }) {
+            entry.snapshot.error = Some(failure.clone().into());
+            entry.snapshot.unknown_outcome |= failure.unknown_outcome;
+            if failure.kind != Failure::Remote
+                || matches!(failure.remote_code, Some(-32021 | -32012))
+            {
+                entry.snapshot.phase = Phase::Error;
+                entry.snapshot.session = None;
+            }
+            entry.snapshot.revision = entry.snapshot.revision.saturating_add(1);
+        }
+    }
     async fn run<T: Send + 'static>(
         &self,
         cancel: &CancellationToken,

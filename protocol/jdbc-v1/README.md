@@ -98,6 +98,50 @@ final reply, so an acknowledgement never claims cleanup has finished.
 `driver.inspect` accepts either providerId/classpath/driverClass or a driver spec.
 The spec form checks explicit local paths, validated immutable installs and legacy
 provider/version directories without downloading or creating an install root.
+
+SQL execution runs through that connection's owner. `Statement.execute`, result
+sets and large update counts iterate through `getMoreResults`; warnings and later
+errors preserve earlier received results. Decimal/boolean/temporal values retain
+source display strings, SQL NULL has its own kind and binary previews use base64.
+LOB/XML streams close and JDBC values free on the owner. Arrays use at most 32
+element previews. Invalid driver UTF-16 becomes U+FFFD without splitting scalars.
+
+SQL text is limited to 4 MiB UTF-8; maxRows defaults to 500 (1..100,000) and fetch
+hint to 200 (0..10,000). Preview limits: 256 columns, 1 KiB UTF-8 labels/type names,
+64 KiB per cell and 512 KiB raw data per row. Wide rows reduce each cell's bound,
+with truncation explicit. Batches have at most 200 rows, split around 2 MiB encoded
+data; a single larger bounded row fits the 8 MiB frame ceiling. One extra row is
+fetched to distinguish an exact row cap from a limited result. Result sequences
+are bounded to 1,024 result sets/update counts. Limits are not hard driver RSS caps.
+
+Each execution ID is unique for its helper epoch. Early query.cancel records a
+bounded tombstone so priority cancellation cannot be overtaken by a queued execute.
+Four cancellation workers/64 queued calls operate independently of owner/IPC
+threads; a separate deadline returns requested after 50 ms if cancel is still
+pending. Known failures return unsupported; neither result ends the original
+operation. While that execution owns the connection, cancellation retries cover
+drivers resetting their flag on execute entry. The owner waits for its cancel
+call before closing the statement or running the next query, preventing an old
+connection-wide cancel from affecting a new execution. A hanging driver requires
+explicit disconnect/helper restart. Cancellation never claims transaction rollback.
+
+Final results include `eventCount`, the number of successfully queued preceding
+notifications. The Rust collector drains through that count before publishing
+completion; a known final remains authoritative even if the helper exits directly
+afterward. `connectionState` carries the owner snapshot for transaction/context
+tracking. Native execute waits allow 600 seconds, cancel acknowledgement waits two
+seconds and final-event draining five seconds. Failure leaves the received preview
+and marks uncertainty; SQL is never automatically submitted again.
+
+The native executor permits 16 operations and drains one dedicated query consumer
+independently from drawing. It validates IDs, sequence, result transitions, widths,
+cells and byte bounds. Retention is capped at 32 MiB per preview and 64 MiB shared;
+immutable result clones retain their byte permits until released. Exhaustion is
+explicit (`retention_limited`, incomplete preview and cancellation request), not
+silent coalescing. Progress may coalesce snapshots; row chunks remain owned.
+Cancellation status/error stays visible while awaiting the original final; explicit
+retry uses the same execution ID. SQL text and cell/error bodies are omitted from
+native debug diagnostics.
 An empty explicit classpath requests helper-visible classes; the source-compatible
 bundled H2 version is 2.2.224. Spec lookup never substitutes that bundle for a
 different explicitly selected version. Version-qualified lookup recognizes a
