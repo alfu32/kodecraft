@@ -87,6 +87,7 @@ pub enum AppWork {
         work: EditorWork,
     },
     Project(ProjectWork),
+    LspSettings(crate::panels::settings::lsp::SettingsAction),
     Image(crate::viewers::image::ImageJob),
     Configure {
         tag: JobTag,
@@ -143,6 +144,7 @@ pub struct AppState {
     pub image_settings: crate::viewers::image::ImageSettings,
     pub files: FilesPanel,
     pub project_panel: ProjectPanel,
+    pub lsp_settings: crate::panels::settings::lsp::LspSettings,
     pub tabs: Tabs,
     pub tabs_id: FocusId,
     pub focus: FocusState,
@@ -204,8 +206,14 @@ impl AppState {
             image_settings: Default::default(),
             files,
             project_panel: ProjectPanel::new()?,
+            lsp_settings: crate::panels::settings::lsp::LspSettings::new()?,
             tabs: Tabs::new(
-                vec!["Files".into(), "Project".into(), "Help".into()],
+                vec![
+                    "Files".into(),
+                    "Project".into(),
+                    "Help".into(),
+                    "Settings".into(),
+                ],
                 Axis::Vertical,
             ),
             tabs_id: FocusId(RequestId::fresh()?.0),
@@ -756,6 +764,12 @@ impl AppState {
         Ok(())
     }
     pub fn drain_ui(&mut self) -> Result<()> {
+        self.work.extend(
+            self.lsp_settings
+                .take_work()
+                .into_iter()
+                .map(AppWork::LspSettings),
+        );
         if let Some(view) = &mut self.image {
             self.work
                 .extend(view.take_work().into_iter().map(AppWork::Image));
@@ -860,6 +874,12 @@ impl AppState {
             1 => self
                 .project_panel
                 .render(geometry.panel, buffer, theme, &self.project),
+            3 => self.lsp_settings.render(
+                geometry.panel,
+                buffer,
+                theme,
+                self.focus.focused == Some(self.lsp_settings.id),
+            ),
             _ => {
                 Paragraph::new("Files: open, rename, create, delete.\nProject: source roots and exclusions.\n\nCtrl+S save\nCtrl+F find/replace\nCtrl+Shift+F project search\nCtrl+Space completion\nF6 switch pane\nCtrl+Q quit\n\nImage: Left/Right width, Enter mode, M advanced controls.\n\nHex: Shift+arrows select, Alt+C/X/V local bytes, Delete/Backspace edit memory. Binary saving unavailable.\n\nUse mouse or Alt+1/2/3 to select a sidebar tab.").wrap(Wrap { trim: false }).render(geometry.panel, buffer);
             }

@@ -133,7 +133,7 @@ impl AppState {
         }
         if let InputEvent::Key(input) = event {
             if input.modifiers.alt
-                && let Key::Character(number @ '1'..='3') = input.key
+                && let Key::Character(number @ '1'..='4') = input.key
             {
                 self.tabs.selected = (number as u8 - b'1') as usize;
                 self.focus_panel();
@@ -150,7 +150,10 @@ impl AppState {
                 }
                 return Ok(());
             }
-            if self.splash && input.key == Key::Enter {
+            if self.splash
+                && input.key == Key::Enter
+                && self.focus.focused != Some(self.lsp_settings.id)
+            {
                 self.splash = false;
                 return Ok(());
             }
@@ -198,7 +201,9 @@ impl AppState {
             } else if self.geometry.tabs.contains(position) {
                 Some(self.tabs_id)
             } else {
-                Some(if self.tabs.selected == 0 {
+                Some(if self.tabs.selected == 3 {
+                    self.lsp_settings.id
+                } else if self.tabs.selected == 0 {
                     self.files.id
                 } else {
                     self.project_panel.id
@@ -228,7 +233,9 @@ impl AppState {
                 .contains(Position::new(pointer.x, pointer.y)),
             _ => {
                 self.focus.focused
-                    == Some(if self.tabs.selected == 0 {
+                    == Some(if self.tabs.selected == 3 {
+                        self.lsp_settings.id
+                    } else if self.tabs.selected == 0 {
                         self.files.id
                     } else {
                         self.project_panel.id
@@ -241,6 +248,8 @@ impl AppState {
             } else if self.tabs.selected == 1 {
                 self.project_panel
                     .dispatch(event, &self.project, &mut self.focus);
+            } else if self.tabs.selected == 3 {
+                self.lsp_settings.dispatch(event, &mut self.focus);
             }
         } else if let Some(view) = &mut self.editor {
             view.dispatch(
@@ -262,6 +271,7 @@ impl AppState {
         self.focus.focused = Some(match self.tabs.selected {
             0 => self.files.id,
             1 => self.project_panel.id,
+            3 => self.lsp_settings.id,
             _ => self.tabs_id,
         });
         if let Some(view) = &mut self.editor {

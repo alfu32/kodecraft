@@ -157,7 +157,23 @@ impl InstallJob {
     ) -> Result<InstallReceipt> {
         validate_id(&self.entry.id)?;
         check(cancel)?;
-        let (version,download)=self.entry.download(&self.options.platform).ok_or_else(||invalid(format!("No download for {} on {}/{}; configure a local executable or follow catalog installation instructions",self.entry.name,self.options.platform.os,self.options.platform.arch)))?;
+        let (version, download) = self.entry.download(&self.options.platform).ok_or_else(|| {
+            let instructions = self
+                .entry
+                .versions
+                .first()
+                .filter(|version| !version.install_instructions.is_empty())
+                .map_or(String::new(), |version| {
+                    format!(
+                        "; manual setup: {}",
+                        serde_json::to_string(&version.install_instructions).unwrap_or_default()
+                    )
+                });
+            invalid(format!(
+                "No download for {} on {}/{}; configure a local executable{instructions}",
+                self.entry.name, self.options.platform.os, self.options.platform.arch
+            ))
+        })?;
         let _lock = InstallLock::acquire(&self.options.install_root)?;
         let destination = self.options.directory(&self.entry.id)?;
         if destination

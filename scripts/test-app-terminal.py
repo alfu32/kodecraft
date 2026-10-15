@@ -28,6 +28,8 @@ def run_case(target, config, size, actions, expected=()):
     before = termios.tcgetattr(slave)
     env = dict(os.environ, TERM="xterm-256color", XDG_CONFIG_HOME=str(config), KODE_RS_HOME=str(config / "resources"), KODE_HOME=str(config / "legacy-resources"))
     env.pop("KODE_CODEINTEL_PATH", None)
+    env.pop("KODE_LSP_HOME", None)
+    env.pop("KODE_LSP_CATALOG", None)
     if expected:
         env.pop("NO_COLOR", None)
         env["COLORTERM"] = "truecolor"

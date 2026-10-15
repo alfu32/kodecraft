@@ -149,6 +149,7 @@ impl LspSettings {
             }
             Err(error) => self.message = error.to_string(),
         }
+        self.reveal();
         true
     }
     fn selected_action(&self, key: Key) -> Option<SettingsAction> {
@@ -205,8 +206,8 @@ impl LspSettings {
             InputEvent::Pointer(pointer)
                 if self.area.contains(Position::new(pointer.x, pointer.y)) =>
             {
-                if let PointerAction::Scroll { rows, .. } = pointer.action {
-                    self.scroll = (self.scroll as i64 - rows as i64)
+                if let PointerAction::Scroll { vertical, .. } = pointer.action {
+                    self.scroll = (self.scroll as i64 + vertical as i64)
                         .clamp(0, self.statuses.len().saturating_sub(1) as i64)
                         as usize;
                     return true;
@@ -220,7 +221,11 @@ impl LspSettings {
                     && !input.modifiers.meta =>
             {
                 let count = self.statuses.len();
-                match input.key {
+                let key = match input.key {
+                    Key::Character(ch) => Key::Character(ch.to_ascii_lowercase()),
+                    key => key,
+                };
+                match key {
                     Key::Escape => self.cancel(),
                     Key::Character('f') | Key::Function(5) => self.request_refresh(),
                     Key::Up if count > 0 => {

@@ -185,7 +185,8 @@ impl DiscoveryOptions {
                 install_dir.join("installed.json").display()
             ))
         })?;
-        let executable = fs::canonicalize(&executable).map_err(|e| invalid(e.to_string()))?;
+        // Keep argv[0]'s filename for rustup and other symlink multiplexers.
+        let executable = std::path::absolute(&executable).map_err(|e| invalid(e.to_string()))?;
         let mut args = vec![
             executable
                 .to_str()

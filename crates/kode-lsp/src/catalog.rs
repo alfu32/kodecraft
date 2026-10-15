@@ -1,8 +1,5 @@
 use kode_core::{DomainError, Result};
-use kode_platform::{
-    files::open_regular_file,
-    paths::{ResourceOrigin, ResourcePaths, compiled_resources},
-};
+use kode_platform::{files::open_regular_file, paths::ResourcePaths};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::{
@@ -242,13 +239,34 @@ impl Catalog {
                 .map_err(|e| invalid(e.to_string()))?;
             return Ok((Self::parse(&bytes)?, Some(path.to_owned())));
         }
-        let resource = paths.resolve("lsp/servers.json", &compiled_resources())?;
-        let origin = if let ResourceOrigin::File(path) = resource.origin {
-            Some(path)
-        } else {
-            None
-        };
-        Ok((Self::parse(&resource.bytes)?, origin))
+        let rust_override = paths.explicit.is_some() || paths.rust_home.is_some();
+        for root in [
+            paths.explicit.as_ref(),
+            paths.rust_home.as_ref(),
+            if rust_override {
+                None
+            } else {
+                paths.legacy_home.as_ref()
+            },
+            Some(&paths.executable_dir),
+        ]
+        .into_iter()
+        .flatten()
+        {
+            let path = root.join("lsp/servers.json");
+            match std::fs::symlink_metadata(&path) {
+                Ok(_) => return Self::load(paths, Some(&path)),
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+                Err(source) => {
+                    return Err(DomainError::Io {
+                        operation: "inspect LSP catalog",
+                        path,
+                        source,
+                    });
+                }
+            }
+        }
+        Ok((Self::compiled()?, None))
     }
     pub fn entry(&self, id: &str) -> Option<&ServerEntry> {
         self.servers.iter().find(|entry| entry.id == id)

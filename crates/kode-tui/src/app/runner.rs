@@ -25,40 +25,45 @@ pub async fn run_with_resources(
     initial_file: Option<PathBuf>,
     resources: Option<PathBuf>,
 ) -> Result<()> {
-    let (prepared, theme, detector, log, intelligence) = tokio::task::spawn_blocking(move || {
-        let paths = ResourcePaths::from_environment(resources)?;
-        let defaults = compiled_resources();
-        let css = paths.resolve("styles/app.css", &defaults)?;
-        let css = std::str::from_utf8(&css.bytes).map_err(|error| DomainError::Parse {
-            format: "theme UTF-8",
-            message: error.to_string(),
-        })?;
-        let mut theme = Theme::compiled();
-        theme.merge(&Theme::parse(css));
-        let detector =
-            MimeDetector::from_table(&paths.resolve("mime-types.json", &defaults)?.bytes)?;
-        let definitions = std::env::var_os("KODE_CODEINTEL_PATH").map(PathBuf::from);
-        let intelligence = Arc::new(kode_intelligence::facade::IntelligenceResources::load(
-            &paths,
-            definitions.as_deref(),
-        )?);
-        let log = Arc::new(FileLog::open(
-            &paths.config_dir.join("kode.jsonl"),
-            4 * 1024 * 1024,
-        )?);
-        let prepared = prepare_workspace(
-            &root,
-            WorkspaceGeneration(1),
-            initial_file,
-            &CancellationToken::new(),
-        )?;
-        Ok::<_, DomainError>((prepared, theme, detector, log, intelligence))
-    })
-    .await
-    .map_err(|error| DomainError::Unsupported(format!("workspace startup failed: {error}")))??;
+    let (prepared, theme, detector, log, intelligence, lsp) =
+        tokio::task::spawn_blocking(move || {
+            let paths = ResourcePaths::from_environment(resources)?;
+            let defaults = compiled_resources();
+            let css = paths.resolve("styles/app.css", &defaults)?;
+            let css = std::str::from_utf8(&css.bytes).map_err(|error| DomainError::Parse {
+                format: "theme UTF-8",
+                message: error.to_string(),
+            })?;
+            let mut theme = Theme::compiled();
+            theme.merge(&Theme::parse(css));
+            let detector =
+                MimeDetector::from_table(&paths.resolve("mime-types.json", &defaults)?.bytes)?;
+            let definitions = std::env::var_os("KODE_CODEINTEL_PATH").map(PathBuf::from);
+            let intelligence = Arc::new(kode_intelligence::facade::IntelligenceResources::load(
+                &paths,
+                definitions.as_deref(),
+            )?);
+            let log = Arc::new(FileLog::open(
+                &paths.config_dir.join("kode.jsonl"),
+                4 * 1024 * 1024,
+            )?);
+            let prepared = prepare_workspace(
+                &root,
+                WorkspaceGeneration(1),
+                initial_file,
+                &CancellationToken::new(),
+            )?;
+            let lsp = super::runtime::lsp::LspConfiguration::from_environment(&paths);
+            Ok::<_, DomainError>((prepared, theme, detector, log, intelligence, lsp))
+        })
+        .await
+        .map_err(|error| {
+            DomainError::Unsupported(format!("workspace startup failed: {error}"))
+        })??;
     let mut runtime = AppRuntime::new(prepared)?;
     runtime.set_detector(detector)?;
     runtime.start_intelligence(intelligence).await?;
+    runtime.configure_lsp(lsp)?;
     let terminal = TerminalSession::open(Some(log.clone()), true).map_err(terminal_error);
     let mut terminal = match terminal {
         Ok(terminal) => terminal,

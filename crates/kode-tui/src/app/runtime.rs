@@ -1,5 +1,6 @@
 //! Bounded work execution and application-thread publication.
 mod intelligence;
+pub mod lsp;
 use super::{
     state::{AppState, AppWork, ConfigAction, OpenDestination, PickerKind},
     workspace::{self, OpenRequest, PreparedOpen, PreparedWorkspace},
@@ -50,6 +51,7 @@ use std::{
 use tokio::sync::mpsc;
 
 enum Output {
+    LspSettings(Box<crate::panels::settings::lsp::SettingsReport>),
     IndexPrepared(Box<kode_intelligence::service::PreparedIndex>),
     IndexCommitted(
         Box<(
@@ -77,6 +79,7 @@ enum Output {
     Picker(Project),
 }
 enum Context {
+    LspSettings,
     IndexPrepared,
     IndexCommitted,
     Tree(bool),
@@ -112,6 +115,7 @@ struct Pending {
     work: BlockingJobFactory<Output>,
 }
 pub struct AppRuntime {
+    lsp: Option<lsp::LspRuntime>,
     intelligence: Option<kode_intelligence::service::CodeIntelService>,
     intelligence_resources: Option<Arc<kode_intelligence::facade::IntelligenceResources>>,
     overlay_worker: Option<Arc<crate::editor::overlays::OverlayWorker>>,
@@ -157,6 +161,7 @@ impl AppRuntime {
         let detector = Self::image_detector(MimeDetector::compiled())?;
         state.detector = detector.clone();
         Ok(Self {
+            lsp: None,
             intelligence: None,
             intelligence_resources: None,
             overlay_worker: None,
@@ -246,12 +251,14 @@ impl AppRuntime {
             self.complete(completion)?;
         }
         for progress in self.notifications.take_progress().into_values() {
+            self.state.lsp_settings.progress(&progress);
             if let Some(dialog) = &mut self.state.rescan {
                 dialog.progress(&progress);
             }
         }
         self.state.tick()?;
         let mut active = vec![
+            OwnerId(self.state.lsp_settings.id.0),
             self.root_owner,
             self.clipboard_owner,
             OwnerId(self.state.files.id.0),
@@ -314,6 +321,7 @@ impl AppRuntime {
     }
     fn accept(&mut self, work: AppWork) -> Result<()> {
         match work {
+            AppWork::LspSettings(action) => self.lsp_work(action),
             AppWork::Image(job) => {
                 let owner = self
                     .state
@@ -961,6 +969,18 @@ impl AppRuntime {
             return Ok(());
         }
         match context {
+            Context::LspSettings => {
+                self.state.lsp_settings.complete(
+                    tag,
+                    result.and_then(|output| {
+                        if let Output::LspSettings(report) = output {
+                            Ok(*report)
+                        } else {
+                            Err(DomainError::Unsupported("wrong LSP settings result".into()))
+                        }
+                    }),
+                );
+            }
             Context::IndexPrepared => self.index_prepared(tag, result)?,
             Context::IndexCommitted => self.index_committed(tag, result)?,
             Context::Cells => {
@@ -1475,6 +1495,7 @@ impl AppRuntime {
         self.dispose_services().await
     }
     async fn dispose_services(&mut self) -> Result<()> {
+        self.state.lsp_settings.cancel();
         if let Some(service) = &self.intelligence {
             service.stop_queries();
         }
@@ -1486,9 +1507,23 @@ impl AppRuntime {
         for completion in jobs.shutdown().await {
             self.complete(completion)?;
         }
-        if let Some(service) = self.intelligence.take() {
-            service.shutdown().await?;
-        }
+        let lsp_cleanup = if let Some(lifecycle) = self
+            .lsp
+            .as_ref()
+            .and_then(|runtime| runtime.lifecycle.clone())
+        {
+            tokio::task::spawn_blocking(move || lifecycle.stop_all())
+                .await
+                .map_err(|error| DomainError::Unsupported(format!("LSP shutdown failed: {error}")))
+                .and_then(|result| result)
+        } else {
+            Ok(())
+        };
+        let intelligence_cleanup = if let Some(service) = self.intelligence.take() {
+            service.shutdown().await
+        } else {
+            Ok(())
+        };
         self.query_versions.clear();
         self.overlay_worker = None;
         self.pending.clear();
@@ -1501,7 +1536,8 @@ impl AppRuntime {
                     DomainError::Unsupported(format!("watcher cleanup failed: {error}"))
                 })?;
         }
-        Ok(())
+        lsp_cleanup?;
+        intelligence_cleanup
     }
     /// A broken terminal cannot keep an interactive workspace open. Try the
     /// normal flush, then preserve dirty buffers in distinct recovery files if
@@ -1580,6 +1616,9 @@ impl AppRuntime {
                 if let Some(resources) = self.intelligence_resources.clone() {
                     self.start_intelligence(resources).await?;
                 }
+                if self.lsp.is_some() {
+                    self.state.lsp_settings.request_refresh();
+                }
                 return Err(error);
             }
         };
@@ -1597,6 +1636,9 @@ impl AppRuntime {
             })?;
         if let Some(resources) = self.intelligence_resources.clone() {
             self.start_intelligence(resources).await?;
+        }
+        if self.lsp.is_some() {
+            self.state.lsp_settings.request_refresh();
         }
         Ok(())
     }

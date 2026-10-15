@@ -58,10 +58,13 @@ async fn until(app: &mut AppRuntime, predicate: impl Fn(&AppRuntime) -> bool) {
         }
         assert!(
             start.elapsed() < Duration::from_secs(8),
-            "timeout: {}; {}; watcher={:?}",
+            "timeout: {}; {}; watcher={:?}; LSP: {} (busy={:?}, statuses={})",
             app.state.notice,
             app.state.intelligence_status,
-            app.state.watcher.as_ref().map(|w| w.source_revision())
+            app.state.watcher.as_ref().map(|w| w.source_revision()),
+            app.state.lsp_settings.message,
+            app.state.lsp_settings.busy,
+            app.state.lsp_settings.statuses.len()
         );
         tokio::time::sleep(Duration::from_millis(2)).await;
     }
@@ -71,6 +74,188 @@ fn paint(app: &mut AppRuntime) {
     app.state
         .render(buffer.area, &mut buffer, &Theme::compiled())
         .unwrap();
+}
+
+#[tokio::test]
+async fn lsp_settings_use_real_download_workers_then_acknowledged_lifecycle_callbacks_and_preserve_the_install_root()
+ {
+    use kode_lsp::{
+        catalog::Platform,
+        discovery::{DiscoveryOptions, InstallState},
+    };
+    use kode_platform::paths::ResourcePaths;
+    use kode_tui::{
+        app::runtime::lsp::LspConfiguration,
+        panels::settings::lsp::{LifecycleAction, ServerLifecycle},
+    };
+    use std::{
+        collections::BTreeMap,
+        io::{Read, Write},
+        sync::{Mutex, atomic::AtomicBool},
+    };
+    struct Lifecycle {
+        running: AtomicBool,
+        calls: Mutex<Vec<LifecycleAction>>,
+        stops: AtomicU64,
+    }
+    impl ServerLifecycle for Lifecycle {
+        fn running(&self, _: &str) -> bool {
+            self.running.load(Ordering::SeqCst)
+        }
+        fn apply(
+            &self,
+            id: &str,
+            action: LifecycleAction,
+            cancel: &CancellationToken,
+        ) -> kode_core::Result<String> {
+            assert_eq!(id, "local-server");
+            if cancel.is_cancelled() {
+                return Err(kode_core::DomainError::Cancelled);
+            }
+            self.calls.lock().unwrap().push(action);
+            self.running
+                .store(action != LifecycleAction::Stop, Ordering::SeqCst);
+            Ok(format!("Acknowledged {action:?}"))
+        }
+        fn stop_all(&self) -> kode_core::Result<()> {
+            self.running.store(false, Ordering::SeqCst);
+            self.stops.fetch_add(1, Ordering::SeqCst);
+            Ok(())
+        }
+    }
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().join("project");
+    fs::create_dir(&root).unwrap();
+    let next = directory.path().join("next");
+    fs::create_dir(&next).unwrap();
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = std::thread::spawn(move || {
+        let (mut stream, _) = listener.accept().unwrap();
+        stream
+            .set_read_timeout(Some(Duration::from_secs(3)))
+            .unwrap();
+        let mut input = [0; 4096];
+        assert!(stream.read(&mut input).unwrap() > 0);
+        let body = b"#!/bin/sh\nexit 0\n";
+        stream
+            .write_all(
+                format!(
+                    "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                    body.len()
+                )
+                .as_bytes(),
+            )
+            .unwrap();
+        stream.write_all(body).unwrap();
+    });
+    let catalog = directory.path().join("servers.json");
+    fs::write(&catalog,serde_json::to_vec(&serde_json::json!({"servers":[{"id":"local-server","name":"Local Server","languages":["kotlin"],"preferredCommand":["server","--stdio","two words"],"versions":[{"version":"1","downloads":[{"url":format!("http://{address}/server")}]}]}]})).unwrap()).unwrap();
+    let install = directory.path().join("install root");
+    fs::create_dir(&install).unwrap();
+    fs::write(install.join("user.keep"), b"keep").unwrap();
+    let mut app = make(&root, None, Arc::new(FakeClock::default()));
+    app.configure_lsp(LspConfiguration {
+        paths: ResourcePaths {
+            explicit: None,
+            rust_home: None,
+            legacy_home: None,
+            executable_dir: directory.path().into(),
+            config_dir: directory.path().join("config"),
+        },
+        catalog: Some(catalog),
+        discovery: DiscoveryOptions {
+            platform: Platform::detect(),
+            install_root: install.clone(),
+            search_path: vec![],
+            configured_commands: BTreeMap::new(),
+        },
+    })
+    .unwrap();
+    until(&mut app, |app| {
+        app.state.lsp_settings.statuses.len() == 1 && app.state.lsp_settings.busy.is_none()
+    })
+    .await;
+    let lifecycle = Arc::new(Lifecycle {
+        running: AtomicBool::new(false),
+        calls: Mutex::new(vec![]),
+        stops: AtomicU64::new(0),
+    });
+    app.set_lsp_lifecycle(lifecycle.clone()).unwrap();
+    until(&mut app, |app| app.state.lsp_settings.busy.is_none()).await;
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('4'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    paint(&mut app);
+    assert_eq!(app.state.focus.focused, Some(app.state.lsp_settings.id));
+    assert_eq!(
+        app.state.lsp_settings.statuses[0].install_state,
+        InstallState::Missing
+    );
+    app.state.dispatch(&key(Key::Enter, false)).unwrap();
+    until(&mut app, |app| {
+        app.state.lsp_settings.busy.is_none()
+            && app.state.lsp_settings.message.starts_with("Installed ")
+    })
+    .await;
+    server.join().unwrap();
+    let status = &app.state.lsp_settings.statuses[0];
+    assert_eq!(status.install_state, InstallState::Installed);
+    assert!(!status.running);
+    assert_eq!(
+        status.command.as_ref().unwrap().args[1..],
+        ["--stdio", "two words"]
+    );
+    for (ch, action) in [
+        ('s', LifecycleAction::Start),
+        ('r', LifecycleAction::Restart),
+    ] {
+        app.state.dispatch(&key(Key::Character(ch), false)).unwrap();
+        until(&mut app, |app| {
+            app.state.lsp_settings.busy.is_none()
+                && app.state.lsp_settings.message == format!("Acknowledged {action:?}")
+        })
+        .await;
+        assert!(app.state.lsp_settings.statuses[0].running);
+    }
+    app.state
+        .dispatch(&key(Key::Character('y'), false))
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.lsp_settings.busy.is_none()
+            && app.state.lsp_settings.message.starts_with("Removed ")
+    })
+    .await;
+    assert_eq!(
+        *lifecycle.calls.lock().unwrap(),
+        [
+            LifecycleAction::Start,
+            LifecycleAction::Restart,
+            LifecycleAction::Stop
+        ]
+    );
+    assert!(!app.state.lsp_settings.statuses[0].running);
+    assert!(!install.join("local-server").exists());
+    assert_eq!(fs::read(install.join("user.keep")).unwrap(), b"keep");
+    let owner = app.state.lsp_settings.id;
+    app.switch_workspace(next).await.unwrap();
+    until(&mut app, |app| {
+        app.state.lsp_settings.statuses.len() == 1 && app.state.lsp_settings.busy.is_none()
+    })
+    .await;
+    assert_ne!(app.state.lsp_settings.id, owner);
+    assert!(!app.state.lsp_settings.statuses[0].running);
+    assert_eq!(lifecycle.stops.load(Ordering::SeqCst), 1);
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    assert_eq!(lifecycle.stops.load(Ordering::SeqCst), 2);
 }
 
 #[tokio::test]

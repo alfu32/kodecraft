@@ -166,6 +166,17 @@ fn discovery_finds_existing_manifests_manual_local_path_and_windows_commands_wit
         server.preferred_command.as_ref().unwrap()[1..]
     );
     assert!(!options.install_root.exists());
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::symlink;
+        let command = options.search_path[0].join("server");
+        fs::rename(&command, options.search_path[0].join("multiplexer")).unwrap();
+        symlink("multiplexer", &command).unwrap();
+        assert!(
+            options.status(&server, false).command.unwrap().args[0].ends_with("/server"),
+            "discovery must retain a symlink's invocation name"
+        );
+    }
     executable(&options.install_root.join("test-server/server"));
     assert_eq!(
         options.status(&server, false).install_state,
@@ -221,6 +232,7 @@ fn discovery_finds_existing_manifests_manual_local_path_and_windows_commands_wit
     );
     let mut manual = server;
     manual.id = "manual".into();
+    manual.preferred_command = Some(vec!["missing-manual-server".into()]);
     manual.versions[0].downloads.clear();
     assert_eq!(
         options.status(&manual, false).install_state,
