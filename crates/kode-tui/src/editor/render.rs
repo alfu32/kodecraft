@@ -163,7 +163,7 @@ pub fn render_editor(
         buffer.set_stringn(
             header.x,
             header.y,
-            options.header.text(),
+            super::display::display_text(&options.header.text()),
             header.width as usize,
             theme.style("code-header"),
         );

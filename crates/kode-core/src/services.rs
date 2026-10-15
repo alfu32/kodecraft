@@ -7,7 +7,7 @@ pub trait Clipboard: Send + Sync {
     fn write(&self, text: &str) -> Result<()>;
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct DiskIdentity {
     pub canonical_path: std::path::PathBuf,
     pub length: u64,

@@ -24,21 +24,21 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | E09 | [Completion popup and insertion](tasks/02-editor.md) | E03, E05, E06 | [done](../parity/E09.md) |
 | E10 | [Definitions, usages and hover preview](tasks/02-editor.md) | E05, E06, F03 | [done](../parity/E10.md) |
 | E11 | [Highlight overlays and edit remapping](tasks/02-editor.md) | E05, E07, L02, L09 | todo |
-| E12 | [Reusable editor hosts and virtual/read-only documents](tasks/02-editor.md) | E04, E07, E08, F05 | in-progress |
+| E12 | [Reusable editor hosts and virtual/read-only documents](tasks/02-editor.md) | E04, E07, E08, F05 | [done](../parity/E12.md) |
 | E13 | [Complete editor interaction qualification](tasks/02-editor.md) | E09, E10, E11, E12, W04, W05, P03, D08, R07, G03 | todo |
-| W01 | [Source roots, exclusions and project scanning](tasks/03-workspace.md) | F03 | todo |
-| W02 | [File tree, file actions, refresh and project panel](tasks/03-workspace.md) | W01, F05, E04 | todo |
-| W03 | [Legacy session import and Rust persistence](tasks/03-workspace.md) | E03, F03 | todo |
-| W04 | [Project search modal and embedded editor](tasks/03-workspace.md) | W01, E07, E12, F05, V01 | todo |
-| W05 | [CLI targets and workspace application shell](tasks/03-workspace.md) | F04, F05, W02, W03, E12, V01 | todo |
-| V01 | [MIME/language detection and routing](tasks/04-viewers.md) | F02, F03 | todo |
-| V02 | [Byte buffer and hex viewer](tasks/04-viewers.md) | F05, V01, E04 | todo |
-| V03 | [Image decoding and colored cell modes](tasks/04-viewers.md) | F03, F05, V01 | todo |
+| W01 | [Source roots, exclusions and project scanning](tasks/03-workspace.md) | F03 | [done](../parity/W01.md) |
+| W02 | [File tree, file actions, refresh and project panel](tasks/03-workspace.md) | W01, F05, E04 | [done](../parity/W02.md) |
+| W03 | [Legacy session import and Rust persistence](tasks/03-workspace.md) | E03, F03 | [done](../parity/W03.md) |
+| W04 | [Project search modal and embedded editor](tasks/03-workspace.md) | W01, E07, E12, F05, V01 | [done](../parity/W04.md) |
+| W05 | [CLI targets and workspace application shell](tasks/03-workspace.md) | F04, F05, W02, W03, E12, V01 | [done](../parity/W05.md) |
+| V01 | [MIME/language detection and routing](tasks/04-viewers.md) | F02, F03 | [done](../parity/V01.md) |
+| V02 | [Byte buffer and hex viewer](tasks/04-viewers.md) | F05, V01, E04 | [done](../parity/V02.md) |
+| V03 | [Image decoding and colored cell modes](tasks/04-viewers.md) | F03, F05, V01 | [done](../parity/V03.md) |
 | G01 | [Repository discovery and read operations](tasks/05-git.md) | F03 | todo |
 | G02 | [Stage, unstage, commit, checkout and tags](tasks/05-git.md) | G01, E12, F05 | todo |
 | G03 | [Diff views and restoring worktree chunks](tasks/05-git.md) | G02, E05, E12, V01 | todo |
-| L01 | [Semantic facts, identifiers and immutable snapshots](tasks/06-intelligence.md) | F02, E01 | todo |
-| L02 | [Keyword highlighting and incremental parser registry](tasks/06-intelligence.md) | E01, F03 | todo |
+| L01 | [Semantic facts, identifiers and immutable snapshots](tasks/06-intelligence.md) | F02, E01 | [done](../parity/L01.md) |
+| L02 | [Keyword highlighting and incremental parser registry](tasks/06-intelligence.md) | E01, F03 | in-progress |
 | L03 | [Kotlin semantic extraction](tasks/06-intelligence.md) | L01, L02 | todo |
 | L04 | [C semantic extraction](tasks/06-intelligence.md) | L01, L02 | todo |
 | L05 | [SQLite semantic store and atomic publication](tasks/06-intelligence.md) | L01, F03 | todo |

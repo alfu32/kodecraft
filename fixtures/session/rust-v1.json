@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "sourceRoots": ["src"],
+  "scanExclusions": ["src/generated"],
+  "openEditors": [{
+    "origin": {"File": "src/example.kt"},
+    "history": {
+      "version": 1,
+      "revision": 3,
+      "saved_revision": 1,
+      "current": {"text": "a😀b\ndirty", "selection": {"anchor": 5, "head": 1}},
+      "saved_text": "a😀b",
+      "saved_baseline_known": true,
+      "undo": [{"text": "a😀b", "selection": {"anchor": 5, "head": 5}}],
+      "redo": [],
+      "omitted_undo": 0,
+      "omitted_redo": 0
+    },
+    "scrollTop": 4,
+    "language": "kotlin",
+    "grammarLanguage": "kotlin",
+    "grammarAvailable": true,
+    "futureEditor": {"keep": true}
+  }],
+  "database": {"dataSources": [], "sessions": []},
+  "restApi": {"version": 1, "collection": {"info": {"name": "Synthetic"}, "item": [], "future": true}},
+  "futureRoot": {"keep": true}
+}

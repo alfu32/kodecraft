@@ -4,6 +4,9 @@ pub mod editor;
 pub mod focus;
 pub mod input;
 pub mod layout;
+pub mod panels;
 pub mod terminal;
 pub mod theme;
 pub mod widgets;
+
+pub mod viewers;

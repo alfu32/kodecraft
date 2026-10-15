@@ -216,7 +216,7 @@ completion-related `CodeEditorViewTest` cases.
 
 ## E12 — Reusable editor hosts and virtual/read-only documents
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** E04, E07, E08, F05. **Owns:** `kode-tui/src/editor/{host,mod}.rs`.
 **Read:** public CodeEditorView hooks; ProjectSearchDialog, SqlConsoleManager,

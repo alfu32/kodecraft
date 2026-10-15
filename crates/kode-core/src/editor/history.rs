@@ -59,10 +59,17 @@ pub struct HistoryStateV1 {
     pub saved_revision: Revision,
     pub current: PersistedBuffer,
     pub saved_text: String,
+    /// Legacy dirty buffers may have no recoverable saved text. They stay dirty
+    /// until a real disk baseline or successful save establishes one.
+    #[serde(default = "baseline_known")]
+    pub saved_baseline_known: bool,
     pub undo: Vec<PersistedBuffer>,
     pub redo: Vec<PersistedBuffer>,
     pub omitted_undo: usize,
     pub omitted_redo: usize,
+}
+fn baseline_known() -> bool {
+    true
 }
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct HistoryImportReport {
@@ -165,6 +172,7 @@ impl Document {
                 selection: caret.selection,
             },
             saved_text: self.saved_text.to_string(),
+            saved_baseline_known: self.saved_baseline_known,
             undo,
             redo,
             omitted_undo: self.history.omitted_undo.saturating_add(undo_start),
@@ -248,6 +256,7 @@ impl Document {
         history.omitted_redo = state.omitted_redo.saturating_add(report.discarded_redo);
         self.text = current.rope;
         self.saved_text = Rope::from_str(&state.saved_text);
+        self.saved_baseline_known = state.saved_baseline_known;
         self.saved_revision = state.saved_revision;
         self.revision = Revision(revision);
         self.flattened = Arc::default();

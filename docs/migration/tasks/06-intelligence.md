@@ -8,7 +8,7 @@ scope, lexical classification and resolved types.
 
 ## L01 — Semantic facts, identifiers and immutable snapshots
 
-**Status:** todo
+**Status:** done
 
 **Depends:** F02, E01. **Owns:** `kode-intelligence/src/{model,snapshot,ids}.rs`.
 **Read:** `codeintel/model/SemanticModel.kt`, `index/SemanticIndex.kt`,
@@ -28,7 +28,7 @@ scope, lexical classification and resolved types.
 
 ## L02 — Keyword highlighting and incremental parser registry
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** E01, F03. **Owns:** `kode-syntax/src/`, `resources/keywords/`,
 `resources/grammars/manifest.json`.

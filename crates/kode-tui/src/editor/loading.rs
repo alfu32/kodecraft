@@ -228,4 +228,16 @@ impl SaveController {
     pub fn is_saving(&self) -> bool {
         self.active.is_some()
     }
+    pub fn retarget_file(&mut self, path: &std::path::Path) -> Result<()> {
+        if self.is_saving() {
+            return Err(DomainError::Unsupported(
+                "wait for the active save before moving its file".into(),
+            ));
+        }
+        if let Some(identity) = &mut self.disk_identity {
+            identity.canonical_path = path.into();
+        }
+        self.error = None;
+        Ok(())
+    }
 }

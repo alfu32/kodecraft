@@ -2,10 +2,10 @@
 
 ## V01 — MIME/language detection and routing
 
-**Status:** todo
+**Status:** done
 
 **Depends:** F02, F03. **Owns:** `kode-workspace/src/mime/`,
-`resources/mime-table.json` and routing DTOs.
+`resources/mime-types.json` (the F02 compiled resource) and routing DTOs.
 **Read:** `editor/mime/*.kt`, `DefaultMimeTypeDetectorTest`, source `samples/`.
 
 1. Port explicit filename/extension/language/category mappings, including systemd
@@ -23,7 +23,7 @@
 
 ## V02 — Byte buffer and hex viewer
 
-**Status:** todo
+**Status:** done
 
 **Depends:** F05, V01, E04. **Owns:** `kode-core/src/document/bytes.rs`,
 `kode-tui/src/viewers/hex.rs`.
@@ -44,7 +44,7 @@
 
 ## V03 — Image decoding and colored cell modes
 
-**Status:** todo
+**Status:** done
 
 **Depends:** F03, F05, V01. **Owns:** `kode-platform/src/images/`,
 `kode-tui/src/viewers/image.rs` and image fixtures.

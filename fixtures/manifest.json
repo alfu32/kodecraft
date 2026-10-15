@@ -79,6 +79,118 @@
       "expected": "UTF-16 cursor 3 → UTF-8 byte 5; reverse selection, dirty history, unknown fields preserved"
     },
     {
+      "path": "session/rust-v1.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "93d5b0c5225df4ef3fcbccf2470c1468344ab4c426e0099e23d88202a6f0bfe8",
+      "expected": "Rust v1 dirty Unicode byte selection/history, roots, grammar and opaque feature fields"
+    },
+    {
+      "path": "mime/sample-matrix.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "c9ef9a1fa9b51c1c33972340472ae98783c6c0fbf82ac5c3a30e9471bd4d1930",
+      "expected": "225 tracked sample filenames; Kotlin last-suffix/last-row MIME mapping; no sample contents copied"
+    },
+    {
+      "path": "languages/semantic/ids-kotlin.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "cc644d921a8e8f56ebcf686f4218f0e2ffa88b6499915a83607e5955408ab198",
+      "expected": "Frozen Kotlin semantic identity oracle with explicit UTF-8 byte inputs"
+    },
+    {
+      "path": "images/cells-oracle.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "847539302b63947383e755bec6a476560521afb4c6fdf06c3ce02465bef5fadb",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/checker-rle.psd",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "d885e6ed5e65b7650e0925488734bc5dd30298c8efd7e60ab1af4cad28b7488a",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/checker.bmp",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "24723c6271740b2f28e9234ffdf1e7b1ab9220e86ab194cd77438457ada21948",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/checker.kra",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "bfc47b1b3054124a20d6bd5f2a9365b55cd2b8feeacc96c2433f43859ece2b1b",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/checker.png",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "620edd992210ef75c3db8d80aab7b51249446c5ac83eb465ab79ff328a44e4c5",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/checker.psd",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "70d774f77b4aa82cfe0baf242d623a77b78a25001c97bd4552f650642bf86047",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/checker.svg",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "5bbc5a35e9bd84913c99da08ee0c6b344cccbc421edb4b4a7449f6ee026fa481",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/checker.tga",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "aef73b8aa99daa5dc4e79333a5c4334a67a0f3fb1ec379eac244927cd2d9fdf4",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/dxt1.dds",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "1805c8774fd5de590a9691956199a803e00206f3b2fcffb4e503e055a34fa889",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/dxt3.dds",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "9772100ec966caac86742a9cdbd5511140b944f8b172433c2b1bab48581cc662",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/dxt4.dds",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "b59ffe63b828aeadc4f228b521d94439fbe7203a96a9745e03d6cc68f995baf6",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/dxt5.dds",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "59cc344dcfeed5cfbbf5284bd1d2fd8910f40487521dd1f39ee15632b3d2212e",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
+      "path": "images/red.gif",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "b263ce6bde416426b6676c320846f73870d40b2125bfc9630087c3c54df21ac8",
+      "expected": "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification"
+    },
+    {
       "path": "rest/collection-v21.json",
       "origin": "Synthetic migration fixture; CC0-1.0",
       "license": "CC0-1.0",

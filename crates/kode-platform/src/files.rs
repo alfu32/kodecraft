@@ -33,11 +33,42 @@ fn identity(path: &Path, metadata: &fs::Metadata, bytes: &[u8]) -> DiskIdentity 
         content_hash: format!("{:x}", Sha256::digest(bytes)),
     }
 }
+pub fn open_regular_file(path: &Path) -> Result<fs::File> {
+    if !fs::metadata(path)
+        .map_err(|source| io_error("stat file", path, source))?
+        .is_file()
+    {
+        return Err(DomainError::Unsupported(
+            "document target must be a regular file".into(),
+        ));
+    }
+    let mut options = fs::OpenOptions::new();
+    options.read(true);
+    // Prevent a replaced regular file becoming a blocking FIFO between stat and
+    // open. Nonblocking mode has no effect on regular file reads.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(nix::fcntl::OFlag::O_NONBLOCK.bits());
+    }
+    let file = options
+        .open(path)
+        .map_err(|source| io_error("open file", path, source))?;
+    if !file
+        .metadata()
+        .map_err(|source| io_error("stat opened file", path, source))?
+        .is_file()
+    {
+        return Err(DomainError::Unsupported(
+            "document target changed to a non-regular file".into(),
+        ));
+    }
+    Ok(file)
+}
 pub fn disk_identity(path: &Path) -> Result<DiskIdentity> {
     let canonical =
         fs::canonicalize(path).map_err(|source| io_error("resolve file", path, source))?;
-    let mut file =
-        fs::File::open(&canonical).map_err(|source| io_error("open file", path, source))?;
+    let mut file = open_regular_file(&canonical)?;
     let metadata = file
         .metadata()
         .map_err(|source| io_error("stat file", path, source))?;
@@ -53,8 +84,7 @@ impl DocumentIo for NativeDocumentIo {
         };
         let canonical = fs::canonicalize(path)
             .map_err(|source| io_error("resolve load target", path, source))?;
-        let mut file =
-            fs::File::open(&canonical).map_err(|source| io_error("open document", path, source))?;
+        let mut file = open_regular_file(&canonical)?;
         let before = file
             .metadata()
             .map_err(|source| io_error("stat document", path, source))?;

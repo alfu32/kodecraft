@@ -1,1 +1,4 @@
-//! kode-syntax: migration component; implementation status is tracked in DASHBOARD.md.
+//! Native lexical highlighting and parser services.
+pub mod keywords;
+pub mod model;
+pub mod regex_grammar;

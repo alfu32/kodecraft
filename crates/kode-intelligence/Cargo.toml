@@ -12,3 +12,5 @@ workspace = true
 kode-core.workspace = true
 kode-platform.workspace = true
 kode-syntax.workspace = true
+serde.workspace = true
+serde_json.workspace = true

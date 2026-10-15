@@ -86,12 +86,20 @@ def synchronize(task=None, status=None, check=False):
         dashboard.append(f"- **{task_id}** — [{title}]({path.relative_to(ROOT).as_posix()}#{task_id.lower()}--{re.sub(r'[^a-z0-9 -]', '', title.lower()).replace(' ', '-')})")
     if not active:
         dashboard.append("No task currently in progress.")
-    dashboard += ["", "## Task status", "", "| Task | Definition | Status | Evidence |", "|------|---------------------------------------------------------------------------------------------------|-------------|------------------------------|"]
+    task_rows = []
     for task_id in [row[1] for row in rows]:
         path, title, state, _ = entries[task_id]
         report = ROOT / f"docs/parity/{task_id}.md"
         evidence = f"[Report]({report.relative_to(ROOT).as_posix()})" if report.exists() else "—"
-        dashboard.append(f"| {task_id:>4} | [{(title + path.relative_to(ROOT).as_posix()):>95}) | {state:>11} | {evidence:>28} |")
+        definition = f"[{title}]({path.relative_to(ROOT).as_posix()})"
+        task_rows.append([task_id, definition, state, evidence])
+    headings = ["Task", "Definition", "Status", "Evidence"]
+    widths = [max(len(row[column]) for row in [headings] + task_rows) for column in range(4)]
+    def aligned_row(row):
+        return "| " + " | ".join(value.ljust(width) for value, width in zip(row, widths)) + " |"
+    dashboard += ["", "## Task status", "", aligned_row(headings),
+                  "|" + "|".join("-" * (width + 2) for width in widths) + "|"]
+    dashboard.extend(aligned_row(row) for row in task_rows)
     dashboard += ["", "Regenerate with `python3 scripts/tasks.py`; verify with `python3 scripts/tasks.py --check`.", "",
                   "Change a task with `python3 scripts/tasks.py F01 in-progress`. Prerequisites must be done before starting or completing dependent work.", ""]
     target = ROOT / "DASHBOARD.md"

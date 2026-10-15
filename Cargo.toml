@@ -28,6 +28,18 @@ arboard = { version = "=3.6.1", default-features = false }
 unicode-general-category = "=0.6.0"
 regex = "=1.13.1"
 fancy-regex = "=0.19.2"
+ignore = "=0.4.33"
+notify = "=8.2.0"
+infer = "=0.22.0"
+mime_guess = "=2.0.5"
+image = { version = "=0.25.10", default-features = false, features = ["png", "bmp", "gif", "tga", "dds", "jpeg", "webp", "ico", "tiff", "pnm", "qoi", "hdr"] }
+resvg = { version = "=0.47.0", default-features = false, features = ["text", "system-fonts", "raster-images"] }
+psd = "=0.3.5"
+zip = { version = "=9.0.1", default-features = false, features = ["deflate-flate2-zlib-rs"] }
+indexmap = { version = "=2.14.2", features = ["serde"] }
+tree-sitter = "=0.25.10"
+tree-sitter-kotlin-ng = "=1.1.0"
+tree-sitter-c = "=0.24.2"
 
 kode = { path = "crates/kode" }
 kode-core = { path = "crates/kode-core" }

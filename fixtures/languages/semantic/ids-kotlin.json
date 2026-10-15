@@ -1,0 +1,53 @@
+{
+  "baseline": "7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+  "cases": [
+    {
+      "path": "Program.kt",
+      "prefix": "",
+      "name": "Program",
+      "kind": "CLASS",
+      "scope": "FILE",
+      "start": 0,
+      "end": 7,
+      "offsetUnit": "UTF8_BYTES",
+      "legacyUtf16Start": 0,
+      "fileId": -3169365937690941930,
+      "symbolId": -2265028408534591263,
+      "scopeId": 5013249851083445085,
+      "occurrenceId": 4228990579000718657,
+      "typeId": -7597840041898699826
+    },
+    {
+      "path": "src/😀.kt",
+      "prefix": "val emoji = \"😀\"; ",
+      "name": "Føø",
+      "kind": "FUNCTION",
+      "scope": "FUNCTION",
+      "start": 20,
+      "end": 25,
+      "offsetUnit": "UTF8_BYTES",
+      "legacyUtf16Start": 18,
+      "fileId": -5229342592713747026,
+      "symbolId": -3478389716214891950,
+      "scopeId": -1918133413522943776,
+      "occurrenceId": -765987979785712932,
+      "typeId": -7597840041898699826
+    },
+    {
+      "path": "c/model.h",
+      "prefix": "/* héader */\n",
+      "name": "Customer",
+      "kind": "STRUCT",
+      "scope": "TYPE",
+      "start": 14,
+      "end": 22,
+      "offsetUnit": "UTF8_BYTES",
+      "legacyUtf16Start": 13,
+      "fileId": 3879548576114072412,
+      "symbolId": -4086293339295184597,
+      "scopeId": -5046040493046551156,
+      "occurrenceId": -786949371331612153,
+      "typeId": -7597840041898699826
+    }
+  ]
+}

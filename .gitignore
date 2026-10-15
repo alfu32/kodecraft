@@ -5,3 +5,5 @@
 /.kode-rs.json
 *.log
 .idea
+
+__pycache__/

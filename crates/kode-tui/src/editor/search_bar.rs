@@ -597,7 +597,7 @@ impl EditorInputHooks for SearchBar {
     }
 }
 
-fn escape_literal(text: &str) -> String {
+pub fn escape_literal(text: &str) -> String {
     let mut escaped = String::new();
     for ch in text.chars() {
         if "\\.[]{}()*+?^$|".contains(ch) {

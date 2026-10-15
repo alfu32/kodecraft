@@ -17,6 +17,10 @@ serde_json.workspace = true
 sha2.workspace = true
 arboard.workspace = true
 tempfile.workspace = true
+image.workspace = true
+resvg.workspace = true
+psd.workspace = true
+zip.workspace = true
 
 [target.'cfg(unix)'.dependencies]
 nix.workspace = true

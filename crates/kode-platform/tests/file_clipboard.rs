@@ -19,6 +19,28 @@ fn tag() -> JobTag {
         document: None,
     }
 }
+#[test]
+fn document_io_rejects_directories_and_fifos_before_opening_or_hashing() {
+    let temp = tempfile::tempdir().unwrap();
+    assert!(
+        NativeDocumentIo
+            .load(&DocumentOrigin::File(temp.path().into()), tag())
+            .is_err()
+    );
+    assert!(kode_platform::files::disk_identity(temp.path()).is_err());
+    #[cfg(unix)]
+    {
+        use nix::{sys::stat::Mode, unistd::mkfifo};
+        let path = temp.path().join("fifo");
+        mkfifo(&path, Mode::S_IRUSR | Mode::S_IWUSR).unwrap();
+        assert!(
+            NativeDocumentIo
+                .load(&DocumentOrigin::File(path.clone()), tag())
+                .is_err()
+        );
+        assert!(kode_platform::files::disk_identity(&path).is_err());
+    }
+}
 
 #[test]
 fn atomic_load_save_preserves_bom_crlf_and_missing_files_are_errors() {

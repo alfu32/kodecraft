@@ -20,6 +20,7 @@ impl Document {
             });
         }
         self.saved_text = snapshot.rope.clone();
+        self.saved_baseline_known = true;
         self.saved_revision = snapshot.revision;
         Ok(())
     }

@@ -1,0 +1,53 @@
+{
+  "cases": [
+    {
+      "case": "file-edit-save-dirty-quit",
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "folder-restores-dirty-session",
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "empty-folder-tiny-quit",
+      "size": [
+        20,
+        6
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "empty-folder-tiny-quit",
+      "size": [
+        1,
+        1
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "missing-target-help-version",
+      "status": "passed"
+    }
+  ],
+  "passed": 5
+}

@@ -1,3 +1,4 @@
+pub mod bytes;
 pub mod encoding;
 pub mod positions;
 pub mod save;

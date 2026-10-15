@@ -2,7 +2,7 @@
 
 ## W01 — Source roots, exclusions and project scanning
 
-**Status:** todo
+**Status:** done
 
 **Depends:** F03. **Owns:** `kode-workspace/src/{scanner,project,exclusions}.rs`.
 **Read:** `editor/app/ProjectFileScanner.kt`, `editor/lib/ProjectFolderStatus.kt`,
@@ -21,7 +21,7 @@ Main's source-root/exclusion helpers; ProjectFileScannerTest and ProjectFolderSt
 
 ## W02 — File tree, file actions, refresh and project panel
 
-**Status:** todo
+**Status:** done
 
 **Depends:** W01, F05, E04. **Owns:** `kode-workspace/src/tree.rs`,
 `kode-tui/src/panels/{files,project}/`, `widgets/folder_picker.rs`.
@@ -43,7 +43,7 @@ Main's source-root/exclusion helpers; ProjectFileScannerTest and ProjectFolderSt
 
 ## W03 — Legacy session import and Rust persistence
 
-**Status:** todo
+**Status:** done
 
 **Depends:** E03, F03. **Owns:** `kode-workspace/src/session/`,
 `fixtures/session/`; schema in `docs/formats/session-v1.md`.
@@ -66,7 +66,7 @@ ProjectSessionManagerTest; database and REST serialized state models.
 
 ## W04 — Project search modal and embedded editor
 
-**Status:** todo
+**Status:** done
 
 **Depends:** W01, E07, E12, F05, V01. **Owns:**
 `kode-workspace/src/search.rs`, `kode-tui/src/panels/project_search/`.
@@ -87,7 +87,7 @@ ProjectSessionManagerTest; database and REST serialized state models.
 
 ## W05 — CLI targets and workspace application shell
 
-**Status:** todo
+**Status:** done
 
 **Depends:** F04, F05, W02, W03, E12, V01. **Owns:** `kode/src/main.rs`,
 `kode/src/cli.rs`, `kode-tui/src/app/{state,workspace,dispatch}.rs`.

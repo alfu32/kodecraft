@@ -128,6 +128,16 @@ SQL/REST execution, only after focused child controls and popups get their defin
 priority. Read-only checks occur at the edit boundary, covering keyboard, mouse,
 replacement, completion, programmatic insertion, paste, and history actions.
 
+`EditorDocuments` keeps document/save lifetime separate from `EditorView` focus,
+caret, search and popup lifetime. Response/raw/historical factories force read-only
+documents. File and explicit owner-key saves serialize per document; a view closing
+cannot discard a pending critical save. Document save owner identities are distinct
+from view owner identities. The application broadcasts document changes to all
+attached views before paint, drains work/events, and cancels only interactive owners
+on view detach. Native clipboard jobs use the shared ClipboardService and bounded
+blocking scheduler. Execution payloads retain snapshot/selection; actual SQL/request
+resolution belongs to the owning feature card.
+
 `DocumentLoader` gates worker-prepared documents and exposes typed load failures.
 `SaveController` serializes saves per document and coalesces later requested
 snapshots. Its critical completion path accepts an older saved revision while
@@ -169,6 +179,14 @@ See the exception details for usage, suggestion, and definition popups in the UX
 contract; they do not all capture every key identically.
 
 ## Feature service contracts
+
+Project scanning uses only configured canonical roots (new-project defaults are
+existing src/lib/include). Root/nested Gitignore rules and hidden whitelisting are
+project-local; explicit exclusions cannot be re-included. Scan batches cap at 128
+files and carry workspace/request identity plus scan-only progress. The collector
+stages publication and preserves the previous file list on cancellation/incomplete
+reads. Folder/tree/search policies are separate from index traversal. See W01 for
+symlink, metadata and error policy.
 
 Editor layout is cached by document identity/revision, text width and collapsed
 folds. Raw scalar byte ranges map to fixed tab/escape display runs; whole fitting
@@ -246,10 +264,44 @@ must not fall back to unrelated workspace members.
 
 ## Persistence and resources
 
+V01's `FileClassification` carries MIME/category/language/detection source and
+Code/Image/Hex routing. Shell shebangs precede explicit Kode filename/extension
+tables; signatures precede deterministic MIME guesses for unknown names. Only
+capabilities supplied by the V03 decoder service permit Image routing. Generic
+image MIME hints alone do not promise decoder support; decoding errors retain
+their message and allow byte inspection. The F02 compiled table name remains
+`mime-types.json`.
+
+File browsing and index scanning use separate policies. `FileTree` publishes only
+prepared worker listings; rendering/reducers never stat files. A successful file
+move retargets document metadata/revision, tree expansion, recents and configured
+roots/exclusions while preserving text/history/dirty baseline. Before scheduling a
+file mutation, reserve its affected paths with `EditorDocuments::reserve_file_action`.
+New saves wait until critical completion is applied with `finish_file_action`,
+which releases the reservation on both success and failure. Directory deletion
+keeps dirty documents owned for recovery; it never replaces them with empty buffers.
+
+W04 project search scans all project text independently of indexing configuration,
+skipping Git/session metadata, binary classifications and directory links. Its
+prepared hits carry byte/UTF-16 ranges and document revision/disk identity. `OpenHit`
+must reuse a registry document or load real file bytes before attaching the preview;
+failed loads never substitute empty editable text. Preview edits invalidate old hit
+coordinates and refresh against live snapshots. Child editor effects retain their
+owner; physical saves remain registry-owned. Whole-project replacement is absent
+in the source and is not inferred from its global replacement field.
+
 `ProjectSessionV1` in `.kode-rs.json` contains version, recent files, open document
 and view snapshots, roots/exclusions, and feature state blocks. W03 owns the exact
 schema and legacy import. Prefer atomic replace with a recoverable previous state;
 flush on orderly shutdown after the normal three-second debounce.
+
+W03 specifies [session-v1](../formats/session-v1.md). Unknown feature JSON and
+legacy fields survive imports; `HistoryStateV1.saved_baseline_known` defaults true
+for older Rust snapshots and represents unknown legacy dirty baselines explicitly.
+`DiskIdentity` is serializable. The shell uses `restore_with_recovery` so stale
+dirty state reaches a unique recovery file before disk content replaces its view.
+Drain active critical writes before `SessionPersistence::flush_shutdown`; newer
+pending edits cannot be cleared by completion of an older session snapshot.
 
 Use `.kode-rs/index.sqlite` for the rebuildable internal index. Retain the old
 `.kode/db` untouched. Existing datasource/credentials/driver directories are import
@@ -261,3 +313,44 @@ resource directory → compiled defaults. Recognize legacy `KODE_HOME` as a docu
 fallback when no Rust-specific override exists. Compile a usable default theme,
 keyword catalog, and MIME table into the executable. Optional installed resources
 must not depend on the current working directory.
+
+## Binary viewer ownership
+
+V02's `document::bytes::ByteIndex` is independent of UTF-8 `ByteOffset`.
+`ByteBuffer` owns exact bytes, cursor/anchor and a local binary clipboard, with
+borrowed viewport slices and half-open selection ranges. Binary paste never
+passes through String. `PreparedViewer` carries worker-loaded code or binary
+results; loads, classification and decode errors stay outside rendering/input.
+The shell keeps byte views during workspace lifetime, reconciles their renamed
+paths and persists HEX recents/active origin. Matching the actual source, binary
+edits have no save/history/session-buffer format and remain temporary; the UI
+states this explicitly. The binary loading limit is 64 MiB.
+
+## Image viewer workers
+
+V03 `DecodedImage` owns immutable RGBA pixels under explicit dimension/pixel/input
+limits. `ImageJob` captures settings, viewport scaling and a fresh workspace tag;
+`ImageView` accepts only its pending completion. Decode and color/glyph sampling
+run in bounded workers, while painting only copies prepared cells. The shell
+registers qualified decoder MIME capabilities and fills absent TGA/DDS/PSD/KRA
+extension defaults without replacing explicit resource mappings. Unsupported data
+falls back to hex with the original decoder error. Source alpha-ignoring RGB
+sampling and active mode order are retained; optional Gray/Contrast controls are
+available under `[more]`/M. See V03's qualified subformat matrix and bounds.
+
+## Native semantic model and queries
+
+L01 semantic FileId/SymbolId/ScopeId/TypeId/OccurrenceId are distinct signed i64
+FNV identities, retaining source bit patterns. Hash offset inputs are ByteOffset,
+never implicit legacy UTF-16. SourceRange aliases the guarded core TextRange;
+frontends must validate every delta against its source text before publication.
+All actual SemanticModel.kt fact/enumeration/type/confidence/knowledge distinctions
+are retained in `kode-intelligence::model`, independently of the editor facade DTOs.
+
+ResolvedSemanticProject separates immutable extraction deltas from enriched
+records. SemanticSnapshot builds its private query tables on a worker, validates
+identity/scope/reference integrity, collapses identical records and rejects
+conflicting IDs. Range queries preserve nested overlaps. SnapshotPublisher swaps
+prepared Arc snapshots with increasing revisions; it does not itself persist or
+resolve facts. L05/L08/L09 must gate publication after transaction success and
+current workspace/document/index tags. Readers may retain old snapshots safely.

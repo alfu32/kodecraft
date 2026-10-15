@@ -32,6 +32,7 @@ pub struct Document {
     pub(crate) saved_revision: Revision,
     pub(crate) text: Rope,
     pub(crate) saved_text: Rope,
+    pub(crate) saved_baseline_known: bool,
     pub(crate) flattened: Arc<OnceLock<Arc<str>>>,
     read_only: bool,
     pub(crate) history: crate::editor::history::History,
@@ -52,6 +53,7 @@ impl Document {
             revision: Revision(0),
             saved_revision: Revision(0),
             saved_text: text.clone(),
+            saved_baseline_known: true,
             text,
             flattened: Arc::default(),
             read_only: false,
@@ -77,6 +79,23 @@ impl Document {
     pub fn origin(&self) -> &DocumentOrigin {
         &self.origin
     }
+    /// Metadata-only move after a successful filesystem operation. Invalidate
+    /// old worker snapshots while preserving unsaved text, baseline and history.
+    pub fn retarget_file(&mut self, path: std::path::PathBuf) -> Result<()> {
+        if !matches!(self.origin, DocumentOrigin::File(_)) {
+            return Err(crate::DomainError::NoSaveTarget);
+        }
+        if self.origin == DocumentOrigin::File(path.clone()) {
+            return Ok(());
+        }
+        let revision =
+            self.revision.0.checked_add(1).ok_or_else(|| {
+                crate::DomainError::Unsupported("document revision exhausted".into())
+            })?;
+        self.origin = DocumentOrigin::File(path);
+        self.revision = Revision(revision);
+        Ok(())
+    }
     pub fn revision(&self) -> Revision {
         self.revision
     }
@@ -84,7 +103,7 @@ impl Document {
         self.saved_revision
     }
     pub fn is_dirty(&self) -> bool {
-        self.text != self.saved_text
+        !self.saved_baseline_known || self.text != self.saved_text
     }
     pub fn is_read_only(&self) -> bool {
         self.read_only

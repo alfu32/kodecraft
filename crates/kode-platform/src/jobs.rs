@@ -300,6 +300,16 @@ impl<T: Send + 'static> Scheduler<T> {
         self.active.remove(&output.tag);
         Some(output)
     }
+    /// Application-thread reservation check before consuming an owned closure.
+    /// Submission has no other producer; workers can only release these permits.
+    pub fn can_submit_blocking(&self) -> bool {
+        self.async_slots.available_permits() > 0 && self.blocking_slots.available_permits() > 0
+    }
+    pub fn cancel_request(&mut self, tag: JobTag) {
+        if let Some((_, token)) = self.active.remove(&tag) {
+            token.cancel();
+        }
+    }
     /// Cancels owners, drains all critical completions and joins every worker.
     /// The caller applies/persists these completions before restoring the terminal.
     pub async fn shutdown(mut self) -> Vec<Completion<T>> {

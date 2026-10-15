@@ -94,11 +94,12 @@ pub fn scan(
                 }
             }
             Err(_) => {
-                let regex = fancy_regex::RegexBuilder::new(&pattern)
-                    .backtrack_limit(100_000)
-                    .delegate_size_limit(8 * 1024 * 1024)
-                    .build()
-                    .map_err(|error| format!("Invalid or unsupported Java regex: {error}"))?;
+                let regex =
+                    fancy_regex::RegexBuilder::new(&super::search_pattern::backtracking(&pattern))
+                        .backtrack_limit(100_000)
+                        .delegate_size_limit(8 * 1024 * 1024)
+                        .build()
+                        .map_err(|error| format!("Invalid or unsupported Java regex: {error}"))?;
                 for captures in regex.captures_iter(report.text.as_ref()) {
                     let captures =
                         captures.map_err(|error| format!("Regex execution failed: {error}"))?;

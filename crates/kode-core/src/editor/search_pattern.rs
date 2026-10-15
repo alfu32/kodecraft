@@ -216,3 +216,17 @@ pub(super) fn translate(query: &str) -> std::result::Result<String, String> {
     }
     Ok(out)
 }
+
+/// fancy-regex cannot disable Unicode mode inline. Expand only the generated
+/// ASCII boundary assertions when a pattern requires its look-around engine.
+pub(super) fn backtracking(pattern: &str) -> String {
+    pattern
+        .replace(
+            r"(?-u:\b)",
+            r"(?:(?<=[A-Za-z0-9_])(?![A-Za-z0-9_])|(?<![A-Za-z0-9_])(?=[A-Za-z0-9_]))",
+        )
+        .replace(
+            r"(?-u:\B)",
+            r"(?:(?<=[A-Za-z0-9_])(?=[A-Za-z0-9_])|(?<![A-Za-z0-9_])(?![A-Za-z0-9_]))",
+        )
+}

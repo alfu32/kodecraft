@@ -11,3 +11,13 @@ workspace = true
 [dependencies]
 kode-core.workspace = true
 kode-platform.workspace = true
+ignore.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tempfile.workspace = true
+tokio.workspace = true
+notify.workspace = true
+infer.workspace = true
+mime_guess.workspace = true
+sha2.workspace = true
+nix.workspace = true

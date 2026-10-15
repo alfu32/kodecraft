@@ -115,6 +115,24 @@ def fixtures():
               "redo": [], "dirty": True}, "scrollTop": 0, "language": "kotlin", "lastModifiedMillis": 1}],
              "database": {}, "restApi": {}, "futureExtension": {"keep": True}}
     put("sessions/legacy-v6.json", json.dumps(state), "UTF-16 cursor 3 → UTF-8 byte 5; reverse selection, dirty history, unknown fields preserved")
+    rust_session = FIXTURES / "session/rust-v1.json"
+    if rust_session.exists():
+        put("session/rust-v1.json", rust_session.read_bytes(), "Rust v1 dirty Unicode byte selection/history, roots, grammar and opaque feature fields")
+    mime_matrix = FIXTURES / "mime/sample-matrix.json"
+    if mime_matrix.exists():
+        put("mime/sample-matrix.json", mime_matrix.read_bytes(), "225 tracked sample filenames; Kotlin last-suffix/last-row MIME mapping; no sample contents copied")
+    semantic_directory = FIXTURES / "languages/semantic"
+    if semantic_directory.exists():
+        for path in sorted(semantic_directory.iterdir()):
+            if path.is_file():
+                put("languages/semantic/" + path.name, path.read_bytes(),
+                    "Frozen Kotlin semantic identity oracle with explicit UTF-8 byte inputs")
+    image_directory = FIXTURES / "images"
+    if image_directory.exists():
+        for path in sorted(image_directory.iterdir()):
+            if path.is_file():
+                put("images/" + path.name, path.read_bytes(),
+                    "Original synthetic decoder input / frozen Kotlin AsciiCore cell-color oracle; V03 qualification")
     postman = {"info": {"name": "Synthetic", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
                "variable": [{"key": "base", "value": "http://127.0.0.1", "disabled": False}],
                "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "synthetic-token"}]},

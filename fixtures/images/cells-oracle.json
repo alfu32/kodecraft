@@ -1,0 +1,4466 @@
+{
+  "baseline": "7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+  "source": "AsciiCore.kt compiled with kotlinc",
+  "cases": [
+    {
+      "name": "checker-0.0",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "█",
+          "foreground": [
+            255,
+            0,
+            0
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "▐",
+          "foreground": [
+            0,
+            255,
+            0
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "█",
+          "foreground": [
+            0,
+            255,
+            0
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "█",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "▐",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "█",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.0",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            0,
+            127
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            255,
+            127
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            255
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.0",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            0,
+            127
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            255,
+            127
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            255
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.0",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⠀",
+          "foreground": [
+            255,
+            0,
+            0
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "⢸",
+          "foreground": [
+            178,
+            178,
+            0
+          ],
+          "background": [
+            127,
+            127,
+            0
+          ]
+        },
+        {
+          "glyph": "⣿",
+          "foreground": [
+            0,
+            255,
+            0
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "⠀",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "⢸",
+          "foreground": [
+            76,
+            76,
+            153
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "⣿",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.0",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": ".",
+          "foreground": [
+            127,
+            0,
+            127
+          ],
+          "background": [
+            127,
+            0,
+            127
+          ]
+        },
+        {
+          "glyph": "=",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        },
+        {
+          "glyph": "%",
+          "foreground": [
+            127,
+            255,
+            127
+          ],
+          "background": [
+            127,
+            255,
+            127
+          ]
+        },
+        {
+          "glyph": ".",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "+",
+          "foreground": [
+            76,
+            76,
+            153
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "@",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.2",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.2,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "█",
+          "foreground": [
+            255,
+            0,
+            0
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "▐",
+          "foreground": [
+            0,
+            255,
+            0
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "█",
+          "foreground": [
+            0,
+            255,
+            0
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "█",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "▐",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "█",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.2",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.2,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            0,
+            127
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            255,
+            127
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            255
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.2",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.2,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            0,
+            127
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            255,
+            127
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            255
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.2",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.2,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⠀",
+          "foreground": [
+            255,
+            0,
+            0
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "⢸",
+          "foreground": [
+            178,
+            178,
+            0
+          ],
+          "background": [
+            127,
+            127,
+            0
+          ]
+        },
+        {
+          "glyph": "⣿",
+          "foreground": [
+            0,
+            255,
+            0
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "⠀",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "⢸",
+          "foreground": [
+            76,
+            76,
+            153
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "⣿",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.2",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.2,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": " ",
+          "foreground": [
+            127,
+            0,
+            127
+          ],
+          "background": [
+            127,
+            0,
+            127
+          ]
+        },
+        {
+          "glyph": "-",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        },
+        {
+          "glyph": "#",
+          "foreground": [
+            127,
+            255,
+            127
+          ],
+          "background": [
+            127,
+            255,
+            127
+          ]
+        },
+        {
+          "glyph": " ",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "=",
+          "foreground": [
+            76,
+            76,
+            153
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "@",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.8",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.8,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "█",
+          "foreground": [
+            255,
+            0,
+            0
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "▐",
+          "foreground": [
+            0,
+            255,
+            0
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "█",
+          "foreground": [
+            0,
+            255,
+            0
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "█",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "▐",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "█",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.8",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.8,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            0,
+            127
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            255,
+            127
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            255
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.8",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.8,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            0,
+            127
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            255,
+            127
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            255
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.8",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.8,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⠀",
+          "foreground": [
+            255,
+            0,
+            0
+          ],
+          "background": [
+            255,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "⠀",
+          "foreground": [
+            178,
+            178,
+            0
+          ],
+          "background": [
+            127,
+            127,
+            0
+          ]
+        },
+        {
+          "glyph": "⠀",
+          "foreground": [
+            0,
+            255,
+            0
+          ],
+          "background": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "glyph": "⠀",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": "⢸",
+          "foreground": [
+            76,
+            76,
+            153
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "⣿",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checker-0.8",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294901760,
+        4278255360,
+        4278190335,
+        16777215
+      ],
+      "outWidth": 3,
+      "outHeight": 2,
+      "gray": 0.8,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": " ",
+          "foreground": [
+            127,
+            0,
+            127
+          ],
+          "background": [
+            127,
+            0,
+            127
+          ]
+        },
+        {
+          "glyph": " ",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        },
+        {
+          "glyph": "-",
+          "foreground": [
+            127,
+            255,
+            127
+          ],
+          "background": [
+            127,
+            255,
+            127
+          ]
+        },
+        {
+          "glyph": " ",
+          "foreground": [
+            0,
+            0,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "glyph": " ",
+          "foreground": [
+            76,
+            76,
+            153
+          ],
+          "background": [
+            127,
+            127,
+            255
+          ]
+        },
+        {
+          "glyph": "@",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ramp",
+      "width": 4,
+      "height": 4,
+      "pixels": [
+        4278190080,
+        4279308561,
+        4280427042,
+        4281545523,
+        4282664004,
+        4283782485,
+        4284900966,
+        4286019447,
+        4287137928,
+        4288256409,
+        4289374890,
+        4290493371,
+        4291611852,
+        4292730333,
+        4293848814,
+        4294967295
+      ],
+      "outWidth": 2,
+      "outHeight": 3,
+      "gray": 0.15,
+      "scatter": 100.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▐",
+          "foreground": [
+            17,
+            17,
+            17
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "glyph": "▐",
+          "foreground": [
+            51,
+            51,
+            51
+          ],
+          "background": [
+            34,
+            34,
+            34
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            144,
+            144,
+            144
+          ],
+          "background": [
+            76,
+            76,
+            76
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            110,
+            110,
+            110
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            212,
+            212,
+            212
+          ],
+          "background": [
+            144,
+            144,
+            144
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            246,
+            246,
+            246
+          ],
+          "background": [
+            178,
+            178,
+            178
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ramp",
+      "width": 4,
+      "height": 4,
+      "pixels": [
+        4278190080,
+        4279308561,
+        4280427042,
+        4281545523,
+        4282664004,
+        4283782485,
+        4284900966,
+        4286019447,
+        4287137928,
+        4288256409,
+        4289374890,
+        4290493371,
+        4291611852,
+        4292730333,
+        4293848814,
+        4294967295
+      ],
+      "outWidth": 2,
+      "outHeight": 3,
+      "gray": 0.15,
+      "scatter": 100.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            51,
+            51,
+            51
+          ],
+          "background": [
+            17,
+            17,
+            17
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            76,
+            76,
+            76
+          ],
+          "background": [
+            42,
+            42,
+            42
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            153,
+            153,
+            153
+          ],
+          "background": [
+            119,
+            119,
+            119
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            144,
+            144,
+            144
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            221,
+            221,
+            221
+          ],
+          "background": [
+            187,
+            187,
+            187
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            246,
+            246,
+            246
+          ],
+          "background": [
+            212,
+            212,
+            212
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ramp",
+      "width": 4,
+      "height": 4,
+      "pixels": [
+        4278190080,
+        4279308561,
+        4280427042,
+        4281545523,
+        4282664004,
+        4283782485,
+        4284900966,
+        4286019447,
+        4287137928,
+        4288256409,
+        4289374890,
+        4290493371,
+        4291611852,
+        4292730333,
+        4293848814,
+        4294967295
+      ],
+      "outWidth": 2,
+      "outHeight": 3,
+      "gray": 0.15,
+      "scatter": 100.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            51,
+            51,
+            51
+          ],
+          "background": [
+            17,
+            17,
+            17
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            76,
+            76,
+            76
+          ],
+          "background": [
+            42,
+            42,
+            42
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            153,
+            153,
+            153
+          ],
+          "background": [
+            119,
+            119,
+            119
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            144,
+            144,
+            144
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            221,
+            221,
+            221
+          ],
+          "background": [
+            187,
+            187,
+            187
+          ]
+        },
+        {
+          "glyph": "▄",
+          "foreground": [
+            246,
+            246,
+            246
+          ],
+          "background": [
+            212,
+            212,
+            212
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ramp",
+      "width": 4,
+      "height": 4,
+      "pixels": [
+        4278190080,
+        4279308561,
+        4280427042,
+        4281545523,
+        4282664004,
+        4283782485,
+        4284900966,
+        4286019447,
+        4287137928,
+        4288256409,
+        4289374890,
+        4290493371,
+        4291611852,
+        4292730333,
+        4293848814,
+        4294967295
+      ],
+      "outWidth": 2,
+      "outHeight": 3,
+      "gray": 0.15,
+      "scatter": 100.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⠀",
+          "foreground": [
+            35,
+            35,
+            35
+          ],
+          "background": [
+            25,
+            25,
+            25
+          ]
+        },
+        {
+          "glyph": "⠀",
+          "foreground": [
+            83,
+            83,
+            83
+          ],
+          "background": [
+            59,
+            59,
+            59
+          ]
+        },
+        {
+          "glyph": "⢠",
+          "foreground": [
+            154,
+            154,
+            154
+          ],
+          "background": [
+            110,
+            110,
+            110
+          ]
+        },
+        {
+          "glyph": "⣤",
+          "foreground": [
+            86,
+            86,
+            86
+          ],
+          "background": [
+            144,
+            144,
+            144
+          ]
+        },
+        {
+          "glyph": "⣾",
+          "foreground": [
+            117,
+            117,
+            117
+          ],
+          "background": [
+            195,
+            195,
+            195
+          ]
+        },
+        {
+          "glyph": "⣿",
+          "foreground": [
+            137,
+            137,
+            137
+          ],
+          "background": [
+            229,
+            229,
+            229
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ramp",
+      "width": 4,
+      "height": 4,
+      "pixels": [
+        4278190080,
+        4279308561,
+        4280427042,
+        4281545523,
+        4282664004,
+        4283782485,
+        4284900966,
+        4286019447,
+        4287137928,
+        4288256409,
+        4289374890,
+        4290493371,
+        4291611852,
+        4292730333,
+        4293848814,
+        4294967295
+      ],
+      "outWidth": 2,
+      "outHeight": 3,
+      "gray": 0.15,
+      "scatter": 100.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": ".",
+          "foreground": [
+            71,
+            71,
+            71
+          ],
+          "background": [
+            51,
+            51,
+            51
+          ]
+        },
+        {
+          "glyph": ":",
+          "foreground": [
+            106,
+            106,
+            106
+          ],
+          "background": [
+            76,
+            76,
+            76
+          ]
+        },
+        {
+          "glyph": "-",
+          "foreground": [
+            167,
+            167,
+            167
+          ],
+          "background": [
+            119,
+            119,
+            119
+          ]
+        },
+        {
+          "glyph": "=",
+          "foreground": [
+            86,
+            86,
+            86
+          ],
+          "background": [
+            144,
+            144,
+            144
+          ]
+        },
+        {
+          "glyph": "*",
+          "foreground": [
+            112,
+            112,
+            112
+          ],
+          "background": [
+            187,
+            187,
+            187
+          ]
+        },
+        {
+          "glyph": "#",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            212,
+            212,
+            212
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-0",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "█",
+          "foreground": [
+            0,
+            0,
+            0
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-0",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            0
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-0",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            0
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-0",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⠀",
+          "foreground": [
+            0,
+            0,
+            0
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-0",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": " ",
+          "foreground": [
+            0,
+            0,
+            0
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-1",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▘",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-1",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            0
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-1",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            0
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-1",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⠃",
+          "foreground": [
+            88,
+            88,
+            88
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-1",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": ":",
+          "foreground": [
+            88,
+            88,
+            88
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-2",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▝",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-2",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            0
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-2",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            0
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-2",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⠘",
+          "foreground": [
+            88,
+            88,
+            88
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-2",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": ":",
+          "foreground": [
+            88,
+            88,
+            88
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-3",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▀",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-3",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            0
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-3",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            0,
+            0,
+            0
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-3",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⠛",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-3",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4278190080,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": "=",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-4",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▖",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-4",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-4",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-4",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⡄",
+          "foreground": [
+            88,
+            88,
+            88
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-4",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": ":",
+          "foreground": [
+            88,
+            88,
+            88
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-5",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▌",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-5",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-5",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-5",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⡇",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-5",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": "=",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-6",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▞",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-6",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-6",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-6",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⡜",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-6",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": "=",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-7",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▛",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-7",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-7",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-7",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⡟",
+          "foreground": [
+            115,
+            115,
+            115
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-7",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4294967295,
+        4278190080
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": "#",
+          "foreground": [
+            115,
+            115,
+            115
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-8",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▗",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-8",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-8",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-8",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⢠",
+          "foreground": [
+            88,
+            88,
+            88
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-8",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": ":",
+          "foreground": [
+            88,
+            88,
+            88
+          ],
+          "background": [
+            63,
+            63,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-9",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▚",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-9",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-9",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-9",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⢣",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-9",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": "=",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-10",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▐",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-10",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-10",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-10",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⢸",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-10",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": "=",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-11",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▜",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-11",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-11",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            127,
+            127,
+            127
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-11",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⢻",
+          "foreground": [
+            115,
+            115,
+            115
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-11",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4278190080,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": "#",
+          "foreground": [
+            115,
+            115,
+            115
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-12",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-12",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-12",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-12",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⣤",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-12",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4278190080,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": "=",
+          "foreground": [
+            178,
+            178,
+            178
+          ],
+          "background": [
+            127,
+            127,
+            127
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-13",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▙",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-13",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-13",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-13",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⣧",
+          "foreground": [
+            115,
+            115,
+            115
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-13",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4278190080,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": "#",
+          "foreground": [
+            115,
+            115,
+            115
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-14",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "▟",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-14",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-14",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-14",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⣼",
+          "foreground": [
+            115,
+            115,
+            115
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-14",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4278190080,
+        4294967295,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": "#",
+          "foreground": [
+            115,
+            115,
+            115
+          ],
+          "background": [
+            191,
+            191,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-15",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Quart",
+      "cells": [
+        {
+          "glyph": "█",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-15",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Demi",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-15",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Bixel",
+      "cells": [
+        {
+          "glyph": "▄",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-15",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Braille",
+      "cells": [
+        {
+          "glyph": "⣿",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quadrants-15",
+      "width": 2,
+      "height": 2,
+      "pixels": [
+        4294967295,
+        4294967295,
+        4294967295,
+        4294967295
+      ],
+      "outWidth": 1,
+      "outHeight": 1,
+      "gray": 0.0,
+      "scatter": 1600.0,
+      "mode": "Ascii",
+      "cells": [
+        {
+          "glyph": "@",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            255,
+            255,
+            255
+          ]
+        }
+      ]
+    }
+  ]
+}

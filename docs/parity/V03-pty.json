@@ -1,0 +1,38 @@
+{
+  "cases": [
+    {
+      "case": "image-cells-mode-width-advanced-quit",
+      "size": [
+        120,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "image-cells-mode-width-advanced-quit",
+      "size": [
+        20,
+        6
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "image-cells-mode-width-advanced-quit",
+      "size": [
+        1,
+        1
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 3
+}

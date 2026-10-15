@@ -20,6 +20,10 @@ kode-rest.workspace = true
 kode-database.workspace = true
 kode-tui.workspace = true
 clap.workspace = true
+tokio.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
 
 [[bin]]
 name = "kode"

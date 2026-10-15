@@ -5,3 +5,5 @@ pub mod jobs;
 pub mod logging;
 pub mod paths;
 pub mod process;
+
+pub mod images;

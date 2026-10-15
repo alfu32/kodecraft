@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    49 |           1 |   15 |       0 |    65 |
+|    39 |           1 |   25 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **E12** — [Reusable editor hosts and virtual/read-only documents](docs/migration/tasks/02-editor.md#e12--reusable-editor-hosts-and-virtualread-only-documents)
+- **L02** — [Keyword highlighting and incremental parser registry](docs/migration/tasks/06-intelligence.md#l02--keyword-highlighting-and-incremental-parser-registry)
 
 ## Task status
 
@@ -30,21 +30,21 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | E09  | [Completion popup and insertion](docs/migration/tasks/02-editor.md)                             | done        | [Report](docs/parity/E09.md) |
 | E10  | [Definitions, usages and hover preview](docs/migration/tasks/02-editor.md)                      | done        | [Report](docs/parity/E10.md) |
 | E11  | [Highlight overlays and edit remapping](docs/migration/tasks/02-editor.md)                      | todo        | —                            |
-| E12  | [Reusable editor hosts and virtual/read-only documents](docs/migration/tasks/02-editor.md)      | in-progress | —                            |
+| E12  | [Reusable editor hosts and virtual/read-only documents](docs/migration/tasks/02-editor.md)      | done        | [Report](docs/parity/E12.md) |
 | E13  | [Complete editor interaction qualification](docs/migration/tasks/02-editor.md)                  | todo        | —                            |
-| W01  | [Source roots, exclusions and project scanning](docs/migration/tasks/03-workspace.md)           | todo        | —                            |
-| W02  | [File tree, file actions, refresh and project panel](docs/migration/tasks/03-workspace.md)      | todo        | —                            |
-| W03  | [Legacy session import and Rust persistence](docs/migration/tasks/03-workspace.md)              | todo        | —                            |
-| W04  | [Project search modal and embedded editor](docs/migration/tasks/03-workspace.md)                | todo        | —                            |
-| W05  | [CLI targets and workspace application shell](docs/migration/tasks/03-workspace.md)             | todo        | —                            |
-| V01  | [MIME/language detection and routing](docs/migration/tasks/04-viewers.md)                       | todo        | —                            |
-| V02  | [Byte buffer and hex viewer](docs/migration/tasks/04-viewers.md)                                | todo        | —                            |
-| V03  | [Image decoding and colored cell modes](docs/migration/tasks/04-viewers.md)                     | todo        | —                            |
+| W01  | [Source roots, exclusions and project scanning](docs/migration/tasks/03-workspace.md)           | done        | [Report](docs/parity/W01.md) |
+| W02  | [File tree, file actions, refresh and project panel](docs/migration/tasks/03-workspace.md)      | done        | [Report](docs/parity/W02.md) |
+| W03  | [Legacy session import and Rust persistence](docs/migration/tasks/03-workspace.md)              | done        | [Report](docs/parity/W03.md) |
+| W04  | [Project search modal and embedded editor](docs/migration/tasks/03-workspace.md)                | done        | [Report](docs/parity/W04.md) |
+| W05  | [CLI targets and workspace application shell](docs/migration/tasks/03-workspace.md)             | done        | [Report](docs/parity/W05.md) |
+| V01  | [MIME/language detection and routing](docs/migration/tasks/04-viewers.md)                       | done        | [Report](docs/parity/V01.md) |
+| V02  | [Byte buffer and hex viewer](docs/migration/tasks/04-viewers.md)                                | done        | [Report](docs/parity/V02.md) |
+| V03  | [Image decoding and colored cell modes](docs/migration/tasks/04-viewers.md)                     | done        | [Report](docs/parity/V03.md) |
 | G01  | [Repository discovery and read operations](docs/migration/tasks/05-git.md)                      | todo        | —                            |
 | G02  | [Stage, unstage, commit, checkout and tags](docs/migration/tasks/05-git.md)                     | todo        | —                            |
 | G03  | [Diff views and restoring worktree chunks](docs/migration/tasks/05-git.md)                      | todo        | —                            |
-| L01  | [Semantic facts, identifiers and immutable snapshots](docs/migration/tasks/06-intelligence.md)  | todo        | —                            |
-| L02  | [Keyword highlighting and incremental parser registry](docs/migration/tasks/06-intelligence.md) | todo        | —                            |
+| L01  | [Semantic facts, identifiers and immutable snapshots](docs/migration/tasks/06-intelligence.md)  | done        | [Report](docs/parity/L01.md) |
+| L02  | [Keyword highlighting and incremental parser registry](docs/migration/tasks/06-intelligence.md) | in-progress | —                            |
 | L03  | [Kotlin semantic extraction](docs/migration/tasks/06-intelligence.md)                           | todo        | —                            |
 | L04  | [C semantic extraction](docs/migration/tasks/06-intelligence.md)                                | todo        | —                            |
 | L05  | [SQLite semantic store and atomic publication](docs/migration/tasks/06-intelligence.md)         | todo        | —                            |
