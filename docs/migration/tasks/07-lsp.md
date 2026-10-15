@@ -2,7 +2,7 @@
 
 ## P01 — Server catalog, discovery and installation
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** F03, F05. **Owns:** `kode-lsp/src/{catalog,install,discovery}.rs`,
 `kode-tui/src/panels/settings/lsp.rs`, `resources/lsp/servers.json`.
@@ -23,7 +23,7 @@
 
 ## P02 — LSP client transport and lifecycle
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** P01, E01, F03. **Owns:** `kode-lsp/src/{transport,client,documents}.rs`.
 **Read:** LspClient.kt, LspService.kt; lsp-types docs and server fixture protocol.

@@ -22,7 +22,7 @@ screen_module = importlib.util.module_from_spec(screen_spec)
 screen_spec.loader.exec_module(screen_module)
 
 
-def run_case(target, config, size, actions, expected=()):
+def run_case(target, config, size, actions, expected=(), env_overrides=None):
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", size[1], size[0], 0, 0))
     before = termios.tcgetattr(slave)
@@ -30,6 +30,7 @@ def run_case(target, config, size, actions, expected=()):
     env.pop("KODE_CODEINTEL_PATH", None)
     env.pop("KODE_LSP_HOME", None)
     env.pop("KODE_LSP_CATALOG", None)
+    env.update(env_overrides or {})
     if expected:
         env.pop("NO_COLOR", None)
         env["COLORTERM"] = "truecolor"

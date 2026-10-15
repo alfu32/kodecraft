@@ -275,6 +275,43 @@ SQLSTATE/vendor code, HTTP status versus transport failure, Git failure context,
 parse errors, and missing-resource information. A failed operation never yields a
 fake successful empty result. Logs go to a file/stderr capture, never the TUI canvas.
 
+## LSP management
+
+P01 supplies `kode-lsp::{catalog,discovery,install}`. Catalog/manifest structs retain
+unknown fields and command argument arrays. Catalog order chooses the first matching
+version/download; platform aliases normalize OS/architecture names. Configured
+commands precede manifest commands, then preferred commands; executable discovery
+checks unpack subdirectory, install directory/root and PATH. It preserves the invoked
+symlink name for command multiplexers. Discovery never chmods external commands or
+creates the install root. Installed, manual/update/error state and actual running
+state are distinct.
+
+LSP catalog precedence is explicit `KODE_LSP_CATALOG`, F02 resource roots, then
+compiled defaults. Reads are regular-file guarded and limited to 1 MiB; manifests
+cap at 128 KiB. Explicit Rust resource roots exclude legacy roots. Install root is
+`KODE_LSP_HOME`, Rust resource home/lsp, legacy home/lsp, then Rust config/lsp.
+Catalog and discovery run on workers; settings consume owned reports.
+
+`InstallJob` runs on a bounded F03 blocking worker. `HttpFetcher` drives cancellable
+Reqwest futures on the existing Tokio runtime, without a private runtime/thread
+pool or shell. Downloads cap at 256 MiB, extracted data at 1 GiB, individual files
+at 512 MiB and archive entries at 100,000. ZIP/TAR/TGZ/GZIP/raw packages preserve
+command arguments, honor unpackSubdir and supplied SHA-256, and validate a staged
+command before publication. TAR metadata gets a 64 KiB preflight bound. Traversal,
+links/devices/sparse entries, duplicate files and reserved manifests fail explicitly.
+Installation publishes a complete staged directory, retains the old directory and
+rolls back failed replacement; uninstall removes only the selected server directory.
+Root locks serialize operations. A crash-retained lock/stage/previous directory is
+preserved for inspection, not silently removed.
+
+LSP settings actions are acknowledged F03 jobs. Install/removal/lifecycle work is
+critical; its own cancel token aborts preparation, but a started publication finishes
+or rolls back before acknowledgement/shutdown. `ServerLifecycle` delegates
+start/stop/restart and running state to P02's process registry; settings never fake
+running flags. A missing process service is an explicit error. Workspace changes
+drain jobs and stop registered services; old owner/request/workspace results cannot
+populate new settings. See `docs/parity/P01.md` for evidence and limits.
+
 ## Intelligence publication
 
 `FileSemanticDelta` holds file facts: symbols, scopes, occurrences, imports, types,

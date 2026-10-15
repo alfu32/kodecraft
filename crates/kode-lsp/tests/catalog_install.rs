@@ -145,6 +145,92 @@ fn frozen_catalog_unknown_fields_platform_aliases_and_preference_order_are_prese
 }
 
 #[test]
+fn catalog_resource_priority_and_bounds_reject_bad_paths_hashes_and_command_arrays() {
+    use kode_platform::paths::ResourcePaths;
+    let root = tempfile::tempdir().unwrap();
+    let rust = root.path().join("rust");
+    let legacy = root.path().join("legacy");
+    fs::create_dir_all(rust.join("lsp")).unwrap();
+    fs::create_dir_all(legacy.join("lsp")).unwrap();
+    let mut catalog = Catalog::compiled().unwrap();
+    catalog.extra.insert("origin".into(), "legacy".into());
+    fs::write(
+        legacy.join("lsp/servers.json"),
+        serde_json::to_vec(&catalog).unwrap(),
+    )
+    .unwrap();
+    let mut paths = ResourcePaths {
+        explicit: None,
+        rust_home: Some(rust.clone()),
+        legacy_home: Some(legacy),
+        executable_dir: root.path().join("executable"),
+        config_dir: root.path().join("config"),
+    };
+    assert!(
+        Catalog::load(&paths, None).unwrap().1.is_none(),
+        "explicit Rust resource root excludes the legacy root"
+    );
+    catalog.extra.insert("origin".into(), "rust".into());
+    fs::write(
+        rust.join("lsp/servers.json"),
+        serde_json::to_vec(&catalog).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(
+        Catalog::load(&paths, None).unwrap().0.extra["origin"],
+        "rust"
+    );
+    let explicit = root.path().join("custom.json");
+    catalog.extra.insert("origin".into(), "explicit".into());
+    fs::write(&explicit, serde_json::to_vec(&catalog).unwrap()).unwrap();
+    assert_eq!(
+        Catalog::load(&paths, Some(&explicit)).unwrap().0.extra["origin"],
+        "explicit"
+    );
+    fs::write(&explicit, vec![b' '; MAX_CATALOG_BYTES + 1]).unwrap();
+    assert!(Catalog::load(&paths, Some(&explicit)).is_err());
+    fs::remove_file(rust.join("lsp/servers.json")).unwrap();
+    paths.rust_home = None;
+    assert_eq!(
+        Catalog::load(&paths, None).unwrap().0.extra["origin"],
+        "legacy"
+    );
+    let mut value =
+        serde_json::to_value(entry("https://example.invalid/server.zip", &["server"])).unwrap();
+    for (field, invalid_value) in [
+        ("sha256", serde_json::json!("short")),
+        ("unpackSubdir", serde_json::json!("../outside")),
+        ("command", serde_json::json!([])),
+        (
+            "url",
+            serde_json::json!("https://user:password@example.invalid/server.zip"),
+        ),
+    ] {
+        let old = value["versions"][0]["downloads"][0][field].clone();
+        value["versions"][0]["downloads"][0][field] = invalid_value;
+        assert!(
+            Catalog::parse(
+                &serde_json::to_vec(&serde_json::json!({"servers":[value.clone()]})).unwrap()
+            )
+            .is_err(),
+            "{field}"
+        );
+        value["versions"][0]["downloads"][0][field] = old;
+    }
+    for path in [
+        "../outside",
+        "/absolute",
+        "C:/escape",
+        "..\\escape",
+        "directory/../../escape",
+    ] {
+        assert!(relative_path(path).is_err(), "{path}");
+    }
+    assert!(relative_path("./bin/server").is_ok());
+    assert!(relative_path(".").is_ok());
+}
+
+#[test]
 fn discovery_finds_existing_manifests_manual_local_path_and_windows_commands_without_download_or_mutation()
  {
     let root = tempfile::tempdir().unwrap();

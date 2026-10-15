@@ -1,0 +1,27 @@
+{
+  "cases": [
+    {
+      "case": "settings-local-discovery-status-and-acknowledged-errors",
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "settings-local-discovery-status-and-acknowledged-errors",
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 2
+}

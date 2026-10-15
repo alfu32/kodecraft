@@ -331,19 +331,27 @@ impl LspSettings {
             line(
                 row as u16 + 1,
                 &format!(
-                    "{:?} | {} | {}",
-                    status.install_state,
-                    status
-                        .installed_version
-                        .as_deref()
-                        .unwrap_or("local/unversioned"),
-                    if status.running { "running" } else { "stopped" }
+                    "{} | {:?}",
+                    if status.running { "running" } else { "stopped" },
+                    status.install_state
                 ),
                 buffer,
                 style,
             );
             line(
                 row as u16 + 2,
+                &format!(
+                    "Version: {}",
+                    status
+                        .installed_version
+                        .as_deref()
+                        .unwrap_or("local/unversioned")
+                ),
+                buffer,
+                style,
+            );
+            line(
+                row as u16 + 5,
                 status.message.as_deref().unwrap_or(""),
                 buffer,
                 style,

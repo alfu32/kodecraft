@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    27 |           1 |   37 |       0 |    65 |
+|    26 |           1 |   38 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **P01** — [Server catalog, discovery and installation](docs/migration/tasks/07-lsp.md#p01--server-catalog-discovery-and-installation)
+- **P02** — [LSP client transport and lifecycle](docs/migration/tasks/07-lsp.md#p02--lsp-client-transport-and-lifecycle)
 
 ## Task status
 
@@ -55,8 +55,8 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | L10  | [Other language adapters and heuristic fallback](docs/migration/tasks/06-intelligence.md)       | done        | [Report](docs/parity/L10.md) |
 | L11  | [Completion providers and deterministic ranking](docs/migration/tasks/06-intelligence.md)       | done        | [Report](docs/parity/L11.md) |
 | L12  | [Language and persistence parity qualification](docs/migration/tasks/06-intelligence.md)        | done        | [Report](docs/parity/L12.md) |
-| P01  | [Server catalog, discovery and installation](docs/migration/tasks/07-lsp.md)                    | in-progress | —                            |
-| P02  | [LSP client transport and lifecycle](docs/migration/tasks/07-lsp.md)                            | todo        | —                            |
+| P01  | [Server catalog, discovery and installation](docs/migration/tasks/07-lsp.md)                    | done        | [Report](docs/parity/P01.md) |
+| P02  | [LSP client transport and lifecycle](docs/migration/tasks/07-lsp.md)                            | in-progress | —                            |
 | P03  | [Editor enrichment and provider fallback](docs/migration/tasks/07-lsp.md)                       | todo        | —                            |
 | R01  | [Lossless collection and environment model](docs/migration/tasks/08-rest.md)                    | todo        | —                            |
 | R02  | [Variables, auth, headers, URLs and request bodies](docs/migration/tasks/08-rest.md)            | todo        | —                            |
