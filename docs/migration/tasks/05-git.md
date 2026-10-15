@@ -25,7 +25,7 @@ JGitServiceTest, GitPanelViewTest.
 
 ## G02 — Stage, unstage, commit, checkout and tags
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** G01, E12, F05. **Owns:** `kode-git/src/write.rs`,
 `kode-tui/src/panels/git/` excluding diff renderer.
@@ -47,7 +47,7 @@ JGitServiceTest, GitPanelViewTest.
 
 ## G03 — Diff views and restoring worktree chunks
 
-**Status:** todo
+**Status:** done
 
 **Depends:** G02, E05, E12, V01. **Owns:** `kode-git/src/diff.rs`,
 `kode-tui/src/panels/git/diff/`.

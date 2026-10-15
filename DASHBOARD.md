@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    23 |           1 |   41 |       0 |    65 |
+|    21 |           1 |   43 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **G02** — [Stage, unstage, commit, checkout and tags](docs/migration/tasks/05-git.md#g02--stage-unstage-commit-checkout-and-tags)
+- **D01** — [Database models, settings, credentials and URL catalogs](docs/migration/tasks/09-database.md#d01--database-models-settings-credentials-and-url-catalogs)
 
 ## Task status
 
@@ -41,8 +41,8 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | V02  | [Byte buffer and hex viewer](docs/migration/tasks/04-viewers.md)                                | done        | [Report](docs/parity/V02.md) |
 | V03  | [Image decoding and colored cell modes](docs/migration/tasks/04-viewers.md)                     | done        | [Report](docs/parity/V03.md) |
 | G01  | [Repository discovery and read operations](docs/migration/tasks/05-git.md)                      | done        | [Report](docs/parity/G01.md) |
-| G02  | [Stage, unstage, commit, checkout and tags](docs/migration/tasks/05-git.md)                     | in-progress | —                            |
-| G03  | [Diff views and restoring worktree chunks](docs/migration/tasks/05-git.md)                      | todo        | —                            |
+| G02  | [Stage, unstage, commit, checkout and tags](docs/migration/tasks/05-git.md)                     | done        | [Report](docs/parity/G02.md) |
+| G03  | [Diff views and restoring worktree chunks](docs/migration/tasks/05-git.md)                      | done        | [Report](docs/parity/G03.md) |
 | L01  | [Semantic facts, identifiers and immutable snapshots](docs/migration/tasks/06-intelligence.md)  | done        | [Report](docs/parity/L01.md) |
 | L02  | [Keyword highlighting and incremental parser registry](docs/migration/tasks/06-intelligence.md) | done        | [Report](docs/parity/L02.md) |
 | L03  | [Kotlin semantic extraction](docs/migration/tasks/06-intelligence.md)                           | done        | [Report](docs/parity/L03.md) |
@@ -66,7 +66,7 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | R06  | [REST tree, environments and management dialogs](docs/migration/tasks/08-rest.md)               | todo        | —                            |
 | R07  | [Request/response editors and complete REST UX](docs/migration/tasks/08-rest.md)                | todo        | —                            |
 | R08  | [Collection runner, persistence and REST qualification](docs/migration/tasks/08-rest.md)        | todo        | —                            |
-| D01  | [Database models, settings, credentials and URL catalogs](docs/migration/tasks/09-database.md)  | todo        | —                            |
+| D01  | [Database models, settings, credentials and URL catalogs](docs/migration/tasks/09-database.md)  | in-progress | —                            |
 | D02  | [Protocol, Java bootstrap and Rust process supervisor](docs/migration/tasks/09-database.md)     | todo        | —                            |
 | D03  | [Driver install, Maven resolution and classloaders](docs/migration/tasks/09-database.md)        | todo        | —                            |
 | D04  | [Connections, testing and transaction control](docs/migration/tasks/09-database.md)             | todo        | —                            |

@@ -87,6 +87,8 @@ pub enum AppWork {
         work: EditorWork,
     },
     Project(ProjectWork),
+    Git(crate::panels::git::GitWork),
+    Diff(crate::panels::git::diff::DiffWork),
     LspSettings(crate::panels::settings::lsp::SettingsAction),
     Image(crate::viewers::image::ImageJob),
     Configure {
@@ -145,6 +147,8 @@ pub struct AppState {
     pub files: FilesPanel,
     pub project_panel: ProjectPanel,
     pub lsp_settings: crate::panels::settings::lsp::LspSettings,
+    pub git: crate::panels::git::GitPanel,
+    pub diff: Option<crate::panels::git::diff::DiffViewer>,
     pub tabs: Tabs,
     pub tabs_id: FocusId,
     pub focus: FocusState,
@@ -195,24 +199,35 @@ impl AppState {
         };
         let initial = prepared.initial;
         let notice = prepared.session.warning.clone().unwrap_or_default();
+        let mut documents = EditorDocuments::default();
+        let git = crate::panels::git::GitPanel::new(
+            project.root.clone(),
+            generation,
+            &mut documents,
+            clipboard.clone(),
+            clock.clone(),
+        )?;
         let mut state = Self {
             generation,
             project,
-            documents: EditorDocuments::default(),
+            documents,
             editor: None,
             hexes: HashMap::new(),
+            diff: None,
             active_hex: None,
             image: None,
             image_settings: Default::default(),
             files,
             project_panel: ProjectPanel::new()?,
             lsp_settings: crate::panels::settings::lsp::LspSettings::new()?,
+            git,
             tabs: Tabs::new(
                 vec![
                     "Files".into(),
                     "Project".into(),
                     "Help".into(),
                     "Settings".into(),
+                    "Git".into(),
                 ],
                 Axis::Vertical,
             ),
@@ -330,6 +345,9 @@ impl AppState {
         Ok(())
     }
     pub fn viewer_id(&self) -> Option<FocusId> {
+        if let Some(diff) = &self.diff {
+            return Some(diff.id());
+        }
         self.editor
             .as_ref()
             .map(|view| view.input.id)
@@ -341,7 +359,79 @@ impl AppState {
             })
             .or_else(|| self.image.as_ref().map(|view| view.id))
     }
-    fn detach_image(&mut self) {
+    pub fn clear_diff(&mut self) -> Result<()> {
+        self.git.cancel_diff();
+        if let Some(mut diff) = self.diff.take() {
+            let focused = self.focus.focused == Some(diff.id());
+            diff.detach(&mut self.documents, &mut self.focus)?;
+            self.work
+                .extend(diff.take_work().into_iter().map(AppWork::Diff));
+            if focused {
+                self.focus.focused = self.viewer_id();
+            }
+        }
+        Ok(())
+    }
+    pub(super) fn show_diff(&mut self, plan: Arc<kode_git::diff::DiffPlan>) -> Result<()> {
+        let root = self
+            .git
+            .read
+            .snapshot
+            .as_ref()
+            .and_then(|snapshot| snapshot.location.work_tree.clone())
+            .unwrap_or_else(|| self.project.root.clone());
+        let source_revision = self
+            .documents
+            .find_origin(&DocumentOrigin::File(root.join(&plan.contents().path)))
+            .and_then(|id| {
+                self.documents
+                    .document(id)
+                    .ok()
+                    .map(|document| (id, document.revision()))
+            });
+        if let Some(diff) = &mut self.diff
+            && (
+                diff.plan.contents().path.as_path(),
+                diff.plan.contents().staged,
+                &diff.plan.contents().revision,
+            ) == (
+                plan.contents().path.as_path(),
+                plan.contents().staged,
+                &plan.contents().revision,
+            )
+        {
+            diff.replace_plan(plan);
+            diff.source_revision = source_revision;
+            return Ok(());
+        }
+        self.clear_diff()?;
+        if let Some(view) = &mut self.editor {
+            view.completion.dismiss();
+            view.navigation.dismiss();
+        }
+        let root = self
+            .git
+            .read
+            .snapshot
+            .as_ref()
+            .and_then(|snapshot| snapshot.location.work_tree.clone())
+            .unwrap_or_else(|| self.project.root.clone());
+        let mut diff = crate::panels::git::diff::DiffViewer::new(
+            root,
+            plan,
+            self.generation,
+            self.clipboard.clone(),
+            self.clock.clone(),
+        )?;
+        diff.resize(self.geometry.viewer);
+        diff.source_revision = source_revision;
+        self.focus.captured = None;
+        self.splash = false;
+        self.focus.focused = Some(diff.id());
+        self.diff = Some(diff);
+        Ok(())
+    }
+    pub(super) fn detach_image(&mut self) {
         if let Some(mut view) = self.image.take() {
             view.detach(&mut self.focus);
             self.image_settings = view.settings;
@@ -478,8 +568,22 @@ impl AppState {
         }
     }
     pub fn open(&mut self, request: OpenRequest, destination: OpenDestination) -> Result<()> {
+        self.open_impl(request, destination, true)
+    }
+    pub(super) fn open_background(&mut self, request: OpenRequest) -> Result<()> {
+        self.open_impl(request, OpenDestination::Main, false)
+    }
+    fn open_impl(
+        &mut self,
+        request: OpenRequest,
+        destination: OpenDestination,
+        clear: bool,
+    ) -> Result<()> {
         let tag = self.tag()?;
         if destination == OpenDestination::Main {
+            if clear {
+                self.clear_diff()?;
+            }
             self.pending_open = Some(tag);
         }
         self.work.push(AppWork::Open {
@@ -764,6 +868,12 @@ impl AppState {
         Ok(())
     }
     pub fn drain_ui(&mut self) -> Result<()> {
+        if let Some(diff) = &mut self.diff {
+            self.work
+                .extend(diff.take_work().into_iter().map(AppWork::Diff));
+        }
+        self.work
+            .extend(self.git.take_work().into_iter().map(AppWork::Git));
         self.work.extend(
             self.lsp_settings
                 .take_work()
@@ -880,12 +990,23 @@ impl AppState {
                 theme,
                 self.focus.focused == Some(self.lsp_settings.id),
             ),
+            4 => {
+                cursor =
+                    self.git
+                        .render(geometry.panel, buffer, theme, &self.documents, &self.focus)?
+            }
             _ => {
-                Paragraph::new("Files: open, rename, create, delete.\nProject: source roots and exclusions.\n\nCtrl+S save\nCtrl+F find/replace\nCtrl+Shift+F project search\nCtrl+Space completion\nF6 switch pane\nCtrl+Q quit\n\nImage: Left/Right width, Enter mode, M advanced controls.\n\nHex: Shift+arrows select, Alt+C/X/V local bytes, Delete/Backspace edit memory. Binary saving unavailable.\n\nUse mouse or Alt+1/2/3 to select a sidebar tab.").wrap(Wrap { trim: false }).render(geometry.panel, buffer);
+                Paragraph::new("Files: open, rename, create, delete.\nProject: source roots and exclusions.\n\nCtrl+S save\nCtrl+F find/replace\nCtrl+Shift+F project search\nCtrl+Space completion\nF6 switch pane\nCtrl+Q quit\n\nGit: Space stage/unstage, a/A stage/unstage all, Tab message, Ctrl+Enter commit, Ctrl+Tab sections. b branches, t tag, T create/move tag, Enter expand history, m copy message.\n\nImage: Left/Right width, Enter mode, M advanced controls.\n\nHex: Shift+arrows select, Alt+C/X/V local bytes, Delete/Backspace edit memory. Binary saving unavailable.\n\nUse mouse or Alt+1/2/3/4/5 to select Files/Project/Help/Settings/Git.").wrap(Wrap { trim: false }).render(geometry.panel, buffer);
             }
         }
         self.splitter.render(geometry.body, buffer, theme);
-        if let Some(view) = &mut self.editor {
+        if let Some(diff) = &mut self.diff {
+            let caret =
+                diff.render(geometry.viewer, &self.documents, &self.focus, buffer, theme)?;
+            if caret.is_some() {
+                cursor = caret;
+            }
+        } else if let Some(view) = &mut self.editor {
             view.synchronize(&self.documents)?;
             if self.center_editor && !geometry.viewer.is_empty() {
                 let document = self.documents.document(view.document_id())?;
@@ -963,6 +1084,9 @@ impl AppState {
         if let Some(dialog) = &mut self.rescan {
             dialog.render(area, buffer, theme);
             cursor = None;
+        }
+        if self.git.has_modal() {
+            cursor = self.git.render_modal(area, buffer, theme);
         }
         Ok(cursor)
     }

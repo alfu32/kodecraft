@@ -1,4 +1,5 @@
 //! Bounded work execution and application-thread publication.
+mod git;
 mod intelligence;
 pub mod lsp;
 use super::{
@@ -51,6 +52,11 @@ use std::{
 use tokio::sync::mpsc;
 
 enum Output {
+    GitDiff(Arc<kode_git::diff::DiffPlan>),
+    DiffLayout(crate::panels::git::diff::projection::Projection),
+    DiffRestored(kode_git::diff::RestoreReceipt),
+    GitRead(Box<kode_git::read::ReadOutput>),
+    GitWritten(kode_git::write::WriteReceipt),
     LspDocuments,
     LspSettings(Box<crate::panels::settings::lsp::SettingsReport>),
     IndexPrepared(Box<kode_intelligence::service::PreparedIndex>),
@@ -83,6 +89,10 @@ enum Output {
     Picker(Project),
 }
 enum Context {
+    DiffLayout,
+    DiffRestore,
+    GitRead(crate::panels::git::ReadKind),
+    GitWrite(bool),
     LspDocuments,
     LspSettings,
     IndexPrepared,
@@ -106,10 +116,18 @@ enum Context {
     Picker(PickerKind),
 }
 enum ClipboardTarget {
+    Git,
     None,
     Names,
     Project(FocusId),
     Editor(OwnerId, PasteTarget),
+}
+#[derive(Clone, Copy)]
+enum EditorSlot {
+    Diff,
+    Main,
+    Search,
+    GitCommit,
 }
 struct Pending {
     tag: JobTag,
@@ -120,6 +138,9 @@ struct Pending {
     work: BlockingJobFactory<Output>,
 }
 pub struct AppRuntime {
+    git_fresh_paths: std::collections::HashSet<std::path::PathBuf>,
+    git_reload_tags: std::collections::HashSet<JobTag>,
+    open_requests: HashMap<JobTag, (OpenDestination, OpenRequest)>,
     lsp: Option<lsp::LspRuntime>,
     intelligence: Option<kode_intelligence::service::CodeIntelService>,
     intelligence_resources: Option<Arc<kode_intelligence::facade::IntelligenceResources>>,
@@ -166,6 +187,9 @@ impl AppRuntime {
         let detector = Self::image_detector(MimeDetector::compiled())?;
         state.detector = detector.clone();
         Ok(Self {
+            git_fresh_paths: Default::default(),
+            git_reload_tags: Default::default(),
+            open_requests: HashMap::new(),
             lsp: None,
             intelligence: None,
             intelligence_resources: None,
@@ -264,11 +288,21 @@ impl AppRuntime {
         }
         self.state.tick()?;
         let mut active = vec![
+            self.state.git.owner(),
             OwnerId(self.state.lsp_settings.id.0),
             self.root_owner,
             self.clipboard_owner,
             OwnerId(self.state.files.id.0),
         ];
+        if let Some(view) = &self.state.git.commit_editor {
+            active.push(view.owner());
+        }
+        if let Some(diff) = &self.state.diff {
+            active.push(diff.owner());
+            if let Some(view) = &diff.editor {
+                active.push(view.owner());
+            }
+        }
         if let Some(view) = &self.state.editor {
             active.push(view.owner());
         }
@@ -331,6 +365,7 @@ impl AppRuntime {
     }
     fn accept(&mut self, work: AppWork) -> Result<()> {
         match work {
+            AppWork::Git(work) => self.git_work(work),
             AppWork::LspSettings(action) => self.lsp_work(action),
             AppWork::Image(job) => {
                 let owner = self
@@ -395,6 +430,7 @@ impl AppRuntime {
                     }),
                 )
             }
+            AppWork::Diff(work) => self.diff_work(work),
             AppWork::Open {
                 tag,
                 request,
@@ -403,7 +439,11 @@ impl AppRuntime {
                 let root = self.state.project.root.clone();
                 let detector = self.detector.clone();
                 let images = self.images.clone();
-                let session = self.state.persistence.snapshot();
+                let session = if self.git_fresh_paths.contains(&request.path) {
+                    Arc::new(ProjectSessionV1::default())
+                } else {
+                    self.state.persistence.snapshot()
+                };
                 let owner = match destination {
                     OpenDestination::Main => self.root_owner,
                     OpenDestination::ProjectSearch(id) => OwnerId(id.0),
@@ -423,6 +463,12 @@ impl AppRuntime {
                         },
                     )?;
                     return Ok(());
+                }
+                if destination == OpenDestination::Main {
+                    self.open_requests.clear();
+                    self.git_reload_tags.retain(|current| *current == tag);
+                    self.open_requests
+                        .insert(tag, (destination, request.clone()));
                 }
                 let existing = request
                     .navigation
@@ -691,6 +737,21 @@ impl AppRuntime {
                     .search
                     .as_ref()?
                     .editor
+                    .as_ref()
+                    .filter(|view| view.owner() == owner)
+            })
+            .or_else(|| {
+                self.state
+                    .diff
+                    .as_ref()?
+                    .editor
+                    .as_ref()
+                    .filter(|view| view.owner() == owner)
+            })
+            .or_else(|| {
+                self.state
+                    .git
+                    .commit_editor
                     .as_ref()
                     .filter(|view| view.owner() == owner)
             })
@@ -971,6 +1032,13 @@ impl AppRuntime {
             return Ok(());
         };
         let Completion { tag, owner, result } = completion;
+        let preserve_focus = self
+            .git_reload_tags
+            .remove(&tag)
+            .then_some(self.state.focus.focused);
+        if matches!(context, Context::Open(_)) {
+            self.open_requests.remove(&tag);
+        }
         if tag.workspace != self.state.generation {
             return Ok(());
         }
@@ -1015,6 +1083,54 @@ impl AppRuntime {
             return Ok(());
         }
         match context {
+            Context::DiffLayout => {
+                if let Some(diff) = &mut self.state.diff
+                    && diff.owner() == owner
+                {
+                    diff.complete_layout(
+                        tag,
+                        result.and_then(|output| match output {
+                            Output::DiffLayout(projection) => Ok(projection),
+                            _ => Err(DomainError::Unsupported("wrong diff layout output".into())),
+                        }),
+                        &mut self.state.documents,
+                        &mut self.state.focus,
+                    )?;
+                }
+            }
+            Context::DiffRestore => self.diff_restored(owner, tag, result)?,
+            Context::GitRead(kind) => {
+                if owner == self.state.git.owner() {
+                    if matches!(kind, crate::panels::git::ReadKind::Diff) {
+                        let accepted = self.state.git.complete_diff(
+                            tag,
+                            result.and_then(|output| match output {
+                                Output::GitDiff(plan) => Ok(plan),
+                                _ => Err(DomainError::Unsupported(
+                                    "wrong diff preparation output".into(),
+                                )),
+                            }),
+                        );
+                        if accepted
+                            && self.state.tabs.selected == 4
+                            && !self.state.closing
+                            && let Some(plan) = self.state.git.latest_diff.clone()
+                        {
+                            self.state.show_diff(plan)?;
+                        }
+                        return self.state.drain_ui();
+                    }
+                    self.state.git.complete_read(
+                        tag,
+                        kind,
+                        result.and_then(|output| match output {
+                            Output::GitRead(report) => Ok(*report),
+                            _ => Err(DomainError::Unsupported("wrong Git read output".into())),
+                        }),
+                    );
+                }
+            }
+            Context::GitWrite(checkout) => self.git_written(owner, tag, checkout, result)?,
             Context::LspDocuments => {
                 if let Some(runtime) = &mut self.lsp {
                     runtime.documents_busy = false;
@@ -1321,16 +1437,48 @@ impl AppRuntime {
             Context::Clipboard(target) => self.complete_clipboard(tag, target, result)?,
             context => self.complete_editor(owner, tag, context, result)?,
         }
+        if let Some(Some(previous)) = preserve_focus {
+            self.state.focus.focused = Some(previous);
+        }
         self.state.drain_ui()
     }
-    fn take_view(&mut self, owner: OwnerId) -> Option<(bool, EditorView<QueuedEditorHost>, Rect)> {
+    fn take_view(
+        &mut self,
+        owner: OwnerId,
+    ) -> Option<(EditorSlot, EditorView<QueuedEditorHost>, Rect)> {
+        if let Some(diff) = &mut self.state.diff
+            && diff
+                .editor
+                .as_ref()
+                .is_some_and(|view| view.owner() == owner)
+        {
+            let body = diff.body();
+            return Some((EditorSlot::Diff, diff.editor.take()?, body));
+        }
         if self
             .state
             .editor
             .as_ref()
             .is_some_and(|view| view.owner() == owner)
         {
-            return Some((false, self.state.editor.take()?, self.state.geometry.viewer));
+            return Some((
+                EditorSlot::Main,
+                self.state.editor.take()?,
+                self.state.geometry.viewer,
+            ));
+        }
+        if self
+            .state
+            .git
+            .commit_editor
+            .as_ref()
+            .is_some_and(|view| view.owner() == owner)
+        {
+            return Some((
+                EditorSlot::GitCommit,
+                self.state.git.commit_editor.take()?,
+                self.state.git.geometry.editor,
+            ));
         }
         let dialog = self.state.search.as_mut()?;
         if dialog
@@ -1338,22 +1486,32 @@ impl AppRuntime {
             .as_ref()
             .is_some_and(|view| view.owner() == owner)
         {
-            Some((true, dialog.editor.take()?, dialog.geometry.editor))
+            Some((
+                EditorSlot::Search,
+                dialog.editor.take()?,
+                dialog.geometry.editor,
+            ))
         } else {
             None
         }
     }
-    fn return_view(&mut self, search: bool, mut view: EditorView<QueuedEditorHost>) {
+    fn return_view(&mut self, search: EditorSlot, mut view: EditorView<QueuedEditorHost>) {
         let owner = view.owner();
         self.state.work.extend(
             view.take_work()
                 .into_iter()
                 .map(|work| AppWork::Editor { owner, work }),
         );
-        if search {
+        if matches!(search, EditorSlot::Diff) {
+            if let Some(diff) = &mut self.state.diff {
+                diff.editor = Some(view);
+            }
+        } else if matches!(search, EditorSlot::Search) {
             if let Some(dialog) = &mut self.state.search {
                 dialog.editor = Some(view);
             }
+        } else if matches!(search, EditorSlot::GitCommit) {
+            self.state.git.commit_editor = Some(view);
         } else {
             self.state.editor = Some(view);
         }
@@ -1442,7 +1600,16 @@ impl AppRuntime {
             }
             _ => Ok(()),
         };
+        let diff_preview = matches!(search, EditorSlot::Diff);
         self.return_view(search, view);
+        if diff_preview
+            && let Err(error @ (DomainError::ReadOnly | DomainError::NoSaveTarget)) = &result
+        {
+            if let Some(diff) = &mut self.state.diff {
+                diff.notice = error.to_string();
+            }
+            return Ok(());
+        }
         result
     }
     fn complete_clipboard(
@@ -1459,6 +1626,11 @@ impl AppRuntime {
             }
         });
         match target {
+            ClipboardTarget::Git => {
+                self.state
+                    .git
+                    .complete_clipboard(tag, result, &self.state.focus)
+            }
             ClipboardTarget::None => {}
             ClipboardTarget::Names => {
                 self.state.files.complete_name_clipboard(
@@ -1495,7 +1667,17 @@ impl AppRuntime {
                         &self.state.focus,
                         area,
                     );
+                    let diff_preview = matches!(search, EditorSlot::Diff);
                     self.return_view(search, view);
+                    if diff_preview
+                        && let Err(error @ (DomainError::ReadOnly | DomainError::NoSaveTarget)) =
+                            &accepted
+                    {
+                        if let Some(diff) = &mut self.state.diff {
+                            diff.notice = error.to_string();
+                        }
+                        return Ok(());
+                    }
                     accepted?;
                 }
             }
@@ -1518,7 +1700,12 @@ impl AppRuntime {
             && !self.contexts.values().any(|context| {
                 matches!(
                     context,
-                    Context::File | Context::Persist | Context::Save(_) | Context::Project
+                    Context::File
+                        | Context::Persist
+                        | Context::Save(_)
+                        | Context::Project
+                        | Context::GitWrite(_)
+                        | Context::DiffRestore
                 )
             })
             && !self
@@ -1584,6 +1771,9 @@ impl AppRuntime {
             Ok(())
         };
         self.query_versions.clear();
+        self.git_fresh_paths.clear();
+        self.git_reload_tags.clear();
+        self.open_requests.clear();
         self.overlay_worker = None;
         self.pending.clear();
         self.contexts.clear();

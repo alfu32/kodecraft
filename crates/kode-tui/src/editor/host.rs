@@ -699,6 +699,9 @@ impl EditorInputHooks for Hooks<'_> {
 /// One view with independent caret/focus/search/popups over a registry document.
 /// Multiple views share edits and the document's serialized save controller.
 pub struct EditorView<H: EditorHost> {
+    /// Composite previews can supply their own header/line-number columns while
+    /// retaining the common editor's input, search, selection and mutation guard.
+    pub chrome: bool,
     pub host: H,
     pub input: EditorInput,
     pub search: SearchBar,
@@ -735,6 +738,7 @@ impl<H: EditorHost> EditorView<H> {
         let mut completion = CompletionPopup::new(workspace);
         completion.auto_show_external = host.descriptor().auto_show_external;
         let mut view = Self {
+            chrome: true,
             host,
             input: EditorInput::new(FocusId(RequestId::fresh()?.0), document),
             search: SearchBar::new(workspace),
@@ -763,6 +767,16 @@ impl<H: EditorHost> EditorView<H> {
         std::mem::take(&mut self.work)
     }
     pub fn geometry(&self, documents: &EditorDocuments, area: Rect) -> Result<EditorGeometry> {
+        if !self.chrome {
+            let search = self.search.preferred_height().min(area.height);
+            return Ok(EditorGeometry {
+                header: Rect::default(),
+                gutter: Rect::default(),
+                minimap: Rect::default(),
+                search: Rect::new(area.x, area.y, area.width, search),
+                text: Rect::new(area.x, area.y + search, area.width, area.height - search),
+            });
+        }
         Ok(EditorGeometry::new(
             area,
             documents

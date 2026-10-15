@@ -7,7 +7,7 @@ client models remain Rust.
 
 ## D01 — Database models, settings, credentials and URL catalogs
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** F02, F03. **Owns:** `kode-database/src/{model,config,credentials,catalog}.rs`,
 `resources/database/`.

@@ -1,0 +1,840 @@
+{
+  "version": 1,
+  "drivers": [
+    {
+      "id": "postgresql",
+      "displayName": "PostgreSQL",
+      "databaseFamily": "PostgreSQL",
+      "driverClass": "org.postgresql.Driver",
+      "defaultMavenCoordinates": "org.postgresql:postgresql",
+      "defaultJdbcUrlTemplate": "jdbc:postgresql://localhost:5432/postgres",
+      "urlPrefixes": [
+        "jdbc:postgresql:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.postgresql",
+        "artifactId": "postgresql"
+      }
+    },
+    {
+      "id": "mysql",
+      "displayName": "MySQL",
+      "databaseFamily": "MySQL",
+      "driverClass": "com.mysql.cj.jdbc.Driver",
+      "defaultMavenCoordinates": "com.mysql:mysql-connector-j",
+      "defaultJdbcUrlTemplate": "jdbc:mysql://localhost:3306/mysql",
+      "urlPrefixes": [
+        "jdbc:mysql:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.mysql",
+        "artifactId": "mysql-connector-j"
+      }
+    },
+    {
+      "id": "mariadb",
+      "displayName": "MariaDB",
+      "databaseFamily": "MariaDB",
+      "driverClass": "org.mariadb.jdbc.Driver",
+      "defaultMavenCoordinates": "org.mariadb.jdbc:mariadb-java-client",
+      "defaultJdbcUrlTemplate": "jdbc:mariadb://localhost:3306/mysql",
+      "urlPrefixes": [
+        "jdbc:mariadb:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.mariadb.jdbc",
+        "artifactId": "mariadb-java-client"
+      }
+    },
+    {
+      "id": "oracle",
+      "displayName": "Oracle",
+      "databaseFamily": "Oracle",
+      "driverClass": "oracle.jdbc.OracleDriver",
+      "defaultMavenCoordinates": "com.oracle.database.jdbc:ojdbc11",
+      "defaultJdbcUrlTemplate": "jdbc:oracle:thin:@localhost:1521/FREEPDB1",
+      "urlPrefixes": [
+        "jdbc:oracle:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.oracle.database.jdbc",
+        "artifactId": "ojdbc11"
+      }
+    },
+    {
+      "id": "sqlserver",
+      "displayName": "Microsoft SQL Server",
+      "databaseFamily": "SQL Server",
+      "driverClass": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+      "defaultMavenCoordinates": "com.microsoft.sqlserver:mssql-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:sqlserver://localhost:1433;databaseName=master",
+      "urlPrefixes": [
+        "jdbc:sqlserver:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.microsoft.sqlserver",
+        "artifactId": "mssql-jdbc"
+      }
+    },
+    {
+      "id": "db2",
+      "displayName": "IBM Db2 LUW",
+      "databaseFamily": "DB2",
+      "driverClass": "com.ibm.db2.jcc.DB2Driver",
+      "defaultMavenCoordinates": "com.ibm.db2:jcc",
+      "defaultJdbcUrlTemplate": "jdbc:db2://localhost:50000/sample",
+      "urlPrefixes": [
+        "jdbc:db2:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.ibm.db2",
+        "artifactId": "jcc"
+      }
+    },
+    {
+      "id": "sqlite",
+      "displayName": "SQLite",
+      "databaseFamily": "SQLite",
+      "driverClass": "org.sqlite.JDBC",
+      "defaultMavenCoordinates": "org.xerial:sqlite-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:sqlite:file.db",
+      "urlPrefixes": [
+        "jdbc:sqlite:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.xerial",
+        "artifactId": "sqlite-jdbc"
+      }
+    },
+    {
+      "id": "h2",
+      "displayName": "H2",
+      "databaseFamily": "H2",
+      "driverClass": "org.h2.Driver",
+      "defaultMavenCoordinates": "com.h2database:h2",
+      "defaultJdbcUrlTemplate": "jdbc:h2:mem:kode",
+      "urlPrefixes": [
+        "jdbc:h2:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.h2database",
+        "artifactId": "h2"
+      }
+    },
+    {
+      "id": "hsqldb",
+      "displayName": "HSQLDB / HyperSQL",
+      "databaseFamily": "HSQLDB",
+      "driverClass": "org.hsqldb.jdbc.JDBCDriver",
+      "defaultMavenCoordinates": "org.hsqldb:hsqldb",
+      "defaultJdbcUrlTemplate": "jdbc:hsqldb:mem:kode",
+      "urlPrefixes": [
+        "jdbc:hsqldb:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.hsqldb",
+        "artifactId": "hsqldb"
+      }
+    },
+    {
+      "id": "derby-embedded",
+      "displayName": "Apache Derby Embedded",
+      "databaseFamily": "Derby",
+      "driverClass": "org.apache.derby.jdbc.EmbeddedDriver",
+      "defaultMavenCoordinates": "org.apache.derby:derby",
+      "defaultJdbcUrlTemplate": "jdbc:derby:memory:kode;create=true",
+      "urlPrefixes": [
+        "jdbc:derby:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.apache.derby",
+        "artifactId": "derby"
+      }
+    },
+    {
+      "id": "derby-client",
+      "displayName": "Apache Derby Network",
+      "databaseFamily": "Derby",
+      "driverClass": "org.apache.derby.jdbc.ClientDriver",
+      "defaultMavenCoordinates": "org.apache.derby:derbyclient",
+      "defaultJdbcUrlTemplate": "jdbc:derby://localhost:1527/kode",
+      "urlPrefixes": [
+        "jdbc:derby:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.apache.derby",
+        "artifactId": "derbyclient"
+      }
+    },
+    {
+      "id": "firebird",
+      "displayName": "Firebird",
+      "databaseFamily": "Firebird",
+      "driverClass": "org.firebirdsql.jdbc.FBDriver",
+      "defaultMavenCoordinates": "org.firebirdsql.jdbc:jaybird",
+      "defaultJdbcUrlTemplate": "jdbc:firebirdsql://localhost/kode",
+      "urlPrefixes": [
+        "jdbc:firebirdsql:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.firebirdsql.jdbc",
+        "artifactId": "jaybird"
+      }
+    },
+    {
+      "id": "informix",
+      "displayName": "IBM Informix",
+      "databaseFamily": "Informix",
+      "driverClass": "com.informix.jdbc.IfxDriver",
+      "defaultMavenCoordinates": "com.ibm.informix:jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:informix-sqli://localhost:9088/kode",
+      "urlPrefixes": [
+        "jdbc:informix-sqli:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.ibm.informix",
+        "artifactId": "jdbc"
+      }
+    },
+    {
+      "id": "iris",
+      "displayName": "InterSystems IRIS",
+      "databaseFamily": "IRIS",
+      "driverClass": "com.intersystems.jdbc.IRISDriver",
+      "defaultMavenCoordinates": "com.intersystems:intersystems-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:IRIS://localhost:1972/kode",
+      "urlPrefixes": [
+        "jdbc:IRIS:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.intersystems",
+        "artifactId": "intersystems-jdbc"
+      }
+    },
+    {
+      "id": "tibero",
+      "displayName": "TmaxTibero",
+      "databaseFamily": "Tibero",
+      "driverClass": "com.tmax.tibero.jdbc.TbDriver",
+      "defaultMavenCoordinates": "com.tmaxtibero:tbjdbc8",
+      "defaultJdbcUrlTemplate": "jdbc:tibero:thin:@localhost:8629:kode",
+      "urlPrefixes": [
+        "jdbc:tibero:thin:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.tmaxtibero",
+        "artifactId": "tbjdbc8"
+      }
+    },
+    {
+      "id": "teradata",
+      "displayName": "Teradata Vantage",
+      "databaseFamily": "Teradata",
+      "driverClass": "com.teradata.jdbc.TeraDriver",
+      "defaultMavenCoordinates": "com.teradata.jdbc:terajdbc",
+      "defaultJdbcUrlTemplate": "jdbc:teradata://localhost/database=kode",
+      "urlPrefixes": [
+        "jdbc:teradata:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.teradata.jdbc",
+        "artifactId": "terajdbc"
+      }
+    },
+    {
+      "id": "vertica",
+      "displayName": "Vertica",
+      "databaseFamily": "Vertica",
+      "driverClass": "com.vertica.jdbc.Driver",
+      "defaultMavenCoordinates": "com.vertica.jdbc:vertica-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:vertica://localhost:5433/kode",
+      "urlPrefixes": [
+        "jdbc:vertica:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.vertica.jdbc",
+        "artifactId": "vertica-jdbc"
+      }
+    },
+    {
+      "id": "exasol",
+      "displayName": "Exasol",
+      "databaseFamily": "Exasol",
+      "driverClass": "com.exasol.jdbc.EXADriver",
+      "defaultMavenCoordinates": "com.exasol:exasol-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:exa:localhost..1",
+      "urlPrefixes": [
+        "jdbc:exa:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.exasol",
+        "artifactId": "exasol-jdbc"
+      }
+    },
+    {
+      "id": "sap-hana",
+      "displayName": "SAP HANA",
+      "databaseFamily": "SAP HANA",
+      "driverClass": "com.sap.db.jdbc.Driver",
+      "defaultMavenCoordinates": "com.sap.cloud.db.jdbc:ngdbc",
+      "defaultJdbcUrlTemplate": "jdbc:sap://localhost:39015",
+      "urlPrefixes": [
+        "jdbc:sap:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.sap.cloud.db.jdbc",
+        "artifactId": "ngdbc"
+      }
+    },
+    {
+      "id": "snowflake",
+      "displayName": "Snowflake",
+      "databaseFamily": "Snowflake",
+      "driverClass": "net.snowflake.client.jdbc.SnowflakeDriver",
+      "defaultMavenCoordinates": "net.snowflake:snowflake-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:snowflake://account.snowflakecomputing.com",
+      "urlPrefixes": [
+        "jdbc:snowflake:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "net.snowflake",
+        "artifactId": "snowflake-jdbc"
+      }
+    },
+    {
+      "id": "redshift",
+      "displayName": "Amazon Redshift",
+      "databaseFamily": "Redshift",
+      "driverClass": "com.amazon.redshift.jdbc.Driver",
+      "defaultMavenCoordinates": "com.amazon.redshift:redshift-jdbc42",
+      "defaultJdbcUrlTemplate": "jdbc:redshift://localhost:5439/kode",
+      "urlPrefixes": [
+        "jdbc:redshift:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.amazon.redshift",
+        "artifactId": "redshift-jdbc42"
+      }
+    },
+    {
+      "id": "bigquery",
+      "displayName": "Google BigQuery",
+      "databaseFamily": "BigQuery",
+      "driverClass": "",
+      "defaultMavenCoordinates": "com.google.cloud:google-cloud-bigquery-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:bigquery://https://www.googleapis.com/bigquery/v2:443;ProjectId=project",
+      "urlPrefixes": [
+        "jdbc:bigquery:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.google.cloud",
+        "artifactId": "google-cloud-bigquery-jdbc",
+        "classifier": "all"
+      }
+    },
+    {
+      "id": "trino",
+      "displayName": "Trino",
+      "databaseFamily": "Trino",
+      "driverClass": "io.trino.jdbc.TrinoDriver",
+      "defaultMavenCoordinates": "io.trino:trino-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:trino://localhost:8080/kode",
+      "urlPrefixes": [
+        "jdbc:trino:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "io.trino",
+        "artifactId": "trino-jdbc"
+      }
+    },
+    {
+      "id": "presto",
+      "displayName": "PrestoDB",
+      "databaseFamily": "PrestoDB",
+      "driverClass": "com.facebook.presto.jdbc.PrestoDriver",
+      "defaultMavenCoordinates": "com.facebook.presto:presto-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:presto://localhost:8080/kode",
+      "urlPrefixes": [
+        "jdbc:presto:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.facebook.presto",
+        "artifactId": "presto-jdbc"
+      }
+    },
+    {
+      "id": "hive",
+      "displayName": "Apache Hive",
+      "databaseFamily": "Hive",
+      "driverClass": "org.apache.hive.jdbc.HiveDriver",
+      "defaultMavenCoordinates": "org.apache.hive:hive-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:hive2://localhost:10000/kode",
+      "urlPrefixes": [
+        "jdbc:hive2:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.apache.hive",
+        "artifactId": "hive-jdbc"
+      }
+    },
+    {
+      "id": "databricks",
+      "displayName": "Databricks",
+      "databaseFamily": "Databricks",
+      "driverClass": "",
+      "defaultMavenCoordinates": "com.databricks:databricks-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:databricks://localhost:443/default",
+      "urlPrefixes": [
+        "jdbc:databricks:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.databricks",
+        "artifactId": "databricks-jdbc"
+      }
+    },
+    {
+      "id": "clickhouse",
+      "displayName": "ClickHouse",
+      "databaseFamily": "ClickHouse",
+      "driverClass": "com.clickhouse.jdbc.ClickHouseDriver",
+      "defaultMavenCoordinates": "com.clickhouse:clickhouse-jdbc-all",
+      "defaultJdbcUrlTemplate": "jdbc:clickhouse://localhost:8123/kode",
+      "urlPrefixes": [
+        "jdbc:clickhouse:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.clickhouse",
+        "artifactId": "clickhouse-jdbc-all"
+      }
+    },
+    {
+      "id": "duckdb",
+      "displayName": "DuckDB",
+      "databaseFamily": "DuckDB",
+      "driverClass": "org.duckdb.DuckDBDriver",
+      "defaultMavenCoordinates": "org.duckdb:duckdb_jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:duckdb:kode.db",
+      "urlPrefixes": [
+        "jdbc:duckdb:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.duckdb",
+        "artifactId": "duckdb_jdbc"
+      }
+    },
+    {
+      "id": "singlestore",
+      "displayName": "SingleStore",
+      "databaseFamily": "SingleStore",
+      "driverClass": "",
+      "defaultMavenCoordinates": "com.singlestore:singlestore-jdbc-client",
+      "defaultJdbcUrlTemplate": "jdbc:singlestore://localhost:3306/kode",
+      "urlPrefixes": [
+        "jdbc:singlestore:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.singlestore",
+        "artifactId": "singlestore-jdbc-client"
+      }
+    },
+    {
+      "id": "spanner",
+      "displayName": "Google Cloud Spanner",
+      "databaseFamily": "Spanner",
+      "driverClass": "com.google.cloud.spanner.jdbc.JdbcDriver",
+      "defaultMavenCoordinates": "com.google.cloud:google-cloud-spanner-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:cloudspanner:/projects/project/instances/instance/databases/database",
+      "urlPrefixes": [
+        "jdbc:cloudspanner:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "com.google.cloud",
+        "artifactId": "google-cloud-spanner-jdbc"
+      }
+    },
+    {
+      "id": "ignite2",
+      "displayName": "Apache Ignite 2",
+      "databaseFamily": "Ignite",
+      "driverClass": "org.apache.ignite.IgniteJdbcThinDriver",
+      "defaultMavenCoordinates": "org.apache.ignite:ignite-core",
+      "defaultJdbcUrlTemplate": "jdbc:ignite:thin://127.0.0.1",
+      "urlPrefixes": [
+        "jdbc:ignite:thin:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.apache.ignite",
+        "artifactId": "ignite-core"
+      }
+    },
+    {
+      "id": "mongodb-atlas",
+      "displayName": "MongoDB Atlas SQL",
+      "databaseFamily": "MongoDB",
+      "driverClass": "",
+      "defaultMavenCoordinates": "org.mongodb:mongodb-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:mongodb://localhost",
+      "urlPrefixes": [
+        "jdbc:mongodb:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.mongodb",
+        "artifactId": "mongodb-jdbc"
+      }
+    },
+    {
+      "id": "neo4j",
+      "displayName": "Neo4j",
+      "databaseFamily": "Neo4j",
+      "driverClass": "",
+      "defaultMavenCoordinates": "org.neo4j:neo4j-jdbc",
+      "defaultJdbcUrlTemplate": "jdbc:neo4j://localhost",
+      "urlPrefixes": [
+        "jdbc:neo4j:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CENTRAL",
+        "groupId": "org.neo4j",
+        "artifactId": "neo4j-jdbc"
+      }
+    },
+    {
+      "id": "athena",
+      "displayName": "Amazon Athena",
+      "databaseFamily": "Athena",
+      "driverClass": "com.amazon.athena.jdbc.AthenaDriver",
+      "defaultJdbcUrlTemplate": "jdbc:athena:",
+      "urlPrefixes": [
+        "jdbc:athena:"
+      ],
+      "artifact": {
+        "repositoryType": "VENDOR_URL",
+        "vendorDownloadPage": "https://docs.aws.amazon.com/athena/latest/ug/connect-with-jdbc.html"
+      }
+    },
+    {
+      "id": "documentdb",
+      "displayName": "Amazon DocumentDB SQL/JDBC",
+      "databaseFamily": "DocumentDB",
+      "driverClass": "",
+      "defaultJdbcUrlTemplate": "jdbc:documentdb:",
+      "urlPrefixes": [
+        "jdbc:documentdb:"
+      ],
+      "artifact": {
+        "repositoryType": "VENDOR_URL",
+        "vendorDownloadPage": "https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-ec2.html"
+      }
+    },
+    {
+      "id": "elasticsearch",
+      "displayName": "Elasticsearch SQL JDBC",
+      "databaseFamily": "Elasticsearch",
+      "driverClass": "org.elasticsearch.xpack.sql.jdbc.EsDriver",
+      "defaultJdbcUrlTemplate": "jdbc:es://localhost:9200",
+      "urlPrefixes": [
+        "jdbc:es:"
+      ],
+      "artifact": {
+        "repositoryType": "MAVEN_CUSTOM",
+        "groupId": "org.elasticsearch.plugin",
+        "artifactId": "x-pack-sql-jdbc",
+        "repository": "https://artifacts.elastic.co/maven"
+      }
+    },
+    {
+      "id": "cockroachdb",
+      "displayName": "CockroachDB",
+      "databaseFamily": "CockroachDB",
+      "driverClass": "org.postgresql.Driver",
+      "defaultJdbcUrlTemplate": "jdbc:postgresql:",
+      "urlPrefixes": [
+        "jdbc:postgresql:"
+      ],
+      "aliasOf": "postgresql"
+    },
+    {
+      "id": "greenplum",
+      "displayName": "Greenplum",
+      "databaseFamily": "Greenplum",
+      "driverClass": "org.postgresql.Driver",
+      "defaultJdbcUrlTemplate": "jdbc:postgresql:",
+      "urlPrefixes": [
+        "jdbc:postgresql:"
+      ],
+      "aliasOf": "postgresql"
+    },
+    {
+      "id": "yugabytedb",
+      "displayName": "YugabyteDB YSQL",
+      "databaseFamily": "YugabyteDB",
+      "driverClass": "org.postgresql.Driver",
+      "defaultJdbcUrlTemplate": "jdbc:postgresql:",
+      "urlPrefixes": [
+        "jdbc:postgresql:"
+      ],
+      "aliasOf": "postgresql"
+    },
+    {
+      "id": "timescaledb",
+      "displayName": "TimescaleDB",
+      "databaseFamily": "TimescaleDB",
+      "driverClass": "org.postgresql.Driver",
+      "defaultJdbcUrlTemplate": "jdbc:postgresql:",
+      "urlPrefixes": [
+        "jdbc:postgresql:"
+      ],
+      "aliasOf": "postgresql"
+    },
+    {
+      "id": "citus",
+      "displayName": "Citus",
+      "databaseFamily": "Citus",
+      "driverClass": "org.postgresql.Driver",
+      "defaultJdbcUrlTemplate": "jdbc:postgresql:",
+      "urlPrefixes": [
+        "jdbc:postgresql:"
+      ],
+      "aliasOf": "postgresql"
+    },
+    {
+      "id": "aurora-postgresql",
+      "displayName": "Amazon Aurora PostgreSQL",
+      "databaseFamily": "Aurora PostgreSQL",
+      "driverClass": "org.postgresql.Driver",
+      "defaultJdbcUrlTemplate": "jdbc:postgresql:",
+      "urlPrefixes": [
+        "jdbc:postgresql:"
+      ],
+      "aliasOf": "postgresql"
+    },
+    {
+      "id": "tidb",
+      "displayName": "TiDB",
+      "databaseFamily": "TiDB",
+      "driverClass": "com.mysql.cj.jdbc.Driver",
+      "defaultJdbcUrlTemplate": "jdbc:mysql:",
+      "urlPrefixes": [
+        "jdbc:mysql:"
+      ],
+      "aliasOf": "mysql"
+    },
+    {
+      "id": "oceanbase-mysql",
+      "displayName": "OceanBase MySQL mode",
+      "databaseFamily": "OceanBase",
+      "driverClass": "com.mysql.cj.jdbc.Driver",
+      "defaultJdbcUrlTemplate": "jdbc:mysql:",
+      "urlPrefixes": [
+        "jdbc:mysql:"
+      ],
+      "aliasOf": "mysql"
+    },
+    {
+      "id": "aurora-mysql",
+      "displayName": "Amazon Aurora MySQL",
+      "databaseFamily": "Aurora MySQL",
+      "driverClass": "com.mysql.cj.jdbc.Driver",
+      "defaultJdbcUrlTemplate": "jdbc:mysql:",
+      "urlPrefixes": [
+        "jdbc:mysql:"
+      ],
+      "aliasOf": "mysql"
+    },
+    {
+      "id": "azure-sql",
+      "displayName": "Azure SQL Database",
+      "databaseFamily": "Azure SQL",
+      "driverClass": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+      "defaultJdbcUrlTemplate": "jdbc:sqlserver:",
+      "urlPrefixes": [
+        "jdbc:sqlserver:"
+      ],
+      "aliasOf": "sqlserver"
+    },
+    {
+      "id": "sqlserver-localdb",
+      "displayName": "Microsoft SQL Server LocalDB",
+      "databaseFamily": "SQL Server",
+      "driverClass": "sqlserver",
+      "defaultJdbcUrlTemplate": "jdbc:sqlserver:",
+      "urlPrefixes": [
+        "jdbc:sqlserver:"
+      ],
+      "aliasOf": "sqlserver"
+    },
+    {
+      "id": "spark-thrift",
+      "displayName": "Apache Spark SQL / Thrift Server",
+      "databaseFamily": "Spark SQL",
+      "driverClass": "org.apache.hive.jdbc.HiveDriver",
+      "defaultJdbcUrlTemplate": "jdbc:hive2:",
+      "urlPrefixes": [
+        "jdbc:hive2:"
+      ],
+      "aliasOf": "hive"
+    },
+    {
+      "id": "sybase-ase",
+      "displayName": "SAP/Sybase ASE",
+      "databaseFamily": "Sybase ASE",
+      "driverClass": "com.sybase.jdbc4.jdbc.SybDriver",
+      "defaultJdbcUrlTemplate": "jdbc:sybase:Tds:",
+      "urlPrefixes": [
+        "jdbc:sybase:Tds:"
+      ],
+      "artifact": {
+        "repositoryType": "VENDOR_URL",
+        "vendorDownloadPage": "https://help.sap.com/docs/SAP_ASE"
+      }
+    },
+    {
+      "id": "denodo",
+      "displayName": "Denodo VDP",
+      "databaseFamily": "Denodo",
+      "driverClass": "",
+      "defaultJdbcUrlTemplate": "jdbc:vdb:",
+      "urlPrefixes": [
+        "jdbc:vdb:"
+      ],
+      "artifact": {
+        "repositoryType": "VENDOR_URL",
+        "vendorDownloadPage": "https://www.denodo.com/en/platform/technical-documentation"
+      }
+    },
+    {
+      "id": "mimer",
+      "displayName": "Mimer SQL",
+      "databaseFamily": "Mimer",
+      "driverClass": "",
+      "defaultJdbcUrlTemplate": "jdbc:mimer:",
+      "urlPrefixes": [
+        "jdbc:mimer:"
+      ],
+      "artifact": {
+        "repositoryType": "VENDOR_URL",
+        "vendorDownloadPage": "https://developer.mimer.com/"
+      }
+    },
+    {
+      "id": "openedge",
+      "displayName": "Progress OpenEdge",
+      "databaseFamily": "OpenEdge",
+      "driverClass": "com.ddtek.jdbc.openedge.OpenEdgeDriver",
+      "defaultJdbcUrlTemplate": "jdbc:datadirect:openedge:",
+      "urlPrefixes": [
+        "jdbc:datadirect:openedge:"
+      ],
+      "artifact": {
+        "repositoryType": "VENDOR_URL",
+        "vendorDownloadPage": "https://www.progress.com/openedge"
+      }
+    },
+    {
+      "id": "phoenix",
+      "displayName": "Apache Phoenix",
+      "databaseFamily": "Phoenix",
+      "driverClass": "org.apache.phoenix.jdbc.PhoenixDriver",
+      "defaultJdbcUrlTemplate": "jdbc:phoenix:",
+      "urlPrefixes": [
+        "jdbc:phoenix:"
+      ],
+      "artifact": {
+        "repositoryType": "VENDOR_URL",
+        "vendorDownloadPage": "https://phoenix.apache.org/"
+      }
+    },
+    {
+      "id": "tarantool",
+      "displayName": "Tarantool",
+      "databaseFamily": "Tarantool",
+      "driverClass": "",
+      "defaultJdbcUrlTemplate": "jdbc:tarantool:",
+      "urlPrefixes": [
+        "jdbc:tarantool:"
+      ]
+    },
+    {
+      "id": "couchbase",
+      "displayName": "Couchbase",
+      "databaseFamily": "Couchbase",
+      "driverClass": "",
+      "defaultJdbcUrlTemplate": "jdbc:couchbase:",
+      "urlPrefixes": [
+        "jdbc:couchbase:"
+      ]
+    },
+    {
+      "id": "cassandra",
+      "displayName": "Apache Cassandra",
+      "databaseFamily": "Apache Cassandra",
+      "driverClass": "",
+      "defaultJdbcUrlTemplate": "jdbc:cassandra:",
+      "urlPrefixes": [
+        "jdbc:cassandra:"
+      ]
+    },
+    {
+      "id": "redis",
+      "displayName": "Redis",
+      "databaseFamily": "Redis",
+      "driverClass": "",
+      "defaultJdbcUrlTemplate": "jdbc:redis:",
+      "urlPrefixes": [
+        "jdbc:redis:"
+      ]
+    },
+    {
+      "id": "dynamodb",
+      "displayName": "Amazon DynamoDB",
+      "databaseFamily": "Amazon DynamoDB",
+      "driverClass": "",
+      "defaultJdbcUrlTemplate": "jdbc:dynamodb:",
+      "urlPrefixes": [
+        "jdbc:dynamodb:"
+      ]
+    },
+    {
+      "id": "custom-jdbc",
+      "displayName": "Custom JDBC",
+      "databaseFamily": "Custom",
+      "driverClass": "",
+      "defaultJdbcUrlTemplate": "jdbc:",
+      "urlPrefixes": [
+        "jdbc:"
+      ]
+    }
+  ]
+}

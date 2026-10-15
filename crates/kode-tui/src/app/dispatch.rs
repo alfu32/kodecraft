@@ -70,6 +70,11 @@ impl AppState {
                 view.dispatch(event, &mut self.focus);
             }
             self.files.dispatch(event, &mut self.focus)?;
+            self.git
+                .dispatch(event, &mut self.documents, &mut self.focus)?;
+            if let Some(diff) = &mut self.diff {
+                diff.dispatch(event, &mut self.documents, &mut self.focus)?;
+            }
             return self.drain_ui();
         }
         if !self.window_focused || self.closing {
@@ -106,8 +111,17 @@ impl AppState {
             self.files.dispatch(event, &mut self.focus)?;
             return self.drain_ui();
         }
+        if self.git.has_modal() {
+            self.git
+                .dispatch(event, &mut self.documents, &mut self.focus)?;
+            return self.drain_ui();
+        }
         if matches!(event, InputEvent::Key(input) if input.modifiers.ctrl && input.modifiers.shift && !input.modifiers.alt && matches!(input.key, Key::Character('f' | 'F')))
         {
+            if self.git.checkout_pending() {
+                self.notice = "Wait for branch checkout before opening project search".into();
+                return Ok(());
+            }
             let (query, filter) = if let Some(view) = &self.editor {
                 let document = self.documents.document(view.document_id())?;
                 let selected = view.input.state.caret.selected_text(&document.snapshot())?;
@@ -133,8 +147,12 @@ impl AppState {
         }
         if let InputEvent::Key(input) = event {
             if input.modifiers.alt
-                && let Key::Character(number @ '1'..='4') = input.key
+                && let Key::Character(number @ '1'..='5') = input.key
             {
+                if number != '5' {
+                    self.clear_diff()?;
+                    self.git.deactivate(&mut self.documents, &mut self.focus)?;
+                }
                 self.tabs.selected = (number as u8 - b'1') as usize;
                 self.focus_panel();
                 return Ok(());
@@ -146,6 +164,7 @@ impl AppState {
                 {
                     self.focus_panel();
                 } else {
+                    self.git.deactivate(&mut self.documents, &mut self.focus)?;
                     self.focus.focused = self.viewer_id();
                 }
                 return Ok(());
@@ -153,6 +172,7 @@ impl AppState {
             if self.splash
                 && input.key == Key::Enter
                 && self.focus.focused != Some(self.lsp_settings.id)
+                && !self.git.contains_focus(&self.focus)
             {
                 self.splash = false;
                 return Ok(());
@@ -163,6 +183,13 @@ impl AppState {
                 || view.navigation.definition.is_some()
                 || view.navigation.usages.is_some()
         });
+        if (self.git.has_popup() || self.git.has_capture(&self.focus))
+            && self
+                .git
+                .dispatch(event, &mut self.documents, &mut self.focus)?
+        {
+            return self.drain_ui();
+        }
         let captured = self
             .editor
             .as_ref()
@@ -201,7 +228,9 @@ impl AppState {
             } else if self.geometry.tabs.contains(position) {
                 Some(self.tabs_id)
             } else {
-                Some(if self.tabs.selected == 3 {
+                Some(if self.tabs.selected == 4 {
+                    self.git.focus_id()
+                } else if self.tabs.selected == 3 {
                     self.lsp_settings.id
                 } else if self.tabs.selected == 0 {
                     self.files.id
@@ -224,6 +253,10 @@ impl AppState {
             .tabs
             .handle(event, self.focus.focused == Some(self.tabs_id))
         {
+            if self.tabs.selected != 4 {
+                self.clear_diff()?;
+                self.git.deactivate(&mut self.documents, &mut self.focus)?;
+            }
             return Ok(());
         }
         let in_panel = match event {
@@ -232,14 +265,18 @@ impl AppState {
                 .panel
                 .contains(Position::new(pointer.x, pointer.y)),
             _ => {
-                self.focus.focused
-                    == Some(if self.tabs.selected == 3 {
-                        self.lsp_settings.id
-                    } else if self.tabs.selected == 0 {
-                        self.files.id
-                    } else {
-                        self.project_panel.id
-                    })
+                if self.tabs.selected == 4 {
+                    self.git.contains_focus(&self.focus)
+                } else {
+                    self.focus.focused
+                        == Some(if self.tabs.selected == 3 {
+                            self.lsp_settings.id
+                        } else if self.tabs.selected == 0 {
+                            self.files.id
+                        } else {
+                            self.project_panel.id
+                        })
+                }
             }
         };
         if in_panel {
@@ -250,7 +287,12 @@ impl AppState {
                     .dispatch(event, &self.project, &mut self.focus);
             } else if self.tabs.selected == 3 {
                 self.lsp_settings.dispatch(event, &mut self.focus);
+            } else if self.tabs.selected == 4 {
+                self.git
+                    .dispatch(event, &mut self.documents, &mut self.focus)?;
             }
+        } else if let Some(diff) = &mut self.diff {
+            diff.dispatch(event, &mut self.documents, &mut self.focus)?;
         } else if let Some(view) = &mut self.editor {
             view.dispatch(
                 event,
@@ -272,6 +314,7 @@ impl AppState {
             0 => self.files.id,
             1 => self.project_panel.id,
             3 => self.lsp_settings.id,
+            4 => self.git.focus_id(),
             _ => self.tabs_id,
         });
         if let Some(view) = &mut self.editor {
@@ -280,6 +323,14 @@ impl AppState {
     }
     pub fn tick(&mut self) -> Result<()> {
         if !self.closing {
+            self.git
+                .tick(&self.documents, &self.focus, self.tabs.selected == 4)?;
+            if let Some(diff) = &mut self.diff {
+                let area = diff.body();
+                if let Some(view) = &mut diff.editor {
+                    view.tick(&self.documents, &self.focus, area)?;
+                }
+            }
             if let Some(watcher) = &self.watcher {
                 self.files.poll_refresh(self.clock.now_millis(), watcher)?;
             }

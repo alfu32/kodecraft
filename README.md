@@ -8,7 +8,8 @@ ongoing work and links to acceptance evidence. Open a file or folder with
 `cargo run -p kode -- /path/to/project`; Ctrl+S saves and Ctrl+Q saves workspace
 state and quits. The shell includes file/project panels, search, text editing,
 hex inspection, portable image viewing, syntax/semantic highlighting and native
-completion/navigation. Git, SQL/JDBC, REST and remaining release tasks continue in dependency order.
+completion/navigation, local Git operations and diff views. SQL/JDBC, REST and
+remaining release tasks continue in dependency order.
 `cargo check --workspace`, `--help` and `--version` work on stable Rust.
 The Rust application will remain a TUI. JDBC will run in an **external JVM**;
 the Rust process will not embed a JVM.
@@ -30,6 +31,17 @@ Opening a file attempts to start its first matching local server in the backgrou
 it never installs a package. Current non-empty LSP definitions, references and
 completion take precedence; missing, crashed, empty or failing servers use native
 intelligence. Highlighting and definition previews retain native styling.
+
+Open **Git** with Alt+5. Space stages/unstages the selected status row; `a` stages
+all rows and `A` unstages them. Tab enters the shared commit-message editor,
+Ctrl+Enter commits, and Ctrl+Tab cycles sections. Outside that editor, `b` selects
+a local branch, `t` creates a tag, and `T` explicitly creates or moves a tag on the
+selected commit. Enter expands history; `m` copies its message into the draft.
+Checkout preserves local changes and refuses dirty file or binary buffers.
+Enter on a status row opens its diff in the main pane. `c` toggles context, `v`
+switches side-by-side/unified presentation, and Enter/`r` or a center arrow restores
+the selected unstaged text chunk. Previews support shared selection, copy and find;
+staged/historical comparisons are read-only. Leaving Git restores the ordinary viewer.
 
 Use the latest Rust **stable** toolchain (`rustup update stable`). This workspace
 selects `stable` through `rust-toolchain.toml`, as requested. Dependency versions

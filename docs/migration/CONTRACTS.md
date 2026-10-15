@@ -328,6 +328,93 @@ Git/filesystem work. The original throwing-status startup/render regression is
 covered by its standalone widget test. G02 owns application-tab routing, staging,
 commit editor, write actions and history expansion; G03 owns interactive diffs.
 
+## Git writes and application controls
+
+G02 runs every local write as an F03 critical blocking job. Cancellation is checked
+during preparation; after publication acknowledgement reports the actual outcome.
+Index operations hold the repository's standard `index.lock`, prepare a private
+attached index, then sync and rename the owned lock into place. Failed preparation
+keeps the original index; an external lock is never removed. Literal path validation
+rejects metadata/parent escapes and unsafe parent links. Files, deleted paths,
+unborn HEAD and conflict-stage removal have real repository fixtures.
+
+Commits require a nonblank message (128 KiB maximum), configured nonblank identity,
+staged changes, no unresolved conflict and no ongoing repository operation. They
+commit the captured staged tree and leave the worktree and on-disk index intact.
+Tags are annotated; moving an existing tag requires the explicit move action and
+resolves the new commit before updating its ref. No shell, hooks or JGit is used.
+
+Checkout uses safe libgit2 options with ignored-file overwrite disabled. It refuses
+tracked local changes, branches used by another worktree, dirty text/binary buffers,
+active workspace persistence and changes to this open workspace's session/cache
+paths. It locks the index and affected references and never silently forces. A
+checkout is not an atomic transaction across all filesystem paths/index/refs: an
+I/O failure after worktree publication reports that partial changes need inspection.
+Unix lock ownership uses file identity; non-Unix fallback/actual native execution
+remain release qualification work. Native calls are not forcibly interrupted.
+
+Alt+5 opens the Git panel. Status changes only after write acknowledgement and a
+fresh read. Its virtual commit document uses the shared editor, local completion,
+find/history and clipboard. Only a successful commit whose captured document and
+revision still match clears the draft; refresh and errors preserve it. Drafts are
+not persisted across restart. Commit buttons arm on mouse-down and submit once on
+mouse-up inside; leaving the panel cancels drag/armed state. History expansions are
+bounded to 32 commits/20,000 cached paths; menus retain immutable snapshots.
+
+Successful checkout invalidates only clean captures in the repository, reloads the
+active text/hex/image view and reindexes/rescans without stealing sidebar focus.
+Dirty edits made after submission stay in memory. A newer explicit file-open request
+keeps precedence and its focus intent; clean hidden caches bypass old session bytes
+on next open. Project search waits for checkout acknowledgement to avoid attaching
+a stale preview. G02 emits typed status/history diff requests; G03 owns displaying
+them and restoring chunks.
+
+## Git diffs and chunk restoration
+
+G03 builds immutable `kode_git::diff::DiffPlan` values in F03 workers. Libgit2's
+default xdiff algorithm with zero context/interhunk context supplies one set of
+line/byte ranges. Both presentation and restore retain that set; actions never
+recompute a different diff and reuse an old ordinal. Its repeated-line alignment
+can differ from JGit HistogramDiff: `fixtures/git/diff-algorithm.json` records an
+actual JGit 7.4.0 oracle counterexample, pinned by Rust range assertions.
+
+Sources are bounded to 8 MiB each/200,000 combined lines. Missing content is empty
+on its corresponding side. Binary/oversized/submodule/symlink content displays a
+typed notice and cannot restore. Native diff calls cannot be interrupted midway;
+the same native RSS/cross-platform qualification limits as G01 apply. Presentation
+is a separate cancellable worker job, bounded to 100,000 rows/16 MiB, with visible
+limit errors instead of silent truncation or repeated automatic retries.
+
+Side-by-side projection pairs insertion/deletion/replacement/context rows, original
+line numbers, per-side colors and wrapping. Both sides scroll as one prepared
+document. `c` toggles context and `v` switches to unified +/- rows; footer controls
+also accept mouse clicks. A common Historical editor host supplies the read-only
+mutation guard, raw clipboard service, selection, search, navigation and scrolling.
+Copy contains the displayed projection, including its numbers/markers. Source-point
+maps retain selection and viewport position across reflow where source rows remain
+visible. Reflow and replacement acknowledgements reject old tags, including a new
+capture at the same width. Failed presentation disables restore until a new valid
+presentation is prepared. All paint is prepared data; it performs no Git/file I/O.
+
+Only normal unstaged text comparisons allow restore. Capture records worktree disk
+identity; execution checks that identity, exact old index/new worktree contents,
+safe repository paths, the original open-document revision and dirty text/binary
+buffers. It holds the standard index lock, reserves the file against concurrent
+saves/file actions and uses E04's guarded atomic save. Unselected bytes, BOM, CRLF,
+final-newline state and existing permissions stay intact. A deleted regular file
+can be recreated; removing all added text retains an empty regular file, matching
+the source chunk action. Staged and historical comparisons cannot restore.
+
+Accepted restores are critical jobs and drain before quit/disposal. Edits made
+after submission remain in memory and retain their old disk baseline, so a later
+save cannot silently overwrite the changed physical file. Successful publication
+invalidates clean captures of only the changed file, reloads its ordinary viewer
+without taking preview/sidebar focus, refreshes Git and reindexes. Leaving Git or
+opening another ordinary file dismisses the preview and late diff acknowledgements;
+the previous text/hex/image view remains available. A filesystem writer racing the
+final identity-check/rename boundary has the same documented limits as E04 saves;
+no cross-process filesystem transaction or hard RSS guarantee is claimed.
+
 ## LSP management
 
 P01 supplies `kode-lsp::{catalog,discovery,install}`. Catalog/manifest structs retain

@@ -1,0 +1,40 @@
+{
+  "cases": [
+    {
+      "case": "stage-shared-message-mouse-commit",
+      "exact_crlf": true,
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "stage-shared-message-mouse-commit",
+      "exact_crlf": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "missing-repository-initialize",
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 3
+}

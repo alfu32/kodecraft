@@ -453,6 +453,11 @@ image-body {
     fg: #000000;
 }
 
+diff-header{
+    bg: #3f4e7e;
+    fg: #b6b9c5;
+}
+
 diff-gutter{
     bg: #3f4e7e;
     fg: #b6b9c5;

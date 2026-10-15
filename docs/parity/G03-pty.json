@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "case": "readonly-context-selected-restore-unified-leave",
+      "exact_crlf": true,
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "readonly-context-selected-restore-unified-leave",
+      "exact_crlf": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 2
+}

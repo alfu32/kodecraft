@@ -1,4 +1,4 @@
-mod index;
+pub(crate) mod index;
 use crate::repository::{check, error, open, relative, string};
 use git2::{BranchType, ErrorCode, IndexEntry, IndexTime, ObjectType, Repository, Signature};
 use index::IndexTransaction;
@@ -54,6 +54,15 @@ impl WriteJob {
     /// Cancellation can stop preparation. Once publication begins, return its
     /// actual outcome; never report a committed operation as cancelled.
     pub fn run(&self, cancel: &CancellationToken) -> Result<WriteReceipt> {
+        self.run_protecting(cancel, &[])
+    }
+    /// App-owned files can be protected from an in-place branch change while
+    /// their stores are open. Ordinary library callers need no protected paths.
+    pub fn run_protecting(
+        &self,
+        cancel: &CancellationToken,
+        protected_paths: &[PathBuf],
+    ) -> Result<WriteReceipt> {
         check(cancel)?;
         if matches!(self.request, WriteRequest::Init) {
             return init(&self.root, cancel);
@@ -64,7 +73,7 @@ impl WriteJob {
             WriteRequest::Stage(paths) => stage(&repo, paths, cancel),
             WriteRequest::Unstage(paths) => unstage(&repo, paths, cancel),
             WriteRequest::Commit { message } => commit(&repo, message, cancel),
-            WriteRequest::Checkout { branch } => checkout(&repo, branch, cancel),
+            WriteRequest::Checkout { branch } => checkout(&repo, branch, cancel, protected_paths),
             WriteRequest::Tag {
                 name,
                 revision,
@@ -430,7 +439,12 @@ fn tag(
         vec![],
     ))
 }
-fn checkout(repo: &Repository, branch: &str, cancel: &CancellationToken) -> Result<WriteReceipt> {
+fn checkout(
+    repo: &Repository,
+    branch: &str,
+    cancel: &CancellationToken,
+    protected_paths: &[PathBuf],
+) -> Result<WriteReceipt> {
     root(repo)?;
     if branch.contains('\0') || !git2::Reference::is_valid_name(&format!("refs/heads/{branch}")) {
         return Err(failure(
@@ -487,6 +501,31 @@ fn checkout(repo: &Repository, branch: &str, cancel: &CancellationToken) -> Resu
         .find_reference(&reference)
         .and_then(|reference| reference.peel_to_commit())
         .map_err(|failure| error(repo.path(), "resolve locked checkout commit", failure))?;
+    let old_tree = match repo.head() {
+        Ok(head) => Some(
+            head.peel_to_tree()
+                .map_err(|failure| error(repo.path(), "read protected HEAD tree", failure))?,
+        ),
+        Err(failure) if failure.code() == ErrorCode::UnbornBranch => None,
+        Err(failure) => return Err(error(repo.path(), "read protected HEAD", failure)),
+    };
+    let target_tree = target
+        .tree()
+        .map_err(|failure| error(repo.path(), "read protected checkout tree", failure))?;
+    for path in protected_paths {
+        let path = relative(path)?;
+        let old = tree_entry(repo, old_tree.as_ref(), &path)?;
+        let new = tree_entry(repo, Some(&target_tree), &path)?;
+        if old != new {
+            return Err(failure(
+                "checkout branch",
+                format!(
+                    "checkout changes active workspace metadata {}; close this workspace before checking out that branch",
+                    path.display()
+                ),
+            ));
+        }
+    }
     let signature = signature(repo)?;
     refs.set_symbolic_target(
         "HEAD",
@@ -521,6 +560,18 @@ fn checkout(repo: &Repository, branch: &str, cancel: &CancellationToken) -> Resu
     );
     result.worktree_changed = true;
     Ok(result)
+}
+fn tree_entry(
+    repo: &Repository,
+    tree: Option<&git2::Tree<'_>>,
+    path: &Path,
+) -> Result<Option<(git2::Oid, i32)>> {
+    match tree.map(|tree| tree.get_path(path)) {
+        Some(Ok(entry)) => Ok(Some((entry.id(), entry.filemode()))),
+        None => Ok(None),
+        Some(Err(failure)) if failure.code() == ErrorCode::NotFound => Ok(None),
+        Some(Err(failure)) => Err(error(repo.path(), "read protected path", failure)),
+    }
 }
 fn check_branch_worktrees(repo: &Repository, reference: &str) -> Result<()> {
     let common = Repository::open(repo.commondir())

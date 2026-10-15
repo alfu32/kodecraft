@@ -27,3 +27,4 @@ unicode-general-category.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
+git2.workspace = true

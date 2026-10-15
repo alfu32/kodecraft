@@ -1315,6 +1315,7 @@ async fn workspace_switch_persists_old_state_advances_generation_and_rejects_old
     fs::write(second.path().join("two.rs"), "two").unwrap();
     let mut app = make(first.path(), Some("one.rs"), Arc::new(FakeClock::default()));
     until(&mut app, |app| app.state.editor.is_some()).await;
+    let previous_document = app.state.editor.as_ref().unwrap().document_id();
     paint(&mut app);
     app.state
         .dispatch(&InputEvent::Paste("draft ".into()))
@@ -1323,7 +1324,16 @@ async fn workspace_switch_persists_old_state_advances_generation_and_rejects_old
     app.switch_workspace(second.path().into()).await.unwrap();
     assert_eq!(app.state.generation, WorkspaceGeneration(2));
     assert_eq!(app.state.project.root, second.path());
-    assert_eq!(app.state.documents.ids().count(), 0);
+    assert!(app.state.documents.document(previous_document).is_err());
+    assert!(app.state.documents.ids().all(|id| !matches!(
+        app.state.documents.document(id).unwrap().origin(),
+        DocumentOrigin::File(_)
+    )));
+    assert_eq!(
+        app.state.documents.ids().count(),
+        1,
+        "the new workspace owns only its virtual commit-message document"
+    );
     assert!(first.path().join(".kode-rs.json").exists());
     until(&mut app, |app| !app.state.files.tree.flattened().is_empty()).await;
     assert!(

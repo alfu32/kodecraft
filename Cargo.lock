@@ -1462,6 +1462,11 @@ version = "0.1.0"
 dependencies = [
  "kode-core",
  "kode-platform",
+ "regex",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
 ]
 
 [[package]]
@@ -1471,6 +1476,7 @@ dependencies = [
  "git2",
  "kode-core",
  "kode-platform",
+ "sha2",
  "tempfile",
  "tokio",
 ]
@@ -1585,6 +1591,7 @@ name = "kode-tui"
 version = "0.1.0"
 dependencies = [
  "crossterm",
+ "git2",
  "kode-core",
  "kode-database",
  "kode-git",

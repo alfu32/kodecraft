@@ -8,7 +8,7 @@ use std::{
     io::{Seek, SeekFrom, Write},
     path::PathBuf,
 };
-pub(super) struct IndexTransaction {
+pub(crate) struct IndexTransaction {
     pub index: Index,
     original: PathBuf,
     lock_path: PathBuf,

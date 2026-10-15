@@ -13,6 +13,7 @@ kode-core.workspace = true
 kode-platform.workspace = true
 git2.workspace = true
 tempfile.workspace = true
+sha2.workspace = true
 
 [dev-dependencies]
 tokio.workspace = true

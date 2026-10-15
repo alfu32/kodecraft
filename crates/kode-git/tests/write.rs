@@ -28,6 +28,12 @@ fn init(root: &Path) -> Repository {
             root.join(".git/no-global-attributes").to_str().unwrap(),
         )
         .unwrap();
+    config
+        .set_str(
+            "core.excludesfile",
+            root.join(".git/no-global-excludes").to_str().unwrap(),
+        )
+        .unwrap();
     config.set_str("user.name", "Synthetic Author").unwrap();
     config
         .set_str("user.email", "synthetic@example.invalid")
@@ -433,4 +439,71 @@ fn initialization_refuses_existing_metadata_and_checkout_refuses_a_branch_owned_
     fs::write(corrupt.join(".git/user.keep"), "keep").unwrap();
     assert!(run(&corrupt, WriteRequest::Init).is_err());
     assert_eq!(fs::read(corrupt.join(".git/user.keep")).unwrap(), b"keep");
+}
+
+#[test]
+fn checkout_protects_ignored_collisions_and_application_owned_metadata() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    let repo = init(root);
+    fs::write(root.join(".gitignore"), "ignored-private\n").unwrap();
+    fs::write(root.join(".kode-rs.json"), "first workspace metadata\n").unwrap();
+    stage(root, &[".gitignore", ".kode-rs.json"]);
+    let first = commit(root, "first");
+    repo.branch("old", &repo.find_commit(first).unwrap(), false)
+        .unwrap();
+    fs::write(root.join(".kode-rs.json"), "second workspace metadata\n").unwrap();
+    stage(root, &[".kode-rs.json"]);
+    let second = commit(root, "second");
+    let error = WriteJob {
+        root: root.into(),
+        request: WriteRequest::Checkout {
+            branch: "old".into(),
+        },
+    }
+    .run_protecting(&CancellationToken::new(), &[".kode-rs.json".into()])
+    .unwrap_err();
+    assert!(error.to_string().contains("active workspace metadata"));
+    assert_eq!(repo.head().unwrap().target(), Some(second));
+    assert_eq!(
+        fs::read(root.join(".kode-rs.json")).unwrap(),
+        b"second workspace metadata\n"
+    );
+    assert_no_lock(&repo);
+    // Build a branch tracking a currently ignored path without changing main.
+    let mut index = index(&repo);
+    let mut entry = index.get_path(Path::new(".kode-rs.json"), 0).unwrap();
+    entry.path = b"ignored-private".to_vec();
+    entry.id = repo.blob(b"tracked branch data\n").unwrap();
+    entry.file_size = 20;
+    index.add(&entry).unwrap();
+    let tree = index.write_tree().unwrap();
+    let tree = repo.find_tree(tree).unwrap();
+    let signature = repo.signature().unwrap();
+    repo.commit(
+        Some("refs/heads/collision"),
+        &signature,
+        &signature,
+        "collision",
+        &tree,
+        &[&repo.find_commit(second).unwrap()],
+    )
+    .unwrap();
+    index.read(true).unwrap();
+    fs::write(root.join("ignored-private"), "keep private ignored bytes\n").unwrap();
+    assert!(
+        run(
+            root,
+            WriteRequest::Checkout {
+                branch: "collision".into()
+            }
+        )
+        .is_err()
+    );
+    assert_eq!(
+        fs::read(root.join("ignored-private")).unwrap(),
+        b"keep private ignored bytes\n"
+    );
+    assert_eq!(repo.head().unwrap().target(), Some(second));
+    assert_no_lock(&repo);
 }
