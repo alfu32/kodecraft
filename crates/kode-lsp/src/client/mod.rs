@@ -389,6 +389,17 @@ impl LspClient {
             .get(uri.as_str())
             .map(|(stamp, _)| *stamp)
     }
+    pub fn document_origins(&self) -> Vec<DocumentOrigin> {
+        self.owner
+            .shared
+            .documents
+            .read()
+            .expect("LSP document lock")
+            .keys()
+            .filter_map(|uri| uri.parse::<Uri>().ok().and_then(|uri| uri_path(&uri).ok()))
+            .map(DocumentOrigin::File)
+            .collect()
+    }
     pub fn document_mapper(&self, uri: &Uri) -> Option<PositionMapper> {
         self.owner
             .shared

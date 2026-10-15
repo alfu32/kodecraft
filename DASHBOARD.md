@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    25 |           1 |   39 |       0 |    65 |
+|    24 |           1 |   40 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **P03** — [Editor enrichment and provider fallback](docs/migration/tasks/07-lsp.md#p03--editor-enrichment-and-provider-fallback)
+- **G01** — [Repository discovery and read operations](docs/migration/tasks/05-git.md#g01--repository-discovery-and-read-operations)
 
 ## Task status
 
@@ -40,7 +40,7 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | V01  | [MIME/language detection and routing](docs/migration/tasks/04-viewers.md)                       | done        | [Report](docs/parity/V01.md) |
 | V02  | [Byte buffer and hex viewer](docs/migration/tasks/04-viewers.md)                                | done        | [Report](docs/parity/V02.md) |
 | V03  | [Image decoding and colored cell modes](docs/migration/tasks/04-viewers.md)                     | done        | [Report](docs/parity/V03.md) |
-| G01  | [Repository discovery and read operations](docs/migration/tasks/05-git.md)                      | todo        | —                            |
+| G01  | [Repository discovery and read operations](docs/migration/tasks/05-git.md)                      | in-progress | —                            |
 | G02  | [Stage, unstage, commit, checkout and tags](docs/migration/tasks/05-git.md)                     | todo        | —                            |
 | G03  | [Diff views and restoring worktree chunks](docs/migration/tasks/05-git.md)                      | todo        | —                            |
 | L01  | [Semantic facts, identifiers and immutable snapshots](docs/migration/tasks/06-intelligence.md)  | done        | [Report](docs/parity/L01.md) |
@@ -57,7 +57,7 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | L12  | [Language and persistence parity qualification](docs/migration/tasks/06-intelligence.md)        | done        | [Report](docs/parity/L12.md) |
 | P01  | [Server catalog, discovery and installation](docs/migration/tasks/07-lsp.md)                    | done        | [Report](docs/parity/P01.md) |
 | P02  | [LSP client transport and lifecycle](docs/migration/tasks/07-lsp.md)                            | done        | [Report](docs/parity/P02.md) |
-| P03  | [Editor enrichment and provider fallback](docs/migration/tasks/07-lsp.md)                       | in-progress | —                            |
+| P03  | [Editor enrichment and provider fallback](docs/migration/tasks/07-lsp.md)                       | done        | [Report](docs/parity/P03.md) |
 | R01  | [Lossless collection and environment model](docs/migration/tasks/08-rest.md)                    | todo        | —                            |
 | R02  | [Variables, auth, headers, URLs and request bodies](docs/migration/tasks/08-rest.md)            | todo        | —                            |
 | R03  | [Postman and OpenAPI import/export](docs/migration/tasks/08-rest.md)                            | todo        | —                            |

@@ -11,6 +11,7 @@ Path(pid_path).write_text(str(os.getpid()))
 held = []
 cancelled = []
 documents = {}
+behavior = {"empty": True} if mode == "empty-primary" else {}
 
 
 def read():
@@ -62,6 +63,22 @@ while True:
     method = message.get("method")
     params = message.get("params", {})
     identifier = message.get("id")
+    if method in ("textDocument/definition", "textDocument/references", "textDocument/completion"):
+        if mode == "crash-query":
+            sys.stderr.write("fixture query crash\n")
+            sys.stderr.flush()
+            sys.exit(9)
+        if behavior.get("delay"):
+            time.sleep(behavior["delay"])
+        if behavior.get("error"):
+            error(identifier, -32603, "fixture primary unavailable")
+            continue
+        if behavior.get("empty"):
+            result(identifier, [] if method == "textDocument/references" else None)
+            continue
+        if method in behavior:
+            result(identifier, behavior[method])
+            continue
     if method == "initialize":
         if mode == "no-initialize":
             continue
@@ -122,6 +139,9 @@ while True:
         result(identifier, cancelled)
     elif method == "fixture/echo":
         result(identifier, params)
+    elif method == "fixture/configure":
+        behavior = params
+        result(identifier, None)
     elif method == "fixture/notifications":
         for index in range(100):
             send({"jsonrpc": "2.0", "method": "window/logMessage", "params": {"type": 3, "message": f"{index}:" + "x" * 3000}})

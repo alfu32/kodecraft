@@ -338,14 +338,57 @@ document identity changes reset the replica, and accepted writes finish even if
 the caller drops its reply future. Limits are 64 documents, 8 MiB per source,
 1 million protocol lines and 64 MiB for all source/index captures per client.
 Virtual documents remain a native-provider responsibility. Typed definition,
-reference and completion requests check server capabilities. Editor attachment,
-current-query revision gates and non-empty-primary/native fallback belong to P03.
+reference and completion requests check server capabilities. P03 composes editor
+attachment, current-query gates and native fallback below.
 
 Normal shutdown closes documents, sends shutdown then exit, and forces process
 group termination/reaping when deadlines expire. A failed close cannot race a late
 open against shutdown. Actor failure or dropped ownership also cancels the
 supervisor. Defaults are 10 s startup, 800 ms request, 2 s pipe write, 1 s shutdown
 and 500 ms exit grace; no UI input or render path waits for a server response.
+
+P03's `EditorLsp` receives O(1) immutable rope captures from file/search hosts and
+the workspace document registry. Captures prioritize attached hosts and cap at
+64 documents/64 MiB, with 8 MiB per source. Unsupported/overflow/virtual sources
+use native intelligence. A coalesced F03 job attempts the first matching local
+server on a new file attachment, then synchronizes selected replicas. Discovery
+alone does not launch processes; editor attachment never installs packages. Manual
+stop/crash does not cause an immediate restart loop; a later file attachment or
+explicit start can retry. Server language aliases use the same protocol mapping.
+
+Worker queries synchronize selected captured buffers before the request, so a
+target in another unsaved file has the same replica revision as its byte mapper.
+Negotiated coordinates convert Locations/LocationLinks to exact editor bytes and
+UTF-16 navigation locations. Other sources use bounded regular-file reads with
+change checks. Non-file locations are excluded. Missing UTF-16 sources retain their
+portable location/source-unavailable state; UTF-8/32 locations without readable
+source fall back rather than inventing byte offsets. Target conversion caps at
+1,000 locations/64 sources/64 MiB. Definition previews retain native highlighting.
+
+Current non-empty primary results win. Empty/error/unsupported/stale primary
+results call the native provider; lists are not merged. Host suggestions still
+precede the composed completion provider per E09. LSP completion preserves server
+order and details, deduplicates labels and caps at 50. Plain insertion and text
+edits matching the typed prefix work; snippets, additional edits, commands and
+insert/replace extensions are not advertised or applied. Unusable items permit
+native fallback. Unicode insertion preserves receivers, suffixes and saved bytes.
+
+Source changes cancel in-flight LSP requests; scheduler cancellation and workspace
+disposal also cancel them. Identity/revision, server identity/state and replica
+version are checked before/after conversion. Application publication checks source
+epoch and registry revision again, covering changes after a worker queues its
+reply. Existing owner/focus/selection/context gates remain authoritative. An
+entirely primary operation does not depend on native index publication; mixed or
+fallback operations retain the native epoch/index gate. New captures are observed
+before stamping a query, and newly installed cached hosts receive providers before
+the next input event. A physical save reports actual saved bytes even if a newer
+unsaved replica already exists; LSP failure cannot invalidate a successful save.
+
+Diagnostics remain bounded transport events; the frozen facade's diagnostic,
+document-symbol and prepare-rename methods are empty/default interfaces, not
+implemented editor features. Protocol hover, symbol/diagnostic decoration,
+rename/refactoring and server edits are not advertised. Existing delayed
+definition previews use the real composed definitions provider instead.
 
 ## Intelligence publication
 

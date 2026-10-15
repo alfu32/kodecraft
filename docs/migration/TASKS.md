@@ -34,7 +34,7 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | V01 | [MIME/language detection and routing](tasks/04-viewers.md) | F02, F03 | [done](../parity/V01.md) |
 | V02 | [Byte buffer and hex viewer](tasks/04-viewers.md) | F05, V01, E04 | [done](../parity/V02.md) |
 | V03 | [Image decoding and colored cell modes](tasks/04-viewers.md) | F03, F05, V01 | [done](../parity/V03.md) |
-| G01 | [Repository discovery and read operations](tasks/05-git.md) | F03 | todo |
+| G01 | [Repository discovery and read operations](tasks/05-git.md) | F03 | in-progress |
 | G02 | [Stage, unstage, commit, checkout and tags](tasks/05-git.md) | G01, E12, F05 | todo |
 | G03 | [Diff views and restoring worktree chunks](tasks/05-git.md) | G02, E05, E12, V01 | todo |
 | L01 | [Semantic facts, identifiers and immutable snapshots](tasks/06-intelligence.md) | F02, E01 | [done](../parity/L01.md) |
@@ -51,7 +51,7 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | L12 | [Language and persistence parity qualification](tasks/06-intelligence.md) | L09, L10 | [done](../parity/L12.md) |
 | P01 | [Server catalog, discovery and installation](tasks/07-lsp.md) | F03, F05 | [done](../parity/P01.md) |
 | P02 | [LSP client transport and lifecycle](tasks/07-lsp.md) | P01, E01, F03 | [done](../parity/P02.md) |
-| P03 | [Editor enrichment and provider fallback](tasks/07-lsp.md) | P02, L09, E09, E10 | in-progress |
+| P03 | [Editor enrichment and provider fallback](tasks/07-lsp.md) | P02, L09, E09, E10 | [done](../parity/P03.md) |
 | R01 | [Lossless collection and environment model](tasks/08-rest.md) | F02 | todo |
 | R02 | [Variables, auth, headers, URLs and request bodies](tasks/08-rest.md) | R01, F03 | todo |
 | R03 | [Postman and OpenAPI import/export](tasks/08-rest.md) | R01 | todo |

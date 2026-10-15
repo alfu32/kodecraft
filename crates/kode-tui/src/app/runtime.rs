@@ -51,6 +51,7 @@ use std::{
 use tokio::sync::mpsc;
 
 enum Output {
+    LspDocuments,
     LspSettings(Box<crate::panels::settings::lsp::SettingsReport>),
     IndexPrepared(Box<kode_intelligence::service::PreparedIndex>),
     IndexCommitted(
@@ -72,13 +73,17 @@ enum Output {
     Overlays(crate::editor::overlays::OverlayReport),
     Search(SearchReport),
     ProjectSearch(ProjectSearchReport),
-    Completion(Vec<CompletionItem>),
-    Navigation(NavigationResult),
+    Completion(
+        Vec<CompletionItem>,
+        Option<kode_lsp::provider::ProviderProof>,
+    ),
+    Navigation(NavigationResult, Option<kode_lsp::provider::ProviderProof>),
     Clipboard(ClipboardResult),
     Project(Project),
     Picker(Project),
 }
 enum Context {
+    LspDocuments,
     LspSettings,
     IndexPrepared,
     IndexCommitted,
@@ -244,6 +249,7 @@ impl AppRuntime {
         })
     }
     pub fn pump(&mut self) -> Result<()> {
+        self.capture_lsp();
         while let Ok(batch) = self.batches.try_recv() {
             self.state.scan.batch(batch);
         }
@@ -289,13 +295,16 @@ impl AppRuntime {
             self.latest.remove(&key);
             self.pending.retain(|work| work.key != Some(key));
         }
+        self.pump_intelligence()?;
         for work in self.state.take_work() {
             if let Err(error) = self.accept(work) {
                 self.state.notice = error.to_string();
             }
         }
+        // Opening a cached document may install a new host synchronously while
+        // accepting work. Bind it before the next input event can reach it.
         self.pump_intelligence()?;
-        self.pump_lsp();
+        self.pump_lsp()?;
         if !self.config_active
             && let Some((tag, action)) = self.config_queue.pop_front()
         {
@@ -758,6 +767,7 @@ impl AppRuntime {
         match work {
             EditorWork::SaveFile(job) => {
                 let id = job.snapshot.id;
+                let lsp = self.editor_lsp();
                 let save_owner = self.state.documents.save_owner(id)?;
                 self.blocking(
                     job.tag,
@@ -769,13 +779,17 @@ impl AppRuntime {
                         let DocumentOrigin::File(path) = &job.snapshot.origin else {
                             return Err(DomainError::NoSaveTarget);
                         };
-                        NativeDocumentIo
-                            .save(
-                                path,
-                                &job.snapshot.to_service_snapshot(),
-                                job.expected_disk.as_ref(),
-                            )
-                            .map(Output::Saved)
+                        let identity = NativeDocumentIo.save(
+                            path,
+                            &job.snapshot.to_service_snapshot(),
+                            job.expected_disk.as_ref(),
+                        )?;
+                        if let Some(lsp) = lsp {
+                            // A protocol failure cannot turn a successful physical
+                            // save into a failed file operation.
+                            let _ = lsp.saved(job.snapshot);
+                        }
+                        Ok(Output::Saved(identity))
                     }),
                 )
             }
@@ -818,6 +832,7 @@ impl AppRuntime {
                 let provider = self
                     .view(owner)
                     .and_then(|view| view.host.intelligence.clone());
+                let lsp = self.editor_lsp();
                 self.blocking(
                     job.tag,
                     owner,
@@ -825,10 +840,18 @@ impl AppRuntime {
                     false,
                     Context::Completion,
                     Box::new(move |cancel| {
+                        let (provider, usage) = if let Some(lsp) = lsp {
+                            let (provider, usage) = lsp.tracked_provider(provider, cancel.clone());
+                            (Some(provider), Some(usage))
+                        } else {
+                            (provider, None)
+                        };
                         completion::prepare(&job, external.as_deref(), provider.as_deref(), || {
                             cancel.is_cancelled()
                         })
-                        .map(Output::Completion)
+                        .map(|items| {
+                            Output::Completion(items, usage.and_then(|usage| usage.proof()))
+                        })
                     }),
                 )
             }
@@ -841,6 +864,7 @@ impl AppRuntime {
                     .ok_or_else(|| {
                         DomainError::Unsupported("code intelligence is unavailable".into())
                     })?;
+                let lsp = self.editor_lsp();
                 self.blocking(
                     job.tag,
                     owner,
@@ -848,6 +872,13 @@ impl AppRuntime {
                     false,
                     Context::Navigation,
                     Box::new(move |cancel| {
+                        let (provider, usage) = if let Some(lsp) = lsp {
+                            let (provider, usage) =
+                                lsp.tracked_provider(Some(provider), cancel.clone());
+                            (provider, Some(usage))
+                        } else {
+                            (provider, None)
+                        };
                         definition::prepare(
                             &job,
                             provider.as_ref(),
@@ -862,7 +893,9 @@ impl AppRuntime {
                             }),
                             || cancel.is_cancelled(),
                         )
-                        .map(Output::Navigation)
+                        .map(|targets| {
+                            Output::Navigation(targets, usage.and_then(|usage| usage.proof()))
+                        })
                     }),
                 )
             }
@@ -939,7 +972,17 @@ impl AppRuntime {
         if tag.workspace != self.state.generation {
             return Ok(());
         }
+        if let Ok(Output::Completion(_, Some(proof)) | Output::Navigation(_, Some(proof))) = &result
+            && !proof.is_current()
+        {
+            self.query_versions.remove(&tag);
+            return Ok(());
+        }
         if let Some(expected) = self.query_versions.remove(&tag)
+            && !matches!(
+                &result,
+                Ok(Output::Completion(_, Some(_)) | Output::Navigation(_, Some(_)))
+            )
             && self
                 .intelligence
                 .as_ref()
@@ -970,6 +1013,16 @@ impl AppRuntime {
             return Ok(());
         }
         match context {
+            Context::LspDocuments => {
+                if let Some(runtime) = &mut self.lsp {
+                    runtime.documents_busy = false;
+                }
+                if let Err(error) = result
+                    && !matches!(error, DomainError::Cancelled)
+                {
+                    self.state.notice = error.to_string();
+                }
+            }
             Context::LspSettings => {
                 self.state.lsp_settings.complete(
                     tag,
@@ -1359,7 +1412,7 @@ impl AppRuntime {
                 .complete_completion(
                     tag,
                     result.and_then(|output| {
-                        if let Output::Completion(items) = output {
+                        if let Output::Completion(items, _) = output {
                             Ok(items)
                         } else {
                             Err(DomainError::Unsupported("wrong completion result".into()))
@@ -1374,7 +1427,7 @@ impl AppRuntime {
                 view.complete_navigation(
                     tag,
                     result.and_then(|output| {
-                        if let Output::Navigation(targets) = output {
+                        if let Output::Navigation(targets, _) = output {
                             Ok(targets)
                         } else {
                             Err(DomainError::Unsupported("wrong navigation result".into()))
@@ -1497,6 +1550,9 @@ impl AppRuntime {
     }
     async fn dispose_services(&mut self) -> Result<()> {
         self.state.lsp_settings.cancel();
+        if let Some(editor) = self.editor_lsp() {
+            editor.stop();
+        }
         if let Some(service) = &self.intelligence {
             service.stop_queries();
         }

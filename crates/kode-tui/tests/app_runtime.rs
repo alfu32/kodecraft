@@ -76,6 +76,446 @@ fn paint(app: &mut AppRuntime) {
         .unwrap();
 }
 
+fn configure_editor_lsp_fixture(app: &mut AppRuntime, directory: &Path) {
+    use kode_lsp::{catalog::Platform, discovery::DiscoveryOptions};
+    use kode_platform::paths::ResourcePaths;
+    use kode_tui::app::runtime::lsp::LspConfiguration;
+    let script = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../fixtures/lsp/server.py")
+        .canonicalize()
+        .unwrap();
+    let catalog = directory.join("catalog.json");
+    fs::write(&catalog,serde_json::to_vec(&serde_json::json!({"servers":[{
+        "id":"fixture","name":"Fixture","languages":["kotlin"],"versions":[],
+        "preferredCommand":["/usr/bin/python3",script,"fragment",directory.join("trace.jsonl"),directory.join("pid")],
+        "configuration":{"fixture":{"option":42}}
+    }]})).unwrap()).unwrap();
+    app.configure_lsp(LspConfiguration {
+        paths: ResourcePaths {
+            explicit: None,
+            rust_home: None,
+            legacy_home: None,
+            executable_dir: directory.into(),
+            config_dir: directory.join("config"),
+        },
+        catalog: Some(catalog),
+        discovery: DiscoveryOptions {
+            platform: Platform::detect(),
+            install_root: directory.join("install"),
+            search_path: vec![],
+            configured_commands: Default::default(),
+        },
+    })
+    .unwrap();
+}
+fn lsp_trace(directory: &Path) -> Vec<serde_json::Value> {
+    fs::read_to_string(directory.join("trace.jsonl"))
+        .unwrap_or_default()
+        .lines()
+        .filter_map(|line| serde_json::from_str(line).ok())
+        .collect()
+}
+fn editor_caret(app: &mut AppRuntime, offset: usize) {
+    let id = app.state.editor.as_ref().unwrap().document_id();
+    let snapshot = app.state.documents.document(id).unwrap().snapshot();
+    app.state
+        .editor
+        .as_mut()
+        .unwrap()
+        .input
+        .state
+        .caret
+        .move_to(&snapshot, kode_core::ByteOffset(offset), false)
+        .unwrap();
+    paint(app);
+}
+#[tokio::test]
+async fn editor_lsp_auto_start_completion_save_native_fallback_and_late_reply_keep_typing_and_focus()
+ {
+    use kode_intelligence::{facade::IntelligenceResources, service::IndexPhase};
+    use serde_json::json;
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().join("project");
+    fs::create_dir(&root).unwrap();
+    let source = "class Customer { val id: Long = 0; val name: String = \"\" }\nfun use(customer: Customer) {\n    customer.\n}\n";
+    fs::write(root.join("Use.kt"), source).unwrap();
+    let clock = Arc::new(FakeClock::default());
+    let mut app = make(&root, Some("Use.kt"), clock.clone());
+    configure_editor_lsp_fixture(&mut app, directory.path());
+    app.start_intelligence(Arc::new(IntelligenceResources::compiled().unwrap()))
+        .await
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.editor.is_some() && app.lsp_service().unwrap().running("fixture")
+    })
+    .await;
+    clock.0.store(300, Ordering::SeqCst);
+    until(&mut app, |app| {
+        app.intelligence().unwrap().status().unwrap().phase == IndexPhase::Ready
+    })
+    .await;
+    let client = app.lsp_service().unwrap().client("fixture").unwrap();
+    let id = app.state.editor.as_ref().unwrap().document_id();
+    let position = source.find("customer.\n").unwrap() + "customer.".len();
+    editor_caret(&mut app, position);
+    let focus = app.state.focus.focused;
+    app.state.dispatch(&key(Key::Character(' '), true)).unwrap();
+    until(&mut app, |app| {
+        !app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .completion
+            .entries
+            .is_empty()
+    })
+    .await;
+    assert_eq!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .completion
+            .entries
+            .iter()
+            .map(|item| item.source.as_str())
+            .collect::<Vec<_>>(),
+        ["lsp"]
+    );
+    app.state.dispatch(&key(Key::Enter, false)).unwrap();
+    assert!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .contains("customer.naïve\n")
+    );
+    app.state.dispatch(&key(Key::Character('s'), true)).unwrap();
+    until(&mut app, |app| {
+        !app.state.documents.document(id).unwrap().is_dirty()
+            && lsp_trace(directory.path())
+                .iter()
+                .any(|message| message["method"] == "textDocument/didSave")
+    })
+    .await;
+    assert!(
+        fs::read_to_string(root.join("Use.kt"))
+            .unwrap()
+            .contains("customer.naïve\n")
+    );
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('u'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    editor_caret(&mut app, position);
+    clock.0.store(600, Ordering::SeqCst);
+    app.pump().unwrap();
+    // Index-only publication must not discard a current authoritative LSP reply.
+    client
+        .request(
+            "fixture/configure",
+            json!({"delay":0.3}),
+            &CancellationToken::new(),
+        )
+        .await
+        .unwrap();
+    app.state.dispatch(&key(Key::Character(' '), true)).unwrap();
+    until(&mut app, |_| client.pending_requests() > 0).await;
+    let previous_index = app.intelligence().unwrap().snapshot().unwrap().version();
+    app.rebuild_index().unwrap();
+    until(&mut app, |app| {
+        app.intelligence().unwrap().snapshot().unwrap().version() > previous_index
+    })
+    .await;
+    until(&mut app, |app| {
+        !app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .completion
+            .entries
+            .is_empty()
+    })
+    .await;
+    assert_eq!(
+        app.state.editor.as_ref().unwrap().completion.entries[0].source,
+        "lsp"
+    );
+    app.state.dispatch(&key(Key::Escape, false)).unwrap();
+    for behavior in [json!({"empty":true}), json!({"error":true})] {
+        client
+            .request("fixture/configure", behavior, &CancellationToken::new())
+            .await
+            .unwrap();
+        app.state.dispatch(&key(Key::Character(' '), true)).unwrap();
+        until(&mut app, |app| {
+            !app.state
+                .editor
+                .as_ref()
+                .unwrap()
+                .completion
+                .entries
+                .is_empty()
+        })
+        .await;
+        let entries = &app.state.editor.as_ref().unwrap().completion.entries;
+        assert_eq!(
+            entries
+                .iter()
+                .map(|item| item.label.as_str())
+                .collect::<std::collections::BTreeSet<_>>(),
+            ["id", "name"].into_iter().collect()
+        );
+        assert!(entries.iter().all(|item| item.source != "lsp"));
+        app.state.dispatch(&key(Key::Escape, false)).unwrap();
+    }
+    client
+        .request(
+            "fixture/configure",
+            json!({"delay":0.25}),
+            &CancellationToken::new(),
+        )
+        .await
+        .unwrap();
+    let prior = lsp_trace(directory.path())
+        .iter()
+        .filter(|message| message["method"] == "textDocument/completion")
+        .count();
+    app.state.dispatch(&key(Key::Character(' '), true)).unwrap();
+    until(&mut app, |_| {
+        lsp_trace(directory.path())
+            .iter()
+            .filter(|message| message["method"] == "textDocument/completion")
+            .count()
+            > prior
+    })
+    .await;
+    assert!(client.pending_requests() > 0);
+    app.state
+        .dispatch(&InputEvent::Paste("draft".into()))
+        .unwrap();
+    assert!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .contains("customer.draft\n")
+    );
+    assert_eq!(app.state.focus.focused, focus);
+    until(&mut app, |_| client.pending_requests() == 0).await;
+    tokio::time::sleep(Duration::from_millis(300)).await;
+    app.pump().unwrap();
+    assert!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .completion
+            .entries
+            .is_empty(),
+        "late LSP reply resurrected a dismissed popup"
+    );
+    assert_eq!(app.state.focus.focused, focus);
+    let _ = client
+        .request("fixture/crash", json!({}), &CancellationToken::new())
+        .await;
+    until(&mut app, |app| !app.state.lsp_settings.statuses[0].running).await;
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('u'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    editor_caret(&mut app, position);
+    app.state.dispatch(&key(Key::Character(' '), true)).unwrap();
+    until(&mut app, |app| {
+        !app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .completion
+            .entries
+            .is_empty()
+    })
+    .await;
+    assert!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .completion
+            .entries
+            .iter()
+            .all(|item| item.source != "lsp")
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+fn ctrl_click_editor(app: &mut AppRuntime, offset: usize) {
+    use kode_tui::editor::input::InputViewport;
+    paint(app);
+    let view = app.state.editor.as_mut().unwrap();
+    let document = app
+        .state
+        .documents
+        .document(view.document_id())
+        .unwrap()
+        .clone();
+    let geometry = view
+        .geometry(&app.state.documents, app.state.geometry.viewer)
+        .unwrap();
+    let layout = view
+        .input
+        .layout(
+            &document,
+            InputViewport {
+                geometry,
+                folds: &[],
+            },
+        )
+        .unwrap();
+    let (row, column) = layout
+        .position_to_cell(kode_core::ByteOffset(offset))
+        .unwrap();
+    app.state
+        .dispatch(&InputEvent::Pointer(PointerInput {
+            x: geometry.text.x + column as u16,
+            y: geometry.text.y + row as u16,
+            action: PointerAction::Down(crossterm::event::MouseButton::Left),
+            modifiers: Modifiers {
+                ctrl: true,
+                ..Default::default()
+            },
+        }))
+        .unwrap();
+}
+#[tokio::test]
+async fn editor_lsp_definition_links_navigate_exact_unicode_bytes_and_empty_primary_uses_native_targets()
+ {
+    use kode_intelligence::{facade::IntelligenceResources, service::IndexPhase};
+    use kode_tui::app::{state::OpenDestination, workspace::OpenRequest};
+    use serde_json::json;
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().join("project");
+    fs::create_dir(&root).unwrap();
+    let src = root.join("src");
+    fs::create_dir(&src).unwrap();
+    let source = "fun use(customer: Customer) {}\n";
+    fs::write(src.join("Use.kt"), source).unwrap();
+    fs::write(src.join("Customer.kt"), "class Customer {}\n").unwrap();
+    let primary_source = "// 😀\r\nclass Primary {}\r\n";
+    fs::write(src.join("Primary.kt"), primary_source).unwrap();
+    let clock = Arc::new(FakeClock::default());
+    let mut app = make(&root, Some("src/Use.kt"), clock.clone());
+    configure_editor_lsp_fixture(&mut app, directory.path());
+    app.start_intelligence(Arc::new(IntelligenceResources::compiled().unwrap()))
+        .await
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.editor.is_some() && app.lsp_service().unwrap().running("fixture")
+    })
+    .await;
+    clock.0.store(300, Ordering::SeqCst);
+    until(&mut app, |app| {
+        app.intelligence().unwrap().status().unwrap().phase == IndexPhase::Ready
+    })
+    .await;
+    let client = app.lsp_service().unwrap().client("fixture").unwrap();
+    client.request("fixture/configure",json!({"textDocument/definition":[{
+        "targetUri":kode_lsp::documents::file_uri(&src.join("Primary.kt")).unwrap().as_str(),
+        "targetRange":{"start":{"line":1,"character":0},"end":{"line":1,"character":16}},
+        "targetSelectionRange":{"start":{"line":1,"character":6},"end":{"line":1,"character":13}}
+    }]}),&CancellationToken::new()).await.unwrap();
+    ctrl_click_editor(&mut app, source.find("Customer").unwrap());
+    until(&mut app, |app| {
+        app.state.editor.as_ref().is_some_and(|view| {
+            app.state
+                .documents
+                .document(view.document_id())
+                .unwrap()
+                .origin()
+                == &DocumentOrigin::File(src.join("Primary.kt"))
+        })
+    })
+    .await;
+    let view = app.state.editor.as_ref().unwrap();
+    assert_eq!(
+        view.input.state.caret.cursor().0,
+        primary_source.find("Primary").unwrap()
+    );
+    client
+        .request(
+            "fixture/configure",
+            json!({"empty":true}),
+            &CancellationToken::new(),
+        )
+        .await
+        .unwrap();
+    app.state
+        .open(
+            OpenRequest {
+                path: src.join("Use.kt"),
+                saved: None,
+                navigation: None,
+            },
+            OpenDestination::Main,
+        )
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.editor.as_ref().is_some_and(|view| {
+            app.state
+                .documents
+                .document(view.document_id())
+                .unwrap()
+                .origin()
+                == &DocumentOrigin::File(src.join("Use.kt"))
+        })
+    })
+    .await;
+    // Opening changes native query epoch before this immediate click is queued.
+    ctrl_click_editor(&mut app, source.find("Customer").unwrap());
+    until(&mut app, |app| {
+        app.state.editor.as_ref().is_some_and(|view| {
+            app.state
+                .documents
+                .document(view.document_id())
+                .unwrap()
+                .origin()
+                == &DocumentOrigin::File(src.join("Customer.kt"))
+        })
+    })
+    .await;
+    assert_eq!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .input
+            .state
+            .caret
+            .cursor()
+            .0,
+        6
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
 #[tokio::test]
 async fn builtin_lsp_settings_start_restart_crash_repaint_switch_and_quit_reap_actual_children() {
     use kode_lsp::{catalog::Platform, discovery::DiscoveryOptions};

@@ -1,0 +1,70 @@
+{
+  "cases": [
+    {
+      "case": "fragment-100",
+      "provider": "lsp",
+      "exact_crlf_utf8_save": true,
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "fragment-60",
+      "provider": "lsp",
+      "exact_crlf_utf8_save": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "empty-primary-100",
+      "provider": "native",
+      "exact_crlf_utf8_save": true,
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "crash-query-60",
+      "provider": "native",
+      "exact_crlf_utf8_save": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "missing-100",
+      "provider": "native",
+      "exact_crlf_utf8_save": true,
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 5
+}

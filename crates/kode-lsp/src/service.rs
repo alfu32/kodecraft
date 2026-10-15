@@ -60,6 +60,9 @@ impl LspService {
     pub fn revision(&self) -> u64 {
         self.revision.load(Ordering::Acquire)
     }
+    pub fn report_start_error(&self, id: &str, error: &DomainError) {
+        self.error(id, Some(error.to_string().chars().take(4096).collect()));
+    }
     fn changed(&self) {
         self.revision.fetch_add(1, Ordering::AcqRel);
         if let Some(notifications) = &self.notifications {
@@ -119,13 +122,21 @@ impl LspService {
             .iter()
             .find(|server| {
                 server.client.state() == ClientState::Running
-                    && server
-                        .entry
-                        .languages
-                        .iter()
-                        .any(|candidate| candidate.eq_ignore_ascii_case(language))
+                    && server.entry.languages.iter().any(|candidate| {
+                        crate::documents::language_id(candidate)
+                            == crate::documents::language_id(language)
+                    })
             })
             .map(|server| server.client.clone())
+    }
+    pub fn clients(&self) -> Vec<LspClient> {
+        self.servers
+            .read()
+            .expect("LSP registry lock")
+            .iter()
+            .filter(|server| server.client.state() == ClientState::Running)
+            .map(|server| server.client.clone())
+            .collect()
     }
     pub fn take_events(&self) -> Vec<(String, crate::client::ServerEvent)> {
         self.servers

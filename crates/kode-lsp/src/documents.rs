@@ -419,7 +419,17 @@ impl DocumentTracker {
         mode: SyncMode,
         encoding: PositionEncoding,
     ) -> Result<Vec<Notification>> {
-        let mut messages = self.synchronize(snapshot.clone(), mode, encoding)?;
+        // A physical save can finish after a newer unsaved edit was synchronized.
+        // Report the actual saved bytes without rolling the server replica back.
+        let uri = origin_uri(&snapshot.origin)?;
+        let newer = self.opened.get(uri.as_str()).is_some_and(|open| {
+            open.snapshot.id == snapshot.id && open.snapshot.revision > snapshot.revision
+        });
+        let mut messages = if newer {
+            vec![]
+        } else {
+            self.synchronize(snapshot.clone(), mode, encoding)?
+        };
         if mode.save {
             let mut params = json!({"textDocument":{"uri":origin_uri(&snapshot.origin)?}});
             if mode.save_text {

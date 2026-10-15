@@ -355,6 +355,13 @@ pub fn prepare(
             })
         };
         if let Ok(snapshot) = &source {
+            if target.missing_source
+                && let Some(location) = target.location
+            {
+                target.identifier_range =
+                    TextRange::caret(snapshot.utf16_to_byte_clamped(location));
+                target.missing_source = false;
+            }
             target.location =
                 Some(snapshot.byte_to_utf16(snapshot.clamp_byte(target.identifier_range.start))?);
         }

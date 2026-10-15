@@ -13,7 +13,7 @@ completion/navigation. Git, SQL/JDBC, REST and remaining release tasks continue 
 The Rust application will remain a TUI. JDBC will run in an **external JVM**;
 the Rust process will not embed a JVM.
 
-Ctrl+Space requests native completion and Ctrl-click follows definitions/usages.
+Ctrl+Space requests completion and Ctrl-click follows definitions/usages.
 The Project panel provides `r` rescan, `b` rebuild index and `c` clear index.
 Indexing runs on bounded workers, uses unsaved buffers and persists its cache in
 `.kode-rs/index.sqlite` without Java or language servers. `KODE_CODEINTEL_PATH`
@@ -26,7 +26,10 @@ Use `f` to refresh, Enter to install/update, `y` to remove, and Escape to cancel
 root. Existing local executables and manifest command arrays are supported.
 Use `s` to start/stop and `r` to restart a server. Running state follows the actual
 initialized child; workspace changes and exit stop and reap owned servers.
-Editor enrichment and native fallback continue in P03.
+Opening a file attempts to start its first matching local server in the background;
+it never installs a package. Current non-empty LSP definitions, references and
+completion take precedence; missing, crashed, empty or failing servers use native
+intelligence. Highlighting and definition previews retain native styling.
 
 Use the latest Rust **stable** toolchain (`rustup update stable`). This workspace
 selects `stable` through `rust-toolchain.toml`, as requested. Dependency versions

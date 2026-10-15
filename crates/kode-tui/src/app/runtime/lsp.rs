@@ -29,6 +29,12 @@ pub(super) struct LspRuntime {
     fetcher: Arc<HttpFetcher>,
     pub lifecycle: Option<Arc<dyn ServerLifecycle>>,
     pub service: Option<Arc<kode_lsp::service::LspService>>,
+    editor: Option<Arc<kode_lsp::provider::EditorLsp>>,
+    pub documents_busy: bool,
+    documents_dirty: bool,
+    attachments: std::collections::HashSet<(OwnerId, DocumentId, String)>,
+    automatic: Vec<String>,
+    reported_errors: HashMap<String, String>,
     revision: u64,
 }
 struct NativeLspLifecycle {
@@ -97,6 +103,12 @@ impl AppRuntime {
             fetcher: Arc::new(HttpFetcher::new(handle)?),
             lifecycle: None,
             service: None,
+            editor: None,
+            documents_busy: false,
+            documents_dirty: false,
+            attachments: Default::default(),
+            automatic: vec![],
+            reported_errors: HashMap::new(),
             revision: 0,
         });
         self.bind_builtin_lsp()
@@ -115,6 +127,9 @@ impl AppRuntime {
             .ok_or_else(|| DomainError::Unsupported("LSP settings are not configured".into()))?;
         runtime.lifecycle = Some(lifecycle);
         runtime.service = None;
+        if let Some(editor) = runtime.editor.take() {
+            editor.stop();
+        }
         self.state.lsp_settings.request_refresh();
         Ok(())
     }
@@ -122,6 +137,9 @@ impl AppRuntime {
         self.lsp
             .as_ref()
             .and_then(|runtime| runtime.service.clone())
+    }
+    pub(super) fn editor_lsp(&self) -> Option<Arc<kode_lsp::provider::EditorLsp>> {
+        self.lsp.as_ref().and_then(|runtime| runtime.editor.clone())
     }
     pub(super) fn bind_builtin_lsp(&mut self) -> Result<()> {
         let Some(runtime) = &mut self.lsp else {
@@ -133,6 +151,16 @@ impl AppRuntime {
             self.state.project.root.clone(),
             Some(self.notifications.clone()),
         ));
+        runtime.editor = Some(Arc::new(kode_lsp::provider::EditorLsp::new(
+            service.clone(),
+            self.state.generation,
+            handle.clone(),
+        )));
+        runtime.documents_busy = false;
+        runtime.documents_dirty = true;
+        runtime.attachments.clear();
+        runtime.automatic.clear();
+        runtime.reported_errors.clear();
         runtime.lifecycle = Some(Arc::new(NativeLspLifecycle {
             service: service.clone(),
             config: runtime.config.clone(),
@@ -143,22 +171,135 @@ impl AppRuntime {
         self.state.lsp_settings.request_refresh();
         Ok(())
     }
-    pub(super) fn pump_lsp(&mut self) {
+    pub(super) fn capture_lsp(&mut self) {
         if self.state.closing {
             return;
         }
+        let Some(runtime) = &mut self.lsp else {
+            return;
+        };
+        let Some(editor) = &runtime.editor else {
+            return;
+        };
+        let mut snapshots = vec![];
+        let mut attachments = std::collections::HashSet::new();
+        for view in self.state.editor.iter().chain(
+            self.state
+                .search
+                .iter()
+                .filter_map(|dialog| dialog.editor.as_ref()),
+        ) {
+            if let Ok(document) = self.state.documents.document(view.document_id()) {
+                let snapshot = document.snapshot();
+                if let (DocumentOrigin::File(_), Some(language)) =
+                    (&snapshot.origin, &snapshot.language)
+                {
+                    let attachment = (view.owner(), snapshot.id, language.clone());
+                    if !runtime.attachments.contains(&attachment)
+                        && !runtime.automatic.contains(language)
+                    {
+                        runtime.automatic.push(language.clone());
+                        runtime.documents_dirty = true;
+                    }
+                    attachments.insert(attachment);
+                    snapshots.push(snapshot);
+                }
+            }
+        }
+        runtime.attachments = attachments;
+        let mut ids: Vec<_> = self.state.documents.ids().collect();
+        ids.sort_unstable();
+        snapshots.extend(ids.into_iter().filter_map(|id| {
+            self.state
+                .documents
+                .document(id)
+                .ok()
+                .map(|document| document.snapshot())
+        }));
+        if editor.replace_sources(snapshots) {
+            runtime.documents_dirty = true;
+        }
+    }
+    pub(super) fn pump_lsp(&mut self) -> Result<()> {
+        if self.state.closing {
+            return Ok(());
+        }
+        self.capture_lsp();
         if let Some(runtime) = &mut self.lsp
             && let Some(service) = &runtime.service
             && runtime.revision != service.revision()
         {
             runtime.revision = service.revision();
+            runtime.documents_dirty = true;
             for status in &mut self.state.lsp_settings.statuses {
                 status.running = service.running(&status.entry.id);
                 if let Some(error) = service.last_error(&status.entry.id) {
-                    status.message = Some(error);
+                    status.message = Some(error.clone());
+                    runtime
+                        .reported_errors
+                        .insert(status.entry.id.clone(), error);
+                } else if let Some(previous) = runtime.reported_errors.remove(&status.entry.id)
+                    && status.message.as_ref() == Some(&previous)
+                {
+                    status.message = None;
                 }
             }
         }
+        let Some(runtime) = &mut self.lsp else {
+            return Ok(());
+        };
+        if runtime.documents_busy
+            || !runtime.documents_dirty
+            || self.state.lsp_settings.busy.is_some()
+        {
+            return Ok(());
+        }
+        let (Some(editor), Some(service), Some(lifecycle)) = (
+            runtime.editor.clone(),
+            runtime.service.clone(),
+            runtime.lifecycle.clone(),
+        ) else {
+            return Ok(());
+        };
+        runtime.documents_busy = true;
+        runtime.documents_dirty = false;
+        let automatic = std::mem::take(&mut runtime.automatic);
+        let config = runtime.config.clone();
+        let handle = tokio::runtime::Handle::try_current()
+            .map_err(|error| DomainError::Unsupported(error.to_string()))?;
+        let tag = self.state.tag()?;
+        self.blocking(
+            tag,
+            self.root_owner,
+            "lsp-documents",
+            false,
+            Context::LspDocuments,
+            Box::new(move |cancel| {
+                if !automatic.is_empty() {
+                    let (catalog, _) = Catalog::load(&config.paths, config.catalog.as_deref())?;
+                    for language in automatic {
+                        if cancel.is_cancelled() {
+                            return Err(DomainError::Cancelled);
+                        }
+                        if service.for_language(&language).is_some() {
+                            continue;
+                        }
+                        if let Some(entry) = catalog.servers.iter().find(|entry| {
+                            entry.languages.iter().any(|candidate| {
+                                kode_lsp::documents::language_id(candidate)
+                                    == kode_lsp::documents::language_id(&language)
+                            })
+                        }) && let Err(error) =
+                            lifecycle.apply(&entry.id, LifecycleAction::Start, &cancel)
+                        {
+                            service.report_start_error(&entry.id, &error);
+                        }
+                    }
+                }
+                handle.block_on(editor.synchronize(&cancel))?;
+                Ok(Output::LspDocuments)
+            }),
+        )
     }
     pub(super) fn lsp_work(&mut self, action: SettingsAction) -> Result<()> {
         let Some(job) = self
