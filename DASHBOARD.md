@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    19 |           1 |   45 |       0 |    65 |
+|    18 |           1 |   46 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **D03** — [Driver install, Maven resolution and classloaders](docs/migration/tasks/09-database.md#d03--driver-install-maven-resolution-and-classloaders)
+- **D04** — [Connections, testing and transaction control](docs/migration/tasks/09-database.md#d04--connections-testing-and-transaction-control)
 
 ## Task status
 
@@ -68,8 +68,8 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | R08  | [Collection runner, persistence and REST qualification](docs/migration/tasks/08-rest.md)        | todo        | —                            |
 | D01  | [Database models, settings, credentials and URL catalogs](docs/migration/tasks/09-database.md)  | done        | [Report](docs/parity/D01.md) |
 | D02  | [Protocol, Java bootstrap and Rust process supervisor](docs/migration/tasks/09-database.md)     | done        | [Report](docs/parity/D02.md) |
-| D03  | [Driver install, Maven resolution and classloaders](docs/migration/tasks/09-database.md)        | in-progress | —                            |
-| D04  | [Connections, testing and transaction control](docs/migration/tasks/09-database.md)             | todo        | —                            |
+| D03  | [Driver install, Maven resolution and classloaders](docs/migration/tasks/09-database.md)        | done        | [Report](docs/parity/D03.md) |
+| D04  | [Connections, testing and transaction control](docs/migration/tasks/09-database.md)             | in-progress | —                            |
 | D05  | [SQL execution, results and independent cancellation](docs/migration/tasks/09-database.md)      | todo        | —                            |
 | D06  | [Lazy metadata and cache invalidation](docs/migration/tasks/09-database.md)                     | todo        | —                            |
 | D07  | [Database explorer, connection and driver dialogs](docs/migration/tasks/09-database.md)         | todo        | —                            |

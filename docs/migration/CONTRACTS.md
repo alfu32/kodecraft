@@ -906,3 +906,42 @@ Database configuration guards explicitly unlock before closing. A briefly inheri
 or duplicated open description must not retain a completed writer's flock, and
 closing that old duplicate must not release the next writer's lock. Lock paths
 remain persistent; guards never unlink another writer's lock file.
+
+## JDBC artifact resolution and loader ownership
+
+D03 adds `driver.resolve`, `driver.cancel` and `driver.inspect` plus the native
+installer/progress model and inert install modal. Full connection/dialog/panel
+composition follows in D04–D09. The complete 59-entry catalog remains selectable.
+Bundled H2 2.2.224 preserves the source's visible default; it never substitutes for
+a different explicitly requested version.
+
+Maven Resolver 2.0.23 supplies the real runtime graph (parent POMs/BOMs/scopes,
+optional exclusions/classifiers). Source stable-version ordering is retained and
+selected versions/classpaths are pinned. Only the configured repository or Central
+is consulted; user Maven settings and POM-declared extra repositories are not
+implicitly imported. Required descriptor failures remain visible. Runtime users
+need Java, with no Maven CLI. Local multi-JAR and legacy provider/version sources
+remain supported; page-only vendor entries stay manual.
+
+Installs stage privately, hash/flush complete JARs, publish an immutable directory
+and atomically select it under a provider lock. Manifests/pointers retain ordered
+paths/digests/version/source, share alias families and verify bytes on reuse. A
+family/version lookup recognizes an initial latest install after the dialog pins
+its resolved version. Old/in-use and original local/legacy artifacts are retained.
+Normal failure/cancellation cleans only owned temporaries; a late cancel cannot
+undo a published success. Hard-kill recovery remains D09/Z04 qualification.
+
+Driver loaders isolate dependencies under the platform parent, cache by provider,
+ordered digest and location, and support concurrent versions of one provider.
+Connection leases defer closure; capacity eviction selects only unused loaders.
+Cleanup code defined in the child unregisters only that loader's DriverManager
+registrations. D04 uses its intended Driver.connect and retained context loader.
+Native linkage errors require explicit helper restart; Java close does not claim
+native-library unloading. Driver inspection can locate installed specs without
+download or directory creation and reports actual classes/load-error types.
+
+Rust progress subscriptions are separate from query consumers and coalesce by
+resolution ID. Transport budgets remain shared and bounded; query data/final
+outcomes are not coalesced. Cancellation waits for the original install final
+response. The modal has no I/O in paint/input, gates completion by workspace/job,
+and never treats progress or a cancellation acknowledgement as completed work.

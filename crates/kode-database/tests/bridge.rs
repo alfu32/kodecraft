@@ -264,6 +264,52 @@ async fn cancellation_and_timeout_do_not_claim_rollback_or_poison_later_response
     client.shutdown().await.unwrap();
 }
 struct CountingFactory(AtomicUsize);
+#[tokio::test]
+async fn feature_consumers_are_independent_and_only_progress_is_coalesced() {
+    let directory = tempfile::tempdir().unwrap();
+    let client = start("normal", &directory.path().join("pid")).await;
+    let mut progress = client.subscribe_events("driver.progress").unwrap();
+    let mut queries = client.subscribe_events("query.event").unwrap();
+    assert_eq!(
+        client.subscribe_events("query.event").err().unwrap().kind,
+        Failure::Busy
+    );
+    client
+        .request(
+            "test.notifications",
+            json!({}),
+            false,
+            &CancellationToken::new(),
+        )
+        .await
+        .unwrap();
+    assert!(client.take_events().is_empty());
+    let event = progress.recv().await.unwrap();
+    assert_eq!(event.params["completedBytes"], 99);
+    for sequence in 0..3 {
+        assert_eq!(queries.recv().await.unwrap().params["sequence"], sequence);
+    }
+    client.shutdown().await.unwrap();
+    assert!(progress.recv().await.is_none());
+    assert!(queries.recv().await.is_none());
+}
+#[tokio::test]
+async fn subscribed_query_overflow_retains_ordered_rows_and_disconnects_visibly() {
+    let directory = tempfile::tempdir().unwrap();
+    let client = start("normal", &directory.path().join("pid")).await;
+    let mut queries = client.subscribe_events("query.event").unwrap();
+    let error = client
+        .request("test.flood", json!({}), true, &CancellationToken::new())
+        .await
+        .unwrap_err();
+    assert!(error.unknown_outcome);
+    client.force_shutdown().await;
+    for sequence in 0..32 {
+        assert_eq!(queries.recv().await.unwrap().params["sequence"], sequence);
+    }
+    assert!(queries.recv().await.is_none());
+    assert_eq!(client.state(), State::Failed);
+}
 struct RecordingFactory(Arc<std::sync::Mutex<Vec<u32>>>);
 impl ProcessFactory for RecordingFactory {
     fn spawn(&self, spec: &ProcessSpec) -> kode_core::Result<tokio::process::Child> {

@@ -17,7 +17,7 @@ public record DriverSpec(String id,String providerId,String driverClass,String r
     public static final String CENTRAL="https://repo.maven.apache.org/maven2";
     public static DriverSpec parse(ObjectNode value) throws RpcException {
         String id=text(value,"id","custom-jdbc"),provider=text(value,"providerId",id);
-        if(id.isBlank()||provider.isBlank()||id.length()>128||provider.length()>128)throw bad();
+        if(id.isBlank()||provider.isBlank()||id.getBytes(StandardCharsets.UTF_8).length>128||provider.getBytes(StandardCharsets.UTF_8).length>128||id.codePoints().anyMatch(Character::isISOControl)||provider.codePoints().anyMatch(Character::isISOControl))throw bad();
         JsonNode artifact=value.path("artifact");
         String coordinates=text(value,"coordinates","");String[] parts=coordinates.split(":",-1);
         String group=text(artifact,"groupId",parts.length>1?parts[0]:""),name=text(artifact,"artifactId",parts.length>1?parts[1]:"");
@@ -51,11 +51,18 @@ public record DriverSpec(String id,String providerId,String driverClass,String r
     }
     String providerDirectory(){return digest(providerId.getBytes(StandardCharsets.UTF_8));}
     String requestKey() throws Exception {
+        return key(true);
+    }
+    String familyKey() throws Exception {return key(false);}
+    private String key(boolean includeVersion) throws Exception {
+        String repositoryIdentity=repository;URI uri=URI.create(repository);
+        if(uri.getRawQuery()==null&&uri.getRawPath()!=null&&uri.getRawPath().length()>1&&repositoryIdentity.endsWith("/"))repositoryIdentity=repositoryIdentity.substring(0,repositoryIdentity.length()-1);
         // Alias IDs/display names/class discovery do not change install family.
         var value=FrameCodec.JSON.createObjectNode().put("providerId",providerId).put("repositoryType",repositoryType)
-            .put("groupId",groupId).put("artifactId",artifactId).put("version",version).put("classifier",classifier)
-            .put("repository",repository).put("downloadUrl",downloadUrl);
-        var paths=value.putArray("localPaths");for(Path path:localPaths)paths.add(path.toString());
+            .put("groupId",groupId).put("artifactId",artifactId).put("classifier",classifier)
+            .put("repository",repositoryIdentity).put("downloadUrl",downloadUrl);
+        if(includeVersion)value.put("version",version);
+        var paths=value.putArray("localPaths");if(repositoryType.equals("LOCAL_FILE"))for(Path path:localPaths)paths.add(path.toString());
         return digest(FrameCodec.JSON.writeValueAsBytes(value));
     }
     static String digest(byte[] bytes) {try{return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));}catch(Exception e){throw new AssertionError(e);}}

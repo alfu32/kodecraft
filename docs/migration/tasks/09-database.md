@@ -49,7 +49,7 @@ in JdbcDrivers.kt; DataSourceRepositoryTest/JdbcUrlTemplatesTest/JdbcDriverRegis
 
 ## D03 — Driver install, Maven resolution and classloaders
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** D02, F05. **Owns:** Java `drivers/`, Rust bridge driver client and install
 manifests; `kode-tui/src/panels/database/driver_install.rs`.
@@ -71,7 +71,7 @@ manifests; `kode-tui/src/panels/database/driver_install.rs`.
 
 ## D04 — Connections, testing and transaction control
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** D03. **Owns:** Java `connections/`,
 `kode-database/src/connections.rs`.

@@ -43,21 +43,36 @@ public final class InstallStore {
     private Path provider(DriverSpec spec){return root.resolve("installs").resolve(spec.providerDirectory());}
     private Path pointer(DriverSpec spec) throws Exception{return provider(spec).resolve("selected-"+spec.requestKey()+".json");}
     public Installed cached(DriverSpec spec,TransferControl control) throws Exception {
-        Path pointer=pointer(spec);rejectLinks(pointer);if(!Files.exists(pointer,LinkOption.NOFOLLOW_LINKS))return null;
-        JsonNode value=readJson(pointer);String digest=value.path("classpathDigest").asText();
+        Path pointer=pointer(spec);rejectLinks(pointer);boolean compatible=false;JsonNode value;
+        if(Files.exists(pointer,LinkOption.NOFOLLOW_LINKS))value=readJson(pointer);
+        else {value=compatiblePointer(spec,control);if(value==null)return null;compatible=true;}
+        String digest=value.path("classpathDigest").asText();
         if(!digest.matches("[0-9a-f]{64}"))throw new IOException("Invalid driver install pointer");
         Installed installed=read(provider(spec).resolve(digest),control);
-        if(!installed.manifest().providerId().equals(spec.providerId())||!value.path("requestKey").asText().equals(spec.requestKey()))throw new IOException("Driver install pointer does not match selected spec");
+        if(!installed.manifest().providerId().equals(spec.providerId())||!installed.manifest().classpathDigest().equals(digest)||!compatible&&!value.path("requestKey").asText().equals(spec.requestKey()))throw new IOException("Driver install pointer does not match selected spec");
         Map<String,String> selectedSources=FrameCodec.JSON.convertValue(value.path("localSources"),new com.fasterxml.jackson.core.type.TypeReference<Map<String,String>>(){});
         if(selectedSources==null||selectedSources.size()>MAX_JARS)throw new IOException("Invalid driver source manifest");
         // Explicit local paths can change in place; never reuse stale copied JARs.
-        if(!spec.localPaths().isEmpty()){
+        if(spec.repositoryType().equals("LOCAL_FILE")&&!spec.localPaths().isEmpty()){
             if(selectedSources.size()!=spec.localPaths().size())return null;
-            for(Path source:spec.localPaths())if(!Objects.equals(selectedSources.get(source.toString()),hash(source,control)))return null;
+            for(Path source:spec.localPaths())if(Files.isRegularFile(source)&&!Objects.equals(selectedSources.get(source.toString()),hash(source,control)))return null;
         }
         Manifest original=installed.manifest();
         Manifest selected=new Manifest(1,original.providerId(),spec.requestKey(),value.path("resolvedVersion").asText(),original.classpathDigest(),value.path("source").asText(),original.jars(),Map.copyOf(selectedSources));
         return new Installed(installed.directory(),selected,installed.classpath());
+    }
+    private JsonNode compatiblePointer(DriverSpec spec,TransferControl control) throws Exception {
+        if(spec.version().isBlank())return null;Path directory=provider(spec);rejectLinks(directory);if(!Files.isDirectory(directory,LinkOption.NOFOLLOW_LINKS))return null;
+        JsonNode selected=null;int count=0;
+        try(var pointers=Files.newDirectoryStream(directory,"selected-*.json")) {
+            for(Path path:pointers){control.check();if(++count>512)throw new IOException("Driver selection cache exceeds 512 entries");JsonNode value=readJson(path);
+                if(value.path("familyKey").asText().equals(spec.familyKey())&&value.path("resolvedVersion").asText().equals(spec.version())) {
+                    if(selected!=null&&!selected.path("classpathDigest").equals(value.path("classpathDigest")))return null;
+                    selected=value;
+                }
+            }
+        }
+        return selected;
     }
     public Installed publish(DriverSpec spec,String version,String source,List<Source> inputs,Path work,TransferControl control) throws Exception {
         if(inputs.isEmpty()||inputs.size()>MAX_JARS)throw new RpcException(-32010,"Driver classpath is empty or exceeds 256 artifacts");
@@ -71,7 +86,7 @@ public final class InstallStore {
             // Verify a real ZIP/JAR without eagerly extracting its contents.
             try(var jar=new java.util.jar.JarFile(target.toFile())){jar.size();}
             entries.add(new Jar(relative,digest,size,input.coordinate()));
-            if(!spec.localPaths().isEmpty())localSources.put(path.toString(),digest);
+            if(spec.repositoryType().equals("LOCAL_FILE"))localSources.put(path.toString(),digest);
         }
         String classpathDigest=classpathDigest(entries);
         Manifest manifest=new Manifest(1,spec.providerId(),spec.requestKey(),version,classpathDigest,source,List.copyOf(entries),Map.copyOf(localSources));
@@ -94,7 +109,7 @@ public final class InstallStore {
                     manifest=new Manifest(1,spec.providerId(),spec.requestKey(),version,classpathDigest,source,existing.manifest().jars(),Map.copyOf(localSources));
                 }else Files.move(staged,destination,StandardCopyOption.ATOMIC_MOVE);
                 control.check();
-                ObjectNode pointer=FrameCodec.JSON.createObjectNode().put("classpathDigest",classpathDigest).put("requestKey",spec.requestKey())
+                ObjectNode pointer=FrameCodec.JSON.createObjectNode().put("classpathDigest",classpathDigest).put("requestKey",spec.requestKey()).put("familyKey",spec.familyKey())
                     .put("resolvedVersion",version).put("source",source);
                 pointer.set("localSources",FrameCodec.JSON.valueToTree(localSources));
                 atomicWrite(pointer(spec),FrameCodec.JSON.writeValueAsBytes(pointer));

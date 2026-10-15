@@ -6,6 +6,7 @@
     {"jsonrpc":"2.0","id":"resolve","method":"driver.resolve","params":{"resolutionId":"resolution-a","driver":{"id":"h2","driverClass":"org.h2.Driver","coordinates":"com.h2database:h2:2.3.232","providerId":"h2"}}},
     {"jsonrpc":"2.0","id":"cancel-driver","method":"driver.cancel","params":{"resolutionId":"resolution-a"}},
     {"jsonrpc":"2.0","id":"inspect","method":"driver.inspect","params":{"providerId":"synthetic","classpath":["/synthetic/driver-a.jar","/synthetic/dependency-b.jar"],"driverClass":"synthetic.Driver"}},
+    {"jsonrpc":"2.0","id":"inspect-installed","method":"driver.inspect","params":{"driver":{"id":"h2","driverClass":"org.h2.Driver","coordinates":"com.h2database:h2"}}},
     {"jsonrpc":"2.0","id":"open","method":"connection.open","params":{"dataSourceId":"datasource-a","loaderId":"loader-a","driverClass":"org.h2.Driver","jdbcUrl":"jdbc:h2:mem:synthetic","properties":{"user":"synthetic","password":"synthetic-ephemeral-only"},"catalog":null,"schema":"PUBLIC","autoCommit":false,"readOnly":false}},
     {"jsonrpc":"2.0","id":"test","method":"connection.test","params":{"dataSourceId":"datasource-a","loaderId":"loader-a","driverClass":"org.h2.Driver","jdbcUrl":"jdbc:h2:mem:synthetic","properties":{}}},
     {"jsonrpc":"2.0","id":"close","method":"connection.close","params":{"connectionId":"connection-a"}},

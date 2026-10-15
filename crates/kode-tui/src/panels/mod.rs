@@ -1,3 +1,4 @@
+pub mod database;
 pub mod files;
 pub mod git;
 pub mod project;

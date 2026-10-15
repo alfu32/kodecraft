@@ -54,6 +54,7 @@ class MavenArtifactsTest {
             Path work=root.resolve("work");Files.createDirectories(work);var spec=spec("","");var resolved=maven.resolve(spec,null,work,DriverFixtures.control());assertEquals("1.10",resolved.version());
             InstallStore store=new InstallStore(root.resolve("cache"));Path publication=store.temporary();var installed=store.publish(spec,resolved.version(),"maven",resolved.sources(),publication,DriverFixtures.control());InstallStore.cleanup(publication);
             InstallStore.cleanup(root.resolve("repository"));assertEquals("1.10",store.cached(spec,DriverFixtures.control()).manifest().resolvedVersion());assertEquals(installed.classpath(),store.cached(spec,DriverFixtures.control()).classpath());
+            assertEquals(installed.classpath(),store.cached(spec("1.10",""),DriverFixtures.control()).classpath());assertNull(store.cached(spec("1.9",""),DriverFixtures.control()));
         }
     }
     @Test void missingRequiredDependencyFailsWithoutPublishingOrLeavingResolutionTemporaries() throws Exception {
@@ -63,5 +64,10 @@ class MavenArtifactsTest {
             var failure=assertThrows(java.util.concurrent.ExecutionException.class,()->service.resolve(params,null).toCompletableFuture().get());assertInstanceOf(RpcException.class,failure.getCause());
             try(var files=Files.list(root.resolve("cache"))){assertEquals(0,files.count());}
         }
+    }
+    @Test void aRequiredJarWithoutItsPomCannotSilentlyClaimACompleteRuntimeGraph() throws Exception {
+        Path jar=DriverFixtures.h2();artifact("driver","1.0","",pom("driver","1.0","<dependencies><dependency><groupId>synthetic.fixture</groupId><artifactId>helper-without-pom</artifactId><version>1.0</version></dependency></dependencies>"),jar);
+        Path dependency=coordinate("helper-without-pom","1.0");Files.createDirectories(dependency);Files.copy(jar,dependency.resolve("helper-without-pom-1.0.jar"));
+        try(MavenArtifacts maven=new MavenArtifacts()){Path work=root.resolve("work");Files.createDirectories(work);assertThrows(RpcException.class,()->maven.resolve(spec("1.0",""),null,work,DriverFixtures.control()));}
     }
 }

@@ -41,11 +41,27 @@ public final class DriverService implements AutoCloseable {
     }
     public CompletionStage<JsonNode> cancel(String id){Job job=active.get(id);if(job!=null)job.control.cancel();return RpcServer.result(FrameCodec.JSON.createObjectNode().put("status",job==null?"alreadyFinished":"requested"));}
     public CompletionStage<JsonNode> inspect(ObjectNode params,RpcServer.Context context) throws Exception {
-        String provider=id(params,"providerId"),selected=DriverSpec.text(params,"driverClass","");
-        if(!params.path("classpath").isArray()||params.path("classpath").size()>InstallStore.MAX_JARS)throw DriverSpec.bad();
-        List<Path> paths=new ArrayList<>();for(JsonNode path:params.path("classpath")){if(!path.isTextual()||path.textValue().isBlank())throw DriverSpec.bad();paths.add(Path.of(path.textValue()).toAbsolutePath().normalize());}
         var control=new TransferControl("inspect",()->closing.get()||(context!=null&&context.stopped()),null);
-        ObjectNode result=loaders.inspect(provider,paths,selected,control);var classpath=result.putArray("classpath");paths.forEach(path->classpath.add(path.toString()));return RpcServer.result(result);
+        String provider,selected;List<Path> paths=new ArrayList<>();InstallStore.Installed installed=null;
+        if(params.get("driver") instanceof ObjectNode value){
+            DriverSpec spec=DriverSpec.parse(value);provider=spec.providerId();selected=spec.driverClass();
+            if(!spec.localPaths().isEmpty()&&spec.localPaths().stream().anyMatch(Files::isRegularFile))paths.addAll(spec.localPaths());
+            else {
+                installed=store==null?null:store.cached(spec,control);
+                if(installed!=null)paths.addAll(installed.classpath());
+                else {String version=spec.version().isBlank()?legacyVersion(spec):spec.version();paths.addAll(legacyJars(spec,version).stream().map(InstallStore.Source::path).toList());}
+            }
+            boolean builtin=spec.localPaths().isEmpty()&&selected.equals("org.h2.Driver")&&(spec.version().isBlank()||spec.version().equals(org.h2.engine.Constants.VERSION));
+            if(paths.isEmpty()&&!builtin)throw new RpcException(-32014,"The selected driver version is not installed; install its JARs first");
+        }else {
+            provider=id(params,"providerId");selected=DriverSpec.text(params,"driverClass","");
+            if(!params.path("classpath").isArray()||params.path("classpath").size()>InstallStore.MAX_JARS)throw DriverSpec.bad();
+            for(JsonNode path:params.path("classpath")){if(!path.isTextual()||path.textValue().isBlank())throw DriverSpec.bad();paths.add(Path.of(path.textValue()).toAbsolutePath().normalize());}
+        }
+        ObjectNode result=loaders.inspect(provider,paths,selected,control);var classpath=result.putArray("classpath");paths.forEach(path->classpath.add(path.toString()));
+        if(installed!=null)result.put("resolvedVersion",installed.manifest().resolvedVersion()).put("manifestPath",installed.directory().resolve("install-v1.json").toString());
+        else if(paths.isEmpty()&&selected.equals("org.h2.Driver"))result.put("resolvedVersion",org.h2.engine.Constants.VERSION);
+        return RpcServer.result(result);
     }
     static String id(ObjectNode value,String key) throws RpcException {
         String id=DriverSpec.text(value,key,"");if(id.isBlank()||id.getBytes(java.nio.charset.StandardCharsets.UTF_8).length>128||id.codePoints().anyMatch(Character::isISOControl))throw DriverSpec.bad();return id;
@@ -55,17 +71,17 @@ public final class DriverService implements AutoCloseable {
         Job(String id,DriverSpec spec,RpcServer.Context context){this.id=id;this.spec=spec;control=new TransferControl(id,()->closing.get()||(context!=null&&context.stopped()),context);}
         @Override public void run(){
             if(!started.compareAndSet(false,true))return;
-            control.attach();Path work=null;ObjectNode success=null;Throwable failure=null;boolean cleanupWarning=false;
+            control.attach();Path work=null;ObjectNode success=null;Throwable failure=null;boolean cleanupWarning=false,publishing=false;
             try {
                 control.check();
-                if(spec.localPaths().isEmpty()&&spec.repositoryType().equals("VENDOR_URL")&&spec.downloadUrl().isBlank())DriverDownloads.vendor(spec,Path.of("."),control);
+                if(spec.repositoryType().equals("VENDOR_URL")&&spec.downloadUrl().isBlank())DriverDownloads.vendor(spec,Path.of("."),control);
                 if(spec.localPaths().isEmpty()&&spec.repositoryType().equals("LOCAL_FILE"))throw new RpcException(-32602,"Select one or more local JDBC JARs");
                 if(store==null)throw new RpcException(-32010,"Driver install root is missing; configure KODE_RS_JDBC_HOME");
                 InstallStore.Installed cached=store.cached(spec,control);
                 if(cached!=null){success=cached.wire();success.put("reused",true);}
                 else {
                     work=store.temporary();List<InstallStore.Source> sources;String version=spec.version(),source;
-                    if(!spec.localPaths().isEmpty()){sources=spec.localPaths().stream().map(path->new InstallStore.Source(path,"local")).toList();source="local-classpath";if(version.isBlank())version="local";}
+                    if(spec.repositoryType().equals("LOCAL_FILE")){sources=spec.localPaths().stream().map(path->new InstallStore.Source(path,"local")).toList();source="local-classpath";if(version.isBlank())version="local";}
                     else if(spec.repositoryType().equals("VENDOR_URL")){sources=DriverDownloads.vendor(spec,work,control);source="vendor";if(version.isBlank())version="vendor";}
                     else {
                         String legacyVersion=version.isBlank()?legacyVersion(spec):version;
@@ -74,6 +90,7 @@ public final class DriverService implements AutoCloseable {
                         else {var resolved=maven.resolve(spec,legacyVersion,work,control);sources=resolved.sources();version=resolved.version();source="maven";}
                     }
                     control.check();control.progress("publish",0,-1);
+                    publishing=true;
                     success=store.publish(spec,version,source,sources,work,control).wire();success.put("reused",false);
                     // Publication has happened. A late cancel must not change a
                     // real successful install into a fictitious rolled-back one.
@@ -90,7 +107,7 @@ public final class DriverService implements AutoCloseable {
                 if(failure instanceof RpcException rpc)error=rpc;
                 else if(control.cancelled())error=new RpcException(-32800,"Driver resolution cancelled");
                 else error=new RpcException(-32010,"Driver installation failed; check the source, classpath and available disk space");
-                if(cleanupWarning){ObjectNode data=error.data instanceof ObjectNode object?object.deepCopy():FrameCodec.JSON.createObjectNode();data.put("cleanupWarning",true);error=new RpcException(error.code,error.getMessage(),data);}
+                if(cleanupWarning||!publishing){ObjectNode data=error.data instanceof ObjectNode object?object.deepCopy():FrameCodec.JSON.createObjectNode();if(cleanupWarning)data.put("cleanupWarning",true);if(!publishing)data.put("notStarted",true);error=new RpcException(error.code,error.getMessage(),data);}
                 future.completeExceptionally(error);
             }
         }

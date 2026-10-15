@@ -17,6 +17,9 @@ final class DriverFixtures {
         Path classes=root.resolve("classes");Files.createDirectories(classes);assertEquals(0,ToolProvider.getSystemJavaCompiler().run(null,null,null,"--release","21","-d",classes.toString(),source.toString()));return pack(classes,root.resolve("dependency.jar"),null);
     }
     static Path driver(Path root,Path dependency,String cleanupKey) throws Exception {
+        return driver(root,dependency,cleanupKey,false);
+    }
+    static Path driver(Path root,Path dependency,String cleanupKey,boolean nativeFailure) throws Exception {
         String source="""
             package synthetic;
             public class FixtureDriver implements java.sql.Driver {
@@ -30,6 +33,7 @@ final class DriverFixtures {
                 public java.util.logging.Logger getParentLogger(){return java.util.logging.Logger.getGlobal();}
             }
             """.formatted(cleanupKey);
+        if(nativeFailure)source=source.replace("static { try {","static { if(Boolean.parseBoolean(\"true\")) throw new UnsatisfiedLinkError(\"synthetic native library\"); } static { try {");
         Path file=root.resolve("source/synthetic/FixtureDriver.java");Files.createDirectories(file.getParent());Files.writeString(file,source);Path classes=root.resolve("classes");Files.createDirectories(classes);
         assertEquals(0,ToolProvider.getSystemJavaCompiler().run(null,null,null,"--release","21","-cp",dependency.toString(),"-d",classes.toString(),file.toString()));
         return pack(classes,root.resolve("driver.jar"),"synthetic.FixtureDriver");

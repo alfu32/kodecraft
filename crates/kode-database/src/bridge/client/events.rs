@@ -1,15 +1,16 @@
-//! One independently drained consumer per feature notification method. Query
-//! data is never stolen by a concurrent driver's progress consumer.
+//! Independent feature consumers. Only progress is coalesced; query data and
+//! final status never compete with a driver's progress consumer.
 use super::*;
 use std::sync::Weak;
-use tokio::sync::OwnedSemaphorePermit;
+use tokio::sync::{Notify, OwnedSemaphorePermit};
 pub(super) struct Frame {
     pub event: Event,
     _budget: OwnedSemaphorePermit,
 }
 pub(super) struct Route {
     ticket: u64,
-    sender: mpsc::Sender<Frame>,
+    queue: VecDeque<Frame>,
+    ready: Arc<Notify>,
 }
 pub(super) struct Events {
     pub queue: VecDeque<Frame>,
@@ -19,32 +20,49 @@ pub struct EventSubscription {
     shared: Weak<Shared>,
     method: String,
     ticket: u64,
-    receiver: mpsc::Receiver<Frame>,
+    ready: Arc<Notify>,
 }
 impl EventSubscription {
-    /// Drain already received data before reporting a stopped epoch. Callers own
-    /// bounded result storage after receiving; this permit bounds only transport.
     pub async fn recv(&mut self) -> Option<Event> {
-        if let Ok(frame) = self.receiver.try_recv() {
-            return Some(frame.event);
-        }
         let shared = self.shared.upgrade()?;
-        tokio::select! {biased;frame=self.receiver.recv()=>frame.map(|frame|frame.event),_=shared.stop.cancelled()=>None}
+        loop {
+            let notified = self.ready.notified();
+            {
+                let mut events = shared.events.lock().expect("bridge events");
+                let route = events.routes.get_mut(&self.method)?;
+                if route.ticket != self.ticket {
+                    return None;
+                }
+                if let Some(frame) = route.queue.pop_front() {
+                    return Some(frame.event);
+                }
+            }
+            if shared.stop.is_cancelled() {
+                return None;
+            }
+            tokio::select! {biased;_=notified=>{},_=shared.stop.cancelled()=>{}}
+        }
     }
 }
 impl Drop for EventSubscription {
     fn drop(&mut self) {
         if let Some(shared) = self.shared.upgrade() {
             let mut events = shared.events.lock().expect("bridge events");
-            if events
+            let removed = if events
                 .routes
                 .get(&self.method)
                 .is_some_and(|route| route.ticket == self.ticket)
             {
-                events.routes.remove(&self.method);
-            }
-            let incomplete = !self.receiver.is_empty() && self.method != "driver.progress";
+                events.routes.remove(&self.method)
+            } else {
+                None
+            };
+            let incomplete = removed
+                .as_ref()
+                .is_some_and(|route| !route.queue.is_empty())
+                && self.method != "driver.progress";
             drop(events);
+            drop(removed);
             if incomplete {
                 shared.fail(BridgeError::new(
                     Failure::Busy,
@@ -77,50 +95,76 @@ impl Client {
             .next_id
             .try_update(Ordering::Relaxed, Ordering::Relaxed, |id| id.checked_add(1))
             .map_err(|_| BridgeError::new(Failure::Protocol, "JDBC IDs exhausted"))?;
-        let (sender, receiver) = mpsc::channel(32);
-        events
-            .routes
-            .insert(method.into(), Route { ticket, sender });
+        let ready = Arc::new(Notify::new());
+        events.routes.insert(
+            method.into(),
+            Route {
+                ticket,
+                queue: VecDeque::new(),
+                ready: ready.clone(),
+            },
+        );
         Ok(EventSubscription {
             shared: Arc::downgrade(shared),
             method: method.into(),
             ticket,
-            receiver,
+            ready,
         })
     }
 }
 impl Shared {
     pub(super) fn receive_event(&self, event: Event, size: usize) -> Result<()> {
-        let budget = self
+        let mut events = self.events.lock().expect("bridge events");
+        let progress = event.method == "driver.progress";
+        let (queue, ready) = if let Some(route) = events.routes.get_mut(&event.method) {
+            (&mut route.queue, Some(route.ready.clone()))
+        } else {
+            (&mut events.queue, None)
+        };
+        if progress {
+            let same = queue.iter().position(|frame| {
+                frame.event.method == event.method
+                    && frame.event.params.get("resolutionId") == event.params.get("resolutionId")
+            });
+            if let Some(index) = same {
+                queue.remove(index);
+            }
+            if queue.len() >= 32 {
+                if let Some(index) = queue
+                    .iter()
+                    .position(|frame| frame.event.method == "driver.progress")
+                {
+                    queue.remove(index);
+                } else {
+                    return Ok(());
+                }
+            }
+        } else if queue.len() >= 32 {
+            return Err(BridgeError::new(
+                Failure::Busy,
+                "JDBC result consumer overflow; preview incomplete and helper disconnected",
+            ));
+        }
+        let budget = match self
             .event_budget
             .clone()
             .try_acquire_many_owned(size as u32)
-            .map_err(|_| {
-                BridgeError::new(
-                    Failure::Busy,
-                    "JDBC notification byte capacity exhausted; preview incomplete",
-                )
-            })?;
-        let frame = Frame {
-            event,
-            _budget: budget,
-        };
-        let mut events = self.events.lock().expect("bridge events");
-        if let Some(route) = events.routes.get(&frame.event.method) {
-            route.sender.try_send(frame).map_err(|_| {
-                BridgeError::new(
-                    Failure::Busy,
-                    "JDBC event consumer overflow; preview incomplete and helper disconnected",
-                )
-            })?;
-        } else {
-            if events.queue.len() >= 32 {
+        {
+            Ok(budget) => budget,
+            Err(_) if progress => return Ok(()),
+            Err(_) => {
                 return Err(BridgeError::new(
                     Failure::Busy,
-                    "JDBC result queue overflow; preview incomplete and helper disconnected",
+                    "JDBC notification byte capacity exhausted; preview incomplete",
                 ));
             }
-            events.queue.push_back(frame);
+        };
+        queue.push_back(Frame {
+            event,
+            _budget: budget,
+        });
+        if let Some(ready) = ready {
+            ready.notify_one();
         }
         Ok(())
     }

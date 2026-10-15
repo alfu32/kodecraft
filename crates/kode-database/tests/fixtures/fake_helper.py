@@ -33,6 +33,20 @@ def perform(message):
         result(id,{'done':True})
     elif method == 'test.error':
         send({'jsonrpc':'2.0','id':id,'error':{'code':-32603,'message':'synthetic-password-marker','data':{'sqlState':'42000','vendorCode':123,'message':'synthetic-password-marker'}}})
+    elif method == 'test.notifications':
+        for count in range(100): send({'jsonrpc':'2.0','method':'driver.progress','params':{'resolutionId':'synthetic-driver','phase':'download','completedBytes':count,'totalBytes':100}})
+        for count in range(3): send({'jsonrpc':'2.0','method':'query.event','params':{'executionId':'synthetic-query','sequence':count}})
+        result(id,{'done':True})
+    elif method == 'driver.resolve':
+        resolution=params['resolutionId']
+        send({'jsonrpc':'2.0','method':'driver.progress','params':{'resolutionId':resolution,'phase':'download','completedBytes':8192,'totalBytes':-1}})
+        if params['driver']['id']=='synthetic-block':
+            finished.wait(20)
+            send({'jsonrpc':'2.0','id':id,'error':{'code':-32800,'message':'Driver resolution cancelled','data':{'notStarted':True}}})
+        else:
+            result(id,{'providerId':'synthetic','resolvedVersion':'1.0','classpathDigest':'0'*64,'source':'local-classpath','manifestPath':'/synthetic/install-v1.json','classpath':['/synthetic/driver.jar'],'reused':False})
+    elif method == 'driver.cancel':
+        finished.set();result(id,{'status':'requested'})
     else: send({'jsonrpc':'2.0','id':id,'error':{'code':-32601,'message':'Unknown method'}})
 while True:
     header=sys.stdin.buffer.read(4)

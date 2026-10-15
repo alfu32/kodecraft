@@ -4,5 +4,6 @@ pub mod bridge;
 pub mod catalog;
 pub mod config;
 pub mod credentials;
+pub mod drivers;
 pub mod model;
 pub mod security;

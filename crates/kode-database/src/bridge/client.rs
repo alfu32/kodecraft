@@ -401,15 +401,25 @@ impl Client {
         mutating: bool,
         cancel: &CancellationToken,
     ) -> Result<Value> {
-        self.request_inner(
+        self.request_with_timeout(
             method,
             params,
             mutating,
-            false,
             self.owner.shared.options.request_timeout,
             cancel,
         )
         .await
+    }
+    pub async fn request_with_timeout(
+        &self,
+        method: &str,
+        params: Value,
+        mutating: bool,
+        timeout: Duration,
+        cancel: &CancellationToken,
+    ) -> Result<Value> {
+        self.request_inner(method, params, mutating, false, timeout, cancel)
+            .await
     }
     pub fn cancel(&self) {
         if !matches!(self.state(), State::Failed | State::Stopped) {

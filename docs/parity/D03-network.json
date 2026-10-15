@@ -1,0 +1,21 @@
+{
+  "cases": [
+    {
+      "provider": "h2",
+      "selectedVersion": "2.2.224",
+      "jarCount": 1,
+      "selectedClass": "org.h2.Driver",
+      "reused": true,
+      "status": "passed"
+    },
+    {
+      "provider": "derby-embedded",
+      "selectedVersion": "10.17.1.0",
+      "jarCount": 2,
+      "selectedClass": "org.apache.derby.iapi.jdbc.AutoloadedDriver",
+      "reused": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 2
+}

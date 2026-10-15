@@ -55,6 +55,24 @@ Every start uses a fresh helper epoch and request IDs are never reused within it
 Raw stderr is drained to 64 KiB and suppressed in public diagnostics, including
 launcher output: third-party drivers are not trusted to redact their own logs.
 
+D03 adds independent notification subscriptions by method: driver progress cannot
+consume query events. Progress coalesces by resolution ID; query events remain
+ordered and lossless until an explicit bounded overflow failure. Consumers drain
+already received events before observing a stopped epoch. Dropping an unfinished
+install wait sends driver.cancel; an ordinary cancellation waits for its original
+final reply, so an acknowledgement never claims cleanup has finished.
+
+`driver.inspect` accepts either providerId/classpath/driverClass or a driver spec.
+The spec form checks explicit local paths, validated immutable installs and legacy
+provider/version directories without downloading or creating an install root.
+An empty explicit classpath requests helper-visible classes; the source-compatible
+bundled H2 version is 2.2.224. Spec lookup never substitutes that bundle for a
+different explicitly selected version. Version-qualified lookup recognizes a
+previous latest-version install when its family and resolved version agree.
+Inspection reports actual selected classes, sanitized load error types and restart
+requirements. Only driver.resolve downloads/publishes an install. Its sources use
+the artifact repository type; explicit local loading remains an inspect override.
+
 Build/test with `bash scripts/test-jdbc-bridge.sh` (Java 21, Maven at build time).
 The resulting shaded `jdbc-bridge/target/kode-jdbc-bridge.jar` needs only Java at
 runtime. Jackson 2.21.4 is pinned and relocated to the helper namespace so later

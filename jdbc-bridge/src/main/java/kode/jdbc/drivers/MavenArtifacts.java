@@ -30,8 +30,9 @@ public final class MavenArtifacts implements AutoCloseable {
         if(spec.groupId().isBlank()||spec.artifactId().isBlank())throw new RpcException(-32602,"Maven groupId and artifactId are required");
         RepositorySystem system=system();Limits transfers=new Limits(control);
         var builder=new SessionBuilderSupplier(system).get().withLocalRepositoryBaseDirectories(work.resolve("maven"))
-            .setTransferListener(transfers).setConfigProperty("aether.connector.connectTimeout",20_000)
+            .setTransferListener(transfers).setIgnoreArtifactDescriptorRepositories(true).setConfigProperty("aether.connector.connectTimeout",20_000)
             .setConfigProperty("aether.connector.requestTimeout",30_000);
+        builder.setArtifactDescriptorPolicy(new org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy(false,false));
         // Do not expose arbitrary environment/Maven user secrets to downloaded
         // POM property interpolation. Keep only ordinary platform activation data.
         Map<String,String> platform=new HashMap<>();
@@ -51,7 +52,10 @@ public final class MavenArtifacts implements AutoCloseable {
             }
             control.check();control.progress("resolve-graph",0,-1);
             var artifact=new DefaultArtifact(spec.groupId(),spec.artifactId(),spec.classifier(),"jar",version);
-            var collect=new CollectRequest(new Dependency(artifact,JavaScopes.RUNTIME),repositories).setRequestContext("kode-jdbc");
+            // Treat the driver as a dependency of a virtual application root,
+            // rather than as the application project itself. This gives Maven's
+            // optional/scope selectors the correct depth for its dependencies.
+            var collect=new CollectRequest().addDependency(new Dependency(artifact,JavaScopes.RUNTIME)).setRepositories(repositories).setRequestContext("kode-jdbc");
             var result=system.resolveDependencies(session,new DependencyRequest(collect,DependencyFilterUtils.classpathFilter(JavaScopes.RUNTIME)));
             control.check();
             if(!result.getCollectExceptions().isEmpty()||result.getArtifactResults().isEmpty()||result.getArtifactResults().size()>InstallStore.MAX_JARS)
