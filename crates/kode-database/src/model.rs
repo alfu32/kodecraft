@@ -112,6 +112,17 @@ impl std::fmt::Debug for DriverSpec {
             .finish_non_exhaustive()
     }
 }
+impl DriverSpec {
+    pub fn local_classpath(&self, separator: char) -> Vec<std::path::PathBuf> {
+        self.jar_path
+            .as_deref()
+            .into_iter()
+            .flat_map(|paths| paths.split(separator))
+            .filter(|path| !path.is_empty())
+            .map(std::path::PathBuf::from)
+            .collect()
+    }
+}
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DataSourceDefinition {
