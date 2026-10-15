@@ -78,6 +78,8 @@ fn all_59_frozen_entries_resolve_with_exact_classes_artifacts_aliases_vendor_pag
     );
     assert!(urls.templates("tarantool").is_empty());
     assert_eq!(urls.recent_family("cockroachdb"), "postgresql");
+    assert_eq!(urls.recent_family("COCKROACHDB"), "postgresql");
+    assert_eq!(urls.recent_family("POSTGRESQL"), "POSTGRESQL");
     assert_eq!(urls.recent_family("spark-thrift"), "hive");
 }
 #[test]
@@ -166,6 +168,7 @@ fn credential_urls_and_properties_cannot_escape_through_direct_or_unknown_model_
         "jdbc:db2://host/db:password=synthetic-value;",
         "jdbc:postgresql://host/db?%70ass%77ord=synthetic-value",
         "jdbc:postgresql://host/db;OAuthClientSecret=synthetic-value",
+        "jdbc:postgresql://host/db;pwd\t =synthetic-value",
     ] {
         assert!(contains_secret(url));
         source.jdbc_url = url.into();

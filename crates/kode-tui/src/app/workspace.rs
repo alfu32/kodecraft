@@ -180,7 +180,7 @@ pub fn prepare_workspace(
         return Err(DomainError::Cancelled);
     }
     let initial_project = Project::new(root, generation)?;
-    let store = SessionStore::new(&initial_project.root)?;
+    let store = SessionStore::new(&initial_project.root)?.with_validator(validate_feature_session);
     let loaded = match store.load() {
         Ok(loaded) => loaded,
         Err(error) => LoadedSession {
@@ -381,6 +381,7 @@ pub fn capture_session(
     captured: Vec<CapturedDocument>,
     active: Option<DocumentOrigin>,
 ) -> Result<ProjectSessionV1> {
+    validate_feature_session(&base)?;
     base.source_roots = project.config.source_roots.clone();
     base.scan_exclusions = project.config.exclusions.clone();
     base.ignore_patterns = project.config.ignore_patterns.clone();
@@ -431,6 +432,14 @@ pub fn capture_session(
         }
     }
     Ok(base)
+}
+fn validate_feature_session(session: &ProjectSessionV1) -> Result<()> {
+    kode_database::security::validate_persistent_json(&session.database).map_err(|message| {
+        DomainError::Parse {
+            format: "database project state",
+            message: message.into(),
+        }
+    })
 }
 pub fn epoch_millis() -> i64 {
     SystemTime::now()

@@ -18,6 +18,45 @@ fn tag() -> JobTag {
     }
 }
 #[test]
+fn application_database_export_policy_rejects_credentials_before_capture_or_any_session_backup_write()
+ {
+    use serde_json::json;
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    let prepared = prepare_workspace(
+        root,
+        WorkspaceGeneration(1),
+        None,
+        &CancellationToken::new(),
+    )
+    .unwrap();
+    let store = prepared.store;
+    let identity = store.save(&ProjectSessionV1::default(), None).unwrap();
+    let before = fs::read(store.path()).unwrap();
+    let mut session = ProjectSessionV1::default();
+    for database in [
+        json!({"dataSources":[{"jdbcUrl":"jdbc:h2:mem:test;password=synthetic-value"}]}),
+        json!({"dataSources":[{"properties":{"sslpassword":"synthetic-value"}}]}),
+        json!({"futurePlugin":{"client_secret":"synthetic-value"}}),
+    ] {
+        session.database = database;
+        let error = store.save(&session, Some(&identity)).unwrap_err();
+        assert!(!error.to_string().contains("synthetic-value"));
+        assert!(capture_session(session.clone(), &prepared.project, vec![], None).is_err());
+        assert_eq!(fs::read(store.path()).unwrap(), before);
+        assert!(!root.join(".kode-rs.json.previous").exists());
+    }
+    session.database = json!({"dataSources":[{"id":"synthetic","credentialReference":"synthetic.password","credentialProperties":{"token":"synthetic.token"}}],"sessions":[],"future":{"value":42}});
+    store.save(&session, Some(&identity)).unwrap();
+    let value: serde_json::Value =
+        serde_json::from_slice(&fs::read(store.path()).unwrap()).unwrap();
+    assert_eq!(value["database"]["future"]["value"], 42);
+    assert_eq!(
+        value["database"]["dataSources"][0]["credentialReference"],
+        "synthetic.password"
+    );
+}
+#[test]
 fn explicit_file_focus_overrides_session_and_corrupt_config_does_not_erase_source_data() {
     let directory = tempfile::tempdir().unwrap();
     let root = directory.path();

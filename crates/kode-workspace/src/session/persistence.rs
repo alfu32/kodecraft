@@ -32,6 +32,7 @@ pub struct LoadedSession {
 #[derive(Debug, Clone)]
 pub struct SessionStore {
     pub root: PathBuf,
+    validator: Option<fn(&ProjectSessionV1) -> Result<()>>,
 }
 fn io_error(operation: &'static str, path: &Path, source: std::io::Error) -> DomainError {
     DomainError::Io {
@@ -108,7 +109,16 @@ impl SessionStore {
                 "session root is not a directory".into(),
             ));
         }
-        Ok(Self { root })
+        Ok(Self {
+            root,
+            validator: None,
+        })
+    }
+    /// Composition supplies feature export policy while storage retains opaque
+    /// JSON blocks and no dependency on feature crates.
+    pub fn with_validator(mut self, validator: fn(&ProjectSessionV1) -> Result<()>) -> Self {
+        self.validator = Some(validator);
+        self
     }
     pub fn path(&self) -> PathBuf {
         self.root.join(".kode-rs.json")
@@ -176,6 +186,9 @@ impl SessionStore {
         expected: Option<&DiskIdentity>,
     ) -> Result<DiskIdentity> {
         session.validate_version()?;
+        if let Some(validate) = self.validator {
+            validate(session)?;
+        }
         let path = self.path();
         if let Some(expected) = expected {
             if disk_identity(&path)? != *expected {

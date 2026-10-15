@@ -7,29 +7,35 @@ use std::{collections::BTreeMap, sync::LazyLock};
 pub fn sensitive_key(name: &str) -> bool {
     let canonical: String = name
         .chars()
-        .filter(|ch| !matches!(ch, '_' | '-' | '.' | ' '))
+        .filter(|ch| !ch.is_whitespace() && !matches!(ch, '_' | '-' | '.'))
         .flat_map(char::to_lowercase)
         .collect();
-    matches!(
-        canonical.as_str(),
-        "password"
-            | "passwd"
-            | "pwd"
-            | "pass"
-            | "secret"
-            | "clientsecret"
-            | "oauthclientsecret"
-            | "token"
-            | "accesstoken"
-            | "oauthaccesstoken"
-            | "oauthrefreshtoken"
-            | "apikey"
-            | "privatekey"
-            | "secretaccesskey"
-            | "accesskeyid"
-            | "sessiontoken"
-            | "credentials"
-    )
+    canonical.ends_with("password")
+        || canonical.ends_with("secret")
+        || canonical.ends_with("token")
+        || matches!(
+            canonical.as_str(),
+            "password"
+                | "passwd"
+                | "pwd"
+                | "pass"
+                | "secret"
+                | "clientsecret"
+                | "oauthclientsecret"
+                | "token"
+                | "accesstoken"
+                | "oauthaccesstoken"
+                | "oauthrefreshtoken"
+                | "apikey"
+                | "privatekey"
+                | "secretaccesskey"
+                | "accesskeyid"
+                | "sessiontoken"
+                | "credentials"
+                | "authorization"
+                | "accesskey"
+                | "jwt"
+        )
 }
 fn percent_decode(text: &str) -> String {
     let mut output = vec![];
@@ -92,10 +98,21 @@ pub fn validate_persistent_json(value: &Value) -> Result<(), &'static str> {
                 if sensitive_key(key) {
                     return Err("credential values must be stored separately behind references");
                 }
-                if matches!(
-                    key.to_ascii_lowercase().as_str(),
-                    "jdbcurl" | "repository" | "downloadurl" | "vendordownloadpage"
-                ) && value.as_str().is_some_and(contains_secret)
+                let canonical: String = key
+                    .chars()
+                    .filter(|ch| !ch.is_whitespace() && !matches!(ch, '_' | '-' | '.'))
+                    .flat_map(char::to_lowercase)
+                    .collect();
+                if (canonical.ends_with("url")
+                    || matches!(
+                        canonical.as_str(),
+                        "repository"
+                            | "vendordownloadpage"
+                            | "connectionstring"
+                            | "connectionuri"
+                            | "dsn"
+                    ))
+                    && value.as_str().is_some_and(contains_secret)
                 {
                     return Err("credential-bearing URLs cannot be persisted");
                 }
@@ -128,6 +145,8 @@ pub fn serialize_properties<S: Serializer>(
             "secret driver properties require credential references",
         ));
     }
+    let json = serde_json::to_value(value).map_err(serde::ser::Error::custom)?;
+    validate_persistent_json(&json).map_err(serde::ser::Error::custom)?;
     value.serialize(serializer)
 }
 pub fn deserialize_properties<'de, D: Deserializer<'de>>(
@@ -139,7 +158,16 @@ pub fn deserialize_properties<'de, D: Deserializer<'de>>(
             "secret driver properties require credential references",
         ));
     }
+    let json = serde_json::to_value(&value).map_err(serde::de::Error::custom)?;
+    validate_persistent_json(&json).map_err(serde::de::Error::custom)?;
     Ok(value)
+}
+pub fn serialize_project_state<S: Serializer>(
+    value: &Value,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    validate_persistent_json(value).map_err(serde::ser::Error::custom)?;
+    value.serialize(serializer)
 }
 pub fn serialize_url<S: Serializer>(value: &str, serializer: S) -> Result<S::Ok, S::Error> {
     if !value.trim().to_ascii_lowercase().starts_with("jdbc:") || contains_secret(value) {

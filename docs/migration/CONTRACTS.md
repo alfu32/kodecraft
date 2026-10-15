@@ -787,3 +787,76 @@ revisions for tree reuse. ParserSession additionally checks raw bytes before an
 equal-revision reuse, preventing stale revision-zero disk trees. Source watcher
 invalidation ignores cache/session/build metadata to prevent SQLite refresh loops.
 Partial parse/fallback/inference notes remain explicit and bounded in index status.
+
+## Database models, catalogs and private configuration
+
+D01 supplies native datasource/driver/artifact/session/status/metadata/result models
+in `kode-database::model`. Known fields retain Kotlin spelling/defaults on disk;
+unknown configuration fields survive import/export unless they contain reserved
+credential fields. Local multi-JAR paths remain unchanged and are split with an
+explicit platform separator by the resolver. Models/configuration never start Java.
+
+`resources/database/drivers.json` freezes all 59 source registry definitions in
+declaration order, including aliases, classes, classifier/artifact coordinates,
+custom Maven repositories and vendor page-only sources. No vendor artifact URLs
+are invented. URL morphology is copied exactly from the frozen source. The catalog
+validates coverage, unique IDs, inheritance/provider cycles, effective template
+IDs, JDBC schemes, sensitive placeholders and unsafe TLS defaults. Effective lists
+share immutable templates, including inherited aliases. Registry lookup preserves
+source prefix order; provider artifacts and recents use their source families.
+`scripts/database-catalog.py --check` compares against the frozen source tree.
+
+`DatabasePaths` discovers paths without loading or creating configuration. Rust
+user data defaults to `<Rust config>/database`, separate from the legacy Kode root.
+`KODE_RS_DATABASE_HOME` overrides it. `KODE_CONFIG_HOME` identifies the legacy import
+root; XDG/APPDATA/home fallbacks match the source. Plugin paths use
+`KODE_RS_JDBC_HOME`, explicit legacy `KODE_PLUGINS_HOME/jdbc`, then the Rust plugin
+root; legacy default plugin locations remain available for D03 reuse. Import is
+explicit and never edits source files or replaces existing Rust configuration.
+
+Rust files are `datasources-v1.json`, `credentials-v1.json` and
+`jdbc-url-recents-v1.json`. Writes hold an OS advisory lock, use E04's guarded atomic
+save and retain errors/corrupt/future files instead of replacing them with defaults.
+Known symlink traversal and nonregular lock/data targets are rejected. File locking
+uses stable Rust APIs (available since 1.89), with real contention distinct from I/O
+failure. Configuration methods are synchronous worker services; D07 must schedule
+them through F03, not call them from paint/input.
+
+Credential values live only in the separate private UTF-8 JSON store. New files
+use mode 0600 on Unix, created directories use 0700, and reading a credential file
+with group/other permissions fails explicitly. `Secret` has redacted Debug/Display
+and no Serialize implementation; connection wire code must explicitly expose it.
+Errors do not echo URLs, property values or malformed credential bodies. This is
+restricted-access local storage, not encryption or a claim of memory zeroization.
+Windows inherited ACL behavior/native execution remains D09/Z04 qualification.
+
+Legacy properties import follows actual `java.util.Properties.load(InputStream)`:
+Latin-1 bytes, logical continuations, comment rules, escaped separators/whitespace,
+duplicates/unknown escapes, and UTF-16 Unicode escapes. Valid surrogate pairs are
+preserved; unpaired units cannot be represented losslessly and are rejected with
+the original retained. A shared synthetic fixture is checked by Rust and an actual
+JDK oracle (`scripts/test-java-properties.py`). No real credential/session file is
+used for qualification.
+
+Legacy driver properties identified as credentials move to deterministic private
+references in `credentialProperties`; existing `credentialReference`, identifiers,
+URLs/classes/coordinates/JAR lists and safe properties remain unchanged. Reference
+collisions reject before publication. Credential-bearing URLs are rejected rather
+than rewritten. Private data publishes before public definitions: a late public
+I/O failure may leave private orphan refs, but cannot publish lost auth values.
+This is not a cross-file filesystem transaction. D04 must inject referenced secret
+properties/credentials only into ephemeral connection requests in source order.
+
+Recents preserve trimmed, exact case-sensitive URL values, deduplicate exactly,
+keep 12 entries per family in MRU order and retain source seed order. Alias families
+share the same store. Known credential parameters/userinfo, Oracle embedded auth
+and encoded credential keys are rejected; safe connection parameters remain intact.
+Legacy recents import filters unsafe entries without modifying the legacy file.
+
+The application composition layer applies the database feature's export validator
+before capture and before any session save/backup. `SessionStore::with_validator`
+keeps the generic workspace crate independent of database models and retains opaque
+feature JSON. Unsafe payloads fail visibly with original files intact; they are not
+silently stripped or exported. Typed datasource/project export also enforces the
+policy. D07 owns database import/dialog integration and explicit correction of
+unsupported credential-bearing definitions; D02–D09 own JDBC process/execution UX.

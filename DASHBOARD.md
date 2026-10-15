@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    21 |           1 |   43 |       0 |    65 |
+|    20 |           1 |   44 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **D01** — [Database models, settings, credentials and URL catalogs](docs/migration/tasks/09-database.md#d01--database-models-settings-credentials-and-url-catalogs)
+- **D02** — [Protocol, Java bootstrap and Rust process supervisor](docs/migration/tasks/09-database.md#d02--protocol-java-bootstrap-and-rust-process-supervisor)
 
 ## Task status
 
@@ -66,8 +66,8 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | R06  | [REST tree, environments and management dialogs](docs/migration/tasks/08-rest.md)               | todo        | —                            |
 | R07  | [Request/response editors and complete REST UX](docs/migration/tasks/08-rest.md)                | todo        | —                            |
 | R08  | [Collection runner, persistence and REST qualification](docs/migration/tasks/08-rest.md)        | todo        | —                            |
-| D01  | [Database models, settings, credentials and URL catalogs](docs/migration/tasks/09-database.md)  | in-progress | —                            |
-| D02  | [Protocol, Java bootstrap and Rust process supervisor](docs/migration/tasks/09-database.md)     | todo        | —                            |
+| D01  | [Database models, settings, credentials and URL catalogs](docs/migration/tasks/09-database.md)  | done        | [Report](docs/parity/D01.md) |
+| D02  | [Protocol, Java bootstrap and Rust process supervisor](docs/migration/tasks/09-database.md)     | in-progress | —                            |
 | D03  | [Driver install, Maven resolution and classloaders](docs/migration/tasks/09-database.md)        | todo        | —                            |
 | D04  | [Connections, testing and transaction control](docs/migration/tasks/09-database.md)             | todo        | —                            |
 | D05  | [SQL execution, results and independent cancellation](docs/migration/tasks/09-database.md)      | todo        | —                            |

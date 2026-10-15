@@ -2,6 +2,7 @@ use crate::model::{DriverSpec, Extra, JdbcDriverArtifact};
 use kode_core::{DomainError, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
+use std::sync::Arc;
 fn failure(message: impl Into<String>) -> DomainError {
     DomainError::Parse {
         format: "JDBC catalog",
@@ -9,17 +10,21 @@ fn failure(message: impl Into<String>) -> DomainError {
     }
 }
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(default, rename_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
 pub struct DriverDefinition {
     pub id: String,
     pub display_name: String,
     pub database_family: String,
+    #[serde(default)]
     pub driver_class: String,
     pub default_maven_coordinates: Option<String>,
+    #[serde(default)]
     pub default_jdbc_url_template: String,
+    #[serde(default)]
     pub url_prefixes: Vec<String>,
     pub artifact: Option<JdbcDriverArtifact>,
     pub alias_of: Option<String>,
+    #[serde(default)]
     pub jdbc_url_templates: Vec<UrlTemplate>,
     #[serde(flatten)]
     pub extra: Extra,
@@ -27,6 +32,7 @@ pub struct DriverDefinition {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct RegistryData {
+    #[serde(default = "version")]
     version: u32,
     drivers: Vec<DriverDefinition>,
 }
@@ -35,6 +41,13 @@ pub struct DriverRegistry {
     definitions: Vec<DriverDefinition>,
 }
 impl DriverRegistry {
+    pub fn from_resources(paths: &kode_platform::paths::ResourcePaths) -> Result<Self> {
+        let resource = paths.resolve(
+            "database/drivers.json",
+            &kode_platform::paths::compiled_resources(),
+        )?;
+        Self::from_json(&resource.bytes)
+    }
     pub fn compiled() -> Result<Self> {
         Self::from_json(include_bytes!("../../../resources/database/drivers.json"))
     }
@@ -134,13 +147,15 @@ impl DriverRegistry {
     }
 }
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(default, rename_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
 pub struct UrlTemplate {
     pub id: String,
     pub label: String,
     pub template: String,
     pub description: Option<String>,
+    #[serde(default)]
     pub advanced: bool,
+    #[serde(default)]
     pub legacy: bool,
     pub min_driver_version: Option<String>,
     pub note: Option<String>,
@@ -148,13 +163,15 @@ pub struct UrlTemplate {
     pub extra: Extra,
 }
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(default, rename_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
 pub struct DriverTemplates {
     pub driver_id: String,
     pub recent_family: Option<String>,
     pub default_port: Option<u16>,
     pub inherit: Option<String>,
+    #[serde(default)]
     pub prepend: bool,
+    #[serde(default)]
     pub templates: Vec<UrlTemplate>,
     pub note: Option<String>,
     #[serde(flatten)]
@@ -162,16 +179,28 @@ pub struct DriverTemplates {
 }
 #[derive(Debug, Deserialize)]
 struct UrlCatalogData {
+    #[serde(default = "version")]
     version: u32,
     drivers: Vec<DriverTemplates>,
 }
 #[derive(Debug, Clone)]
 pub struct UrlCatalog {
     entries: BTreeMap<String, DriverTemplates>,
-    effective: BTreeMap<String, Vec<UrlTemplate>>,
+    effective: BTreeMap<String, Vec<Arc<UrlTemplate>>>,
     families: BTreeMap<String, String>,
+    alias_families: BTreeMap<String, String>,
 }
 impl UrlCatalog {
+    pub fn from_resources(
+        paths: &kode_platform::paths::ResourcePaths,
+        registry: &DriverRegistry,
+    ) -> Result<Self> {
+        let resource = paths.resolve(
+            "database-jdbc-url-templates.json",
+            &kode_platform::paths::compiled_resources(),
+        )?;
+        Self::from_json(&resource.bytes, registry)
+    }
     pub fn compiled(registry: &DriverRegistry) -> Result<Self> {
         Self::from_json(
             include_bytes!("../../../resources/database/jdbc-url-templates.json"),
@@ -207,6 +236,7 @@ impl UrlCatalog {
             entries,
             effective: BTreeMap::new(),
             families: BTreeMap::new(),
+            alias_families: BTreeMap::new(),
         };
         for id in catalog.entries.keys().cloned().collect::<Vec<_>>() {
             let templates = catalog.resolve(&id, registry, &mut BTreeSet::new())?;
@@ -244,17 +274,29 @@ impl UrlCatalog {
             let family = catalog.family(&id, registry, &mut BTreeSet::new())?;
             catalog.families.insert(id, family);
         }
+        for definition in registry.definitions() {
+            if let Some(alias) = &definition.alias_of {
+                let family = catalog.family(alias, registry, &mut BTreeSet::new())?;
+                catalog
+                    .alias_families
+                    .insert(definition.id.to_ascii_lowercase(), family);
+            }
+        }
         Ok(catalog)
     }
     fn resolve(
-        &self,
+        &mut self,
         id: &str,
         registry: &DriverRegistry,
         visiting: &mut BTreeSet<String>,
-    ) -> Result<Vec<UrlTemplate>> {
+    ) -> Result<Vec<Arc<UrlTemplate>>> {
+        if let Some(cached) = self.effective.get(id) {
+            return Ok(cached.clone());
+        }
         let entry = self
             .entries
             .get(id)
+            .cloned()
             .ok_or_else(|| failure("unknown URL inheritance driver"))?;
         if !visiting.insert(id.into()) {
             return Err(failure("URL inheritance cycle"));
@@ -264,20 +306,23 @@ impl UrlCatalog {
         } else {
             vec![]
         };
-        let mut own = entry.templates.clone();
+        let mut own: Vec<_> = entry.templates.into_iter().map(Arc::new).collect();
         if let Some(definition) = registry.by_id(id) {
-            own.extend(definition.jdbc_url_templates.clone());
+            own.extend(definition.jdbc_url_templates.iter().cloned().map(Arc::new));
         }
         if inherited.len().saturating_add(own.len()) > 5_000 {
             return Err(failure("effective URL template count exceeds 5,000"));
         }
-        if entry.prepend {
+        let effective = if entry.prepend {
             own.extend(inherited);
-            Ok(own)
+            own
         } else {
             inherited.extend(own);
-            Ok(inherited)
-        }
+            inherited
+        };
+        visiting.remove(id);
+        self.effective.insert(id.into(), effective.clone());
+        Ok(effective)
     }
     fn family(
         &self,
@@ -308,10 +353,16 @@ impl UrlCatalog {
     pub fn entry(&self, id: &str) -> Option<&DriverTemplates> {
         self.entries.get(id)
     }
-    pub fn templates(&self, id: &str) -> &[UrlTemplate] {
+    pub fn templates(&self, id: &str) -> &[Arc<UrlTemplate>] {
         self.effective.get(id).map_or(&[], Vec::as_slice)
     }
     pub fn recent_family<'a>(&'a self, id: &'a str) -> &'a str {
-        self.families.get(id).map_or(id, String::as_str)
+        self.families
+            .get(id)
+            .or_else(|| self.alias_families.get(&id.to_ascii_lowercase()))
+            .map_or(id, String::as_str)
     }
+}
+fn version() -> u32 {
+    1
 }

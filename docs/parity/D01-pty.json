@@ -1,0 +1,16 @@
+{
+  "cases": [
+    {
+      "case": "native-editor-without-java-or-database-initialization",
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 1
+}

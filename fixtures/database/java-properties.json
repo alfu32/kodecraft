@@ -1,0 +1,16 @@
+{
+  "inputLatin1": "# synthetic comment \\\nafter.comment=kept\nescaped\\ key\\:\\==one\\\\two\\tthree\\nfour\\r\\f\ncontinued=one\\\n   two\\\n\tthree\nunicode=\\u00E9\\uD83D\\uDE00\nlatin=é\nduplicate=first\nduplicate:last\nunknown=\\z\\:\\=\\ \\#\nempty=\nbare\n\\#literal=value\ntrailing=done\\",
+  "expected": {
+    "after.comment": "kept",
+    "escaped key:=": "one\\two\tthree\nfour\r\f",
+    "continued": "onetwothree",
+    "unicode": "é😀",
+    "latin": "é",
+    "duplicate": "last",
+    "unknown": "z:= #",
+    "empty": "",
+    "bare": "",
+    "#literal": "value",
+    "trailing": "done"
+  }
+}

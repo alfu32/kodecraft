@@ -7,7 +7,7 @@ client models remain Rust.
 
 ## D01 — Database models, settings, credentials and URL catalogs
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** F02, F03. **Owns:** `kode-database/src/{model,config,credentials,catalog}.rs`,
 `resources/database/`.
@@ -28,7 +28,7 @@ in JdbcDrivers.kt; DataSourceRepositoryTest/JdbcUrlTemplatesTest/JdbcDriverRegis
 
 ## D02 — Protocol, Java bootstrap and Rust process supervisor
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** D01, F03. **Owns:** `protocol/jdbc-v1/`, `kode-database/src/bridge/`,
 `jdbc-bridge/pom.xml`, Java `protocol/` and `Main`.

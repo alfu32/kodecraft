@@ -138,5 +138,9 @@ pub fn compiled_resources() -> HashMap<&'static str, &'static [u8]> {
             "database-jdbc-url-templates.json",
             include_bytes!("../../../resources/database-jdbc-url-templates.json").as_slice(),
         ),
+        (
+            "database/drivers.json",
+            include_bytes!("../../../resources/database/drivers.json").as_slice(),
+        ),
     ])
 }
