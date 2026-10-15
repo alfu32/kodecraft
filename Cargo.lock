@@ -1482,6 +1482,7 @@ name = "kode-lsp"
 version = "0.1.0"
 dependencies = [
  "flate2",
+ "futures-util",
  "kode-core",
  "kode-platform",
  "lsp-types",
@@ -1492,6 +1493,7 @@ dependencies = [
  "tar",
  "tempfile",
  "tokio",
+ "tokio-util",
  "zip",
 ]
 

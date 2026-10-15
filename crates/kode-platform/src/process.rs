@@ -184,6 +184,32 @@ impl ManagedChild {
     pub fn stderr(&self) -> String {
         self.stderr.text()
     }
+    pub fn stderr_tail(&self) -> TailBuffer {
+        self.stderr.clone()
+    }
+    /// Supervise an interactive child after its pipes have been transferred.
+    /// Cancellation kills its owned process group, then reaps and joins stderr.
+    pub async fn wait_or_cancel(mut self, token: CancellationToken) -> Result<(ExitStatus, bool)> {
+        self.stdin.take();
+        self.stdout.take();
+        let (status, cancelled) = tokio::select! {
+            biased;
+            _=token.cancelled()=>{
+                self.group.kill().map_err(|error|process_error(&self.spec,error))?;
+                if self.child.try_wait().map_err(|error|process_error(&self.spec,error))?.is_none() { self.child.start_kill().map_err(|error|process_error(&self.spec,error))?; }
+                (self.child.wait().await.map_err(|error|process_error(&self.spec,error))?,true)
+            },
+            status=self.child.wait()=>(status.map_err(|error|process_error(&self.spec,error))?,false),
+        };
+        self.group
+            .kill()
+            .map_err(|error| process_error(&self.spec, error))?;
+        self.stderr_task
+            .await
+            .map_err(|error| process_error(&self.spec, error))?
+            .map_err(|error| process_error(&self.spec, error))?;
+        Ok((status, cancelled))
+    }
     pub fn take_stdin(&mut self) -> Option<ChildStdin> {
         self.stdin.take()
     }

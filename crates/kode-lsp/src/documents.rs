@@ -270,23 +270,33 @@ pub struct Notification {
 }
 #[derive(Default)]
 pub struct DocumentTracker {
-    opened: BTreeMap<Uri, OpenDocument>,
+    opened: BTreeMap<String, OpenDocument>,
 }
 impl DocumentTracker {
     pub fn mapper(&self, uri: &Uri) -> Option<PositionMapper> {
-        self.opened.get(uri).map(|doc| doc.mapper.clone())
+        self.opened.get(uri.as_str()).map(|doc| doc.mapper.clone())
     }
     pub fn stamp(&self, uri: &Uri) -> Option<DocumentStamp> {
-        self.opened.get(uri).map(|doc| DocumentStamp {
+        self.opened.get(uri.as_str()).map(|doc| DocumentStamp {
             document: doc.snapshot.id,
             revision: doc.snapshot.revision,
             version: doc.version,
         })
     }
-    pub fn stamps(&self) -> BTreeMap<Uri, DocumentStamp> {
+    pub fn stamps(&self) -> BTreeMap<String, DocumentStamp> {
         self.opened
             .keys()
-            .filter_map(|uri| self.stamp(uri).map(|stamp| (uri.clone(), stamp)))
+            .map(|uri| {
+                let doc = &self.opened[uri];
+                (
+                    uri.clone(),
+                    DocumentStamp {
+                        document: doc.snapshot.id,
+                        revision: doc.snapshot.revision,
+                        version: doc.version,
+                    },
+                )
+            })
             .collect()
     }
     pub fn synchronize(
@@ -304,7 +314,7 @@ impl DocumentTracker {
             ));
         }
         let uri = origin_uri(&snapshot.origin)?;
-        let old = self.opened.get(&uri);
+        let old = self.opened.get(uri.as_str());
         if let Some(old) = old
             && old.snapshot.id == snapshot.id
             && old.snapshot.revision > snapshot.revision
@@ -375,7 +385,7 @@ impl DocumentTracker {
             version
         };
         self.opened.insert(
-            uri,
+            uri.as_str().to_owned(),
             OpenDocument {
                 snapshot,
                 mapper,
@@ -406,7 +416,7 @@ impl DocumentTracker {
     }
     pub fn close(&mut self, origin: &DocumentOrigin, mode: SyncMode) -> Result<Vec<Notification>> {
         let uri = origin_uri(origin)?;
-        if self.opened.remove(&uri).is_some() && mode.open_close {
+        if self.opened.remove(uri.as_str()).is_some() && mode.open_close {
             Ok(vec![Notification {
                 method: "textDocument/didClose",
                 params: json!({"textDocument":{"uri":uri}}),
