@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    24 |           1 |   40 |       0 |    65 |
+|    23 |           1 |   41 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **G01** — [Repository discovery and read operations](docs/migration/tasks/05-git.md#g01--repository-discovery-and-read-operations)
+- **G02** — [Stage, unstage, commit, checkout and tags](docs/migration/tasks/05-git.md#g02--stage-unstage-commit-checkout-and-tags)
 
 ## Task status
 
@@ -40,8 +40,8 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | V01  | [MIME/language detection and routing](docs/migration/tasks/04-viewers.md)                       | done        | [Report](docs/parity/V01.md) |
 | V02  | [Byte buffer and hex viewer](docs/migration/tasks/04-viewers.md)                                | done        | [Report](docs/parity/V02.md) |
 | V03  | [Image decoding and colored cell modes](docs/migration/tasks/04-viewers.md)                     | done        | [Report](docs/parity/V03.md) |
-| G01  | [Repository discovery and read operations](docs/migration/tasks/05-git.md)                      | in-progress | —                            |
-| G02  | [Stage, unstage, commit, checkout and tags](docs/migration/tasks/05-git.md)                     | todo        | —                            |
+| G01  | [Repository discovery and read operations](docs/migration/tasks/05-git.md)                      | done        | [Report](docs/parity/G01.md) |
+| G02  | [Stage, unstage, commit, checkout and tags](docs/migration/tasks/05-git.md)                     | in-progress | —                            |
 | G03  | [Diff views and restoring worktree chunks](docs/migration/tasks/05-git.md)                      | todo        | —                            |
 | L01  | [Semantic facts, identifiers and immutable snapshots](docs/migration/tasks/06-intelligence.md)  | done        | [Report](docs/parity/L01.md) |
 | L02  | [Keyword highlighting and incremental parser registry](docs/migration/tasks/06-intelligence.md) | done        | [Report](docs/parity/L02.md) |

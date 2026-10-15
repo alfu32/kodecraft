@@ -1,1 +1,6 @@
-//! kode-git: migration component; implementation status is tracked in DASHBOARD.md.
+//! Local Git operations. Open handles stay inside F03 blocking workers; only
+//! owned models and repository locations cross the application boundary.
+pub mod model;
+pub mod read;
+pub mod repository;
+pub mod status;

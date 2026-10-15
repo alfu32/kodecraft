@@ -5,7 +5,7 @@ JGit is not retained in the JDBC helper.
 
 ## G01 — Repository discovery and read operations
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** F03. **Owns:** `kode-git/src/{model,repository,read,status}.rs`.
 **Read:** `editor/lib/IGitService.kt`, `GitPanelView.kt` error handling;
@@ -25,7 +25,7 @@ JGitServiceTest, GitPanelViewTest.
 
 ## G02 — Stage, unstage, commit, checkout and tags
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** G01, E12, F05. **Owns:** `kode-git/src/write.rs`,
 `kode-tui/src/panels/git/` excluding diff renderer.

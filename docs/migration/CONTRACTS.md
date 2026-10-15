@@ -275,6 +275,59 @@ SQLSTATE/vendor code, HTTP status versus transport failure, Git failure context,
 parse errors, and missing-resource information. A failed operation never yields a
 fake successful empty result. Logs go to a file/stderr capture, never the TUI canvas.
 
+## Git reads
+
+G01 uses git2 0.21.0 and vendored libgit2 via libgit2-sys 0.18.8+1.9.7. Local
+operations enable no SSH/HTTPS transport or JVM. `ReadJob` carries a root, typed
+request and limits into F03 blocking workers; real repository/index/tree/blob
+handles are opened and dropped there. Only owned models cross back to the UI.
+Cancellation is checked before/after native calls and while iterating. A native
+libgit2 call already in progress is not forcibly interrupted.
+
+Discovery supports nested roots, file starts, linked worktrees and bare repositories.
+Missing repositories are distinct from malformed metadata at the requested root.
+HEAD distinguishes unborn/full branch reference/detached commit. Branch names retain
+their full hierarchy, correcting the source's last-segment ambiguity. Status rows
+retain separate index/worktree changes, untracked/deleted/type-changed/unreadable
+files and merge-stage conflict codes. Renames remain add/delete status rows, as in
+the source service; status does not enable content-based rename detection. Index
+soft refresh/stat updates are disabled, and status never calls the blob-content
+reader. Repository bytes and mtimes remain unchanged by reads.
+
+History walks reachable HEAD commits in topological/time order and reports explicit
+truncation. Commit labels choose the highest numeric-scored annotated tag, matching
+the source's digit extraction, 10-bit slots, signed Long shifts and first-tie rule;
+this is not SemVer sorting. Raw tag listing includes lightweight/non-commit tags
+and preserves full names. File lists compare the first parent, or an empty tree
+for a root commit. Bounded candidates use libgit2's 50% rename similarity; otherwise
+exact object renames are detected and edited large renames retain add/delete paths.
+Limits are checked via object headers before enabling similarity content loads.
+
+Staged contents compare HEAD/index; unstaged contents compare index/worktree.
+Unborn, missing and deleted sides are explicit. Content kinds distinguish text,
+binary, oversized, symlink and submodule values. Blob headers are checked before
+loading explicit content. Worktree reads are bounded, regular-file guarded and
+check metadata for concurrent change; symlink values are read without following
+their leaf target, and known parent escapes/absolute/parent/Git-metadata paths are
+rejected. Unix paths preserve non-UTF-8 bytes. Raw content bytes retain Git's stored
+data and worktree line endings; configured clean filters can intentionally make
+index bytes differ from worktree bytes. Read operations do not normalize either.
+
+Defaults: 8 MiB per content side, 100,000 listed entries and 5,000 history commits;
+hard maxima are 32 MiB/1,000,000/50,000. Similarity candidates total at most 32 MiB;
+ignore-pattern reads cap at 1 MiB. Larger data is visibly classified/truncated.
+These bounds do not claim a hard RSS limit inside native libgit2 status/revwalk.
+Unsupported non-UTF-8 ref/metadata fields produce contextual errors. Snapshot
+refresh preserves per-section failures in its report, allowing other sections to
+remain available, including bare/corrupt-object cases.
+
+`GitReadPanel` owns no repository handles. Tagged refresh acknowledgement preserves
+selection by path/layer, keeps earlier rows on a whole-job failure, renders section
+errors/limits, and rejects disposed/workspace-stale results. Paint never performs
+Git/filesystem work. The original throwing-status startup/render regression is
+covered by its standalone widget test. G02 owns application-tab routing, staging,
+commit editor, write actions and history expansion; G03 owns interactive diffs.
+
 ## LSP management
 
 P01 supplies `kode-lsp::{catalog,discovery,install}`. Catalog/manifest structs retain
