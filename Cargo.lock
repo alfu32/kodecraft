@@ -1460,6 +1460,7 @@ dependencies = [
 name = "kode-database"
 version = "0.1.0"
 dependencies = [
+ "futures-util",
  "kode-core",
  "kode-platform",
  "regex",
@@ -1467,6 +1468,8 @@ dependencies = [
  "serde_json",
  "sha2",
  "tempfile",
+ "tokio",
+ "tokio-util",
 ]
 
 [[package]]
@@ -3150,6 +3153,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "futures-util",
+ "libc",
  "pin-project-lite",
  "tokio",
 ]

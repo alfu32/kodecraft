@@ -1,0 +1,3 @@
+//! External Java helper protocol/supervision. Construction is lazy; native
+//! editor startup never probes Java or launches a helper.
+pub mod protocol;

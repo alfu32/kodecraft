@@ -1,0 +1,14 @@
+{
+  "valid": [
+    {"jsonrpc":"2.0","id":"rpc-1","method":"hello","params":{"protocolVersion":1,"clientVersion":"0.1.0"}},
+    {"jsonrpc":"2.0","id":"rpc-1","result":{"protocolVersion":1,"helperVersion":"0.1.0","javaVersion":"21","helperEpoch":"synthetic-epoch","maxFrameBytes":8388608,"capabilities":["hello","ping","shutdown"]}},
+    {"jsonrpc":"2.0","method":"driver.progress","params":{"resolutionId":"synthetic","phase":"resolve"}},
+    {"jsonrpc":"2.0","id":"unicode","result":{"text":"naïve 😀\r\n","future":{"value":42}}},
+    {"jsonrpc":"2.0","id":"rpc-error","error":{"code":-32601,"message":"Unknown method"}}
+  ],
+  "invalid": [
+    [], {"jsonrpc":"1.0","id":"x","result":null}, {"jsonrpc":"2.0","id":1,"result":null},
+    {"jsonrpc":"2.0","id":"x"}, {"jsonrpc":"2.0","id":"x","result":null,"error":{"code":1,"message":"bad"}},
+    {"jsonrpc":"2.0","method":"ping","params":[]}, {"jsonrpc":"2.0","id":"x","error":{"message":"bad"}}
+  ]
+}
