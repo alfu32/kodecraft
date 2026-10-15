@@ -4,4 +4,5 @@ pub mod client;
 pub mod discovery;
 pub mod documents;
 pub mod install;
+pub mod service;
 pub mod transport;

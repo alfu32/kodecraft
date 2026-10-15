@@ -1,0 +1,33 @@
+{
+  "cases": [
+    {
+      "case": "settings-start-restart-stop-and-quit",
+      "handshakes": 2,
+      "graceful_exits": 2,
+      "child_reaped": true,
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "quit-with-running-server",
+      "handshakes": 2,
+      "graceful_exits": 2,
+      "child_reaped": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 2
+}

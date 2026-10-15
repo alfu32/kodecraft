@@ -59,6 +59,23 @@ fn origin_uri(origin: &DocumentOrigin) -> Result<Uri> {
         )),
     }
 }
+pub fn language_id(language: &str) -> String {
+    let language = language.to_ascii_lowercase();
+    match language.as_str() {
+        "tsx" => "typescriptreact",
+        "jsx" => "javascriptreact",
+        "bash" | "sh" => "shellscript",
+        "kt" | "kts" => "kotlin",
+        "c#" | "cs" => "csharp",
+        "c++" | "cplus" => "cpp",
+        "js" => "javascript",
+        "ts" => "typescript",
+        "py" => "python",
+        "rb" => "ruby",
+        _ => &language,
+    }
+    .into()
+}
 /// LSP recognizes CR, LF and CRLF independently of the editor's LF-only display
 /// model. Build this index once on a worker and reuse it for every returned range.
 #[derive(Debug, Clone)]
@@ -324,11 +341,12 @@ impl DocumentTracker {
                 current: old.snapshot.revision,
             });
         }
-        let language = snapshot
-            .language
-            .clone()
-            .unwrap_or_else(|| "plaintext".into())
-            .to_ascii_lowercase();
+        let language = language_id(
+            &snapshot
+                .language
+                .clone()
+                .unwrap_or_else(|| "plaintext".into()),
+        );
         if let Some(old) = old
             && (old.snapshot.id, old.snapshot.revision, &old.language)
                 == (snapshot.id, snapshot.revision, &language)

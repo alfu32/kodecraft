@@ -104,7 +104,7 @@ impl Shared {
     fn set_state(&self, state: ClientState) {
         self.state.store(state as u8, Ordering::Release);
         if let Some(callback) = &self.options.on_state {
-            callback(state);
+            let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| callback(state)));
         }
     }
     fn error(&self, message: impl Into<String>) -> DomainError {
@@ -116,7 +116,19 @@ impl Shared {
     fn fail(&self, message: impl Into<String>) {
         let message = message.into();
         if !matches!(self.state(), ClientState::Stopping | ClientState::Stopped) {
-            *self.error.lock().expect("LSP error lock") = Some(message.clone());
+            let mut error = self.error.lock().expect("LSP error lock");
+            *error = Some(
+                error
+                    .as_ref()
+                    .map_or_else(
+                        || message.clone(),
+                        |existing| format!("{existing}; {message}"),
+                    )
+                    .chars()
+                    .take(4096)
+                    .collect(),
+            );
+            drop(error);
             self.set_state(ClientState::Failed);
         }
         self.cancel_pending(&message);
@@ -323,6 +335,11 @@ impl LspClient {
     }
     pub fn state(&self) -> ClientState {
         self.owner.shared.state()
+    }
+    /// Nonblocking disposal fallback; normal owners await `shutdown` to join it.
+    pub fn cancel(&self) {
+        self.owner.shared.set_state(ClientState::Stopping);
+        self.owner.shared.stop.cancel();
     }
     pub fn process_id(&self) -> u32 {
         self.owner.shared.pid

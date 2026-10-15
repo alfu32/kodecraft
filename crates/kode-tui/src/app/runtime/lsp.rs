@@ -28,6 +28,60 @@ pub(super) struct LspRuntime {
     config: LspConfiguration,
     fetcher: Arc<HttpFetcher>,
     pub lifecycle: Option<Arc<dyn ServerLifecycle>>,
+    pub service: Option<Arc<kode_lsp::service::LspService>>,
+    revision: u64,
+}
+struct NativeLspLifecycle {
+    service: Arc<kode_lsp::service::LspService>,
+    config: LspConfiguration,
+    runtime: tokio::runtime::Handle,
+}
+impl ServerLifecycle for NativeLspLifecycle {
+    fn running(&self, id: &str) -> bool {
+        self.service.running(id)
+    }
+    fn apply(
+        &self,
+        id: &str,
+        action: LifecycleAction,
+        cancel: &kode_platform::jobs::CancellationToken,
+    ) -> Result<String> {
+        if cancel.is_cancelled() {
+            return Err(DomainError::Cancelled);
+        }
+        if action == LifecycleAction::Stop {
+            self.runtime.block_on(self.service.stop(id))?;
+            return Ok(format!("Stopped {id}"));
+        }
+        let (catalog, _) = Catalog::load(&self.config.paths, self.config.catalog.as_deref())?;
+        let entry = catalog
+            .entry(id)
+            .cloned()
+            .ok_or_else(|| DomainError::Unsupported(format!("unknown language server: {id}")))?;
+        let manifest = self.config.discovery.read_manifest(id)?;
+        let command = self
+            .config
+            .discovery
+            .resolve_command(&entry, manifest.as_ref())?;
+        if action == LifecycleAction::Restart {
+            self.runtime
+                .block_on(self.service.restart(entry, command, cancel))?;
+        } else {
+            self.runtime
+                .block_on(self.service.start(entry, command, cancel))?;
+        }
+        Ok(format!(
+            "{} {id}",
+            if action == LifecycleAction::Restart {
+                "Restarted"
+            } else {
+                "Started"
+            }
+        ))
+    }
+    fn stop_all(&self) -> Result<()> {
+        self.runtime.block_on(self.service.shutdown())
+    }
 }
 impl AppRuntime {
     pub fn configure_lsp(&mut self, config: LspConfiguration) -> Result<()> {
@@ -42,17 +96,69 @@ impl AppRuntime {
             config,
             fetcher: Arc::new(HttpFetcher::new(handle)?),
             lifecycle: None,
+            service: None,
+            revision: 0,
         });
+        self.bind_builtin_lsp()
+    }
+    pub fn set_lsp_lifecycle(&mut self, lifecycle: Arc<dyn ServerLifecycle>) -> Result<()> {
+        if self.state.lsp_settings.busy.is_some()
+            || self
+                .lsp_service()
+                .is_some_and(|service| service.has_running_servers())
+        {
+            return Err(DomainError::Unsupported("stop active servers and wait for the current action before replacing their process service".into()));
+        }
+        let runtime = self
+            .lsp
+            .as_mut()
+            .ok_or_else(|| DomainError::Unsupported("LSP settings are not configured".into()))?;
+        runtime.lifecycle = Some(lifecycle);
+        runtime.service = None;
         self.state.lsp_settings.request_refresh();
         Ok(())
     }
-    pub fn set_lsp_lifecycle(&mut self, lifecycle: Arc<dyn ServerLifecycle>) -> Result<()> {
+    pub fn lsp_service(&self) -> Option<Arc<kode_lsp::service::LspService>> {
         self.lsp
-            .as_mut()
-            .ok_or_else(|| DomainError::Unsupported("LSP settings are not configured".into()))?
-            .lifecycle = Some(lifecycle);
+            .as_ref()
+            .and_then(|runtime| runtime.service.clone())
+    }
+    pub(super) fn bind_builtin_lsp(&mut self) -> Result<()> {
+        let Some(runtime) = &mut self.lsp else {
+            return Ok(());
+        };
+        let handle = tokio::runtime::Handle::try_current()
+            .map_err(|e| DomainError::Unsupported(e.to_string()))?;
+        let service = Arc::new(kode_lsp::service::LspService::new(
+            self.state.project.root.clone(),
+            Some(self.notifications.clone()),
+        ));
+        runtime.lifecycle = Some(Arc::new(NativeLspLifecycle {
+            service: service.clone(),
+            config: runtime.config.clone(),
+            runtime: handle,
+        }));
+        runtime.service = Some(service);
+        runtime.revision = 0;
         self.state.lsp_settings.request_refresh();
         Ok(())
+    }
+    pub(super) fn pump_lsp(&mut self) {
+        if self.state.closing {
+            return;
+        }
+        if let Some(runtime) = &mut self.lsp
+            && let Some(service) = &runtime.service
+            && runtime.revision != service.revision()
+        {
+            runtime.revision = service.revision();
+            for status in &mut self.state.lsp_settings.statuses {
+                status.running = service.running(&status.entry.id);
+                if let Some(error) = service.last_error(&status.entry.id) {
+                    status.message = Some(error);
+                }
+            }
+        }
     }
     pub(super) fn lsp_work(&mut self, action: SettingsAction) -> Result<()> {
         let Some(job) = self
@@ -74,6 +180,7 @@ impl AppRuntime {
         let config = runtime.config.clone();
         let fetcher = runtime.fetcher.clone();
         let lifecycle = runtime.lifecycle.clone();
+        let service = runtime.service.clone();
         let tag = job.tag;
         let owner = OwnerId(self.state.lsp_settings.id.0);
         let notifications = self.notifications.clone();
@@ -163,11 +270,18 @@ impl AppRuntime {
                     })
                 })();
                 let message = outcome.unwrap_or_else(|error| error.to_string());
-                let statuses = config.discovery.statuses(&catalog, |id| {
+                let mut statuses = config.discovery.statuses(&catalog, |id| {
                     lifecycle
                         .as_ref()
                         .is_some_and(|lifecycle| lifecycle.running(id))
                 });
+                if let Some(service) = &service {
+                    for status in &mut statuses {
+                        if let Some(error) = service.last_error(&status.entry.id) {
+                            status.message = Some(error);
+                        }
+                    }
+                }
                 Ok(Output::LspSettings(Box::new(SettingsReport {
                     statuses,
                     catalog_path,

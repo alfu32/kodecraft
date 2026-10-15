@@ -295,6 +295,7 @@ impl AppRuntime {
             }
         }
         self.pump_intelligence()?;
+        self.pump_lsp();
         if !self.config_active
             && let Some((tag, action)) = self.config_queue.pop_front()
         {
@@ -1616,6 +1617,9 @@ impl AppRuntime {
                 if let Some(resources) = self.intelligence_resources.clone() {
                     self.start_intelligence(resources).await?;
                 }
+                if self.lsp_service().is_some() {
+                    self.bind_builtin_lsp()?;
+                }
                 if self.lsp.is_some() {
                     self.state.lsp_settings.request_refresh();
                 }
@@ -1636,6 +1640,9 @@ impl AppRuntime {
             })?;
         if let Some(resources) = self.intelligence_resources.clone() {
             self.start_intelligence(resources).await?;
+        }
+        if self.lsp_service().is_some() {
+            self.bind_builtin_lsp()?;
         }
         if self.lsp.is_some() {
             self.state.lsp_settings.request_refresh();

@@ -28,10 +28,9 @@ def main():
             install = base / f"install-{size[0]}"
             result = terminal.run_case(project, base / f"config-{size[0]}", size, [
                 (b"\x1b[?1049h", 0.2, b"\x1b4"),
-                (b"stopped | Installed", 0.1, b"s"),
-                (b"unsupported operation", 0.1, b"\r"),
+                (b"stopped | Installed", 0.1, b"\r"),
                 (b"invalid LSP catalog", 0.1, b"\x11"),
-            ], expected=[b"LSP Servers", b"Fixture Server", b"stopped | Installed", b"unsupported operation", b"invalid LSP catalog"], env_overrides={"KODE_LSP_CATALOG": str(catalog), "KODE_LSP_HOME": str(install)})
+            ], expected=[b"LSP Servers", b"Fixture Server", b"stopped | Installed", b"invalid LSP catalog"], env_overrides={"KODE_LSP_CATALOG": str(catalog), "KODE_LSP_HOME": str(install)})
             assert not invoked.exists(), "settings discovery or unavailable lifecycle launched the fixture"
             assert not install.exists(), "manual server action created an installation directory"
             cases.append({"case": "settings-local-discovery-status-and-acknowledged-errors", **result})

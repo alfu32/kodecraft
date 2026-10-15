@@ -230,6 +230,9 @@ fn incremental_newline_replacements_expand_across_crlf_instead_of_sending_an_una
 }
 #[test]
 fn full_sync_save_options_disabled_sync_virtual_origins_and_document_bounds_are_honest() {
+    assert_eq!(language_id("tsx"), "typescriptreact");
+    assert_eq!(language_id("jsx"), "javascriptreact");
+    assert_eq!(language_id("bash"), "shellscript");
     let options = TextDocumentSyncCapability::Options(TextDocumentSyncOptions {
         open_close: Some(true),
         change: Some(TextDocumentSyncKind::FULL),

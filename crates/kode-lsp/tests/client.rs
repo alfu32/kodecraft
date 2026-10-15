@@ -412,3 +412,178 @@ async fn blocked_pipe_dropped_start_future_and_dropped_client_cannot_leave_a_ser
     until(|| !Path::new("/proc").join(pid.to_string()).exists()).await;
     assert_reaped(pid);
 }
+
+#[tokio::test]
+async fn pending_request_capacity_is_bounded_and_slots_are_released_after_cancellation() {
+    let mut fixture = Fixture::new("normal");
+    fixture.options.request_timeout = Duration::from_secs(5);
+    let client = fixture.start().await.unwrap();
+    let cancel = CancellationToken::new();
+    let mut tasks = vec![];
+    for index in 0..63 {
+        let client = client.clone();
+        let token = cancel.clone();
+        tasks.push(tokio::spawn(async move {
+            client.request("fixture/hang", Value::Null, &token).await
+        }));
+        until(|| {
+            fixture
+                .trace()
+                .iter()
+                .filter(|message| message["method"] == "fixture/hang")
+                .count()
+                > index
+        })
+        .await;
+    }
+    until(|| client.pending_requests() == 63).await;
+    assert!(matches!(
+        client
+            .request("fixture/echo", Value::Null, &CancellationToken::new())
+            .await,
+        Err(DomainError::QueueFull)
+    ));
+    cancel.cancel();
+    for task in tasks {
+        assert!(matches!(task.await.unwrap(), Err(DomainError::Cancelled)));
+    }
+    assert_eq!(client.pending_requests(), 0);
+    let deadline = Instant::now() + Duration::from_secs(2);
+    loop {
+        match client
+            .request(
+                "fixture/echo",
+                json!("capacity restored"),
+                &CancellationToken::new(),
+            )
+            .await
+        {
+            Err(DomainError::QueueFull) => {
+                assert!(Instant::now() < deadline);
+                tokio::task::yield_now().await;
+            }
+            result => {
+                assert_eq!(result.unwrap(), "capacity restored");
+                break;
+            }
+        }
+    }
+    client.shutdown().await.unwrap();
+}
+
+#[tokio::test]
+async fn registry_serializes_duplicate_starts_preserves_language_precedence_and_restarts_real_children()
+ {
+    use kode_lsp::{catalog::Catalog, discovery::ResolvedCommand, service::LspService};
+    let fixture = Fixture::new("normal");
+    let service = LspService::with_factory(
+        fixture.options.clone(),
+        Arc::new(SystemProcessFactory),
+        None,
+    );
+    let entry = |id: &str| {
+        Catalog::parse(
+            &serde_json::to_vec(&json!({"servers":[{"id":id,"name":id,"languages":["kotlin"]}]}))
+                .unwrap(),
+        )
+        .unwrap()
+        .servers
+        .remove(0)
+    };
+    let mut args = vec![fixture.spec.program.to_str().unwrap().to_owned()];
+    args.extend(fixture.spec.args.clone());
+    let command = ResolvedCommand { args, cwd: None };
+    let cancel = CancellationToken::new();
+    let (one, duplicate) = tokio::join!(
+        service.start(entry("one"), command.clone(), &cancel),
+        service.start(entry("one"), command.clone(), &cancel)
+    );
+    let one = one.unwrap();
+    assert_eq!(one.process_id(), duplicate.unwrap().process_id());
+    let first_pid = one.process_id();
+    let two = service
+        .start(entry("two"), command.clone(), &cancel)
+        .await
+        .unwrap();
+    let second_pid = two.process_id();
+    assert_eq!(
+        service.for_language("KOTLIN").unwrap().process_id(),
+        first_pid
+    );
+    assert!(service.running("one") && service.running("two"));
+    let revision = service.revision();
+    let restarted = service
+        .restart(entry("one"), command, &cancel)
+        .await
+        .unwrap();
+    assert_reaped(first_pid);
+    assert_ne!(restarted.process_id(), first_pid);
+    assert!(service.revision() > revision);
+    assert_eq!(
+        service.for_language("kotlin").unwrap().process_id(),
+        second_pid
+    );
+    let restarted_pid = restarted.process_id();
+    service.shutdown().await.unwrap();
+    assert_reaped(second_pid);
+    assert_reaped(restarted_pid);
+    assert!(!service.running("one") && service.for_language("kotlin").is_none());
+}
+
+#[tokio::test]
+async fn registry_records_failed_start_and_shutdown_cancels_an_inflight_start_before_reaping() {
+    use kode_lsp::{catalog::Catalog, discovery::ResolvedCommand, service::LspService};
+    let fixture = Fixture::new("init-error");
+    let service = LspService::with_factory(
+        fixture.options.clone(),
+        Arc::new(SystemProcessFactory),
+        None,
+    );
+    let entry = Catalog::parse(
+        br#"{"servers":[{"id":"fixture","name":"fixture","languages":["kotlin"]}]}"#,
+    )
+    .unwrap()
+    .servers
+    .remove(0);
+    let command = |fixture: &Fixture| {
+        let mut args = vec![fixture.spec.program.to_str().unwrap().into()];
+        args.extend(fixture.spec.args.clone());
+        ResolvedCommand { args, cwd: None }
+    };
+    assert!(
+        service
+            .start(entry.clone(), command(&fixture), &CancellationToken::new())
+            .await
+            .is_err()
+    );
+    assert!(!service.running("fixture"));
+    assert!(
+        service
+            .last_error("fixture")
+            .unwrap()
+            .contains("fixture startup denied")
+    );
+    service.shutdown().await.unwrap();
+    let mut fixture = Fixture::new("no-initialize");
+    fixture.options.startup_timeout = Duration::from_secs(10);
+    let service = Arc::new(LspService::with_factory(
+        fixture.options.clone(),
+        Arc::new(SystemProcessFactory),
+        None,
+    ));
+    let work_service = service.clone();
+    let command = command(&fixture);
+    let work = tokio::spawn(async move {
+        work_service
+            .start(entry, command, &CancellationToken::new())
+            .await
+    });
+    until(|| fixture.directory.path().join("pid").exists()).await;
+    let pid: u32 = fs::read_to_string(fixture.directory.path().join("pid"))
+        .unwrap()
+        .parse()
+        .unwrap();
+    service.shutdown().await.unwrap();
+    assert!(matches!(work.await.unwrap(), Err(DomainError::Cancelled)));
+    assert_reaped(pid);
+}

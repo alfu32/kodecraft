@@ -77,6 +77,163 @@ fn paint(app: &mut AppRuntime) {
 }
 
 #[tokio::test]
+async fn builtin_lsp_settings_start_restart_crash_repaint_switch_and_quit_reap_actual_children() {
+    use kode_lsp::{catalog::Platform, discovery::DiscoveryOptions};
+    use kode_platform::paths::ResourcePaths;
+    use kode_tui::app::runtime::lsp::LspConfiguration;
+    use serde_json::json;
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().join("project");
+    let next = directory.path().join("next");
+    fs::create_dir(&root).unwrap();
+    fs::create_dir(&next).unwrap();
+    let trace = directory.path().join("trace.jsonl");
+    let pid_file = directory.path().join("pid");
+    let fixture = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../fixtures/lsp/server.py")
+        .canonicalize()
+        .unwrap();
+    let catalog = directory.path().join("catalog.json");
+    fs::write(
+        &catalog,
+        serde_json::to_vec(&json!({"servers":[{
+            "id":"fixture", "name":"Fixture", "languages":["kotlin"],
+            "preferredCommand":["/usr/bin/python3", fixture, "fragment", trace, pid_file],
+            "configuration":{"fixture":{"option":42}}, "versions":[]
+        }]}))
+        .unwrap(),
+    )
+    .unwrap();
+    let mut app = make(&root, None, Arc::new(FakeClock::default()));
+    app.configure_lsp(LspConfiguration {
+        paths: ResourcePaths {
+            explicit: None,
+            rust_home: None,
+            legacy_home: None,
+            executable_dir: directory.path().into(),
+            config_dir: directory.path().join("config"),
+        },
+        catalog: Some(catalog),
+        discovery: DiscoveryOptions {
+            platform: Platform::detect(),
+            install_root: directory.path().join("install"),
+            search_path: vec![],
+            configured_commands: Default::default(),
+        },
+    })
+    .unwrap();
+    until(&mut app, |app| {
+        app.state.lsp_settings.statuses.len() == 1 && app.state.lsp_settings.busy.is_none()
+    })
+    .await;
+    let service = app.lsp_service().unwrap();
+    assert!(
+        !service.has_running_servers(),
+        "discovery must not launch servers"
+    );
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('4'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    paint(&mut app);
+    let mut previous_pid = None;
+    for (ch, acknowledgement) in [('s', "Started fixture"), ('r', "Restarted fixture")] {
+        app.state.dispatch(&key(Key::Character(ch), false)).unwrap();
+        until(&mut app, |app| {
+            app.state.lsp_settings.busy.is_none()
+                && app.state.lsp_settings.message == acknowledgement
+                && app.state.lsp_settings.statuses[0].running
+        })
+        .await;
+        let pid = service.client("fixture").unwrap().process_id();
+        if let Some(previous) = previous_pid {
+            assert_ne!(previous, pid);
+            #[cfg(target_os = "linux")]
+            assert!(!Path::new(&format!("/proc/{previous}")).exists());
+        }
+        previous_pid = Some(pid);
+    }
+    // A process failure changes the rendered state without a key or catalog read.
+    let client = service.client("fixture").unwrap();
+    let _ = client
+        .request("fixture/crash", json!({}), &CancellationToken::new())
+        .await;
+    until(&mut app, |app| {
+        !app.state.lsp_settings.statuses[0].running
+            && app.state.lsp_settings.statuses[0].message.is_some()
+    })
+    .await;
+    app.state
+        .dispatch(&key(Key::Character('s'), false))
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.lsp_settings.busy.is_none() && app.state.lsp_settings.statuses[0].running
+    })
+    .await;
+    let before_switch = service.client("fixture").unwrap().process_id();
+    app.switch_workspace(next).await.unwrap();
+    until(&mut app, |app| {
+        app.state.lsp_settings.statuses.len() == 1 && app.state.lsp_settings.busy.is_none()
+    })
+    .await;
+    assert!(!service.has_running_servers());
+    let next_service = app.lsp_service().unwrap();
+    assert!(!Arc::ptr_eq(&service, &next_service));
+    assert!(!next_service.has_running_servers());
+    #[cfg(target_os = "linux")]
+    assert!(!Path::new(&format!("/proc/{before_switch}")).exists());
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('4'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    paint(&mut app);
+    app.state
+        .dispatch(&key(Key::Character('s'), false))
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.lsp_settings.busy.is_none() && app.state.lsp_settings.statuses[0].running
+    })
+    .await;
+    let before_quit = next_service.client("fixture").unwrap().process_id();
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    assert!(!next_service.has_running_servers());
+    #[cfg(target_os = "linux")]
+    assert!(!Path::new(&format!("/proc/{before_quit}")).exists());
+    let messages: Vec<serde_json::Value> = fs::read_to_string(trace)
+        .unwrap()
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(
+        messages
+            .iter()
+            .filter(|m| m["method"] == "initialize")
+            .count(),
+        4
+    );
+    assert_eq!(
+        messages
+            .iter()
+            .filter(|m| m["method"] == "shutdown")
+            .count(),
+        3
+    );
+}
+
+#[tokio::test]
 async fn lsp_settings_use_real_download_workers_then_acknowledged_lifecycle_callbacks_and_preserve_the_install_root()
  {
     use kode_lsp::{
