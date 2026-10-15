@@ -3,6 +3,7 @@ use crate::model::{LineToken, PatternDiagnostic};
 use indexmap::IndexMap;
 use kode_core::{DomainError, LineIndex, Result, editor::search_regex::SearchRegex};
 use serde::{Deserialize, Serialize};
+use std::io::Read;
 use std::{
     collections::{BTreeMap, BTreeSet},
     path::Path,
@@ -32,13 +33,26 @@ fn io(path: &Path, operation: &'static str, source: std::io::Error) -> DomainErr
         source,
     }
 }
+fn read_definition(path: &Path) -> Result<Vec<u8>> {
+    let file = kode_platform::files::open_regular_file(path)?;
+    let mut bytes = Vec::new();
+    file.take(1024 * 1024 + 1)
+        .read_to_end(&mut bytes)
+        .map_err(|source| io(path, "read regex resource", source))?;
+    if bytes.len() > 1024 * 1024 {
+        return Err(DomainError::Unsupported(
+            "regex resource exceeds 1 MiB".into(),
+        ));
+    }
+    Ok(bytes)
+}
 pub fn load_directory(root: &Path) -> Result<LoadedGrammars> {
     if !root.is_dir() {
         return Err(DomainError::MissingResource(root.display().to_string()));
     }
     let mut loaded = LoadedGrammars::default();
     let index = root.join("index.json");
-    let mut names = match std::fs::read(&index) {
+    let mut names = match read_definition(&index) {
         Ok(bytes) => match serde_json::from_slice::<GrammarIndex>(&bytes) {
             Ok(index) => index.languages,
             Err(error) => {
@@ -51,8 +65,10 @@ pub fn load_directory(root: &Path) -> Result<LoadedGrammars> {
                 vec![]
             }
         },
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => vec![],
-        Err(source) => return Err(io(&index, "read grammar index", source)),
+        Err(DomainError::Io { source, .. }) if source.kind() == std::io::ErrorKind::NotFound => {
+            vec![]
+        }
+        Err(error) => return Err(error),
     };
     if names.is_empty() {
         for entry in
@@ -74,6 +90,11 @@ pub fn load_directory(root: &Path) -> Result<LoadedGrammars> {
         }
         names.sort();
     }
+    if names.len() > 4096 {
+        return Err(DomainError::Unsupported(
+            "regex grammar directory exceeds 4096 entries".into(),
+        ));
+    }
     for language in names {
         // An index names sibling definitions; it is never a path traversal API.
         if language.is_empty()
@@ -91,8 +112,7 @@ pub fn load_directory(root: &Path) -> Result<LoadedGrammars> {
             continue;
         }
         let path = root.join(format!("{language}.json"));
-        let bytes =
-            std::fs::read(&path).map_err(|source| io(&path, "read regex grammar", source))?;
+        let bytes = read_definition(&path)?;
         match serde_json::from_slice(&bytes) {
             Ok(definition) => loaded.definitions.push(definition),
             Err(error) => loaded.diagnostics.push(PatternDiagnostic {

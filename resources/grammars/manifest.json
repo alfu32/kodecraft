@@ -1,0 +1,259 @@
+{
+  "runtime": "0.26.13",
+  "coordinateUnit": "UTF8_BYTES",
+  "ownRustUnsafe": "forbidden",
+  "grammars": [
+    {
+      "language": "bash",
+      "package": "tree-sitter-bash",
+      "version": "0.25.1",
+      "repository": "https://github.com/tree-sitter/tree-sitter-bash",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "b644629f7f9460cb0af080cb88f3bef898e6c47b6f8a76ed512b67ae16ef5ac5"
+    },
+    {
+      "language": "c",
+      "package": "tree-sitter-c",
+      "version": "0.24.2",
+      "repository": "https://github.com/tree-sitter/tree-sitter-c",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "23e819ef1eefd357bb6eba844f47f8492f6a88da3e5046b06ec4acd4da8a9fd6"
+    },
+    {
+      "language": "cpp",
+      "package": "tree-sitter-cpp",
+      "version": "0.23.4",
+      "repository": "https://github.com/tree-sitter/tree-sitter-cpp",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "fdfd4b1f3dca1516616a1eb615bb6c1ad3082b8937ad21070d0def5dcfe7e535"
+    },
+    {
+      "language": "csharp",
+      "package": "tree-sitter-c-sharp",
+      "version": "0.23.5",
+      "repository": "https://github.com/tree-sitter/tree-sitter-c-sharp",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "91d69f7e0d97c002e738a09caadd8ddfa36b1552f7ae94303cc53b03b28551c0"
+    },
+    {
+      "language": "css",
+      "package": "tree-sitter-css",
+      "version": "0.25.0",
+      "repository": "https://github.com/tree-sitter/tree-sitter-css",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "fbbf8d22d82608f6d2f61cfdb374e6758779754fb2f42643e9dc5af6ead0d5d2"
+    },
+    {
+      "language": "d",
+      "package": "tree-sitter-d",
+      "version": "0.8.2",
+      "repository": "https://github.com/gdamore/tree-sitter-d",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "4b5eb5e707044adb264ca694d041be47be24e0b24e76e35a8a14ec80931e5e50"
+    },
+    {
+      "language": "go",
+      "package": "tree-sitter-go",
+      "version": "0.25.0",
+      "repository": "https://github.com/tree-sitter/tree-sitter-go",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "8d77e723df0f0dfccb66d4571a5c3c17ecfb6c90959044c0992146b21f383bff"
+    },
+    {
+      "language": "html",
+      "package": "tree-sitter-html",
+      "version": "0.23.2",
+      "repository": "https://github.com/tree-sitter/tree-sitter-html",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "e04d0a6e667ee3773ceeb0751466ce314f29bafc9b1c7d2466414c39c3eda178"
+    },
+    {
+      "language": "javascript",
+      "package": "tree-sitter-javascript",
+      "version": "0.25.0",
+      "repository": "https://github.com/tree-sitter/tree-sitter-javascript",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "188a8baa97018edaf63bf7ece372c07bc0d74d1301004bc8f211eb7dee5a6e70"
+    },
+    {
+      "language": "json",
+      "package": "tree-sitter-json",
+      "version": "0.24.8",
+      "repository": "https://github.com/tree-sitter/tree-sitter-json",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "620b6f5d38676a97526e9d128972d4b156ddbdf6e130cd7e6b9c35e6823e943f"
+    },
+    {
+      "language": "kotlin",
+      "package": "tree-sitter-kotlin-ng",
+      "version": "1.1.0",
+      "repository": "https://github.com/tree-sitter-grammars/tree-sitter-kotlin",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "0f21509031ad37902dc05d5828f178fed3545c466ffcf38ef30d969cb64e8e9d"
+    },
+    {
+      "language": "lua",
+      "package": "tree-sitter-lua",
+      "version": "0.5.0",
+      "repository": "https://github.com/tree-sitter-grammars/tree-sitter-lua",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "12ea1259c9e644754a13068eafd6160a9c5561c7a69e9cb9c8cd6c968b5e09fc"
+    },
+    {
+      "language": "markdown",
+      "package": "tree-sitter-md",
+      "version": "0.5.3",
+      "repository": "https://github.com/tree-sitter-grammars/tree-sitter-markdown",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "bcc2ad6e70f10473fa5d4567a0f29379b7e9ba88d5ffcfe0d329dc33ffa7dd4e"
+    },
+    {
+      "language": "markdown-inline",
+      "package": "tree-sitter-md",
+      "version": "0.5.3",
+      "repository": "https://github.com/tree-sitter-grammars/tree-sitter-markdown",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "701b6163dced608181dd633b4e548d8fe1520ae9ad40d7d584cb0c814c056a2c"
+    },
+    {
+      "language": "ocaml",
+      "package": "tree-sitter-ocaml",
+      "version": "0.26.0",
+      "repository": "https://github.com/tree-sitter/tree-sitter-ocaml",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "3be4cd8f70c23b64e74b54a8c5c49f7cc5efe8aa6dfcc29c29680a54364093b2"
+    },
+    {
+      "language": "ocaml-interface",
+      "package": "tree-sitter-ocaml",
+      "version": "0.26.0",
+      "repository": "https://github.com/tree-sitter/tree-sitter-ocaml",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "e43768176a6ff052ae76a34a6e21f673a714c7cb470fafbd3c72e9600aebf07c"
+    },
+    {
+      "language": "pascal",
+      "package": "tree-sitter-pascal",
+      "version": "0.10.2",
+      "repository": "https://github.com/Isopod/tree-sitter-pascal",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "bf6f054b26c91fe3d187a9e8543ef03d1d966f42038cc3ad194111a65187e009"
+    },
+    {
+      "language": "perl",
+      "package": "tree-sitter-perl",
+      "version": "1.1.2",
+      "repository": "https://github.com/ganezdragon/tree-sitter-perl",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "83f44dd6a37ce377c46a806fd4f05e9fa11f32ec0a69a7035d6315c06c1804b0"
+    },
+    {
+      "language": "php",
+      "package": "tree-sitter-php",
+      "version": "0.25.1",
+      "repository": "https://github.com/tree-sitter/tree-sitter-php",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "45fddbaad542a86cf413ca204bb232ea4478f8d634dc3beac4b2c8d837ce49ff"
+    },
+    {
+      "language": "python",
+      "package": "tree-sitter-python",
+      "version": "0.25.0",
+      "repository": "https://github.com/tree-sitter/tree-sitter-python",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "a2456847bea3adff5b2222b2f7b03a870159470d8908622204e6eb29ee2fe45e"
+    },
+    {
+      "language": "ruby",
+      "package": "tree-sitter-ruby",
+      "version": "0.23.1",
+      "repository": "https://github.com/tree-sitter/tree-sitter-ruby",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "9683f80e7be3dd93f1d6f575800de3f3445cda8af1f313f1f80003229c328e8b"
+    },
+    {
+      "language": "sql",
+      "package": "tree-sitter-sequel",
+      "version": "0.3.11",
+      "repository": "https://github.com/derekstride/tree-sitter-sql",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "227cb2197775686cc0b0064aa08e709f7f9575b724b2339371b10fb209e37d73"
+    },
+    {
+      "language": "svelte",
+      "package": "tree-sitter-svelte-ng",
+      "version": "1.0.2",
+      "repository": "https://github.com/tree-sitter-grammars/tree-sitter-svelte",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "18aecc6d00acda9369784b5d4054d4bc9b53dbe2d21533f4af90b0b6b1537a6c"
+    },
+    {
+      "language": "swift",
+      "package": "tree-sitter-swift",
+      "version": "0.7.4",
+      "repository": "https://github.com/alex-pinkus/tree-sitter-swift",
+      "license": "MIT",
+      "abi": 15,
+      "node_types_sha256": "9e9977b371d34d6c6863585a6cc4c63b83b1331b4a1536548d7ec73a83872fe1"
+    },
+    {
+      "language": "tsx",
+      "package": "tree-sitter-typescript",
+      "version": "0.23.2",
+      "repository": "https://github.com/tree-sitter/tree-sitter-typescript",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "78b5789145286799a27a0a7ecc36cc1bcb151f94ec7fa631b248459867010c8c"
+    },
+    {
+      "language": "typescript",
+      "package": "tree-sitter-typescript",
+      "version": "0.23.2",
+      "repository": "https://github.com/tree-sitter/tree-sitter-typescript",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "c790a733fc756b54d4e54dceeb7d2d51e40d8b57136e70277753a75804cce3e3"
+    },
+    {
+      "language": "yaml",
+      "package": "tree-sitter-yaml",
+      "version": "0.7.2",
+      "repository": "https://github.com/tree-sitter-grammars/tree-sitter-yaml",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "1238b6c89fc6afb9723b6463a365843aa87e478025490660e5acfc9adaaf809b"
+    },
+    {
+      "language": "zig",
+      "package": "tree-sitter-zig",
+      "version": "1.1.2",
+      "repository": "https://github.com/tree-sitter-grammars/tree-sitter-zig",
+      "license": "MIT",
+      "abi": 14,
+      "node_types_sha256": "dd85513d4bf1b5f03fe6404376162b66924ee23c8b6d5a18e20d9360000be4d0"
+    }
+  ]
+}

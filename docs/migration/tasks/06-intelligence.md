@@ -30,7 +30,8 @@ scope, lexical classification and resolved types.
 
 **Status:** in-progress
 
-**Depends:** E01, F03. **Owns:** `kode-syntax/src/`, `resources/keywords/`,
+**Depends:** E01, F03. **Owns:** `kode-syntax/src/`, the F02
+`resources/{keyword-patterns,token-colors}.txt` catalogs, and
 `resources/grammars/manifest.json`.
 **Read:** `grammars/*.kt`, `lang/{base,TreeSitterSupport}.kt`, keyword-patterns.txt,
 token-colors.txt, KeywordSyntaxProviderTest and RegexSyntaxProviderTest.

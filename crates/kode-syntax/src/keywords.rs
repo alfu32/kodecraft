@@ -126,6 +126,23 @@ impl KeywordProvider {
             },
         })
     }
+    pub fn supports(&self, language: &str) -> bool {
+        let language = normalize(language);
+        self.entries.contains_key(&language)
+            || matches!(
+                language.as_str(),
+                "html"
+                    | "html-derivative"
+                    | "xml"
+                    | "xsl"
+                    | "jsx"
+                    | "tsx"
+                    | "vue-html"
+                    | "css"
+                    | "scss"
+                    | "less"
+            )
+    }
     pub fn languages(&self) -> BTreeSet<&str> {
         self.entries.keys().map(String::as_str).collect()
     }

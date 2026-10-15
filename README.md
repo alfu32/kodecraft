@@ -4,9 +4,12 @@ Planned Rust migration of the Kode terminal IDE. The implementation reference is
 `../kode`, commit `7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68` (audited 2026-10-14).
 
 Implementation is underway. [DASHBOARD.md](DASHBOARD.md) records all 65 task statuses,
-ongoing work and links to acceptance evidence. The Cargo foundation builds with
-`cargo check --workspace`; `cargo run -p kode -- --help` and `--version` exercise
-the initial CLI. Application features are implemented in the task dependency order.
+ongoing work and links to acceptance evidence. Open a file or folder with
+`cargo run -p kode -- /path/to/project`; Ctrl+S saves and Ctrl+Q saves workspace
+state and quits. The shell includes file/project panels, search, text editing,
+hex inspection and portable image viewing. Native language intelligence, Git,
+SQL/JDBC, REST and remaining release tasks continue in dependency order.
+`cargo check --workspace`, `--help` and `--version` work on stable Rust.
 The Rust application will remain a TUI. JDBC will run in an **external JVM**;
 the Rust process will not embed a JVM.
 

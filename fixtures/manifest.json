@@ -100,6 +100,13 @@
       "expected": "Frozen Kotlin semantic identity oracle with explicit UTF-8 byte inputs"
     },
     {
+      "path": "languages/parsers/node-fields.json",
+      "origin": "Synthetic migration fixture; CC0-1.0",
+      "license": "CC0-1.0",
+      "sha256": "2ed17877bd75fd046b365bdd97139b44b20ecfc70c108b342f572ba293f007d6",
+      "expected": "Pinned parser ABI/node-field/byte-range facts for all 28 enabled grammar variants"
+    },
+    {
       "path": "images/cells-oracle.json",
       "origin": "Synthetic migration fixture; CC0-1.0",
       "license": "CC0-1.0",

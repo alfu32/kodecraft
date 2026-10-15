@@ -127,6 +127,10 @@ def fixtures():
             if path.is_file():
                 put("languages/semantic/" + path.name, path.read_bytes(),
                     "Frozen Kotlin semantic identity oracle with explicit UTF-8 byte inputs")
+    parser_fixture = FIXTURES / "languages/parsers/node-fields.json"
+    if parser_fixture.exists():
+        put("languages/parsers/node-fields.json", parser_fixture.read_bytes(),
+            "Pinned parser ABI/node-field/byte-range facts for all 28 enabled grammar variants")
     image_directory = FIXTURES / "images"
     if image_directory.exists():
         for path in sorted(image_directory.iterdir()):

@@ -1,0 +1,8005 @@
+{
+  "runtime": "0.26.13",
+  "bindings": [
+    {
+      "grammar": {
+        "language": "bash",
+        "package": "tree-sitter-bash",
+        "version": "0.25.1",
+        "repository": "https://github.com/tree-sitter/tree-sitter-bash",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "b644629f7f9460cb0af080cb88f3bef898e6c47b6f8a76ed512b67ae16ef5ac5"
+      },
+      "source": "#!/bin/bash\ngreet() { echo hello; }\n",
+      "root": "program",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "program",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 36
+          },
+          "text": "#!/bin/bash\ngreet() { echo hello; }\n"
+        },
+        {
+          "kind": "comment",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 11
+          },
+          "text": "#!/bin/bash"
+        },
+        {
+          "kind": "function_definition",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 12,
+            "end": 35
+          },
+          "text": "greet() { echo hello; }"
+        },
+        {
+          "kind": "word",
+          "parent": "function_definition",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 12,
+            "end": 17
+          },
+          "text": "greet"
+        },
+        {
+          "kind": "(",
+          "parent": "function_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 17,
+            "end": 18
+          },
+          "text": "("
+        },
+        {
+          "kind": ")",
+          "parent": "function_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 18,
+            "end": 19
+          },
+          "text": ")"
+        },
+        {
+          "kind": "compound_statement",
+          "parent": "function_definition",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 20,
+            "end": 35
+          },
+          "text": "{ echo hello; }"
+        },
+        {
+          "kind": "{",
+          "parent": "compound_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 20,
+            "end": 21
+          },
+          "text": "{"
+        },
+        {
+          "kind": "command",
+          "parent": "compound_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 22,
+            "end": 32
+          },
+          "text": "echo hello"
+        },
+        {
+          "kind": "command_name",
+          "parent": "command",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 22,
+            "end": 26
+          },
+          "text": "echo"
+        },
+        {
+          "kind": "word",
+          "parent": "command_name",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 22,
+            "end": 26
+          },
+          "text": "echo"
+        },
+        {
+          "kind": "word",
+          "parent": "command",
+          "field": "argument",
+          "named": true,
+          "range": {
+            "start": 27,
+            "end": 32
+          },
+          "text": "hello"
+        },
+        {
+          "kind": ";",
+          "parent": "compound_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 32,
+            "end": 33
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "compound_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 34,
+            "end": 35
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "c",
+        "package": "tree-sitter-c",
+        "version": "0.24.2",
+        "repository": "https://github.com/tree-sitter/tree-sitter-c",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "23e819ef1eefd357bb6eba844f47f8492f6a88da3e5046b06ec4acd4da8a9fd6"
+      },
+      "source": "typedef struct Customer { int value; } Customer;\nint use(Customer *customer) { return customer->value; }\n",
+      "root": "translation_unit",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "translation_unit",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 105
+          },
+          "text": "typedef struct Customer { int value; } Customer;\nint use(Customer *customer) { return customer->value; }\n"
+        },
+        {
+          "kind": "type_definition",
+          "parent": "translation_unit",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 48
+          },
+          "text": "typedef struct Customer { int value; } Customer;"
+        },
+        {
+          "kind": "typedef",
+          "parent": "type_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 7
+          },
+          "text": "typedef"
+        },
+        {
+          "kind": "struct_specifier",
+          "parent": "type_definition",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 8,
+            "end": 38
+          },
+          "text": "struct Customer { int value; }"
+        },
+        {
+          "kind": "struct",
+          "parent": "struct_specifier",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 8,
+            "end": 14
+          },
+          "text": "struct"
+        },
+        {
+          "kind": "type_identifier",
+          "parent": "struct_specifier",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 15,
+            "end": 23
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": "field_declaration_list",
+          "parent": "struct_specifier",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 38
+          },
+          "text": "{ int value; }"
+        },
+        {
+          "kind": "{",
+          "parent": "field_declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 24,
+            "end": 25
+          },
+          "text": "{"
+        },
+        {
+          "kind": "field_declaration",
+          "parent": "field_declaration_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 26,
+            "end": 36
+          },
+          "text": "int value;"
+        },
+        {
+          "kind": "primitive_type",
+          "parent": "field_declaration",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 26,
+            "end": 29
+          },
+          "text": "int"
+        },
+        {
+          "kind": "field_identifier",
+          "parent": "field_declaration",
+          "field": "declarator",
+          "named": true,
+          "range": {
+            "start": 30,
+            "end": 35
+          },
+          "text": "value"
+        },
+        {
+          "kind": ";",
+          "parent": "field_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 35,
+            "end": 36
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "field_declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 37,
+            "end": 38
+          },
+          "text": "}"
+        },
+        {
+          "kind": "type_identifier",
+          "parent": "type_definition",
+          "field": "declarator",
+          "named": true,
+          "range": {
+            "start": 39,
+            "end": 47
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": ";",
+          "parent": "type_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 47,
+            "end": 48
+          },
+          "text": ";"
+        },
+        {
+          "kind": "function_definition",
+          "parent": "translation_unit",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 49,
+            "end": 104
+          },
+          "text": "int use(Customer *customer) { return customer->value; }"
+        },
+        {
+          "kind": "primitive_type",
+          "parent": "function_definition",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 49,
+            "end": 52
+          },
+          "text": "int"
+        },
+        {
+          "kind": "function_declarator",
+          "parent": "function_definition",
+          "field": "declarator",
+          "named": true,
+          "range": {
+            "start": 53,
+            "end": 76
+          },
+          "text": "use(Customer *customer)"
+        },
+        {
+          "kind": "identifier",
+          "parent": "function_declarator",
+          "field": "declarator",
+          "named": true,
+          "range": {
+            "start": 53,
+            "end": 56
+          },
+          "text": "use"
+        },
+        {
+          "kind": "parameter_list",
+          "parent": "function_declarator",
+          "field": "parameters",
+          "named": true,
+          "range": {
+            "start": 56,
+            "end": 76
+          },
+          "text": "(Customer *customer)"
+        },
+        {
+          "kind": "(",
+          "parent": "parameter_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 56,
+            "end": 57
+          },
+          "text": "("
+        },
+        {
+          "kind": "parameter_declaration",
+          "parent": "parameter_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 57,
+            "end": 75
+          },
+          "text": "Customer *customer"
+        },
+        {
+          "kind": "type_identifier",
+          "parent": "parameter_declaration",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 57,
+            "end": 65
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": "pointer_declarator",
+          "parent": "parameter_declaration",
+          "field": "declarator",
+          "named": true,
+          "range": {
+            "start": 66,
+            "end": 75
+          },
+          "text": "*customer"
+        },
+        {
+          "kind": "*",
+          "parent": "pointer_declarator",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 66,
+            "end": 67
+          },
+          "text": "*"
+        },
+        {
+          "kind": "identifier",
+          "parent": "pointer_declarator",
+          "field": "declarator",
+          "named": true,
+          "range": {
+            "start": 67,
+            "end": 75
+          },
+          "text": "customer"
+        },
+        {
+          "kind": ")",
+          "parent": "parameter_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 75,
+            "end": 76
+          },
+          "text": ")"
+        },
+        {
+          "kind": "compound_statement",
+          "parent": "function_definition",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 77,
+            "end": 104
+          },
+          "text": "{ return customer->value; }"
+        },
+        {
+          "kind": "{",
+          "parent": "compound_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 77,
+            "end": 78
+          },
+          "text": "{"
+        },
+        {
+          "kind": "return_statement",
+          "parent": "compound_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 79,
+            "end": 102
+          },
+          "text": "return customer->value;"
+        },
+        {
+          "kind": "return",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 79,
+            "end": 85
+          },
+          "text": "return"
+        },
+        {
+          "kind": "field_expression",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 86,
+            "end": 101
+          },
+          "text": "customer->value"
+        },
+        {
+          "kind": "identifier",
+          "parent": "field_expression",
+          "field": "argument",
+          "named": true,
+          "range": {
+            "start": 86,
+            "end": 94
+          },
+          "text": "customer"
+        },
+        {
+          "kind": "->",
+          "parent": "field_expression",
+          "field": "operator",
+          "named": false,
+          "range": {
+            "start": 94,
+            "end": 96
+          },
+          "text": "->"
+        },
+        {
+          "kind": "field_identifier",
+          "parent": "field_expression",
+          "field": "field",
+          "named": true,
+          "range": {
+            "start": 96,
+            "end": 101
+          },
+          "text": "value"
+        },
+        {
+          "kind": ";",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 101,
+            "end": 102
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "compound_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 103,
+            "end": 104
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "cpp",
+        "package": "tree-sitter-cpp",
+        "version": "0.23.4",
+        "repository": "https://github.com/tree-sitter/tree-sitter-cpp",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "fdfd4b1f3dca1516616a1eb615bb6c1ad3082b8937ad21070d0def5dcfe7e535"
+      },
+      "source": "namespace demo { class Customer { public: int value; int get() { return value; } }; }\n",
+      "root": "translation_unit",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "translation_unit",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 86
+          },
+          "text": "namespace demo { class Customer { public: int value; int get() { return value; } }; }\n"
+        },
+        {
+          "kind": "namespace_definition",
+          "parent": "translation_unit",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 85
+          },
+          "text": "namespace demo { class Customer { public: int value; int get() { return value; } }; }"
+        },
+        {
+          "kind": "namespace",
+          "parent": "namespace_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 9
+          },
+          "text": "namespace"
+        },
+        {
+          "kind": "namespace_identifier",
+          "parent": "namespace_definition",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 10,
+            "end": 14
+          },
+          "text": "demo"
+        },
+        {
+          "kind": "declaration_list",
+          "parent": "namespace_definition",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 15,
+            "end": 85
+          },
+          "text": "{ class Customer { public: int value; int get() { return value; } }; }"
+        },
+        {
+          "kind": "{",
+          "parent": "declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 15,
+            "end": 16
+          },
+          "text": "{"
+        },
+        {
+          "kind": "class_specifier",
+          "parent": "declaration_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 17,
+            "end": 82
+          },
+          "text": "class Customer { public: int value; int get() { return value; } }"
+        },
+        {
+          "kind": "class",
+          "parent": "class_specifier",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 17,
+            "end": 22
+          },
+          "text": "class"
+        },
+        {
+          "kind": "type_identifier",
+          "parent": "class_specifier",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 23,
+            "end": 31
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": "field_declaration_list",
+          "parent": "class_specifier",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 32,
+            "end": 82
+          },
+          "text": "{ public: int value; int get() { return value; } }"
+        },
+        {
+          "kind": "{",
+          "parent": "field_declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 32,
+            "end": 33
+          },
+          "text": "{"
+        },
+        {
+          "kind": "access_specifier",
+          "parent": "field_declaration_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 34,
+            "end": 40
+          },
+          "text": "public"
+        },
+        {
+          "kind": "public",
+          "parent": "access_specifier",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 34,
+            "end": 40
+          },
+          "text": "public"
+        },
+        {
+          "kind": ":",
+          "parent": "field_declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 40,
+            "end": 41
+          },
+          "text": ":"
+        },
+        {
+          "kind": "field_declaration",
+          "parent": "field_declaration_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 42,
+            "end": 52
+          },
+          "text": "int value;"
+        },
+        {
+          "kind": "primitive_type",
+          "parent": "field_declaration",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 42,
+            "end": 45
+          },
+          "text": "int"
+        },
+        {
+          "kind": "field_identifier",
+          "parent": "field_declaration",
+          "field": "declarator",
+          "named": true,
+          "range": {
+            "start": 46,
+            "end": 51
+          },
+          "text": "value"
+        },
+        {
+          "kind": ";",
+          "parent": "field_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 51,
+            "end": 52
+          },
+          "text": ";"
+        },
+        {
+          "kind": "function_definition",
+          "parent": "field_declaration_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 53,
+            "end": 80
+          },
+          "text": "int get() { return value; }"
+        },
+        {
+          "kind": "primitive_type",
+          "parent": "function_definition",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 53,
+            "end": 56
+          },
+          "text": "int"
+        },
+        {
+          "kind": "function_declarator",
+          "parent": "function_definition",
+          "field": "declarator",
+          "named": true,
+          "range": {
+            "start": 57,
+            "end": 62
+          },
+          "text": "get()"
+        },
+        {
+          "kind": "field_identifier",
+          "parent": "function_declarator",
+          "field": "declarator",
+          "named": true,
+          "range": {
+            "start": 57,
+            "end": 60
+          },
+          "text": "get"
+        },
+        {
+          "kind": "parameter_list",
+          "parent": "function_declarator",
+          "field": "parameters",
+          "named": true,
+          "range": {
+            "start": 60,
+            "end": 62
+          },
+          "text": "()"
+        },
+        {
+          "kind": "(",
+          "parent": "parameter_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 60,
+            "end": 61
+          },
+          "text": "("
+        },
+        {
+          "kind": ")",
+          "parent": "parameter_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 61,
+            "end": 62
+          },
+          "text": ")"
+        },
+        {
+          "kind": "compound_statement",
+          "parent": "function_definition",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 63,
+            "end": 80
+          },
+          "text": "{ return value; }"
+        },
+        {
+          "kind": "{",
+          "parent": "compound_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 63,
+            "end": 64
+          },
+          "text": "{"
+        },
+        {
+          "kind": "return_statement",
+          "parent": "compound_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 65,
+            "end": 78
+          },
+          "text": "return value;"
+        },
+        {
+          "kind": "return",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 65,
+            "end": 71
+          },
+          "text": "return"
+        },
+        {
+          "kind": "identifier",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 72,
+            "end": 77
+          },
+          "text": "value"
+        },
+        {
+          "kind": ";",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 77,
+            "end": 78
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "compound_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 79,
+            "end": 80
+          },
+          "text": "}"
+        },
+        {
+          "kind": "}",
+          "parent": "field_declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 81,
+            "end": 82
+          },
+          "text": "}"
+        },
+        {
+          "kind": ";",
+          "parent": "declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 82,
+            "end": 83
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 84,
+            "end": 85
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "csharp",
+        "package": "tree-sitter-c-sharp",
+        "version": "0.23.5",
+        "repository": "https://github.com/tree-sitter/tree-sitter-c-sharp",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "91d69f7e0d97c002e738a09caadd8ddfa36b1552f7ae94303cc53b03b28551c0"
+      },
+      "source": "namespace Demo { class Customer { public string Greet() { return \"hello\"; } } }\n",
+      "root": "compilation_unit",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "compilation_unit",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 80
+          },
+          "text": "namespace Demo { class Customer { public string Greet() { return \"hello\"; } } }\n"
+        },
+        {
+          "kind": "namespace_declaration",
+          "parent": "compilation_unit",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 79
+          },
+          "text": "namespace Demo { class Customer { public string Greet() { return \"hello\"; } } }"
+        },
+        {
+          "kind": "namespace",
+          "parent": "namespace_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 9
+          },
+          "text": "namespace"
+        },
+        {
+          "kind": "identifier",
+          "parent": "namespace_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 10,
+            "end": 14
+          },
+          "text": "Demo"
+        },
+        {
+          "kind": "declaration_list",
+          "parent": "namespace_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 15,
+            "end": 79
+          },
+          "text": "{ class Customer { public string Greet() { return \"hello\"; } } }"
+        },
+        {
+          "kind": "{",
+          "parent": "declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 15,
+            "end": 16
+          },
+          "text": "{"
+        },
+        {
+          "kind": "class_declaration",
+          "parent": "declaration_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 17,
+            "end": 77
+          },
+          "text": "class Customer { public string Greet() { return \"hello\"; } }"
+        },
+        {
+          "kind": "class",
+          "parent": "class_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 17,
+            "end": 22
+          },
+          "text": "class"
+        },
+        {
+          "kind": "identifier",
+          "parent": "class_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 23,
+            "end": 31
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": "declaration_list",
+          "parent": "class_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 32,
+            "end": 77
+          },
+          "text": "{ public string Greet() { return \"hello\"; } }"
+        },
+        {
+          "kind": "{",
+          "parent": "declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 32,
+            "end": 33
+          },
+          "text": "{"
+        },
+        {
+          "kind": "method_declaration",
+          "parent": "declaration_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 34,
+            "end": 75
+          },
+          "text": "public string Greet() { return \"hello\"; }"
+        },
+        {
+          "kind": "modifier",
+          "parent": "method_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 34,
+            "end": 40
+          },
+          "text": "public"
+        },
+        {
+          "kind": "public",
+          "parent": "modifier",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 34,
+            "end": 40
+          },
+          "text": "public"
+        },
+        {
+          "kind": "predefined_type",
+          "parent": "method_declaration",
+          "field": "returns",
+          "named": true,
+          "range": {
+            "start": 41,
+            "end": 47
+          },
+          "text": "string"
+        },
+        {
+          "kind": "identifier",
+          "parent": "method_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 48,
+            "end": 53
+          },
+          "text": "Greet"
+        },
+        {
+          "kind": "parameter_list",
+          "parent": "method_declaration",
+          "field": "parameters",
+          "named": true,
+          "range": {
+            "start": 53,
+            "end": 55
+          },
+          "text": "()"
+        },
+        {
+          "kind": "(",
+          "parent": "parameter_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 53,
+            "end": 54
+          },
+          "text": "("
+        },
+        {
+          "kind": ")",
+          "parent": "parameter_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 54,
+            "end": 55
+          },
+          "text": ")"
+        },
+        {
+          "kind": "block",
+          "parent": "method_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 56,
+            "end": 75
+          },
+          "text": "{ return \"hello\"; }"
+        },
+        {
+          "kind": "{",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 56,
+            "end": 57
+          },
+          "text": "{"
+        },
+        {
+          "kind": "return_statement",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 58,
+            "end": 73
+          },
+          "text": "return \"hello\";"
+        },
+        {
+          "kind": "return",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 58,
+            "end": 64
+          },
+          "text": "return"
+        },
+        {
+          "kind": "string_literal",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 65,
+            "end": 72
+          },
+          "text": "\"hello\""
+        },
+        {
+          "kind": "\"",
+          "parent": "string_literal",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 65,
+            "end": 66
+          },
+          "text": "\""
+        },
+        {
+          "kind": "string_literal_content",
+          "parent": "string_literal",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 66,
+            "end": 71
+          },
+          "text": "hello"
+        },
+        {
+          "kind": "\"",
+          "parent": "string_literal",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 71,
+            "end": 72
+          },
+          "text": "\""
+        },
+        {
+          "kind": ";",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 72,
+            "end": 73
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 74,
+            "end": 75
+          },
+          "text": "}"
+        },
+        {
+          "kind": "}",
+          "parent": "declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 76,
+            "end": 77
+          },
+          "text": "}"
+        },
+        {
+          "kind": "}",
+          "parent": "declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 78,
+            "end": 79
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "css",
+        "package": "tree-sitter-css",
+        "version": "0.25.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-css",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "fbbf8d22d82608f6d2f61cfdb374e6758779754fb2f42643e9dc5af6ead0d5d2"
+      },
+      "source": ".myBox { color: red; padding: 2px; }\n",
+      "root": "stylesheet",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "stylesheet",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 37
+          },
+          "text": ".myBox { color: red; padding: 2px; }\n"
+        },
+        {
+          "kind": "rule_set",
+          "parent": "stylesheet",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 36
+          },
+          "text": ".myBox { color: red; padding: 2px; }"
+        },
+        {
+          "kind": "selectors",
+          "parent": "rule_set",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 6
+          },
+          "text": ".myBox"
+        },
+        {
+          "kind": "class_selector",
+          "parent": "selectors",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 6
+          },
+          "text": ".myBox"
+        },
+        {
+          "kind": ".",
+          "parent": "class_selector",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 1
+          },
+          "text": "."
+        },
+        {
+          "kind": "class_name",
+          "parent": "class_selector",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 1,
+            "end": 6
+          },
+          "text": "myBox"
+        },
+        {
+          "kind": "identifier",
+          "parent": "class_name",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 1,
+            "end": 6
+          },
+          "text": "myBox"
+        },
+        {
+          "kind": "block",
+          "parent": "rule_set",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 36
+          },
+          "text": "{ color: red; padding: 2px; }"
+        },
+        {
+          "kind": "{",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 7,
+            "end": 8
+          },
+          "text": "{"
+        },
+        {
+          "kind": "declaration",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 9,
+            "end": 20
+          },
+          "text": "color: red;"
+        },
+        {
+          "kind": "property_name",
+          "parent": "declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 9,
+            "end": 14
+          },
+          "text": "color"
+        },
+        {
+          "kind": ":",
+          "parent": "declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 14,
+            "end": 15
+          },
+          "text": ":"
+        },
+        {
+          "kind": "plain_value",
+          "parent": "declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 16,
+            "end": 19
+          },
+          "text": "red"
+        },
+        {
+          "kind": ";",
+          "parent": "declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 19,
+            "end": 20
+          },
+          "text": ";"
+        },
+        {
+          "kind": "declaration",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 21,
+            "end": 34
+          },
+          "text": "padding: 2px;"
+        },
+        {
+          "kind": "property_name",
+          "parent": "declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 21,
+            "end": 28
+          },
+          "text": "padding"
+        },
+        {
+          "kind": ":",
+          "parent": "declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 28,
+            "end": 29
+          },
+          "text": ":"
+        },
+        {
+          "kind": "integer_value",
+          "parent": "declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 30,
+            "end": 33
+          },
+          "text": "2px"
+        },
+        {
+          "kind": "unit",
+          "parent": "integer_value",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 31,
+            "end": 33
+          },
+          "text": "px"
+        },
+        {
+          "kind": ";",
+          "parent": "declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 33,
+            "end": 34
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 35,
+            "end": 36
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "d",
+        "package": "tree-sitter-d",
+        "version": "0.8.2",
+        "repository": "https://github.com/gdamore/tree-sitter-d",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "4b5eb5e707044adb264ca694d041be47be24e0b24e76e35a8a14ec80931e5e50"
+      },
+      "source": "module demo;\nint main() { return 0; }\n",
+      "root": "source_file",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "source_file",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 38
+          },
+          "text": "module demo;\nint main() { return 0; }\n"
+        },
+        {
+          "kind": "module_def",
+          "parent": "source_file",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 37
+          },
+          "text": "module demo;\nint main() { return 0; }"
+        },
+        {
+          "kind": "module_declaration",
+          "parent": "module_def",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 12
+          },
+          "text": "module demo;"
+        },
+        {
+          "kind": "module",
+          "parent": "module_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 6
+          },
+          "text": "module"
+        },
+        {
+          "kind": "module_fqn",
+          "parent": "module_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 11
+          },
+          "text": "demo"
+        },
+        {
+          "kind": "identifier",
+          "parent": "module_fqn",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 11
+          },
+          "text": "demo"
+        },
+        {
+          "kind": ";",
+          "parent": "module_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 11,
+            "end": 12
+          },
+          "text": ";"
+        },
+        {
+          "kind": "function_declaration",
+          "parent": "module_def",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 13,
+            "end": 37
+          },
+          "text": "int main() { return 0; }"
+        },
+        {
+          "kind": "type",
+          "parent": "function_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 13,
+            "end": 16
+          },
+          "text": "int"
+        },
+        {
+          "kind": "int",
+          "parent": "type",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 13,
+            "end": 16
+          },
+          "text": "int"
+        },
+        {
+          "kind": "identifier",
+          "parent": "function_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 17,
+            "end": 21
+          },
+          "text": "main"
+        },
+        {
+          "kind": "parameters",
+          "parent": "function_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 21,
+            "end": 23
+          },
+          "text": "()"
+        },
+        {
+          "kind": "(",
+          "parent": "parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 21,
+            "end": 22
+          },
+          "text": "("
+        },
+        {
+          "kind": ")",
+          "parent": "parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 22,
+            "end": 23
+          },
+          "text": ")"
+        },
+        {
+          "kind": "function_body",
+          "parent": "function_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 37
+          },
+          "text": "{ return 0; }"
+        },
+        {
+          "kind": "block_statement",
+          "parent": "function_body",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 37
+          },
+          "text": "{ return 0; }"
+        },
+        {
+          "kind": "{",
+          "parent": "block_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 24,
+            "end": 25
+          },
+          "text": "{"
+        },
+        {
+          "kind": "return_statement",
+          "parent": "block_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 26,
+            "end": 35
+          },
+          "text": "return 0;"
+        },
+        {
+          "kind": "return",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 26,
+            "end": 32
+          },
+          "text": "return"
+        },
+        {
+          "kind": "expression",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 33,
+            "end": 34
+          },
+          "text": "0"
+        },
+        {
+          "kind": "int_literal",
+          "parent": "expression",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 33,
+            "end": 34
+          },
+          "text": "0"
+        },
+        {
+          "kind": ";",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 34,
+            "end": 35
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "block_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 36,
+            "end": 37
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "go",
+        "package": "tree-sitter-go",
+        "version": "0.25.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-go",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "8d77e723df0f0dfccb66d4571a5c3c17ecfb6c90959044c0992146b21f383bff"
+      },
+      "source": "package demo\nfunc greet(name string) string { return name }\n",
+      "root": "source_file",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "source_file",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 60
+          },
+          "text": "package demo\nfunc greet(name string) string { return name }\n"
+        },
+        {
+          "kind": "package_clause",
+          "parent": "source_file",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 12
+          },
+          "text": "package demo"
+        },
+        {
+          "kind": "package",
+          "parent": "package_clause",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 7
+          },
+          "text": "package"
+        },
+        {
+          "kind": "package_identifier",
+          "parent": "package_clause",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 8,
+            "end": 12
+          },
+          "text": "demo"
+        },
+        {
+          "kind": "function_declaration",
+          "parent": "source_file",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 13,
+            "end": 59
+          },
+          "text": "func greet(name string) string { return name }"
+        },
+        {
+          "kind": "func",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 13,
+            "end": 17
+          },
+          "text": "func"
+        },
+        {
+          "kind": "identifier",
+          "parent": "function_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 18,
+            "end": 23
+          },
+          "text": "greet"
+        },
+        {
+          "kind": "parameter_list",
+          "parent": "function_declaration",
+          "field": "parameters",
+          "named": true,
+          "range": {
+            "start": 23,
+            "end": 36
+          },
+          "text": "(name string)"
+        },
+        {
+          "kind": "(",
+          "parent": "parameter_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 23,
+            "end": 24
+          },
+          "text": "("
+        },
+        {
+          "kind": "parameter_declaration",
+          "parent": "parameter_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 35
+          },
+          "text": "name string"
+        },
+        {
+          "kind": "identifier",
+          "parent": "parameter_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 28
+          },
+          "text": "name"
+        },
+        {
+          "kind": "type_identifier",
+          "parent": "parameter_declaration",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 29,
+            "end": 35
+          },
+          "text": "string"
+        },
+        {
+          "kind": ")",
+          "parent": "parameter_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 35,
+            "end": 36
+          },
+          "text": ")"
+        },
+        {
+          "kind": "type_identifier",
+          "parent": "function_declaration",
+          "field": "result",
+          "named": true,
+          "range": {
+            "start": 37,
+            "end": 43
+          },
+          "text": "string"
+        },
+        {
+          "kind": "block",
+          "parent": "function_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 44,
+            "end": 59
+          },
+          "text": "{ return name }"
+        },
+        {
+          "kind": "{",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 44,
+            "end": 45
+          },
+          "text": "{"
+        },
+        {
+          "kind": "statement_list",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 46,
+            "end": 57
+          },
+          "text": "return name"
+        },
+        {
+          "kind": "return_statement",
+          "parent": "statement_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 46,
+            "end": 57
+          },
+          "text": "return name"
+        },
+        {
+          "kind": "return",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 46,
+            "end": 52
+          },
+          "text": "return"
+        },
+        {
+          "kind": "expression_list",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 53,
+            "end": 57
+          },
+          "text": "name"
+        },
+        {
+          "kind": "identifier",
+          "parent": "expression_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 53,
+            "end": 57
+          },
+          "text": "name"
+        },
+        {
+          "kind": "}",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 58,
+            "end": 59
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "html",
+        "package": "tree-sitter-html",
+        "version": "0.23.2",
+        "repository": "https://github.com/tree-sitter/tree-sitter-html",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "e04d0a6e667ee3773ceeb0751466ce314f29bafc9b1c7d2466414c39c3eda178"
+      },
+      "source": "<div class=\"primary\">hello</div>\n",
+      "root": "document",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "document",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 33
+          },
+          "text": "<div class=\"primary\">hello</div>\n"
+        },
+        {
+          "kind": "element",
+          "parent": "document",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 32
+          },
+          "text": "<div class=\"primary\">hello</div>"
+        },
+        {
+          "kind": "start_tag",
+          "parent": "element",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 21
+          },
+          "text": "<div class=\"primary\">"
+        },
+        {
+          "kind": "<",
+          "parent": "start_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 1
+          },
+          "text": "<"
+        },
+        {
+          "kind": "tag_name",
+          "parent": "start_tag",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 1,
+            "end": 4
+          },
+          "text": "div"
+        },
+        {
+          "kind": "attribute",
+          "parent": "start_tag",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 5,
+            "end": 20
+          },
+          "text": "class=\"primary\""
+        },
+        {
+          "kind": "attribute_name",
+          "parent": "attribute",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 5,
+            "end": 10
+          },
+          "text": "class"
+        },
+        {
+          "kind": "=",
+          "parent": "attribute",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 10,
+            "end": 11
+          },
+          "text": "="
+        },
+        {
+          "kind": "quoted_attribute_value",
+          "parent": "attribute",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 11,
+            "end": 20
+          },
+          "text": "\"primary\""
+        },
+        {
+          "kind": "\"",
+          "parent": "quoted_attribute_value",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 11,
+            "end": 12
+          },
+          "text": "\""
+        },
+        {
+          "kind": "attribute_value",
+          "parent": "quoted_attribute_value",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 12,
+            "end": 19
+          },
+          "text": "primary"
+        },
+        {
+          "kind": "\"",
+          "parent": "quoted_attribute_value",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 19,
+            "end": 20
+          },
+          "text": "\""
+        },
+        {
+          "kind": ">",
+          "parent": "start_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 20,
+            "end": 21
+          },
+          "text": ">"
+        },
+        {
+          "kind": "text",
+          "parent": "element",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 21,
+            "end": 26
+          },
+          "text": "hello"
+        },
+        {
+          "kind": "end_tag",
+          "parent": "element",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 26,
+            "end": 32
+          },
+          "text": "</div>"
+        },
+        {
+          "kind": "</",
+          "parent": "end_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 26,
+            "end": 28
+          },
+          "text": "</"
+        },
+        {
+          "kind": "tag_name",
+          "parent": "end_tag",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 28,
+            "end": 31
+          },
+          "text": "div"
+        },
+        {
+          "kind": ">",
+          "parent": "end_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 31,
+            "end": 32
+          },
+          "text": ">"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "javascript",
+        "package": "tree-sitter-javascript",
+        "version": "0.25.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-javascript",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "188a8baa97018edaf63bf7ece372c07bc0d74d1301004bc8f211eb7dee5a6e70"
+      },
+      "source": "export class Customer { greet() { return 'hello'; } }\n",
+      "root": "program",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "program",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 54
+          },
+          "text": "export class Customer { greet() { return 'hello'; } }\n"
+        },
+        {
+          "kind": "export_statement",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 53
+          },
+          "text": "export class Customer { greet() { return 'hello'; } }"
+        },
+        {
+          "kind": "export",
+          "parent": "export_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 6
+          },
+          "text": "export"
+        },
+        {
+          "kind": "class_declaration",
+          "parent": "export_statement",
+          "field": "declaration",
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 53
+          },
+          "text": "class Customer { greet() { return 'hello'; } }"
+        },
+        {
+          "kind": "class",
+          "parent": "class_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 7,
+            "end": 12
+          },
+          "text": "class"
+        },
+        {
+          "kind": "identifier",
+          "parent": "class_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 13,
+            "end": 21
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": "class_body",
+          "parent": "class_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 22,
+            "end": 53
+          },
+          "text": "{ greet() { return 'hello'; } }"
+        },
+        {
+          "kind": "{",
+          "parent": "class_body",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 22,
+            "end": 23
+          },
+          "text": "{"
+        },
+        {
+          "kind": "method_definition",
+          "parent": "class_body",
+          "field": "member",
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 51
+          },
+          "text": "greet() { return 'hello'; }"
+        },
+        {
+          "kind": "property_identifier",
+          "parent": "method_definition",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 29
+          },
+          "text": "greet"
+        },
+        {
+          "kind": "formal_parameters",
+          "parent": "method_definition",
+          "field": "parameters",
+          "named": true,
+          "range": {
+            "start": 29,
+            "end": 31
+          },
+          "text": "()"
+        },
+        {
+          "kind": "(",
+          "parent": "formal_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 29,
+            "end": 30
+          },
+          "text": "("
+        },
+        {
+          "kind": ")",
+          "parent": "formal_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 30,
+            "end": 31
+          },
+          "text": ")"
+        },
+        {
+          "kind": "statement_block",
+          "parent": "method_definition",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 32,
+            "end": 51
+          },
+          "text": "{ return 'hello'; }"
+        },
+        {
+          "kind": "{",
+          "parent": "statement_block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 32,
+            "end": 33
+          },
+          "text": "{"
+        },
+        {
+          "kind": "return_statement",
+          "parent": "statement_block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 34,
+            "end": 49
+          },
+          "text": "return 'hello';"
+        },
+        {
+          "kind": "return",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 34,
+            "end": 40
+          },
+          "text": "return"
+        },
+        {
+          "kind": "string",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 41,
+            "end": 48
+          },
+          "text": "'hello'"
+        },
+        {
+          "kind": "'",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 41,
+            "end": 42
+          },
+          "text": "'"
+        },
+        {
+          "kind": "string_fragment",
+          "parent": "string",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 42,
+            "end": 47
+          },
+          "text": "hello"
+        },
+        {
+          "kind": "'",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 47,
+            "end": 48
+          },
+          "text": "'"
+        },
+        {
+          "kind": ";",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 48,
+            "end": 49
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "statement_block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 50,
+            "end": 51
+          },
+          "text": "}"
+        },
+        {
+          "kind": "}",
+          "parent": "class_body",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 52,
+            "end": 53
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "json",
+        "package": "tree-sitter-json",
+        "version": "0.24.8",
+        "repository": "https://github.com/tree-sitter/tree-sitter-json",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "620b6f5d38676a97526e9d128972d4b156ddbdf6e130cd7e6b9c35e6823e943f"
+      },
+      "source": "{\"name\": \"demo\", \"enabled\": true, \"count\": 2}\n",
+      "root": "document",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "document",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 46
+          },
+          "text": "{\"name\": \"demo\", \"enabled\": true, \"count\": 2}\n"
+        },
+        {
+          "kind": "object",
+          "parent": "document",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 45
+          },
+          "text": "{\"name\": \"demo\", \"enabled\": true, \"count\": 2}"
+        },
+        {
+          "kind": "{",
+          "parent": "object",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 1
+          },
+          "text": "{"
+        },
+        {
+          "kind": "pair",
+          "parent": "object",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 1,
+            "end": 15
+          },
+          "text": "\"name\": \"demo\""
+        },
+        {
+          "kind": "string",
+          "parent": "pair",
+          "field": "key",
+          "named": true,
+          "range": {
+            "start": 1,
+            "end": 7
+          },
+          "text": "\"name\""
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 1,
+            "end": 2
+          },
+          "text": "\""
+        },
+        {
+          "kind": "string_content",
+          "parent": "string",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 2,
+            "end": 6
+          },
+          "text": "name"
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 6,
+            "end": 7
+          },
+          "text": "\""
+        },
+        {
+          "kind": ":",
+          "parent": "pair",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 7,
+            "end": 8
+          },
+          "text": ":"
+        },
+        {
+          "kind": "string",
+          "parent": "pair",
+          "field": "value",
+          "named": true,
+          "range": {
+            "start": 9,
+            "end": 15
+          },
+          "text": "\"demo\""
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 9,
+            "end": 10
+          },
+          "text": "\""
+        },
+        {
+          "kind": "string_content",
+          "parent": "string",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 10,
+            "end": 14
+          },
+          "text": "demo"
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 14,
+            "end": 15
+          },
+          "text": "\""
+        },
+        {
+          "kind": ",",
+          "parent": "object",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 15,
+            "end": 16
+          },
+          "text": ","
+        },
+        {
+          "kind": "pair",
+          "parent": "object",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 17,
+            "end": 32
+          },
+          "text": "\"enabled\": true"
+        },
+        {
+          "kind": "string",
+          "parent": "pair",
+          "field": "key",
+          "named": true,
+          "range": {
+            "start": 17,
+            "end": 26
+          },
+          "text": "\"enabled\""
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 17,
+            "end": 18
+          },
+          "text": "\""
+        },
+        {
+          "kind": "string_content",
+          "parent": "string",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 18,
+            "end": 25
+          },
+          "text": "enabled"
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 25,
+            "end": 26
+          },
+          "text": "\""
+        },
+        {
+          "kind": ":",
+          "parent": "pair",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 26,
+            "end": 27
+          },
+          "text": ":"
+        },
+        {
+          "kind": "true",
+          "parent": "pair",
+          "field": "value",
+          "named": true,
+          "range": {
+            "start": 28,
+            "end": 32
+          },
+          "text": "true"
+        },
+        {
+          "kind": ",",
+          "parent": "object",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 32,
+            "end": 33
+          },
+          "text": ","
+        },
+        {
+          "kind": "pair",
+          "parent": "object",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 34,
+            "end": 44
+          },
+          "text": "\"count\": 2"
+        },
+        {
+          "kind": "string",
+          "parent": "pair",
+          "field": "key",
+          "named": true,
+          "range": {
+            "start": 34,
+            "end": 41
+          },
+          "text": "\"count\""
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 34,
+            "end": 35
+          },
+          "text": "\""
+        },
+        {
+          "kind": "string_content",
+          "parent": "string",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 35,
+            "end": 40
+          },
+          "text": "count"
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 40,
+            "end": 41
+          },
+          "text": "\""
+        },
+        {
+          "kind": ":",
+          "parent": "pair",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 41,
+            "end": 42
+          },
+          "text": ":"
+        },
+        {
+          "kind": "number",
+          "parent": "pair",
+          "field": "value",
+          "named": true,
+          "range": {
+            "start": 43,
+            "end": 44
+          },
+          "text": "2"
+        },
+        {
+          "kind": "}",
+          "parent": "object",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 44,
+            "end": 45
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "kotlin",
+        "package": "tree-sitter-kotlin-ng",
+        "version": "1.1.0",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-kotlin",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "0f21509031ad37902dc05d5828f178fed3545c466ffcf38ef30d969cb64e8e9d"
+      },
+      "source": "package demo\nclass Café(val name: String) {\n fun greet(): String {\n return name\n }\n}\n",
+      "root": "source_file",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "source_file",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 86
+          },
+          "text": "package demo\nclass Café(val name: String) {\n fun greet(): String {\n return name\n }\n}\n"
+        },
+        {
+          "kind": "package_header",
+          "parent": "source_file",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 12
+          },
+          "text": "package demo"
+        },
+        {
+          "kind": "package",
+          "parent": "package_header",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 7
+          },
+          "text": "package"
+        },
+        {
+          "kind": "qualified_identifier",
+          "parent": "package_header",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 8,
+            "end": 12
+          },
+          "text": "demo"
+        },
+        {
+          "kind": "identifier",
+          "parent": "qualified_identifier",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 8,
+            "end": 12
+          },
+          "text": "demo"
+        },
+        {
+          "kind": "class_declaration",
+          "parent": "source_file",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 13,
+            "end": 85
+          },
+          "text": "class Café(val name: String) {\n fun greet(): String {\n return name\n }\n}"
+        },
+        {
+          "kind": "class",
+          "parent": "class_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 13,
+            "end": 18
+          },
+          "text": "class"
+        },
+        {
+          "kind": "identifier",
+          "parent": "class_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 19,
+            "end": 24
+          },
+          "text": "Café"
+        },
+        {
+          "kind": "primary_constructor",
+          "parent": "class_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 42
+          },
+          "text": "(val name: String)"
+        },
+        {
+          "kind": "class_parameters",
+          "parent": "primary_constructor",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 42
+          },
+          "text": "(val name: String)"
+        },
+        {
+          "kind": "(",
+          "parent": "class_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 24,
+            "end": 25
+          },
+          "text": "("
+        },
+        {
+          "kind": "class_parameter",
+          "parent": "class_parameters",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 25,
+            "end": 41
+          },
+          "text": "val name: String"
+        },
+        {
+          "kind": "val",
+          "parent": "class_parameter",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 25,
+            "end": 28
+          },
+          "text": "val"
+        },
+        {
+          "kind": "identifier",
+          "parent": "class_parameter",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 29,
+            "end": 33
+          },
+          "text": "name"
+        },
+        {
+          "kind": ":",
+          "parent": "class_parameter",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 33,
+            "end": 34
+          },
+          "text": ":"
+        },
+        {
+          "kind": "user_type",
+          "parent": "class_parameter",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 35,
+            "end": 41
+          },
+          "text": "String"
+        },
+        {
+          "kind": "identifier",
+          "parent": "user_type",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 35,
+            "end": 41
+          },
+          "text": "String"
+        },
+        {
+          "kind": ")",
+          "parent": "class_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 41,
+            "end": 42
+          },
+          "text": ")"
+        },
+        {
+          "kind": "class_body",
+          "parent": "class_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 43,
+            "end": 85
+          },
+          "text": "{\n fun greet(): String {\n return name\n }\n}"
+        },
+        {
+          "kind": "{",
+          "parent": "class_body",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 43,
+            "end": 44
+          },
+          "text": "{"
+        },
+        {
+          "kind": "function_declaration",
+          "parent": "class_body",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 46,
+            "end": 83
+          },
+          "text": "fun greet(): String {\n return name\n }"
+        },
+        {
+          "kind": "fun",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 46,
+            "end": 49
+          },
+          "text": "fun"
+        },
+        {
+          "kind": "identifier",
+          "parent": "function_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 50,
+            "end": 55
+          },
+          "text": "greet"
+        },
+        {
+          "kind": "function_value_parameters",
+          "parent": "function_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 55,
+            "end": 57
+          },
+          "text": "()"
+        },
+        {
+          "kind": "(",
+          "parent": "function_value_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 55,
+            "end": 56
+          },
+          "text": "("
+        },
+        {
+          "kind": ")",
+          "parent": "function_value_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 56,
+            "end": 57
+          },
+          "text": ")"
+        },
+        {
+          "kind": ":",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 57,
+            "end": 58
+          },
+          "text": ":"
+        },
+        {
+          "kind": "user_type",
+          "parent": "function_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 59,
+            "end": 65
+          },
+          "text": "String"
+        },
+        {
+          "kind": "identifier",
+          "parent": "user_type",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 59,
+            "end": 65
+          },
+          "text": "String"
+        },
+        {
+          "kind": "function_body",
+          "parent": "function_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 66,
+            "end": 83
+          },
+          "text": "{\n return name\n }"
+        },
+        {
+          "kind": "block",
+          "parent": "function_body",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 66,
+            "end": 83
+          },
+          "text": "{\n return name\n }"
+        },
+        {
+          "kind": "{",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 66,
+            "end": 67
+          },
+          "text": "{"
+        },
+        {
+          "kind": "return_expression",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 69,
+            "end": 80
+          },
+          "text": "return name"
+        },
+        {
+          "kind": "return",
+          "parent": "return_expression",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 69,
+            "end": 75
+          },
+          "text": "return"
+        },
+        {
+          "kind": "identifier",
+          "parent": "return_expression",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 76,
+            "end": 80
+          },
+          "text": "name"
+        },
+        {
+          "kind": "}",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 82,
+            "end": 83
+          },
+          "text": "}"
+        },
+        {
+          "kind": "}",
+          "parent": "class_body",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 84,
+            "end": 85
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "lua",
+        "package": "tree-sitter-lua",
+        "version": "0.5.0",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-lua",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "12ea1259c9e644754a13068eafd6160a9c5561c7a69e9cb9c8cd6c968b5e09fc"
+      },
+      "source": "local function greet(name) return name end\n",
+      "root": "chunk",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "chunk",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 43
+          },
+          "text": "local function greet(name) return name end\n"
+        },
+        {
+          "kind": "function_declaration",
+          "parent": "chunk",
+          "field": "local_declaration",
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 42
+          },
+          "text": "local function greet(name) return name end"
+        },
+        {
+          "kind": "local",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 5
+          },
+          "text": "local"
+        },
+        {
+          "kind": "function",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 6,
+            "end": 14
+          },
+          "text": "function"
+        },
+        {
+          "kind": "identifier",
+          "parent": "function_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 15,
+            "end": 20
+          },
+          "text": "greet"
+        },
+        {
+          "kind": "parameters",
+          "parent": "function_declaration",
+          "field": "parameters",
+          "named": true,
+          "range": {
+            "start": 20,
+            "end": 26
+          },
+          "text": "(name)"
+        },
+        {
+          "kind": "(",
+          "parent": "parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 20,
+            "end": 21
+          },
+          "text": "("
+        },
+        {
+          "kind": "identifier",
+          "parent": "parameters",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 21,
+            "end": 25
+          },
+          "text": "name"
+        },
+        {
+          "kind": ")",
+          "parent": "parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 25,
+            "end": 26
+          },
+          "text": ")"
+        },
+        {
+          "kind": "block",
+          "parent": "function_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 27,
+            "end": 38
+          },
+          "text": "return name"
+        },
+        {
+          "kind": "return_statement",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 27,
+            "end": 38
+          },
+          "text": "return name"
+        },
+        {
+          "kind": "return",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 27,
+            "end": 33
+          },
+          "text": "return"
+        },
+        {
+          "kind": "expression_list",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 34,
+            "end": 38
+          },
+          "text": "name"
+        },
+        {
+          "kind": "identifier",
+          "parent": "expression_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 34,
+            "end": 38
+          },
+          "text": "name"
+        },
+        {
+          "kind": "end",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 39,
+            "end": 42
+          },
+          "text": "end"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "markdown",
+        "package": "tree-sitter-md",
+        "version": "0.5.3",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-markdown",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "bcc2ad6e70f10473fa5d4567a0f29379b7e9ba88d5ffcfe0d329dc33ffa7dd4e"
+      },
+      "source": "# Title\n\nHello **world**.\n",
+      "root": "document",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "document",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 26
+          },
+          "text": "# Title\n\nHello **world**.\n"
+        },
+        {
+          "kind": "section",
+          "parent": "document",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 26
+          },
+          "text": "# Title\n\nHello **world**.\n"
+        },
+        {
+          "kind": "atx_heading",
+          "parent": "section",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 8
+          },
+          "text": "# Title\n"
+        },
+        {
+          "kind": "atx_h1_marker",
+          "parent": "atx_heading",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 1
+          },
+          "text": "#"
+        },
+        {
+          "kind": "inline",
+          "parent": "atx_heading",
+          "field": "heading_content",
+          "named": true,
+          "range": {
+            "start": 2,
+            "end": 7
+          },
+          "text": "Title"
+        },
+        {
+          "kind": "paragraph",
+          "parent": "section",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 9,
+            "end": 26
+          },
+          "text": "Hello **world**.\n"
+        },
+        {
+          "kind": "inline",
+          "parent": "paragraph",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 9,
+            "end": 25
+          },
+          "text": "Hello **world**."
+        },
+        {
+          "kind": "*",
+          "parent": "inline",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 15,
+            "end": 16
+          },
+          "text": "*"
+        },
+        {
+          "kind": "*",
+          "parent": "inline",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 16,
+            "end": 17
+          },
+          "text": "*"
+        },
+        {
+          "kind": "*",
+          "parent": "inline",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 22,
+            "end": 23
+          },
+          "text": "*"
+        },
+        {
+          "kind": "*",
+          "parent": "inline",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 23,
+            "end": 24
+          },
+          "text": "*"
+        },
+        {
+          "kind": ".",
+          "parent": "inline",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 24,
+            "end": 25
+          },
+          "text": "."
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "markdown-inline",
+        "package": "tree-sitter-md",
+        "version": "0.5.3",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-markdown",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "701b6163dced608181dd633b4e548d8fe1520ae9ad40d7d584cb0c814c056a2c"
+      },
+      "source": "Hello **world** and `code`.",
+      "root": "inline",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "inline",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 27
+          },
+          "text": "Hello **world** and `code`."
+        },
+        {
+          "kind": "strong_emphasis",
+          "parent": "inline",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 6,
+            "end": 15
+          },
+          "text": "**world**"
+        },
+        {
+          "kind": "emphasis_delimiter",
+          "parent": "strong_emphasis",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 6,
+            "end": 7
+          },
+          "text": "*"
+        },
+        {
+          "kind": "emphasis_delimiter",
+          "parent": "strong_emphasis",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 8
+          },
+          "text": "*"
+        },
+        {
+          "kind": "emphasis_delimiter",
+          "parent": "strong_emphasis",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 13,
+            "end": 14
+          },
+          "text": "*"
+        },
+        {
+          "kind": "emphasis_delimiter",
+          "parent": "strong_emphasis",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 14,
+            "end": 15
+          },
+          "text": "*"
+        },
+        {
+          "kind": "code_span",
+          "parent": "inline",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 20,
+            "end": 26
+          },
+          "text": "`code`"
+        },
+        {
+          "kind": "code_span_delimiter",
+          "parent": "code_span",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 20,
+            "end": 21
+          },
+          "text": "`"
+        },
+        {
+          "kind": "code_span_delimiter",
+          "parent": "code_span",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 25,
+            "end": 26
+          },
+          "text": "`"
+        },
+        {
+          "kind": ".",
+          "parent": "inline",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 26,
+            "end": 27
+          },
+          "text": "."
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "ocaml",
+        "package": "tree-sitter-ocaml",
+        "version": "0.26.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-ocaml",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "3be4cd8f70c23b64e74b54a8c5c49f7cc5efe8aa6dfcc29c29680a54364093b2"
+      },
+      "source": "module M = struct let value = 2 end\n",
+      "root": "compilation_unit",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "compilation_unit",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 36
+          },
+          "text": "module M = struct let value = 2 end\n"
+        },
+        {
+          "kind": "module_definition",
+          "parent": "compilation_unit",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 35
+          },
+          "text": "module M = struct let value = 2 end"
+        },
+        {
+          "kind": "module",
+          "parent": "module_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 6
+          },
+          "text": "module"
+        },
+        {
+          "kind": "module_binding",
+          "parent": "module_definition",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 35
+          },
+          "text": "M = struct let value = 2 end"
+        },
+        {
+          "kind": "module_name",
+          "parent": "module_binding",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 8
+          },
+          "text": "M"
+        },
+        {
+          "kind": "=",
+          "parent": "module_binding",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 9,
+            "end": 10
+          },
+          "text": "="
+        },
+        {
+          "kind": "structure",
+          "parent": "module_binding",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 11,
+            "end": 35
+          },
+          "text": "struct let value = 2 end"
+        },
+        {
+          "kind": "struct",
+          "parent": "structure",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 11,
+            "end": 17
+          },
+          "text": "struct"
+        },
+        {
+          "kind": "value_definition",
+          "parent": "structure",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 18,
+            "end": 31
+          },
+          "text": "let value = 2"
+        },
+        {
+          "kind": "let",
+          "parent": "value_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 18,
+            "end": 21
+          },
+          "text": "let"
+        },
+        {
+          "kind": "let_binding",
+          "parent": "value_definition",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 22,
+            "end": 31
+          },
+          "text": "value = 2"
+        },
+        {
+          "kind": "value_name",
+          "parent": "let_binding",
+          "field": "pattern",
+          "named": true,
+          "range": {
+            "start": 22,
+            "end": 27
+          },
+          "text": "value"
+        },
+        {
+          "kind": "=",
+          "parent": "let_binding",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 28,
+            "end": 29
+          },
+          "text": "="
+        },
+        {
+          "kind": "number",
+          "parent": "let_binding",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 30,
+            "end": 31
+          },
+          "text": "2"
+        },
+        {
+          "kind": "end",
+          "parent": "structure",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 32,
+            "end": 35
+          },
+          "text": "end"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "ocaml-interface",
+        "package": "tree-sitter-ocaml",
+        "version": "0.26.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-ocaml",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "e43768176a6ff052ae76a34a6e21f673a714c7cb470fafbd3c72e9600aebf07c"
+      },
+      "source": "module M : sig val value : int end\n",
+      "root": "compilation_unit",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "compilation_unit",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 35
+          },
+          "text": "module M : sig val value : int end\n"
+        },
+        {
+          "kind": "module_definition",
+          "parent": "compilation_unit",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 34
+          },
+          "text": "module M : sig val value : int end"
+        },
+        {
+          "kind": "module",
+          "parent": "module_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 6
+          },
+          "text": "module"
+        },
+        {
+          "kind": "module_binding",
+          "parent": "module_definition",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 34
+          },
+          "text": "M : sig val value : int end"
+        },
+        {
+          "kind": "module_name",
+          "parent": "module_binding",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 8
+          },
+          "text": "M"
+        },
+        {
+          "kind": ":",
+          "parent": "module_binding",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 9,
+            "end": 10
+          },
+          "text": ":"
+        },
+        {
+          "kind": "signature",
+          "parent": "module_binding",
+          "field": "module_type",
+          "named": true,
+          "range": {
+            "start": 11,
+            "end": 34
+          },
+          "text": "sig val value : int end"
+        },
+        {
+          "kind": "sig",
+          "parent": "signature",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 11,
+            "end": 14
+          },
+          "text": "sig"
+        },
+        {
+          "kind": "value_specification",
+          "parent": "signature",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 15,
+            "end": 30
+          },
+          "text": "val value : int"
+        },
+        {
+          "kind": "val",
+          "parent": "value_specification",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 15,
+            "end": 18
+          },
+          "text": "val"
+        },
+        {
+          "kind": "value_name",
+          "parent": "value_specification",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 19,
+            "end": 24
+          },
+          "text": "value"
+        },
+        {
+          "kind": ":",
+          "parent": "value_specification",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 25,
+            "end": 26
+          },
+          "text": ":"
+        },
+        {
+          "kind": "type_constructor_path",
+          "parent": "value_specification",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 27,
+            "end": 30
+          },
+          "text": "int"
+        },
+        {
+          "kind": "type_constructor",
+          "parent": "type_constructor_path",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 27,
+            "end": 30
+          },
+          "text": "int"
+        },
+        {
+          "kind": "end",
+          "parent": "signature",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 31,
+            "end": 34
+          },
+          "text": "end"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "pascal",
+        "package": "tree-sitter-pascal",
+        "version": "0.10.2",
+        "repository": "https://github.com/Isopod/tree-sitter-pascal",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "bf6f054b26c91fe3d187a9e8543ef03d1d966f42038cc3ad194111a65187e009"
+      },
+      "source": "program Demo;\nbegin\nend.\n",
+      "root": "root",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "root",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 25
+          },
+          "text": "program Demo;\nbegin\nend.\n"
+        },
+        {
+          "kind": "program",
+          "parent": "root",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 24
+          },
+          "text": "program Demo;\nbegin\nend."
+        },
+        {
+          "kind": "kProgram",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 7
+          },
+          "text": "program"
+        },
+        {
+          "kind": "moduleName",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 8,
+            "end": 12
+          },
+          "text": "Demo"
+        },
+        {
+          "kind": "identifier",
+          "parent": "moduleName",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 8,
+            "end": 12
+          },
+          "text": "Demo"
+        },
+        {
+          "kind": ";",
+          "parent": "program",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 12,
+            "end": 13
+          },
+          "text": ";"
+        },
+        {
+          "kind": "block",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 14,
+            "end": 23
+          },
+          "text": "begin\nend"
+        },
+        {
+          "kind": "kBegin",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 14,
+            "end": 19
+          },
+          "text": "begin"
+        },
+        {
+          "kind": "kEnd",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 20,
+            "end": 23
+          },
+          "text": "end"
+        },
+        {
+          "kind": "kEndDot",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 23,
+            "end": 24
+          },
+          "text": "."
+        },
+        {
+          "kind": ".",
+          "parent": "kEndDot",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 23,
+            "end": 24
+          },
+          "text": "."
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "perl",
+        "package": "tree-sitter-perl",
+        "version": "1.1.2",
+        "repository": "https://github.com/ganezdragon/tree-sitter-perl",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "83f44dd6a37ce377c46a806fd4f05e9fa11f32ec0a69a7035d6315c06c1804b0"
+      },
+      "source": "sub greet { return 'hello'; }\n",
+      "root": "source_file",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "source_file",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 30
+          },
+          "text": "sub greet { return 'hello'; }\n"
+        },
+        {
+          "kind": "function_definition",
+          "parent": "source_file",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 30
+          },
+          "text": "sub greet { return 'hello'; }\n"
+        },
+        {
+          "kind": "sub",
+          "parent": "function_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 3
+          },
+          "text": "sub"
+        },
+        {
+          "kind": "identifier",
+          "parent": "function_definition",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 4,
+            "end": 9
+          },
+          "text": "greet"
+        },
+        {
+          "kind": "block",
+          "parent": "function_definition",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 10,
+            "end": 30
+          },
+          "text": "{ return 'hello'; }\n"
+        },
+        {
+          "kind": "{",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 10,
+            "end": 11
+          },
+          "text": "{"
+        },
+        {
+          "kind": "return_expression",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 12,
+            "end": 26
+          },
+          "text": "return 'hello'"
+        },
+        {
+          "kind": "return",
+          "parent": "return_expression",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 12,
+            "end": 18
+          },
+          "text": "return"
+        },
+        {
+          "kind": "string_single_quoted",
+          "parent": "return_expression",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 19,
+            "end": 26
+          },
+          "text": "'hello'"
+        },
+        {
+          "kind": "'",
+          "parent": "string_single_quoted",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 19,
+            "end": 20
+          },
+          "text": "'"
+        },
+        {
+          "kind": "'",
+          "parent": "string_single_quoted",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 25,
+            "end": 26
+          },
+          "text": "'"
+        },
+        {
+          "kind": ";",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 26,
+            "end": 27
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 28,
+            "end": 29
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "php",
+        "package": "tree-sitter-php",
+        "version": "0.25.1",
+        "repository": "https://github.com/tree-sitter/tree-sitter-php",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "45fddbaad542a86cf413ca204bb232ea4478f8d634dc3beac4b2c8d837ce49ff"
+      },
+      "source": "<?php class Customer { public function greet() { return 'hello'; } }\n",
+      "root": "program",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "program",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 69
+          },
+          "text": "<?php class Customer { public function greet() { return 'hello'; } }\n"
+        },
+        {
+          "kind": "php_tag",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 5
+          },
+          "text": "<?php"
+        },
+        {
+          "kind": "class_declaration",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 6,
+            "end": 68
+          },
+          "text": "class Customer { public function greet() { return 'hello'; } }"
+        },
+        {
+          "kind": "class",
+          "parent": "class_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 6,
+            "end": 11
+          },
+          "text": "class"
+        },
+        {
+          "kind": "name",
+          "parent": "class_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 12,
+            "end": 20
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": "declaration_list",
+          "parent": "class_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 21,
+            "end": 68
+          },
+          "text": "{ public function greet() { return 'hello'; } }"
+        },
+        {
+          "kind": "{",
+          "parent": "declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 21,
+            "end": 22
+          },
+          "text": "{"
+        },
+        {
+          "kind": "method_declaration",
+          "parent": "declaration_list",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 23,
+            "end": 66
+          },
+          "text": "public function greet() { return 'hello'; }"
+        },
+        {
+          "kind": "visibility_modifier",
+          "parent": "method_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 23,
+            "end": 29
+          },
+          "text": "public"
+        },
+        {
+          "kind": "public",
+          "parent": "visibility_modifier",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 23,
+            "end": 29
+          },
+          "text": "public"
+        },
+        {
+          "kind": "function",
+          "parent": "method_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 30,
+            "end": 38
+          },
+          "text": "function"
+        },
+        {
+          "kind": "name",
+          "parent": "method_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 39,
+            "end": 44
+          },
+          "text": "greet"
+        },
+        {
+          "kind": "formal_parameters",
+          "parent": "method_declaration",
+          "field": "parameters",
+          "named": true,
+          "range": {
+            "start": 44,
+            "end": 46
+          },
+          "text": "()"
+        },
+        {
+          "kind": "(",
+          "parent": "formal_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 44,
+            "end": 45
+          },
+          "text": "("
+        },
+        {
+          "kind": ")",
+          "parent": "formal_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 45,
+            "end": 46
+          },
+          "text": ")"
+        },
+        {
+          "kind": "compound_statement",
+          "parent": "method_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 47,
+            "end": 66
+          },
+          "text": "{ return 'hello'; }"
+        },
+        {
+          "kind": "{",
+          "parent": "compound_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 47,
+            "end": 48
+          },
+          "text": "{"
+        },
+        {
+          "kind": "return_statement",
+          "parent": "compound_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 49,
+            "end": 64
+          },
+          "text": "return 'hello';"
+        },
+        {
+          "kind": "return",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 49,
+            "end": 55
+          },
+          "text": "return"
+        },
+        {
+          "kind": "string",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 56,
+            "end": 63
+          },
+          "text": "'hello'"
+        },
+        {
+          "kind": "'",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 56,
+            "end": 57
+          },
+          "text": "'"
+        },
+        {
+          "kind": "string_content",
+          "parent": "string",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 57,
+            "end": 62
+          },
+          "text": "hello"
+        },
+        {
+          "kind": "'",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 62,
+            "end": 63
+          },
+          "text": "'"
+        },
+        {
+          "kind": ";",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 63,
+            "end": 64
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "compound_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 65,
+            "end": 66
+          },
+          "text": "}"
+        },
+        {
+          "kind": "}",
+          "parent": "declaration_list",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 67,
+            "end": 68
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "python",
+        "package": "tree-sitter-python",
+        "version": "0.25.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-python",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "a2456847bea3adff5b2222b2f7b03a870159470d8908622204e6eb29ee2fe45e"
+      },
+      "source": "class Customer:\n    def greet(self):\n        return 'hello'\n",
+      "root": "module",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "module",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 60
+          },
+          "text": "class Customer:\n    def greet(self):\n        return 'hello'\n"
+        },
+        {
+          "kind": "class_definition",
+          "parent": "module",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 59
+          },
+          "text": "class Customer:\n    def greet(self):\n        return 'hello'"
+        },
+        {
+          "kind": "class",
+          "parent": "class_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 5
+          },
+          "text": "class"
+        },
+        {
+          "kind": "identifier",
+          "parent": "class_definition",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 6,
+            "end": 14
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": ":",
+          "parent": "class_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 14,
+            "end": 15
+          },
+          "text": ":"
+        },
+        {
+          "kind": "block",
+          "parent": "class_definition",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 20,
+            "end": 59
+          },
+          "text": "def greet(self):\n        return 'hello'"
+        },
+        {
+          "kind": "function_definition",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 20,
+            "end": 59
+          },
+          "text": "def greet(self):\n        return 'hello'"
+        },
+        {
+          "kind": "def",
+          "parent": "function_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 20,
+            "end": 23
+          },
+          "text": "def"
+        },
+        {
+          "kind": "identifier",
+          "parent": "function_definition",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 29
+          },
+          "text": "greet"
+        },
+        {
+          "kind": "parameters",
+          "parent": "function_definition",
+          "field": "parameters",
+          "named": true,
+          "range": {
+            "start": 29,
+            "end": 35
+          },
+          "text": "(self)"
+        },
+        {
+          "kind": "(",
+          "parent": "parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 29,
+            "end": 30
+          },
+          "text": "("
+        },
+        {
+          "kind": "identifier",
+          "parent": "parameters",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 30,
+            "end": 34
+          },
+          "text": "self"
+        },
+        {
+          "kind": ")",
+          "parent": "parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 34,
+            "end": 35
+          },
+          "text": ")"
+        },
+        {
+          "kind": ":",
+          "parent": "function_definition",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 35,
+            "end": 36
+          },
+          "text": ":"
+        },
+        {
+          "kind": "block",
+          "parent": "function_definition",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 45,
+            "end": 59
+          },
+          "text": "return 'hello'"
+        },
+        {
+          "kind": "return_statement",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 45,
+            "end": 59
+          },
+          "text": "return 'hello'"
+        },
+        {
+          "kind": "return",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 45,
+            "end": 51
+          },
+          "text": "return"
+        },
+        {
+          "kind": "string",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 52,
+            "end": 59
+          },
+          "text": "'hello'"
+        },
+        {
+          "kind": "string_start",
+          "parent": "string",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 52,
+            "end": 53
+          },
+          "text": "'"
+        },
+        {
+          "kind": "string_content",
+          "parent": "string",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 53,
+            "end": 58
+          },
+          "text": "hello"
+        },
+        {
+          "kind": "string_end",
+          "parent": "string",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 58,
+            "end": 59
+          },
+          "text": "'"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "ruby",
+        "package": "tree-sitter-ruby",
+        "version": "0.23.1",
+        "repository": "https://github.com/tree-sitter/tree-sitter-ruby",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "9683f80e7be3dd93f1d6f575800de3f3445cda8af1f313f1f80003229c328e8b"
+      },
+      "source": "class Customer\n  def greet\n    'hello'\n  end\nend\n",
+      "root": "program",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "program",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 49
+          },
+          "text": "class Customer\n  def greet\n    'hello'\n  end\nend\n"
+        },
+        {
+          "kind": "class",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 48
+          },
+          "text": "class Customer\n  def greet\n    'hello'\n  end\nend"
+        },
+        {
+          "kind": "class",
+          "parent": "class",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 5
+          },
+          "text": "class"
+        },
+        {
+          "kind": "constant",
+          "parent": "class",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 6,
+            "end": 14
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": "body_statement",
+          "parent": "class",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 17,
+            "end": 44
+          },
+          "text": "def greet\n    'hello'\n  end"
+        },
+        {
+          "kind": "method",
+          "parent": "body_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 17,
+            "end": 44
+          },
+          "text": "def greet\n    'hello'\n  end"
+        },
+        {
+          "kind": "def",
+          "parent": "method",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 17,
+            "end": 20
+          },
+          "text": "def"
+        },
+        {
+          "kind": "identifier",
+          "parent": "method",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 21,
+            "end": 26
+          },
+          "text": "greet"
+        },
+        {
+          "kind": "body_statement",
+          "parent": "method",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 31,
+            "end": 38
+          },
+          "text": "'hello'"
+        },
+        {
+          "kind": "string",
+          "parent": "body_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 31,
+            "end": 38
+          },
+          "text": "'hello'"
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 31,
+            "end": 32
+          },
+          "text": "'"
+        },
+        {
+          "kind": "string_content",
+          "parent": "string",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 32,
+            "end": 37
+          },
+          "text": "hello"
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 37,
+            "end": 38
+          },
+          "text": "'"
+        },
+        {
+          "kind": "end",
+          "parent": "method",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 41,
+            "end": 44
+          },
+          "text": "end"
+        },
+        {
+          "kind": "end",
+          "parent": "class",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 45,
+            "end": 48
+          },
+          "text": "end"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "sql",
+        "package": "tree-sitter-sequel",
+        "version": "0.3.11",
+        "repository": "https://github.com/derekstride/tree-sitter-sql",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "227cb2197775686cc0b0064aa08e709f7f9575b724b2339371b10fb209e37d73"
+      },
+      "source": "CREATE TABLE customers (id INTEGER, name TEXT);\nSELECT name FROM customers WHERE id = 1;\n",
+      "root": "program",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "program",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 89
+          },
+          "text": "CREATE TABLE customers (id INTEGER, name TEXT);\nSELECT name FROM customers WHERE id = 1;\n"
+        },
+        {
+          "kind": "statement",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 46
+          },
+          "text": "CREATE TABLE customers (id INTEGER, name TEXT)"
+        },
+        {
+          "kind": "create_table",
+          "parent": "statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 46
+          },
+          "text": "CREATE TABLE customers (id INTEGER, name TEXT)"
+        },
+        {
+          "kind": "keyword_create",
+          "parent": "create_table",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 6
+          },
+          "text": "CREATE"
+        },
+        {
+          "kind": "keyword_table",
+          "parent": "create_table",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 12
+          },
+          "text": "TABLE"
+        },
+        {
+          "kind": "object_reference",
+          "parent": "create_table",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 13,
+            "end": 22
+          },
+          "text": "customers"
+        },
+        {
+          "kind": "identifier",
+          "parent": "object_reference",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 13,
+            "end": 22
+          },
+          "text": "customers"
+        },
+        {
+          "kind": "column_definitions",
+          "parent": "create_table",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 23,
+            "end": 46
+          },
+          "text": "(id INTEGER, name TEXT)"
+        },
+        {
+          "kind": "(",
+          "parent": "column_definitions",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 23,
+            "end": 24
+          },
+          "text": "("
+        },
+        {
+          "kind": "column_definition",
+          "parent": "column_definitions",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 34
+          },
+          "text": "id INTEGER"
+        },
+        {
+          "kind": "identifier",
+          "parent": "column_definition",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 26
+          },
+          "text": "id"
+        },
+        {
+          "kind": "int",
+          "parent": "column_definition",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 27,
+            "end": 34
+          },
+          "text": "INTEGER"
+        },
+        {
+          "kind": "keyword_int",
+          "parent": "int",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 27,
+            "end": 34
+          },
+          "text": "INTEGER"
+        },
+        {
+          "kind": ",",
+          "parent": "column_definitions",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 34,
+            "end": 35
+          },
+          "text": ","
+        },
+        {
+          "kind": "column_definition",
+          "parent": "column_definitions",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 36,
+            "end": 45
+          },
+          "text": "name TEXT"
+        },
+        {
+          "kind": "identifier",
+          "parent": "column_definition",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 36,
+            "end": 40
+          },
+          "text": "name"
+        },
+        {
+          "kind": "keyword_text",
+          "parent": "column_definition",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 41,
+            "end": 45
+          },
+          "text": "TEXT"
+        },
+        {
+          "kind": ")",
+          "parent": "column_definitions",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 45,
+            "end": 46
+          },
+          "text": ")"
+        },
+        {
+          "kind": ";",
+          "parent": "program",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 46,
+            "end": 47
+          },
+          "text": ";"
+        },
+        {
+          "kind": "statement",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 48,
+            "end": 87
+          },
+          "text": "SELECT name FROM customers WHERE id = 1"
+        },
+        {
+          "kind": "select",
+          "parent": "statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 48,
+            "end": 59
+          },
+          "text": "SELECT name"
+        },
+        {
+          "kind": "keyword_select",
+          "parent": "select",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 48,
+            "end": 54
+          },
+          "text": "SELECT"
+        },
+        {
+          "kind": "select_expression",
+          "parent": "select",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 55,
+            "end": 59
+          },
+          "text": "name"
+        },
+        {
+          "kind": "term",
+          "parent": "select_expression",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 55,
+            "end": 59
+          },
+          "text": "name"
+        },
+        {
+          "kind": "field",
+          "parent": "term",
+          "field": "value",
+          "named": true,
+          "range": {
+            "start": 55,
+            "end": 59
+          },
+          "text": "name"
+        },
+        {
+          "kind": "identifier",
+          "parent": "field",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 55,
+            "end": 59
+          },
+          "text": "name"
+        },
+        {
+          "kind": "from",
+          "parent": "statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 60,
+            "end": 87
+          },
+          "text": "FROM customers WHERE id = 1"
+        },
+        {
+          "kind": "keyword_from",
+          "parent": "from",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 60,
+            "end": 64
+          },
+          "text": "FROM"
+        },
+        {
+          "kind": "relation",
+          "parent": "from",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 65,
+            "end": 74
+          },
+          "text": "customers"
+        },
+        {
+          "kind": "object_reference",
+          "parent": "relation",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 65,
+            "end": 74
+          },
+          "text": "customers"
+        },
+        {
+          "kind": "identifier",
+          "parent": "object_reference",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 65,
+            "end": 74
+          },
+          "text": "customers"
+        },
+        {
+          "kind": "where",
+          "parent": "from",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 75,
+            "end": 87
+          },
+          "text": "WHERE id = 1"
+        },
+        {
+          "kind": "keyword_where",
+          "parent": "where",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 75,
+            "end": 80
+          },
+          "text": "WHERE"
+        },
+        {
+          "kind": "binary_expression",
+          "parent": "where",
+          "field": "predicate",
+          "named": true,
+          "range": {
+            "start": 81,
+            "end": 87
+          },
+          "text": "id = 1"
+        },
+        {
+          "kind": "field",
+          "parent": "binary_expression",
+          "field": "left",
+          "named": true,
+          "range": {
+            "start": 81,
+            "end": 83
+          },
+          "text": "id"
+        },
+        {
+          "kind": "identifier",
+          "parent": "field",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 81,
+            "end": 83
+          },
+          "text": "id"
+        },
+        {
+          "kind": "=",
+          "parent": "binary_expression",
+          "field": "operator",
+          "named": false,
+          "range": {
+            "start": 84,
+            "end": 85
+          },
+          "text": "="
+        },
+        {
+          "kind": "literal",
+          "parent": "binary_expression",
+          "field": "right",
+          "named": true,
+          "range": {
+            "start": 86,
+            "end": 87
+          },
+          "text": "1"
+        },
+        {
+          "kind": ";",
+          "parent": "program",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 87,
+            "end": 88
+          },
+          "text": ";"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "svelte",
+        "package": "tree-sitter-svelte-ng",
+        "version": "1.0.2",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-svelte",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "18aecc6d00acda9369784b5d4054d4bc9b53dbe2d21533f4af90b0b6b1537a6c"
+      },
+      "source": "<script>let name = 'world';</script>\n<h1>Hello {name}</h1>\n",
+      "root": "document",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "document",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 59
+          },
+          "text": "<script>let name = 'world';</script>\n<h1>Hello {name}</h1>\n"
+        },
+        {
+          "kind": "script_element",
+          "parent": "document",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 36
+          },
+          "text": "<script>let name = 'world';</script>"
+        },
+        {
+          "kind": "start_tag",
+          "parent": "script_element",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 8
+          },
+          "text": "<script>"
+        },
+        {
+          "kind": "<",
+          "parent": "start_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 1
+          },
+          "text": "<"
+        },
+        {
+          "kind": "tag_name",
+          "parent": "start_tag",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 1,
+            "end": 7
+          },
+          "text": "script"
+        },
+        {
+          "kind": ">",
+          "parent": "start_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 7,
+            "end": 8
+          },
+          "text": ">"
+        },
+        {
+          "kind": "raw_text",
+          "parent": "script_element",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 8,
+            "end": 27
+          },
+          "text": "let name = 'world';"
+        },
+        {
+          "kind": "end_tag",
+          "parent": "script_element",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 27,
+            "end": 36
+          },
+          "text": "</script>"
+        },
+        {
+          "kind": "</",
+          "parent": "end_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 27,
+            "end": 29
+          },
+          "text": "</"
+        },
+        {
+          "kind": "tag_name",
+          "parent": "end_tag",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 29,
+            "end": 35
+          },
+          "text": "script"
+        },
+        {
+          "kind": ">",
+          "parent": "end_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 35,
+            "end": 36
+          },
+          "text": ">"
+        },
+        {
+          "kind": "element",
+          "parent": "document",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 37,
+            "end": 58
+          },
+          "text": "<h1>Hello {name}</h1>"
+        },
+        {
+          "kind": "start_tag",
+          "parent": "element",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 37,
+            "end": 41
+          },
+          "text": "<h1>"
+        },
+        {
+          "kind": "<",
+          "parent": "start_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 37,
+            "end": 38
+          },
+          "text": "<"
+        },
+        {
+          "kind": "tag_name",
+          "parent": "start_tag",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 38,
+            "end": 40
+          },
+          "text": "h1"
+        },
+        {
+          "kind": ">",
+          "parent": "start_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 40,
+            "end": 41
+          },
+          "text": ">"
+        },
+        {
+          "kind": "text",
+          "parent": "element",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 41,
+            "end": 46
+          },
+          "text": "Hello"
+        },
+        {
+          "kind": "expression",
+          "parent": "element",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 47,
+            "end": 53
+          },
+          "text": "{name}"
+        },
+        {
+          "kind": "{",
+          "parent": "expression",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 47,
+            "end": 48
+          },
+          "text": "{"
+        },
+        {
+          "kind": "svelte_raw_text",
+          "parent": "expression",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 48,
+            "end": 52
+          },
+          "text": "name"
+        },
+        {
+          "kind": "}",
+          "parent": "expression",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 52,
+            "end": 53
+          },
+          "text": "}"
+        },
+        {
+          "kind": "end_tag",
+          "parent": "element",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 53,
+            "end": 58
+          },
+          "text": "</h1>"
+        },
+        {
+          "kind": "</",
+          "parent": "end_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 53,
+            "end": 55
+          },
+          "text": "</"
+        },
+        {
+          "kind": "tag_name",
+          "parent": "end_tag",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 55,
+            "end": 57
+          },
+          "text": "h1"
+        },
+        {
+          "kind": ">",
+          "parent": "end_tag",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 57,
+            "end": 58
+          },
+          "text": ">"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "swift",
+        "package": "tree-sitter-swift",
+        "version": "0.7.4",
+        "repository": "https://github.com/alex-pinkus/tree-sitter-swift",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "9e9977b371d34d6c6863585a6cc4c63b83b1331b4a1536548d7ec73a83872fe1"
+      },
+      "source": "struct Customer { let name: String; func greet() -> String { return name } }\n",
+      "root": "source_file",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "source_file",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 77
+          },
+          "text": "struct Customer { let name: String; func greet() -> String { return name } }\n"
+        },
+        {
+          "kind": "class_declaration",
+          "parent": "source_file",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 76
+          },
+          "text": "struct Customer { let name: String; func greet() -> String { return name } }"
+        },
+        {
+          "kind": "struct",
+          "parent": "class_declaration",
+          "field": "declaration_kind",
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 6
+          },
+          "text": "struct"
+        },
+        {
+          "kind": "type_identifier",
+          "parent": "class_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 15
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": "class_body",
+          "parent": "class_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 16,
+            "end": 76
+          },
+          "text": "{ let name: String; func greet() -> String { return name } }"
+        },
+        {
+          "kind": "{",
+          "parent": "class_body",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 16,
+            "end": 17
+          },
+          "text": "{"
+        },
+        {
+          "kind": "property_declaration",
+          "parent": "class_body",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 18,
+            "end": 34
+          },
+          "text": "let name: String"
+        },
+        {
+          "kind": "value_binding_pattern",
+          "parent": "property_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 18,
+            "end": 21
+          },
+          "text": "let"
+        },
+        {
+          "kind": "let",
+          "parent": "value_binding_pattern",
+          "field": "mutability",
+          "named": false,
+          "range": {
+            "start": 18,
+            "end": 21
+          },
+          "text": "let"
+        },
+        {
+          "kind": "pattern",
+          "parent": "property_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 22,
+            "end": 26
+          },
+          "text": "name"
+        },
+        {
+          "kind": "simple_identifier",
+          "parent": "pattern",
+          "field": "bound_identifier",
+          "named": true,
+          "range": {
+            "start": 22,
+            "end": 26
+          },
+          "text": "name"
+        },
+        {
+          "kind": "type_annotation",
+          "parent": "property_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 26,
+            "end": 34
+          },
+          "text": ": String"
+        },
+        {
+          "kind": ":",
+          "parent": "type_annotation",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 26,
+            "end": 27
+          },
+          "text": ":"
+        },
+        {
+          "kind": "user_type",
+          "parent": "type_annotation",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 28,
+            "end": 34
+          },
+          "text": "String"
+        },
+        {
+          "kind": "type_identifier",
+          "parent": "user_type",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 28,
+            "end": 34
+          },
+          "text": "String"
+        },
+        {
+          "kind": "function_declaration",
+          "parent": "class_body",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 36,
+            "end": 74
+          },
+          "text": "func greet() -> String { return name }"
+        },
+        {
+          "kind": "func",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 36,
+            "end": 40
+          },
+          "text": "func"
+        },
+        {
+          "kind": "simple_identifier",
+          "parent": "function_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 41,
+            "end": 46
+          },
+          "text": "greet"
+        },
+        {
+          "kind": "(",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 46,
+            "end": 47
+          },
+          "text": "("
+        },
+        {
+          "kind": ")",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 47,
+            "end": 48
+          },
+          "text": ")"
+        },
+        {
+          "kind": "->",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 49,
+            "end": 51
+          },
+          "text": "->"
+        },
+        {
+          "kind": "user_type",
+          "parent": "function_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 52,
+            "end": 58
+          },
+          "text": "String"
+        },
+        {
+          "kind": "type_identifier",
+          "parent": "user_type",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 52,
+            "end": 58
+          },
+          "text": "String"
+        },
+        {
+          "kind": "function_body",
+          "parent": "function_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 59,
+            "end": 74
+          },
+          "text": "{ return name }"
+        },
+        {
+          "kind": "{",
+          "parent": "function_body",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 59,
+            "end": 60
+          },
+          "text": "{"
+        },
+        {
+          "kind": "statements",
+          "parent": "function_body",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 61,
+            "end": 72
+          },
+          "text": "return name"
+        },
+        {
+          "kind": "control_transfer_statement",
+          "parent": "statements",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 61,
+            "end": 72
+          },
+          "text": "return name"
+        },
+        {
+          "kind": "return",
+          "parent": "control_transfer_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 61,
+            "end": 67
+          },
+          "text": "return"
+        },
+        {
+          "kind": "simple_identifier",
+          "parent": "control_transfer_statement",
+          "field": "result",
+          "named": true,
+          "range": {
+            "start": 68,
+            "end": 72
+          },
+          "text": "name"
+        },
+        {
+          "kind": "}",
+          "parent": "function_body",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 73,
+            "end": 74
+          },
+          "text": "}"
+        },
+        {
+          "kind": "}",
+          "parent": "class_body",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 75,
+            "end": 76
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "tsx",
+        "package": "tree-sitter-typescript",
+        "version": "0.23.2",
+        "repository": "https://github.com/tree-sitter/tree-sitter-typescript",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "78b5789145286799a27a0a7ecc36cc1bcb151f94ec7fa631b248459867010c8c"
+      },
+      "source": "export function App() { return <Button className=\"primary\">hello</Button>; }\n",
+      "root": "program",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "program",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 77
+          },
+          "text": "export function App() { return <Button className=\"primary\">hello</Button>; }\n"
+        },
+        {
+          "kind": "export_statement",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 76
+          },
+          "text": "export function App() { return <Button className=\"primary\">hello</Button>; }"
+        },
+        {
+          "kind": "export",
+          "parent": "export_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 6
+          },
+          "text": "export"
+        },
+        {
+          "kind": "function_declaration",
+          "parent": "export_statement",
+          "field": "declaration",
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 76
+          },
+          "text": "function App() { return <Button className=\"primary\">hello</Button>; }"
+        },
+        {
+          "kind": "function",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 7,
+            "end": 15
+          },
+          "text": "function"
+        },
+        {
+          "kind": "identifier",
+          "parent": "function_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 16,
+            "end": 19
+          },
+          "text": "App"
+        },
+        {
+          "kind": "formal_parameters",
+          "parent": "function_declaration",
+          "field": "parameters",
+          "named": true,
+          "range": {
+            "start": 19,
+            "end": 21
+          },
+          "text": "()"
+        },
+        {
+          "kind": "(",
+          "parent": "formal_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 19,
+            "end": 20
+          },
+          "text": "("
+        },
+        {
+          "kind": ")",
+          "parent": "formal_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 20,
+            "end": 21
+          },
+          "text": ")"
+        },
+        {
+          "kind": "statement_block",
+          "parent": "function_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 22,
+            "end": 76
+          },
+          "text": "{ return <Button className=\"primary\">hello</Button>; }"
+        },
+        {
+          "kind": "{",
+          "parent": "statement_block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 22,
+            "end": 23
+          },
+          "text": "{"
+        },
+        {
+          "kind": "return_statement",
+          "parent": "statement_block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 24,
+            "end": 74
+          },
+          "text": "return <Button className=\"primary\">hello</Button>;"
+        },
+        {
+          "kind": "return",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 24,
+            "end": 30
+          },
+          "text": "return"
+        },
+        {
+          "kind": "jsx_element",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 31,
+            "end": 73
+          },
+          "text": "<Button className=\"primary\">hello</Button>"
+        },
+        {
+          "kind": "jsx_opening_element",
+          "parent": "jsx_element",
+          "field": "open_tag",
+          "named": true,
+          "range": {
+            "start": 31,
+            "end": 59
+          },
+          "text": "<Button className=\"primary\">"
+        },
+        {
+          "kind": "<",
+          "parent": "jsx_opening_element",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 31,
+            "end": 32
+          },
+          "text": "<"
+        },
+        {
+          "kind": "identifier",
+          "parent": "jsx_opening_element",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 32,
+            "end": 38
+          },
+          "text": "Button"
+        },
+        {
+          "kind": "jsx_attribute",
+          "parent": "jsx_opening_element",
+          "field": "attribute",
+          "named": true,
+          "range": {
+            "start": 39,
+            "end": 58
+          },
+          "text": "className=\"primary\""
+        },
+        {
+          "kind": "property_identifier",
+          "parent": "jsx_attribute",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 39,
+            "end": 48
+          },
+          "text": "className"
+        },
+        {
+          "kind": "=",
+          "parent": "jsx_attribute",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 48,
+            "end": 49
+          },
+          "text": "="
+        },
+        {
+          "kind": "string",
+          "parent": "jsx_attribute",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 49,
+            "end": 58
+          },
+          "text": "\"primary\""
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 49,
+            "end": 50
+          },
+          "text": "\""
+        },
+        {
+          "kind": "string_fragment",
+          "parent": "string",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 50,
+            "end": 57
+          },
+          "text": "primary"
+        },
+        {
+          "kind": "\"",
+          "parent": "string",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 57,
+            "end": 58
+          },
+          "text": "\""
+        },
+        {
+          "kind": ">",
+          "parent": "jsx_opening_element",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 58,
+            "end": 59
+          },
+          "text": ">"
+        },
+        {
+          "kind": "jsx_text",
+          "parent": "jsx_element",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 59,
+            "end": 64
+          },
+          "text": "hello"
+        },
+        {
+          "kind": "jsx_closing_element",
+          "parent": "jsx_element",
+          "field": "close_tag",
+          "named": true,
+          "range": {
+            "start": 64,
+            "end": 73
+          },
+          "text": "</Button>"
+        },
+        {
+          "kind": "</",
+          "parent": "jsx_closing_element",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 64,
+            "end": 66
+          },
+          "text": "</"
+        },
+        {
+          "kind": "identifier",
+          "parent": "jsx_closing_element",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 66,
+            "end": 72
+          },
+          "text": "Button"
+        },
+        {
+          "kind": ">",
+          "parent": "jsx_closing_element",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 72,
+            "end": 73
+          },
+          "text": ">"
+        },
+        {
+          "kind": ";",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 73,
+            "end": 74
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "statement_block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 75,
+            "end": 76
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "typescript",
+        "package": "tree-sitter-typescript",
+        "version": "0.23.2",
+        "repository": "https://github.com/tree-sitter/tree-sitter-typescript",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "c790a733fc756b54d4e54dceeb7d2d51e40d8b57136e70277753a75804cce3e3"
+      },
+      "source": "export interface Customer { name: string; }\nexport function greet(value: Customer): string { return value.name; }\n",
+      "root": "program",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "program",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 114
+          },
+          "text": "export interface Customer { name: string; }\nexport function greet(value: Customer): string { return value.name; }\n"
+        },
+        {
+          "kind": "export_statement",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 43
+          },
+          "text": "export interface Customer { name: string; }"
+        },
+        {
+          "kind": "export",
+          "parent": "export_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 6
+          },
+          "text": "export"
+        },
+        {
+          "kind": "interface_declaration",
+          "parent": "export_statement",
+          "field": "declaration",
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 43
+          },
+          "text": "interface Customer { name: string; }"
+        },
+        {
+          "kind": "interface",
+          "parent": "interface_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 7,
+            "end": 16
+          },
+          "text": "interface"
+        },
+        {
+          "kind": "type_identifier",
+          "parent": "interface_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 17,
+            "end": 25
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": "interface_body",
+          "parent": "interface_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 26,
+            "end": 43
+          },
+          "text": "{ name: string; }"
+        },
+        {
+          "kind": "{",
+          "parent": "interface_body",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 26,
+            "end": 27
+          },
+          "text": "{"
+        },
+        {
+          "kind": "property_signature",
+          "parent": "interface_body",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 28,
+            "end": 40
+          },
+          "text": "name: string"
+        },
+        {
+          "kind": "property_identifier",
+          "parent": "property_signature",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 28,
+            "end": 32
+          },
+          "text": "name"
+        },
+        {
+          "kind": "type_annotation",
+          "parent": "property_signature",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 32,
+            "end": 40
+          },
+          "text": ": string"
+        },
+        {
+          "kind": ":",
+          "parent": "type_annotation",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 32,
+            "end": 33
+          },
+          "text": ":"
+        },
+        {
+          "kind": "predefined_type",
+          "parent": "type_annotation",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 34,
+            "end": 40
+          },
+          "text": "string"
+        },
+        {
+          "kind": "string",
+          "parent": "predefined_type",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 34,
+            "end": 40
+          },
+          "text": "string"
+        },
+        {
+          "kind": ";",
+          "parent": "interface_body",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 40,
+            "end": 41
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "interface_body",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 42,
+            "end": 43
+          },
+          "text": "}"
+        },
+        {
+          "kind": "export_statement",
+          "parent": "program",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 44,
+            "end": 113
+          },
+          "text": "export function greet(value: Customer): string { return value.name; }"
+        },
+        {
+          "kind": "export",
+          "parent": "export_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 44,
+            "end": 50
+          },
+          "text": "export"
+        },
+        {
+          "kind": "function_declaration",
+          "parent": "export_statement",
+          "field": "declaration",
+          "named": true,
+          "range": {
+            "start": 51,
+            "end": 113
+          },
+          "text": "function greet(value: Customer): string { return value.name; }"
+        },
+        {
+          "kind": "function",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 51,
+            "end": 59
+          },
+          "text": "function"
+        },
+        {
+          "kind": "identifier",
+          "parent": "function_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 60,
+            "end": 65
+          },
+          "text": "greet"
+        },
+        {
+          "kind": "formal_parameters",
+          "parent": "function_declaration",
+          "field": "parameters",
+          "named": true,
+          "range": {
+            "start": 65,
+            "end": 82
+          },
+          "text": "(value: Customer)"
+        },
+        {
+          "kind": "(",
+          "parent": "formal_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 65,
+            "end": 66
+          },
+          "text": "("
+        },
+        {
+          "kind": "required_parameter",
+          "parent": "formal_parameters",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 66,
+            "end": 81
+          },
+          "text": "value: Customer"
+        },
+        {
+          "kind": "identifier",
+          "parent": "required_parameter",
+          "field": "pattern",
+          "named": true,
+          "range": {
+            "start": 66,
+            "end": 71
+          },
+          "text": "value"
+        },
+        {
+          "kind": "type_annotation",
+          "parent": "required_parameter",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 71,
+            "end": 81
+          },
+          "text": ": Customer"
+        },
+        {
+          "kind": ":",
+          "parent": "type_annotation",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 71,
+            "end": 72
+          },
+          "text": ":"
+        },
+        {
+          "kind": "type_identifier",
+          "parent": "type_annotation",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 73,
+            "end": 81
+          },
+          "text": "Customer"
+        },
+        {
+          "kind": ")",
+          "parent": "formal_parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 81,
+            "end": 82
+          },
+          "text": ")"
+        },
+        {
+          "kind": "type_annotation",
+          "parent": "function_declaration",
+          "field": "return_type",
+          "named": true,
+          "range": {
+            "start": 82,
+            "end": 90
+          },
+          "text": ": string"
+        },
+        {
+          "kind": ":",
+          "parent": "type_annotation",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 82,
+            "end": 83
+          },
+          "text": ":"
+        },
+        {
+          "kind": "predefined_type",
+          "parent": "type_annotation",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 84,
+            "end": 90
+          },
+          "text": "string"
+        },
+        {
+          "kind": "string",
+          "parent": "predefined_type",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 84,
+            "end": 90
+          },
+          "text": "string"
+        },
+        {
+          "kind": "statement_block",
+          "parent": "function_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 91,
+            "end": 113
+          },
+          "text": "{ return value.name; }"
+        },
+        {
+          "kind": "{",
+          "parent": "statement_block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 91,
+            "end": 92
+          },
+          "text": "{"
+        },
+        {
+          "kind": "return_statement",
+          "parent": "statement_block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 93,
+            "end": 111
+          },
+          "text": "return value.name;"
+        },
+        {
+          "kind": "return",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 93,
+            "end": 99
+          },
+          "text": "return"
+        },
+        {
+          "kind": "member_expression",
+          "parent": "return_statement",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 100,
+            "end": 110
+          },
+          "text": "value.name"
+        },
+        {
+          "kind": "identifier",
+          "parent": "member_expression",
+          "field": "object",
+          "named": true,
+          "range": {
+            "start": 100,
+            "end": 105
+          },
+          "text": "value"
+        },
+        {
+          "kind": ".",
+          "parent": "member_expression",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 105,
+            "end": 106
+          },
+          "text": "."
+        },
+        {
+          "kind": "property_identifier",
+          "parent": "member_expression",
+          "field": "property",
+          "named": true,
+          "range": {
+            "start": 106,
+            "end": 110
+          },
+          "text": "name"
+        },
+        {
+          "kind": ";",
+          "parent": "return_statement",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 110,
+            "end": 111
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "statement_block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 112,
+            "end": 113
+          },
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "yaml",
+        "package": "tree-sitter-yaml",
+        "version": "0.7.2",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-yaml",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "1238b6c89fc6afb9723b6463a365843aa87e478025490660e5acfc9adaaf809b"
+      },
+      "source": "name: demo\ncount: 2\n",
+      "root": "stream",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "stream",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 20
+          },
+          "text": "name: demo\ncount: 2\n"
+        },
+        {
+          "kind": "document",
+          "parent": "stream",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 20
+          },
+          "text": "name: demo\ncount: 2\n"
+        },
+        {
+          "kind": "block_node",
+          "parent": "document",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 20
+          },
+          "text": "name: demo\ncount: 2\n"
+        },
+        {
+          "kind": "block_mapping",
+          "parent": "block_node",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 20
+          },
+          "text": "name: demo\ncount: 2\n"
+        },
+        {
+          "kind": "block_mapping_pair",
+          "parent": "block_mapping",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 10
+          },
+          "text": "name: demo"
+        },
+        {
+          "kind": "flow_node",
+          "parent": "block_mapping_pair",
+          "field": "key",
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 4
+          },
+          "text": "name"
+        },
+        {
+          "kind": "plain_scalar",
+          "parent": "flow_node",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 4
+          },
+          "text": "name"
+        },
+        {
+          "kind": "string_scalar",
+          "parent": "plain_scalar",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 4
+          },
+          "text": "name"
+        },
+        {
+          "kind": ":",
+          "parent": "block_mapping_pair",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 4,
+            "end": 5
+          },
+          "text": ":"
+        },
+        {
+          "kind": "flow_node",
+          "parent": "block_mapping_pair",
+          "field": "value",
+          "named": true,
+          "range": {
+            "start": 6,
+            "end": 10
+          },
+          "text": "demo"
+        },
+        {
+          "kind": "plain_scalar",
+          "parent": "flow_node",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 6,
+            "end": 10
+          },
+          "text": "demo"
+        },
+        {
+          "kind": "string_scalar",
+          "parent": "plain_scalar",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 6,
+            "end": 10
+          },
+          "text": "demo"
+        },
+        {
+          "kind": "block_mapping_pair",
+          "parent": "block_mapping",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 11,
+            "end": 19
+          },
+          "text": "count: 2"
+        },
+        {
+          "kind": "flow_node",
+          "parent": "block_mapping_pair",
+          "field": "key",
+          "named": true,
+          "range": {
+            "start": 11,
+            "end": 16
+          },
+          "text": "count"
+        },
+        {
+          "kind": "plain_scalar",
+          "parent": "flow_node",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 11,
+            "end": 16
+          },
+          "text": "count"
+        },
+        {
+          "kind": "string_scalar",
+          "parent": "plain_scalar",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 11,
+            "end": 16
+          },
+          "text": "count"
+        },
+        {
+          "kind": ":",
+          "parent": "block_mapping_pair",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 16,
+            "end": 17
+          },
+          "text": ":"
+        },
+        {
+          "kind": "flow_node",
+          "parent": "block_mapping_pair",
+          "field": "value",
+          "named": true,
+          "range": {
+            "start": 18,
+            "end": 19
+          },
+          "text": "2"
+        },
+        {
+          "kind": "plain_scalar",
+          "parent": "flow_node",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 18,
+            "end": 19
+          },
+          "text": "2"
+        },
+        {
+          "kind": "integer_scalar",
+          "parent": "plain_scalar",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 18,
+            "end": 19
+          },
+          "text": "2"
+        }
+      ]
+    },
+    {
+      "grammar": {
+        "language": "zig",
+        "package": "tree-sitter-zig",
+        "version": "1.1.2",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-zig",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "dd85513d4bf1b5f03fe6404376162b66924ee23c8b6d5a18e20d9360000be4d0"
+      },
+      "source": "pub fn main() void { const value: u32 = 2; _ = value; }\n",
+      "root": "source_file",
+      "hasErrors": false,
+      "diagnostics": [],
+      "nodes": [
+        {
+          "kind": "source_file",
+          "parent": null,
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 56
+          },
+          "text": "pub fn main() void { const value: u32 = 2; _ = value; }\n"
+        },
+        {
+          "kind": "function_declaration",
+          "parent": "source_file",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 0,
+            "end": 55
+          },
+          "text": "pub fn main() void { const value: u32 = 2; _ = value; }"
+        },
+        {
+          "kind": "pub",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 0,
+            "end": 3
+          },
+          "text": "pub"
+        },
+        {
+          "kind": "fn",
+          "parent": "function_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 4,
+            "end": 6
+          },
+          "text": "fn"
+        },
+        {
+          "kind": "identifier",
+          "parent": "function_declaration",
+          "field": "name",
+          "named": true,
+          "range": {
+            "start": 7,
+            "end": 11
+          },
+          "text": "main"
+        },
+        {
+          "kind": "parameters",
+          "parent": "function_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 11,
+            "end": 13
+          },
+          "text": "()"
+        },
+        {
+          "kind": "(",
+          "parent": "parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 11,
+            "end": 12
+          },
+          "text": "("
+        },
+        {
+          "kind": ")",
+          "parent": "parameters",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 12,
+            "end": 13
+          },
+          "text": ")"
+        },
+        {
+          "kind": "builtin_type",
+          "parent": "function_declaration",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 14,
+            "end": 18
+          },
+          "text": "void"
+        },
+        {
+          "kind": "void",
+          "parent": "builtin_type",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 14,
+            "end": 18
+          },
+          "text": "void"
+        },
+        {
+          "kind": "block",
+          "parent": "function_declaration",
+          "field": "body",
+          "named": true,
+          "range": {
+            "start": 19,
+            "end": 55
+          },
+          "text": "{ const value: u32 = 2; _ = value; }"
+        },
+        {
+          "kind": "{",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 19,
+            "end": 20
+          },
+          "text": "{"
+        },
+        {
+          "kind": "variable_declaration",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 21,
+            "end": 42
+          },
+          "text": "const value: u32 = 2;"
+        },
+        {
+          "kind": "const",
+          "parent": "variable_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 21,
+            "end": 26
+          },
+          "text": "const"
+        },
+        {
+          "kind": "identifier",
+          "parent": "variable_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 27,
+            "end": 32
+          },
+          "text": "value"
+        },
+        {
+          "kind": ":",
+          "parent": "variable_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 32,
+            "end": 33
+          },
+          "text": ":"
+        },
+        {
+          "kind": "builtin_type",
+          "parent": "variable_declaration",
+          "field": "type",
+          "named": true,
+          "range": {
+            "start": 34,
+            "end": 37
+          },
+          "text": "u32"
+        },
+        {
+          "kind": "=",
+          "parent": "variable_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 38,
+            "end": 39
+          },
+          "text": "="
+        },
+        {
+          "kind": "integer",
+          "parent": "variable_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 40,
+            "end": 41
+          },
+          "text": "2"
+        },
+        {
+          "kind": ";",
+          "parent": "variable_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 41,
+            "end": 42
+          },
+          "text": ";"
+        },
+        {
+          "kind": "variable_declaration",
+          "parent": "block",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 43,
+            "end": 53
+          },
+          "text": "_ = value;"
+        },
+        {
+          "kind": "identifier",
+          "parent": "variable_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 43,
+            "end": 44
+          },
+          "text": "_"
+        },
+        {
+          "kind": "=",
+          "parent": "variable_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 45,
+            "end": 46
+          },
+          "text": "="
+        },
+        {
+          "kind": "identifier",
+          "parent": "variable_declaration",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 47,
+            "end": 52
+          },
+          "text": "value"
+        },
+        {
+          "kind": ";",
+          "parent": "variable_declaration",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 52,
+            "end": 53
+          },
+          "text": ";"
+        },
+        {
+          "kind": "}",
+          "parent": "block",
+          "field": null,
+          "named": false,
+          "range": {
+            "start": 54,
+            "end": 55
+          },
+          "text": "}"
+        }
+      ]
+    }
+  ],
+  "keywords": {
+    "languages": [
+      "abap",
+      "actionscript-3",
+      "ada",
+      "angular-expression",
+      "angular-html",
+      "angular-inline-style",
+      "angular-inline-template",
+      "angular-let-declaration",
+      "angular-template",
+      "angular-template-blocks",
+      "angular-ts",
+      "apache",
+      "apex",
+      "apl",
+      "applescript",
+      "ara",
+      "asciidoc",
+      "asm",
+      "astro",
+      "awk",
+      "ballerina",
+      "bat",
+      "beancount",
+      "berry",
+      "bibtex",
+      "bicep",
+      "blade",
+      "bsl",
+      "c",
+      "cadence",
+      "cairo",
+      "clarity",
+      "clojure",
+      "cmake",
+      "cobol",
+      "codeowners",
+      "codeql",
+      "coffee",
+      "common-lisp",
+      "coq",
+      "cplus",
+      "cpp",
+      "cpp-macro",
+      "crystal",
+      "csharp",
+      "css",
+      "csv",
+      "cue",
+      "cypher",
+      "d",
+      "dart",
+      "dax",
+      "desktop",
+      "diff",
+      "docker",
+      "dotenv",
+      "dream-maker",
+      "edge",
+      "elixir",
+      "elm",
+      "emacs-lisp",
+      "erb",
+      "erlang",
+      "es-tag-css",
+      "es-tag-glsl",
+      "es-tag-html",
+      "es-tag-sql",
+      "es-tag-xml",
+      "fennel",
+      "fish",
+      "fluent",
+      "fortran-fixed-form",
+      "fortran-free-form",
+      "fsharp",
+      "gdresource",
+      "gdscript",
+      "gdshader",
+      "genie",
+      "gherkin",
+      "git-commit",
+      "git-rebase",
+      "gleam",
+      "glimmer-js",
+      "glimmer-ts",
+      "glsl",
+      "gnuplot",
+      "go",
+      "graphql",
+      "groovy",
+      "hack",
+      "haml",
+      "handlebars",
+      "haskell",
+      "haxe",
+      "hcl",
+      "hjson",
+      "hlsl",
+      "html",
+      "html-derivative",
+      "http",
+      "hurl",
+      "hxml",
+      "hy",
+      "imba",
+      "ini",
+      "java",
+      "javascript",
+      "jinja",
+      "jinja-html",
+      "jison",
+      "json",
+      "json5",
+      "jsonc",
+      "jsonl",
+      "jsonnet",
+      "jssm",
+      "jsx",
+      "julia",
+      "kdl",
+      "kotlin",
+      "kotlin-script",
+      "kusto",
+      "latex",
+      "lean",
+      "less",
+      "liquid",
+      "llvm",
+      "log",
+      "logo",
+      "lua",
+      "luau",
+      "make",
+      "markdown",
+      "markdown-nix",
+      "markdown-vue",
+      "marko",
+      "matlab",
+      "mdc",
+      "mdx",
+      "mermaid",
+      "mipsasm",
+      "mojo",
+      "move",
+      "narrat",
+      "nextflow",
+      "nginx",
+      "nim",
+      "nix",
+      "nushell",
+      "objective-c",
+      "objective-cpp",
+      "ocaml",
+      "openscad",
+      "pascal",
+      "perl",
+      "php",
+      "pkl",
+      "plsql",
+      "po",
+      "polar",
+      "postcss",
+      "powerquery",
+      "powershell",
+      "prisma",
+      "prolog",
+      "proto",
+      "pug",
+      "puppet",
+      "purescript",
+      "python",
+      "qml",
+      "qmldir",
+      "qss",
+      "r",
+      "racket",
+      "raku",
+      "razor",
+      "reg",
+      "regexp",
+      "rel",
+      "riscv",
+      "rosmsg",
+      "rst",
+      "ruby",
+      "rust",
+      "sas",
+      "sass",
+      "scala",
+      "scheme",
+      "scss",
+      "sdbl",
+      "shaderlab",
+      "shellscript",
+      "shellsession",
+      "smalltalk",
+      "solidity",
+      "soy",
+      "sparql",
+      "splunk",
+      "sql",
+      "ssh-config",
+      "stata",
+      "stylus",
+      "svelte",
+      "swift",
+      "system-verilog",
+      "systemd",
+      "talonscript",
+      "tasl",
+      "tcl",
+      "templ",
+      "terraform",
+      "tex",
+      "text",
+      "tm-scopes",
+      "toml",
+      "ts-tags",
+      "tsv",
+      "tsx",
+      "turtle",
+      "twig",
+      "typescript",
+      "typespec",
+      "typst",
+      "v",
+      "vala",
+      "vb",
+      "verilog",
+      "vhdl",
+      "viml",
+      "vue",
+      "vue-directives",
+      "vue-html",
+      "vue-interpolations",
+      "vue-sfc-style-variable-injection",
+      "vue-vine",
+      "vyper",
+      "wasm",
+      "wenyan",
+      "wgsl",
+      "wikitext",
+      "wit",
+      "wolfram",
+      "xml",
+      "xsl",
+      "yaml",
+      "zenscript",
+      "zig"
+    ],
+    "diagnostics": []
+  }
+}

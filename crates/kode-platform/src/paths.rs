@@ -107,6 +107,10 @@ impl ResourcePaths {
 pub fn compiled_resources() -> HashMap<&'static str, &'static [u8]> {
     HashMap::from([
         (
+            "grammars/manifest.json",
+            include_bytes!("../../../resources/grammars/manifest.json").as_slice(),
+        ),
+        (
             "mime-types.json",
             include_bytes!("../../../resources/mime-types.json").as_slice(),
         ),
