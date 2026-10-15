@@ -24,8 +24,9 @@ Open **Settings** with Alt+4 for language-server discovery and installation.
 Use `f` to refresh, Enter to install/update, `y` to remove, and Escape to cancel.
 `KODE_LSP_CATALOG` selects a custom catalog and `KODE_LSP_HOME` selects the install
 root. Existing local executables and manifest command arrays are supported.
-Server start/stop/restart controls are connected to the process-service callback;
-the LSP transport and editor enrichment continue in P02/P03.
+Use `s` to start/stop and `r` to restart a server. Running state follows the actual
+initialized child; workspace changes and exit stop and reap owned servers.
+Editor enrichment and native fallback continue in P03.
 
 Use the latest Rust **stable** toolchain (`rustup update stable`). This workspace
 selects `stable` through `rust-toolchain.toml`, as requested. Dependency versions

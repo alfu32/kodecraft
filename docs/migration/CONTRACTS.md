@@ -312,6 +312,41 @@ running flags. A missing process service is an explicit error. Workspace changes
 drain jobs and stop registered services; old owner/request/workspace results cannot
 populate new settings. See `docs/parity/P01.md` for evidence and limits.
 
+P02's `LspService` owns at most 16 ordered server clients per workspace. Discovery
+does not auto-start them. Command arrays launch directly through F03's managed
+processes. Settings only show running after initialize/initialized succeeds; failed
+starts and later crashes retain errors, trigger repaint and cannot masquerade as
+running. Restart and workspace disposal await child shutdown/reaping.
+
+Each client has tracked reader, writer, document and supervisor actors on the
+existing Tokio runtime. Frames use UTF-8 byte-counted Content-Length, strict CRLF,
+8 KiB headers and 16 MiB bodies. The writer queue holds at most 32 frames/32 MiB;
+63 user requests leave a reserved internal shutdown slot. IDs are unique and
+responses can arrive out of order. Timeouts, cancellation and dropped request
+futures remove pending entries and attempt $/cancelRequest. Server errors are
+request failures; malformed transport terminates the client. Stderr keeps a 64 KiB
+tail; notifications keep 32 bounded events. Configuration/workspace requests have
+real replies; unknown client methods return -32601. Server-initiated edits and
+window navigation explicitly decline, and dynamic registration is not advertised.
+
+Position encoding is negotiated (UTF-16 by default; UTF-8/UTF-32 supported). The
+protocol mapper recognizes CR/LF/CRLF without normalizing document bytes, excludes
+newline characters from columns and never sends half a CRLF edit. Client document
+versions are separate from editor revisions. Actor-serialized open/change/save/
+close supports negotiated full/incremental sync; older revisions are rejected,
+document identity changes reset the replica, and accepted writes finish even if
+the caller drops its reply future. Limits are 64 documents, 8 MiB per source,
+1 million protocol lines and 64 MiB for all source/index captures per client.
+Virtual documents remain a native-provider responsibility. Typed definition,
+reference and completion requests check server capabilities. Editor attachment,
+current-query revision gates and non-empty-primary/native fallback belong to P03.
+
+Normal shutdown closes documents, sends shutdown then exit, and forces process
+group termination/reaping when deadlines expire. A failed close cannot race a late
+open against shutdown. Actor failure or dropped ownership also cancels the
+supervisor. Defaults are 10 s startup, 800 ms request, 2 s pipe write, 1 s shutdown
+and 500 ms exit grace; no UI input or render path waits for a server response.
+
 ## Intelligence publication
 
 `FileSemanticDelta` holds file facts: symbols, scopes, occurrences, imports, types,
