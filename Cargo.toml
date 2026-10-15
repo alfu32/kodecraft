@@ -40,6 +40,7 @@ reqwest = { version = "=0.13.5", default-features = false, features = ["rustls",
 tar = { version = "=0.4.46", default-features = false }
 flate2 = { version = "=1.1.10", default-features = false, features = ["zlib-rs"] }
 lsp-types = "=0.97.0"
+git2 = { version = "=0.21.0", default-features = false, features = ["vendored-libgit2"] }
 indexmap = { version = "=2.14.2", features = ["serde"] }
 tree-sitter = "=0.26.13"
 rusqlite = { version = "=0.40.2", default-features = false, features = ["bundled", "hooks", "limits"] }
