@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Timeout(15)
 public class ConnectionServiceTest {
     static ObjectNode object(){return FrameCodec.JSON.createObjectNode();}
-    static JsonNode await(CompletionStage<JsonNode> stage) throws Exception{return stage.toCompletableFuture().get(5,TimeUnit.SECONDS);}
+    static JsonNode await(CompletionStage<JsonNode> stage) throws Exception{try{return stage.toCompletableFuture().get(5,TimeUnit.SECONDS);}catch(ExecutionException failure){if(failure.getCause() instanceof RpcException rpc)throw new ExecutionException("Synthetic fixture RPC "+rpc.code+": "+rpc.data,rpc);throw failure;}}
     static RpcException error(CompletionStage<JsonNode> stage){ExecutionException error=assertThrows(ExecutionException.class,()->await(stage));assertInstanceOf(RpcException.class,error.getCause());return (RpcException)error.getCause();}
     static final class Fixture implements AutoCloseable {
         final LoaderCatalog loaders=new LoaderCatalog();final ConnectionService service=new ConnectionService(loaders);final String loader;
@@ -33,6 +33,18 @@ public class ConnectionServiceTest {
             ObjectNode p=f.params("same");JsonNode open=await(f.service.open(p));String id=open.path("connectionId").asText();
             JsonNode test=await(f.service.test(p));assertTrue(test.path("success").asBoolean());assertEquals("H2",test.path("productName").asText());assertFalse(test.path("productVersion").asText().isBlank());assertFalse(test.path("driverVersion").asText().isBlank());assertTrue(test.path("latencyMs").asLong()>=0);assertFalse(test.has("connectionId"));
             assertEquals(id,await(f.service.open(p)).path("connectionId").asText());assertEquals("1",f.sql(id,"select 1").path("value").asText());
+        }
+    }
+    @Test void concurrentOwnersArePublishedBeforeStartAndConfirmedCloseAllowsImmediateReopen() throws Exception {
+        try(Fixture f=new Fixture()){
+            for(int round=0;round<2;round++){
+                List<ObjectNode> params=new ArrayList<>();List<CompletionStage<JsonNode>> opening=new ArrayList<>();
+                for(int i=0;i<24;i++){ObjectNode p=f.params("parallel-"+round+"-"+i);params.add(p);opening.add(f.service.open(p));}
+                for(int i=0;i<24;i++){
+                    String id=await(opening.get(i)).path("connectionId").asText();assertEquals("1",f.sql(id,"select 1").path("value").asText());
+                    await(f.service.disconnect(object().put("connectionId",id)));String next=await(f.service.open(params.get(i))).path("connectionId").asText();assertNotEquals(id,next);await(f.service.disconnect(object().put("connectionId",next)));
+                }
+            }
         }
     }
     @Test void manualTransactionsAreSharedAcrossConsolesRollbackCommitAndAutoCommitAreAuthoritative() throws Exception {
@@ -85,13 +97,13 @@ public class ConnectionServiceTest {
     }
     public static final class TrackingDriver implements Driver {
         static final Map<String,Track> tracks=new ConcurrentHashMap<>();
-        static final class Track {final Set<Thread> owners=ConcurrentHashMap.newKeySet();final CountDownLatch aborted=new CountDownLatch(1);final AtomicInteger closeCount=new AtomicInteger();volatile boolean failClose;}
+        static final class Track {final Set<Thread> owners=ConcurrentHashMap.newKeySet();final CountDownLatch aborted=new CountDownLatch(1);final AtomicInteger closeCount=new AtomicInteger();volatile boolean failClose,warnAfterClose;}
         public Connection connect(String url,Properties properties) throws SQLException {
             if(!acceptsURL(url))return null;Track track=tracks.get(url);Connection delegate=new org.h2.Driver().connect(url.replace("jdbc:tracked:","jdbc:h2:"),properties);track.owners.add(Thread.currentThread());
             return (Connection)Proxy.newProxyInstance(getClass().getClassLoader(),new Class<?>[]{Connection.class},(proxy,method,args)->{
                 if(method.getName().equals("abort")){track.aborted.countDown();return null;}
                 track.owners.add(Thread.currentThread());if(method.getName().equals("close")){track.closeCount.incrementAndGet();if(track.failClose)throw new SQLException("Synthetic close failure","08006");}
-                try{return method.invoke(delegate,args);}catch(InvocationTargetException failure){throw failure.getCause();}
+                try{Object value=method.invoke(delegate,args);if(method.getName().equals("close")&&track.warnAfterClose)throw new SQLException("Synthetic failure after confirmed close","08006");return value;}catch(InvocationTargetException failure){throw failure.getCause();}
             });
         }
         public boolean acceptsURL(String url){return url.startsWith("jdbc:tracked:");}
@@ -112,6 +124,13 @@ public class ConnectionServiceTest {
         try(Fixture f=new Fixture(TrackingDriver.class.getName())){
             String id=await(f.service.open(f.params("unclosed").put("jdbcUrl",url).put("driverClass",TrackingDriver.class.getName()))).path("connectionId").asText();RpcException failure=error(f.service.disconnect(object().put("connectionId",id)));assertEquals(SqlErrors.SQL_FAILURE,failure.code);
             assertEquals(SqlErrors.NEEDS_RESTART,assertThrows(RpcException.class,()->f.service.open(f.params("new"))).code);assertFalse(failure.data.path("closed").asBoolean());
+        }finally{TrackingDriver.tracks.remove(url);}
+    }
+    @Test void confirmedCloseStillReportsDriverFailureAndAllowsAnExplicitNewConnection() throws Exception {
+        String url="jdbc:tracked:mem:"+UUID.randomUUID();TrackingDriver.Track track=new TrackingDriver.Track();track.warnAfterClose=true;TrackingDriver.tracks.put(url,track);
+        try(Fixture f=new Fixture(TrackingDriver.class.getName())){
+            String id=await(f.service.open(f.params("warning").put("jdbcUrl",url).put("driverClass",TrackingDriver.class.getName()))).path("connectionId").asText();RpcException failure=error(f.service.disconnect(object().put("connectionId",id)));assertTrue(failure.data.path("closed").asBoolean());assertEquals("08006",failure.data.path("sqlError").path("sqlState").asText());
+            assertFalse(await(f.service.open(f.params("warning"))).path("connectionId").asText().isBlank());
         }finally{TrackingDriver.tracks.remove(url);}
     }
 }

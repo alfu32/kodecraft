@@ -363,10 +363,36 @@ impl Shared {
                     }
                     entry.snapshot.error = Some(failure.clone().into());
                     entry.snapshot.unknown_outcome |= failure.unknown_outcome;
+                    if let Some(state) = failure.remote_data().and_then(|data| data.get("state"))
+                        && state.get("contextUnknown").and_then(Value::as_bool) == Some(true)
+                        && let Some(session) = entry.snapshot.session.as_mut()
+                    {
+                        session.context_unknown = true;
+                        session.transaction_usable = false;
+                        session.context_revision = session.context_revision.max(
+                            state
+                                .get("contextRevision")
+                                .and_then(Value::as_u64)
+                                .unwrap_or_default(),
+                        );
+                        session.state_revision = session.state_revision.max(
+                            state
+                                .get("stateRevision")
+                                .and_then(Value::as_u64)
+                                .unwrap_or_default(),
+                        );
+                    }
                     if (failure.unknown_outcome || !matches!(failure.kind, Failure::Remote))
                         && let Some(session) = entry.snapshot.session.as_mut()
                     {
                         session.transaction_usable = false;
+                    }
+                    if !matches!(failure.kind, Failure::Remote) {
+                        // An abandoned wait can leave JDBC running. Further
+                        // transaction commands require explicit disconnect;
+                        // they must not race an operation with no final reply.
+                        entry.snapshot.phase = Phase::Error;
+                        entry.snapshot.session = None;
                     }
                     entry.snapshot.revision = entry.snapshot.revision.saturating_add(1);
                 }

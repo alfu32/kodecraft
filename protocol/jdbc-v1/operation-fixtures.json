@@ -10,6 +10,8 @@
     {"jsonrpc":"2.0","id":"open","method":"connection.open","params":{"dataSourceId":"datasource-a","loaderId":"loader-a","driverClass":"org.h2.Driver","jdbcUrl":"jdbc:h2:mem:synthetic","properties":{"user":"synthetic","password":"synthetic-ephemeral-only"},"catalog":null,"schema":"PUBLIC","autoCommit":false,"readOnly":false}},
     {"jsonrpc":"2.0","id":"test","method":"connection.test","params":{"dataSourceId":"datasource-a","loaderId":"loader-a","driverClass":"org.h2.Driver","jdbcUrl":"jdbc:h2:mem:synthetic","properties":{}}},
     {"jsonrpc":"2.0","id":"close","method":"connection.close","params":{"connectionId":"connection-a"}},
+    {"jsonrpc":"2.0","id":"close-attempt","method":"connection.close","params":{"attemptId":"opening-a"}},
+    {"jsonrpc":"2.0","id":"close-source","method":"connection.close","params":{"dataSourceId":"datasource-a"}},
     {"jsonrpc":"2.0","id":"context","method":"connection.setContext","params":{"connectionId":"connection-a","catalog":null,"schema":"PUBLIC","readOnly":true,"autoCommit":true}},
     {"jsonrpc":"2.0","id":"commit","method":"connection.commit","params":{"connectionId":"connection-a"}},
     {"jsonrpc":"2.0","id":"rollback","method":"connection.rollback","params":{"connectionId":"connection-a"}},

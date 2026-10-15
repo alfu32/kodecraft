@@ -82,7 +82,7 @@ public final class ConnectionService implements AutoCloseable {
         if(attempts.containsKey(opening.attempt())){opening.clear();opening.redactor().clear();throw rejected(-32602,"Connection attempt ID is already active");}
         if(sources.size()>=MAX_CONNECTIONS){opening.clear();opening.redactor().clear();throw rejected(-32003,"Connection capacity exhausted");}
         Session session=new Session(opening);sources.put(session.source,session);ids.put(session.id,session);attempts.put(session.attempt,session);
-        session.worker=Thread.ofPlatform().daemon(true).name("jdbc-connection-"+session.id).start(()->session.loop(opening));return session.opened;
+        session.worker=Thread.ofPlatform().daemon(true).name("jdbc-connection-"+session.id).unstarted(()->session.loop(opening));session.worker.start();return session.opened;
     }
     public synchronized CompletionStage<JsonNode> test(ObjectNode params) throws Exception {
         available();Opening opening=Opening.parse(params);if(cancelledAttempts.contains(opening.attempt())){opening.clear();opening.redactor().clear();throw rejected(SqlErrors.STALE_CONNECTION,"Connection test was cancelled before it started");}if(attempts.containsKey(opening.attempt())){opening.clear();opening.redactor().clear();throw rejected(-32602,"Connection attempt ID is already active");}Session session=new Session(opening);temporary.add(session);attempts.put(session.attempt,session);
@@ -100,7 +100,7 @@ public final class ConnectionService implements AutoCloseable {
             catch(Throwable error){failure=error;}
             finally{opening.clear();}
             try{session.closeOwned();}catch(Throwable error){if(failure==null)failure=error;else failure.addSuppressed(error);}
-            if(failure==null)session.opened.complete(result);else session.opened.completeExceptionally(SqlErrors.error(failure,session.redactor,null,false));
+            if(failure==null)session.opened.complete(result);else session.opened.completeExceptionally(session.afterCloseError(failure));
             if(session.released){session.closed.complete(FrameCodec.JSON.createObjectNode().put("closed",true));session.redactor.clear();temporary.remove(session);forget(session);}else session.closed.completeExceptionally(session.restartError());
             Thread.currentThread().setContextClassLoader(previous);
         }
@@ -144,13 +144,24 @@ public final class ConnectionService implements AutoCloseable {
         private volatile Runnable cancelActive;
         Session(Opening opening){source=opening.source();attempt=opening.attempt();fingerprint=opening.fingerprint();redactor=opening.redactor();}
         private void owner(){if(Thread.currentThread()!=worker)throw new IllegalStateException("JDBC operation outside its owner");}
+        private RpcException afterCloseError(Throwable failure){
+            RpcException error=SqlErrors.error(failure,redactor,null,false);if(released)return error;
+            ObjectNode data=error.data instanceof ObjectNode value?value.deepCopy():FrameCodec.JSON.createObjectNode();data.put("restartRequired",true).put("notStarted",false);return new RpcException(SqlErrors.NEEDS_RESTART,"Connection cleanup could not be confirmed; restart the helper",data);
+        }
         public Connection connection() throws SQLException {owner();if(connection==null||broken||connection.isClosed())throw new SQLException("Connection is unavailable","08003");return connection;}
         /** Cancellation hook must refer to this execution, and must itself be
          * nonblocking (schedule Statement.cancel on its independent executor). */
         public void cancellation(Runnable callback){owner();cancelActive=callback;if(callback!=null&&closing.get())callback.run();}
         public boolean closing(){return closing.get()||stopping.get();}
         public boolean transactionUsable(){owner();return transactionUsable&&!broken;}
-        public void failed(Throwable failure){owner();SQLException sql=SqlErrors.find(failure);if(sql!=null&&sql.getSQLState()!=null){String state=sql.getSQLState();if(state.startsWith("08")){broken=true;transactionUsable=false;}else if(state.startsWith("25")||state.startsWith("40"))transactionUsable=false;}}
+        public void failed(Throwable failure){
+            owner();SQLException sql=SqlErrors.find(failure);if(sql==null)return;
+            String state=sql.getSQLState();if(state!=null&&state.startsWith("08")){broken=true;transactionUsable=false;return;}
+            // Several engines abort manual transactions for ordinary syntax or
+            // constraint errors too. Require explicit rollback conservatively.
+            try{if(connection!=null&&!connection.getAutoCommit())transactionUsable=false;}catch(SQLException ignored){broken=true;transactionUsable=false;}
+            if(state!=null&&(state.startsWith("25")||state.startsWith("40")))transactionUsable=false;
+        }
         public ObjectNode snapshot() throws Exception {
             owner();Connection conn=connection();ObjectNode state=info.deepCopy().put("connectionId",id).put("dataSourceId",source).put("contextRevision",contextRevision).put("stateRevision",++stateRevision).put("transactionUsable",transactionUsable).put("autoCommit",conn.getAutoCommit()).put("readOnly",conn.isReadOnly());
             nullable(state,"catalog",catalog(conn));nullable(state,"schema",schema(conn));return state;
@@ -176,7 +187,7 @@ public final class ConnectionService implements AutoCloseable {
                 try{connect(opening);opened.complete(snapshot());}
                 catch(Throwable failure){
                     try{closeOwned();}catch(Throwable closeFailure){failure.addSuppressed(closeFailure);}
-                    opened.completeExceptionally(SqlErrors.error(failure,redactor,null,false));
+                    opened.completeExceptionally(afterCloseError(failure));
                     if(released){closed.complete(FrameCodec.JSON.createObjectNode().put("closed",true));return;}
                     closed.completeExceptionally(restartError());return;
                 }finally{opening.clear();}

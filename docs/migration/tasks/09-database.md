@@ -71,7 +71,7 @@ manifests; `kode-tui/src/panels/database/driver_install.rs`.
 
 ## D04 — Connections, testing and transaction control
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** D03. **Owns:** Java `connections/`,
 `kode-database/src/connections.rs`.
@@ -90,7 +90,7 @@ manifests; `kode-tui/src/panels/database/driver_install.rs`.
 
 ## D05 — SQL execution, results and independent cancellation
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** D04. **Owns:** Java `queries/`, `kode-database/src/execution.rs`.
 **Read:** SqlQuery.kt execution/conversion/warning code; JdbcDatabaseIntegrationTest.

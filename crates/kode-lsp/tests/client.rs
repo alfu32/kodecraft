@@ -286,7 +286,13 @@ async fn startup_errors_timeout_cancel_crash_and_bad_protocol_always_reap_the_ow
     let work = tokio::spawn(async move {
         LspClient::start(spec, options, Arc::new(SystemProcessFactory), &token).await
     });
-    until(|| fixture.directory.path().join("pid").exists()).await;
+    until(|| {
+        fs::read_to_string(fixture.directory.path().join("pid"))
+            .ok()
+            .and_then(|value| value.parse::<u32>().ok())
+            .is_some()
+    })
+    .await;
     cancel.cancel();
     assert!(matches!(work.await.unwrap(), Err(DomainError::Cancelled)));
     let pid: u32 = fs::read_to_string(fixture.directory.path().join("pid"))
@@ -394,7 +400,13 @@ async fn blocked_pipe_dropped_start_future_and_dropped_client_cannot_leave_a_ser
         )
         .await
     });
-    until(|| fixture.directory.path().join("pid").exists()).await;
+    until(|| {
+        fs::read_to_string(fixture.directory.path().join("pid"))
+            .ok()
+            .and_then(|value| value.parse::<u32>().ok())
+            .is_some()
+    })
+    .await;
     work.abort();
     assert!(work.await.is_err());
     let pid: u32 = fs::read_to_string(fixture.directory.path().join("pid"))
@@ -578,7 +590,13 @@ async fn registry_records_failed_start_and_shutdown_cancels_an_inflight_start_be
             .start(entry, command, &CancellationToken::new())
             .await
     });
-    until(|| fixture.directory.path().join("pid").exists()).await;
+    until(|| {
+        fs::read_to_string(fixture.directory.path().join("pid"))
+            .ok()
+            .and_then(|value| value.parse::<u32>().ok())
+            .is_some()
+    })
+    .await;
     let pid: u32 = fs::read_to_string(fixture.directory.path().join("pid"))
         .unwrap()
         .parse()

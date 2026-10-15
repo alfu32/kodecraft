@@ -945,3 +945,46 @@ resolution ID. Transport budgets remain shared and bounded; query data/final
 outcomes are not coalesced. Cancellation waits for the original install final
 response. The modal has no I/O in paint/input, gates completion by workspace/job,
 and never treats progress or a cancellation acknowledgement as completed work.
+
+## JDBC connections and transaction state
+
+D04 owns Java `connections/` and native `connections::{Connections,SessionInfo,
+Snapshot,Context,TestResult,Error}`. Construction/status reads perform no I/O.
+Explicit test/open inspect the selected installed driver without downloading,
+resolve all credential references from one bounded private snapshot off the
+application thread, and send only ephemeral properties. Public properties precede
+private property references, nonblank username and password override/reference.
+No prepared credential-bearing payload implements a persisted settings contract.
+
+One connection per datasource has its own serialized owner; consoles share its
+transaction. Direct Driver.connect retains its loader lease and thread context.
+Test uses a temporary connection and closes it before replying. Context setters
+verify actual driver state, apply autocommit last and expose partial failures.
+Explicit null catalog/schema restores login defaults; omitted fields stay put.
+SQL failures in manual transactions conservatively require rollback before commit.
+Read-only is a driver hint; ignored setters fail rather than claiming enforcement.
+
+Close has an independent control route, reserved owner slot and bounded abort
+executor. It cancels queued work before start; JDBC close stays on its owner.
+Unconfirmed close retains the lease and requires helper restart. Confirmed close
+with a driver exception still returns that error with `data.closed: true`.
+An attempt ID/tombstone prevents priority cancellation overtaking open dispatch
+and creating a hidden connection; close by attempt cannot affect a newer session.
+Bounds and wire fields are documented in `protocol/jdbc-v1/README.md`.
+
+Connection state is tagged with helper epoch and connection ID; context/state
+revisions prevent stale context or independently delivered replies from restoring
+older state. SQL errors retain bounded redacted message/SQLSTATE/vendor/chains.
+Unknown context is explicit and invalidates context assumptions. Helper death
+invalidates session IDs and marks uncertainty without starting another helper.
+Abandoned transaction waits require explicit disconnect before further commands.
+No SQL/commit/rollback replay exists. Workspace shutdown cancels/drains tracked
+operations, stops installer consumers and shuts down/reaps the helper.
+
+D05/D06 must submit all execution/metadata work through `ConnectionService.submit`
+and its owner-only Session accessors. Execution cancellation hooks must enqueue
+independent statement cancellation without blocking control. D06 keys metadata
+by epoch/connection/context revision and invalidates on unknown context/failure.
+D07 must await `Connections.definition_changed` before saving even an equal
+definition, because private values may change under an unchanged reference.
+Composition supplies process-state repaint notifications; paint never starts Java.

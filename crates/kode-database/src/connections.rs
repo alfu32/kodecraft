@@ -53,6 +53,8 @@ pub struct SessionInfo {
     pub context_revision: u64,
     pub state_revision: u64,
     pub transaction_usable: bool,
+    #[serde(default)]
+    pub context_unknown: bool,
 }
 impl std::fmt::Debug for SessionInfo {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -374,12 +376,28 @@ impl Connections {
         self.owner.tasks.close();
         self.owner.tasks.wait().await;
         self.owner.shared.installer.stop_progress().await;
-        self.owner
+        let result = self
+            .owner
             .shared
             .runtime
             .shutdown()
             .await
-            .map_err(Into::into)
+            .map_err(Error::from);
+        for entry in self
+            .owner
+            .shared
+            .entries
+            .lock()
+            .expect("connection state")
+            .values_mut()
+        {
+            entry.snapshot.phase = Phase::Disconnected;
+            entry.snapshot.session = None;
+            entry.client = None;
+            entry.snapshot.unknown_outcome |= result.is_err();
+            entry.snapshot.revision = entry.snapshot.revision.saturating_add(1);
+        }
+        result
     }
 }
 
@@ -439,7 +457,7 @@ impl Shared {
                 "Datasource contains invalid or unsafe connection settings",
             )
         })?;
-        if definition.id.is_empty()
+        if definition.id.trim().is_empty()
             || definition.id.len() > 128
             || definition.id.chars().any(char::is_control)
             || definition.properties.len() + definition.credential_properties.len() > 254
