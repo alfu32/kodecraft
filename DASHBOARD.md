@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    30 |           1 |   34 |       0 |    65 |
+|    28 |           1 |   36 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **L09** — [Background index coordinator and editor facade](docs/migration/tasks/06-intelligence.md#l09--background-index-coordinator-and-editor-facade)
+- **L12** — [Language and persistence parity qualification](docs/migration/tasks/06-intelligence.md#l12--language-and-persistence-parity-qualification)
 
 ## Task status
 
@@ -29,7 +29,7 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | E08  | [Folding and Braille minimap](docs/migration/tasks/02-editor.md)                                | done        | [Report](docs/parity/E08.md) |
 | E09  | [Completion popup and insertion](docs/migration/tasks/02-editor.md)                             | done        | [Report](docs/parity/E09.md) |
 | E10  | [Definitions, usages and hover preview](docs/migration/tasks/02-editor.md)                      | done        | [Report](docs/parity/E10.md) |
-| E11  | [Highlight overlays and edit remapping](docs/migration/tasks/02-editor.md)                      | todo        | —                            |
+| E11  | [Highlight overlays and edit remapping](docs/migration/tasks/02-editor.md)                      | done        | [Report](docs/parity/E11.md) |
 | E12  | [Reusable editor hosts and virtual/read-only documents](docs/migration/tasks/02-editor.md)      | done        | [Report](docs/parity/E12.md) |
 | E13  | [Complete editor interaction qualification](docs/migration/tasks/02-editor.md)                  | todo        | —                            |
 | W01  | [Source roots, exclusions and project scanning](docs/migration/tasks/03-workspace.md)           | done        | [Report](docs/parity/W01.md) |
@@ -51,10 +51,10 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | L06  | [Names, scopes, imports and symbol resolution](docs/migration/tasks/06-intelligence.md)         | done        | [Report](docs/parity/L06.md) |
 | L07  | [Expression types and receiver member lookup](docs/migration/tasks/06-intelligence.md)          | done        | [Report](docs/parity/L07.md) |
 | L08  | [Dependency invalidation and incremental generations](docs/migration/tasks/06-intelligence.md)  | done        | [Report](docs/parity/L08.md) |
-| L09  | [Background index coordinator and editor facade](docs/migration/tasks/06-intelligence.md)       | in-progress | —                            |
+| L09  | [Background index coordinator and editor facade](docs/migration/tasks/06-intelligence.md)       | done        | [Report](docs/parity/L09.md) |
 | L10  | [Other language adapters and heuristic fallback](docs/migration/tasks/06-intelligence.md)       | done        | [Report](docs/parity/L10.md) |
 | L11  | [Completion providers and deterministic ranking](docs/migration/tasks/06-intelligence.md)       | done        | [Report](docs/parity/L11.md) |
-| L12  | [Language and persistence parity qualification](docs/migration/tasks/06-intelligence.md)        | todo        | —                            |
+| L12  | [Language and persistence parity qualification](docs/migration/tasks/06-intelligence.md)        | in-progress | —                            |
 | P01  | [Server catalog, discovery and installation](docs/migration/tasks/07-lsp.md)                    | todo        | —                            |
 | P02  | [LSP client transport and lifecycle](docs/migration/tasks/07-lsp.md)                            | todo        | —                            |
 | P03  | [Editor enrichment and provider fallback](docs/migration/tasks/07-lsp.md)                       | todo        | —                            |

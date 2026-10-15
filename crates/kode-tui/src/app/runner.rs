@@ -25,7 +25,7 @@ pub async fn run_with_resources(
     initial_file: Option<PathBuf>,
     resources: Option<PathBuf>,
 ) -> Result<()> {
-    let (prepared, theme, detector, log) = tokio::task::spawn_blocking(move || {
+    let (prepared, theme, detector, log, intelligence) = tokio::task::spawn_blocking(move || {
         let paths = ResourcePaths::from_environment(resources)?;
         let defaults = compiled_resources();
         let css = paths.resolve("styles/app.css", &defaults)?;
@@ -37,6 +37,11 @@ pub async fn run_with_resources(
         theme.merge(&Theme::parse(css));
         let detector =
             MimeDetector::from_table(&paths.resolve("mime-types.json", &defaults)?.bytes)?;
+        let definitions = std::env::var_os("KODE_CODEINTEL_PATH").map(PathBuf::from);
+        let intelligence = Arc::new(kode_intelligence::facade::IntelligenceResources::load(
+            &paths,
+            definitions.as_deref(),
+        )?);
         let log = Arc::new(FileLog::open(
             &paths.config_dir.join("kode.jsonl"),
             4 * 1024 * 1024,
@@ -47,12 +52,13 @@ pub async fn run_with_resources(
             initial_file,
             &CancellationToken::new(),
         )?;
-        Ok::<_, DomainError>((prepared, theme, detector, log))
+        Ok::<_, DomainError>((prepared, theme, detector, log, intelligence))
     })
     .await
     .map_err(|error| DomainError::Unsupported(format!("workspace startup failed: {error}")))??;
     let mut runtime = AppRuntime::new(prepared)?;
     runtime.set_detector(detector)?;
+    runtime.start_intelligence(intelligence).await?;
     let terminal = TerminalSession::open(Some(log.clone()), true).map_err(terminal_error);
     let mut terminal = match terminal {
         Ok(terminal) => terminal,
@@ -93,10 +99,9 @@ async fn event_loop(
     terminal: &mut TerminalSession,
     theme: &Theme,
 ) -> Result<()> {
+    let mut repaint = runtime.notifications.subscribe();
     loop {
-        if let Some(event) = terminal
-            .poll(Duration::from_millis(16))
-            .map_err(terminal_error)?
+        if let Some(event) = terminal.poll(Duration::ZERO).map_err(terminal_error)?
             && let Err(error) = runtime.state.dispatch(&event)
         {
             runtime.state.notice = error.to_string();
@@ -145,6 +150,12 @@ async fn event_loop(
                     }
                 }
             }
+        }
+        // Worker results wake painting directly. The timer services input,
+        // hover/drag and debounce deadlines even when no terminal event arrives.
+        tokio::select! {
+            _ = repaint.changed() => {},
+            _ = tokio::time::sleep(Duration::from_millis(16)) => {},
         }
     }
 }

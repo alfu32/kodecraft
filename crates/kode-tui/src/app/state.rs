@@ -157,6 +157,8 @@ pub struct AppState {
     pub store: SessionStore,
     pub watcher: Option<TreeWatcher>,
     pub notice: String,
+    pub intelligence_status: String,
+    pub intelligence_revision: u64,
     pub splash: bool,
     pub closing: bool,
     pub window_focused: bool,
@@ -219,6 +221,8 @@ impl AppState {
             store: prepared.store,
             watcher: Some(prepared.watcher),
             notice,
+            intelligence_status: String::new(),
+            intelligence_revision: 0,
             splash: initial.is_none(),
             closing: false,
             window_focused: true,
@@ -922,6 +926,11 @@ impl AppState {
             display_text(&self.notice)
         } else {
             format!("{} files scanned | Ctrl+Q quit", self.scan.files.len())
+        };
+        let status = if self.intelligence_status.is_empty() {
+            status
+        } else {
+            format!("{status} | {}", display_text(&self.intelligence_status))
         };
         draw_text(geometry.status, buffer, &status, theme.style("content"));
         if let Some(dialog) = &mut self.search {

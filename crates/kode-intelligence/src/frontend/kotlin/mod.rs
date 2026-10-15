@@ -12,6 +12,9 @@ pub struct KotlinSemanticAdapter {
     parser: ParserSession,
 }
 impl KotlinSemanticAdapter {
+    pub fn last_document(&self) -> Option<&ParsedDocument> {
+        self.parser.last_document()
+    }
     pub fn new(registry: &GrammarRegistry) -> Result<Self> {
         let grammar = registry.get("kotlin").ok_or_else(|| {
             kode_core::DomainError::Unsupported("native Kotlin grammar unavailable".into())

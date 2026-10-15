@@ -76,7 +76,7 @@ impl PreviewHighlighter for Highlighter {
     fn highlights(&self, _: &TextSnapshot) -> Result<Vec<HighlightSpan>> {
         Ok(vec![HighlightSpan {
             range: range(0, 3),
-            class: "keyword".into(),
+            class: "semantic.keyword".into(),
         }])
     }
 }
@@ -457,7 +457,7 @@ fn current_unsaved_source_declaration_preview_is_bounded_and_syntax_colored() {
     let buffer = h.render();
     assert_eq!(
         buffer[(popup_geometry.source.x, popup_geometry.source.y)].fg,
-        Theme::compiled().style("keyword").fg.unwrap()
+        Theme::compiled().style("semantic.keyword").fg.unwrap()
     );
 }
 

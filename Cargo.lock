@@ -1018,6 +1018,7 @@ dependencies = [
  "kode-core",
  "kode-platform",
  "kode-syntax",
+ "kode-workspace",
  "rusqlite",
  "serde",
  "serde_json",

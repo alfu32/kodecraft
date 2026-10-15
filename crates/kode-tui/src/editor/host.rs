@@ -7,6 +7,7 @@ use super::{
     },
     loading::{PreparedDocument, SaveController, SaveJob},
     minimap::Minimap,
+    overlays::{OverlayCache, OverlayJob, OverlayReport},
     popups::{
         completion::{CompletionJob, CompletionPopup, HostCompletionProvider},
         definition::{NavigationController, NavigationEffect, NavigationJob, NavigationResult},
@@ -587,6 +588,7 @@ pub enum EditorWork {
     },
     Completion(CompletionJob),
     Navigation(NavigationJob),
+    Overlays(OverlayJob),
     Changed(HostChange),
     Execute(HostExecution),
     Navigate(NavigationTarget),
@@ -702,6 +704,7 @@ pub struct EditorView<H: EditorHost> {
     pub visuals: EditorVisuals,
     pub completion: CompletionPopup,
     pub navigation: NavigationController,
+    pub overlays: OverlayCache,
     pub error: Option<DomainError>,
     workspace: WorkspaceGeneration,
     clipboard: Arc<ClipboardService>,
@@ -737,6 +740,7 @@ impl<H: EditorHost> EditorView<H> {
             visuals: EditorVisuals::default(),
             completion,
             navigation,
+            overlays: OverlayCache::default(),
             error: None,
             workspace,
             clipboard,
@@ -785,6 +789,9 @@ impl<H: EditorHost> EditorView<H> {
     }
     fn changed(&mut self, snapshot: TextSnapshot, deltas: Option<Vec<EditDelta>>) -> Result<()> {
         self.observed_revision = snapshot.revision;
+        self.overlays.changed(&snapshot, deltas.as_deref());
+        self.navigation
+            .set_declaration_spans(&snapshot, self.overlays.declarations())?;
         let change = HostChange {
             snapshot: snapshot.clone(),
             deltas,
@@ -1055,8 +1062,72 @@ impl<H: EditorHost> EditorView<H> {
         self.completion
             .context_changed(&snapshot, &self.input.state);
         self.navigation.tick(&snapshot, &self.input.state);
+        let (visible, coverage) = {
+            let layout = self.input.layout(
+                documents.document(self.document_id())?,
+                InputViewport {
+                    geometry,
+                    folds: &folds,
+                },
+            )?;
+            let mut rows =
+                layout.visible_rows(self.input.state.scroll_rows, geometry.text.height as usize);
+            let first = rows.next();
+            let last = rows.last().or(first);
+            let start = first.map_or(ByteOffset(0), |(_, row)| row.source.start);
+            let end = last.map_or(start, |(_, row)| row.source.end);
+            let first_line = first.map_or(0, |(_, row)| row.line.0).saturating_sub(24);
+            let last_line = last
+                .map_or(first_line, |(_, row)| row.fold_end.unwrap_or(row.line).0)
+                .saturating_add(25);
+            let coverage_end = if last_line < snapshot.len_lines() {
+                snapshot.line_start(LineIndex(last_line))?
+            } else {
+                ByteOffset(snapshot.len_bytes())
+            };
+            (
+                TextRange { start, end },
+                TextRange {
+                    start: snapshot.line_start(LineIndex(first_line))?,
+                    end: coverage_end,
+                },
+            )
+        };
+        if let Some(job) = self.overlays.request(
+            &snapshot,
+            visible,
+            coverage,
+            self.workspace,
+            self.host
+                .descriptor()
+                .language
+                .clone()
+                .or_else(|| snapshot.language.clone())
+                .unwrap_or_default(),
+        )? {
+            self.work
+                .retain(|work| !matches!(work, EditorWork::Overlays(_)));
+            self.work.push(EditorWork::Overlays(job));
+        }
         self.drain_controls()?;
         Ok(outcome.repaint)
+    }
+    pub fn complete_overlays(
+        &mut self,
+        tag: JobTag,
+        result: Result<OverlayReport>,
+        documents: &EditorDocuments,
+    ) -> Result<bool> {
+        if self.detached || tag.workspace != self.workspace {
+            return Ok(false);
+        }
+        let snapshot = documents.document(self.document_id())?.snapshot();
+        let accepted = self.overlays.complete(tag, result, &snapshot)?;
+        if accepted {
+            self.navigation
+                .set_declaration_spans(&snapshot, self.overlays.declarations())?;
+        }
+        Ok(accepted)
     }
     pub fn complete_folds(
         &mut self,
@@ -1204,6 +1275,7 @@ impl<H: EditorHost> EditorView<H> {
     pub fn intelligence_changed(&mut self) {
         self.completion.dismiss();
         self.navigation.dismiss();
+        self.overlays.invalidate();
     }
     pub fn detach(&mut self, focus: &mut FocusState) {
         self.detached = true;
@@ -1253,7 +1325,16 @@ impl<H: EditorHost> EditorView<H> {
                 folds: &folds,
             },
         )?;
-        let mut overlays = self.search.overlays(&snapshot, theme);
+        let mut overlays = self.overlays.overlays(theme);
+        if let Some(range) = self.navigation.hover_range(&snapshot) {
+            overlays.push(OverlaySpan {
+                range,
+                priority: 26,
+                style: ratatui::style::Style::default()
+                    .add_modifier(ratatui::style::Modifier::UNDERLINED),
+            });
+        }
+        overlays.extend(self.search.overlays(&snapshot, theme));
         if let Some(highlight) = self.host.transient_highlight()
             && highlight.revision == snapshot.revision
         {
@@ -1278,7 +1359,7 @@ impl<H: EditorHost> EditorView<H> {
         let header = EditorHeader::for_document(
             document,
             self.host.descriptor().mime.clone(),
-            self.host.descriptor().grammar.clone(),
+            self.overlays.label(&self.host.descriptor().grammar),
         );
         let state = self.input.render_state(focus);
         let caret = render_editor(

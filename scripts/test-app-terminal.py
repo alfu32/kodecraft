@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Run the real CLI in synthetic PTYs; never open the developer's session."""
 import fcntl
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,9 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 BINARY = ROOT / "target/debug/kode"
+screen_spec = importlib.util.spec_from_file_location("terminal_screen", ROOT / "scripts/terminal-screen.py")
+screen_module = importlib.util.module_from_spec(screen_spec)
+screen_spec.loader.exec_module(screen_module)
 
 
 def run_case(target, config, size, actions, expected=()):
@@ -23,12 +27,15 @@ def run_case(target, config, size, actions, expected=()):
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", size[1], size[0], 0, 0))
     before = termios.tcgetattr(slave)
     env = dict(os.environ, TERM="xterm-256color", XDG_CONFIG_HOME=str(config), KODE_RS_HOME=str(config / "resources"), KODE_HOME=str(config / "legacy-resources"))
+    env.pop("KODE_CODEINTEL_PATH", None)
     if expected:
         env.pop("NO_COLOR", None)
         env["COLORTERM"] = "truecolor"
     child = subprocess.Popen([str(BINARY), str(target)], stdin=slave, stdout=slave, stderr=slave,
                              start_new_session=True, preexec_fn=lambda: fcntl.ioctl(0, termios.TIOCSCTTY, 0), env=env)
     output = bytearray()
+    screen = screen_module.Screen(*size)
+    seen_expected = set()
     next_action = 0
     last_action = time.monotonic()
     deadline = last_action + 12
@@ -36,27 +43,32 @@ def run_case(target, config, size, actions, expected=()):
     try:
         while time.monotonic() < deadline:
             if select.select([master], [], [], 0.01)[0]:
-                output.extend(os.read(master, 65536))
+                chunk = os.read(master, 65536)
+                output.extend(chunk)
+                screen.feed(chunk)
+                for marker in expected:
+                    if marker in output or marker in screen.text():
+                        seen_expected.add(marker)
                 if b"\x1b[?u" in output and not queried:
                     os.write(master, b"\x1b[?0u\x1b[?62;1;2c")
                     queried = True
             if next_action < len(actions):
                 trigger, delay, payload = actions[next_action]
                 visible = re.sub(rb"\[[0-?]*[ -/]*[@-~]", b"", output)
-                if (trigger in output or trigger in visible) and time.monotonic() - last_action >= delay:
+                if (trigger in output or trigger in visible or trigger in screen.text()) and time.monotonic() - last_action >= delay:
                     os.write(master, payload)
                     next_action += 1
                     last_action = time.monotonic()
             if child.poll() is not None:
                 break
-        assert child.poll() is not None, f"application timed out after action {next_action}: {bytes(output[:6000])!r}"
+        assert child.poll() is not None, f"application timed out after action {next_action}:\n{screen.text().decode('utf-8')}"
         assert child.wait() == 0, f"application failed: {bytes(output[-4000:])!r}"
         assert next_action == len(actions), "application exited before all input was sent"
         assert termios.tcgetattr(slave) == before, "termios state not restored"
         for marker in [b"\x1b[?1049h", b"\x1b[?1049l", b"\x1b[?2004h", b"\x1b[?2004l", b"\x1b[?25h"]:
             assert marker in output, f"missing terminal restoration: {marker!r}"
         for marker in expected:
-            assert marker in output, f"missing rendered output: {marker!r}"
+            assert marker in seen_expected, f"missing rendered output: {marker!r}"
         return {"size": list(size), "exit": 0, "termios_restored": True, "modes_restored": True, "status": "passed"}
     finally:
         if child.poll() is None:

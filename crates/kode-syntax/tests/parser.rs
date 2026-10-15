@@ -16,6 +16,45 @@ fn document(language: &str, text: &str) -> Document {
         text,
     )
 }
+
+#[test]
+fn disk_revision_zero_reloads_do_not_reuse_a_tree_with_different_source_bytes() {
+    let registry = GrammarRegistry::compiled();
+    let mut parser = ParserSession::new(registry.get("kotlin").unwrap()).unwrap();
+    let before = document("kotlin", "class Before\n");
+    let old = parser
+        .parse(
+            &before.snapshot(),
+            WorkspaceGeneration(1),
+            &CancellationToken::new(),
+        )
+        .unwrap();
+    let after = Document::new(
+        before.id(),
+        before.origin().clone(),
+        Some("kotlin".into()),
+        "class After\n",
+    );
+    let parsed = parser
+        .parse(
+            &after.snapshot(),
+            WorkspaceGeneration(1),
+            &CancellationToken::new(),
+        )
+        .unwrap();
+    let fresh = ParserSession::new(registry.get("kotlin").unwrap())
+        .unwrap()
+        .parse(
+            &after.snapshot(),
+            WorkspaceGeneration(1),
+            &CancellationToken::new(),
+        )
+        .unwrap();
+    assert_eq!(before.revision(), after.revision());
+    assert_eq!(parsed.source(), "class After\n");
+    assert_eq!(parsed.root_node().to_sexp(), fresh.root_node().to_sexp());
+    assert_eq!(old.source(), "class Before\n");
+}
 #[test]
 fn kotlin_and_c_parse_real_unicode_fields_and_incremental_edits_equal_fresh_trees() {
     let registry = GrammarRegistry::compiled();

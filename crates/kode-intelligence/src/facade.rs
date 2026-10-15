@@ -11,7 +11,7 @@ use crate::{
 };
 use kode_core::{
     DocumentId, DocumentOrigin, DomainError, Result, Revision, WorkspaceGeneration,
-    document::Document,
+    document::{Document, TextSnapshot},
     intelligence::{
         CompletionItem, DocumentSnapshot, HighlightSpan, IntelligenceProvider, IntelligenceRequest,
         NavigationTarget, SymbolKind as EditorKind,
@@ -67,10 +67,10 @@ impl IntelligenceResources {
 #[derive(Clone)]
 pub struct CapturedSource {
     pub path: String,
-    pub snapshot: DocumentSnapshot,
+    pub snapshot: TextSnapshot,
 }
 impl CapturedSource {
-    pub fn new(snapshot: DocumentSnapshot) -> Result<Self> {
+    pub fn new(snapshot: TextSnapshot) -> Result<Self> {
         Ok(Self {
             path: source_path(&snapshot.origin)?,
             snapshot,
@@ -88,27 +88,30 @@ impl HotSources {
         let id = SemanticIds::file(&source.path);
         self.order.retain(|old| *old != id);
         if let Some(old) = self.sources.remove(&id) {
-            self.bytes -= old.snapshot.text.len();
+            self.bytes -= old.snapshot.len_bytes();
         }
-        if source.snapshot.text.len() > 16 * 1024 * 1024 {
+        if source.snapshot.len_bytes() > 16 * 1024 * 1024 {
             return;
         }
-        self.bytes += source.snapshot.text.len();
+        self.bytes += source.snapshot.len_bytes();
         self.sources.insert(id, source);
         self.order.push_back(id);
         while self.sources.len() > 32 || self.bytes > 64 * 1024 * 1024 {
             if let Some(old) = self.order.pop_front()
                 && let Some(source) = self.sources.remove(&old)
             {
-                self.bytes -= source.snapshot.text.len();
+                self.bytes -= source.snapshot.len_bytes();
             }
         }
     }
     pub fn remove(&mut self, file: FileId) {
         if let Some(old) = self.sources.remove(&file) {
-            self.bytes -= old.snapshot.text.len();
+            self.bytes -= old.snapshot.len_bytes();
         }
         self.order.retain(|id| *id != file);
+    }
+    pub fn captures(&self) -> Vec<CapturedSource> {
+        self.sources.values().cloned().collect()
     }
     pub fn get(&self, file: FileId) -> Option<&CapturedSource> {
         self.sources.get(&file)
@@ -149,6 +152,17 @@ impl NativeFacade {
         }
         self.client.snapshot()
     }
+    pub fn captured_source(&self, path: &str) -> Result<Option<TextSnapshot>> {
+        if self.stop.is_cancelled() {
+            return Err(DomainError::Cancelled);
+        }
+        Ok(self
+            .sources
+            .read()
+            .map_err(|_| DomainError::Unsupported("hot source catalog poisoned".into()))?
+            .get(SemanticIds::file(path))
+            .map(|source| source.snapshot.clone()))
+    }
     fn current(&self, request: &IntelligenceRequest) -> Result<()> {
         if self.stop.is_cancelled()
             || request.tag.workspace != self.generation
@@ -166,35 +180,39 @@ impl NativeFacade {
         let previous = self.snapshot()?;
         let path = source_path(&source.origin)?;
         let file = SemanticIds::file(&path);
-        let language = canonical_language(
-            source
-                .language
-                .as_deref()
-                .or_else(|| previous.file(file).map(|f| f.language_id.as_str()))
-                .unwrap_or("text"),
-        );
-        let mut sources: BTreeMap<_, _> = self
+        {
+            let hot = self
+                .sources
+                .read()
+                .map_err(|_| DomainError::Unsupported("hot source catalog poisoned".into()))?;
+            if hot.get(file).is_some_and(|current| {
+                current.snapshot.id != source.id || current.snapshot.revision > source.revision
+            }) {
+                return Err(DomainError::Cancelled);
+            }
+        }
+        let captures = self
             .sources
             .read()
             .map_err(|_| DomainError::Unsupported("hot source catalog poisoned".into()))?
-            .sources
-            .iter()
-            .map(|(id, source)| (*id, source.clone()))
+            .captures();
+        let mut sources: BTreeMap<_, _> = captures
+            .into_iter()
+            .map(|capture| {
+                (
+                    SemanticIds::file(&capture.path),
+                    (capture.path, capture.snapshot.to_service_snapshot()),
+                )
+            })
             .collect();
-        sources.insert(
-            file,
-            CapturedSource {
-                path,
-                snapshot: source.clone(),
-            },
-        );
-        sources.retain(|id, source| {
+        sources.insert(file, (path, source.clone()));
+        sources.retain(|id, (_, source)| {
             !previous.file(*id).is_some_and(|f| {
-                f.content_hash == SemanticIds::content_hash(&source.snapshot.text)
-                    && f.language_id
-                        == canonical_language(
-                            source.snapshot.language.as_deref().unwrap_or(&language),
-                        )
+                f.content_hash == SemanticIds::content_hash(&source.text)
+                    && source
+                        .language
+                        .as_deref()
+                        .is_none_or(|language| f.language_id == canonical_language(language))
             })
         });
         if sources.is_empty() {
@@ -203,15 +221,14 @@ impl NativeFacade {
         // Unsaved source is resolved in a private worker snapshot. It never
         // overwrites disk-indexed facts or publishes a query's temporary state.
         let mut deltas = vec![];
-        for captured in sources.into_values() {
-            let source = captured.snapshot;
+        for (path, source) in sources.into_values() {
             let language = source
                 .language
                 .as_deref()
                 .map(canonical_language)
                 .or_else(|| {
                     previous
-                        .file(SemanticIds::file(&captured.path))
+                        .file(SemanticIds::file(&path))
                         .map(|f| f.language_id.clone())
                 })
                 .unwrap_or_else(|| "text".into());
@@ -224,7 +241,7 @@ impl NativeFacade {
             let report = SemanticAdapterSession::new(&self.resources.grammars, &language).extract(
                 &self.resources.definitions,
                 &self.resources.keywords,
-                &captured.path,
+                &path,
                 &document.snapshot(),
                 self.generation,
                 &self.stop,
@@ -381,7 +398,9 @@ impl IntelligenceProvider for NativeFacade {
         let (snapshot, file) = self.snapshot_for(&request.snapshot)?;
         let context = CompletionContext::at(
             file,
-            request.snapshot.language.as_deref().unwrap_or("text"),
+            snapshot
+                .file(file)
+                .map_or("text", |file| file.language_id.as_str()),
             &request.snapshot.text,
             request.position,
         )?;

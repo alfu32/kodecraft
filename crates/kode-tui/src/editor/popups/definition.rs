@@ -589,15 +589,15 @@ impl DefinitionPopup {
                                 end: ByteOffset(byte.0 + scalar.len_utf8()),
                             };
                             let glyph = Glyph::for_scalar(scalar);
-                            let mut style = theme.style(if scalar == '\t' {
-                                "code-tab"
-                            } else {
-                                "code-search-bar"
-                            });
+                            let mut style = theme.style("code-search-bar");
                             for span in &preview.highlights {
                                 if span.range.start < range.end && range.start < span.range.end {
-                                    style = style.patch(theme.style(&span.class));
+                                    style = style
+                                        .patch(crate::editor::overlays::rule(theme, &span.class));
                                 }
+                            }
+                            if scalar == '\t' {
+                                style = style.patch(theme.style("code-tab"));
                             }
                             let y = geometry.source.y + index as u16;
                             let x = geometry.source.x + column as u16;
@@ -757,6 +757,12 @@ impl NavigationController {
         self.declaration_spans = spans;
         self.declaration_stamp = Some((snapshot.id, snapshot.revision));
         Ok(())
+    }
+    pub fn hover_range(&self, snapshot: &TextSnapshot) -> Option<TextRange> {
+        self.hover
+            .as_ref()
+            .filter(|hover| (hover.document, hover.revision) == (snapshot.id, snapshot.revision))
+            .map(|hover| hover.identifier.range)
     }
     fn request(
         &mut self,

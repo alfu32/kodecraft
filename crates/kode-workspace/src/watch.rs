@@ -5,7 +5,7 @@ use std::{
     path::Path,
     sync::{
         Arc, Mutex,
-        atomic::{AtomicBool, Ordering},
+        atomic::{AtomicBool, AtomicU64, Ordering},
     },
 };
 
@@ -13,6 +13,7 @@ pub struct TreeWatcher {
     _watcher: Option<RecommendedWatcher>,
     dirty: Arc<AtomicBool>,
     error: Arc<Mutex<Option<String>>>,
+    source_revision: Arc<AtomicU64>,
 }
 impl TreeWatcher {
     /// Worker-owned setup/drop. Native failures still permit timer refreshes.
@@ -21,13 +22,25 @@ impl TreeWatcher {
         let error = Arc::new(Mutex::new(None));
         let callback_dirty = dirty.clone();
         let callback_error = error.clone();
+        let source_revision = Arc::new(AtomicU64::new(0));
+        let callback_revision = source_revision.clone();
+        let source_root = root.to_path_buf();
         let watcher = notify::recommended_watcher(move |event: notify::Result<notify::Event>| {
             match event {
                 Ok(event) if event.kind.is_access() => return,
+                Ok(event) => {
+                    if event.paths.is_empty()
+                        || event
+                            .paths
+                            .iter()
+                            .any(|path| !crate::exclusions::index_metadata(&source_root, path))
+                    {
+                        callback_revision.fetch_add(1, Ordering::AcqRel);
+                    }
+                }
                 Err(failure) => {
                     *callback_error.lock().expect("watch error") = Some(failure.to_string());
                 }
-                _ => {}
             }
             callback_dirty.store(true, Ordering::Release);
         })
@@ -46,10 +59,15 @@ impl TreeWatcher {
             _watcher: watcher,
             dirty,
             error,
+            source_revision,
         }
     }
     pub fn take_dirty(&self) -> bool {
         self.dirty.swap(false, Ordering::AcqRel)
+    }
+    /// Non-consuming source invalidation excludes writes to owned index metadata.
+    pub fn source_revision(&self) -> u64 {
+        self.source_revision.load(Ordering::Acquire)
     }
     pub fn take_error(&self) -> Option<DomainError> {
         self.error.lock().expect("watch error").take().map(|error| {

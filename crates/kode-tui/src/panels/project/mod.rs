@@ -24,6 +24,8 @@ pub enum ProjectWork {
     RemoveSource(PathBuf),
     RemoveExclusion(PathBuf),
     Rescan,
+    RebuildIndex,
+    ClearIndex,
 }
 pub struct ProjectPanel {
     pub id: FocusId,
@@ -138,6 +140,8 @@ impl ProjectPanel {
                     Key::Character('a' | 'A') => self.work.push(ProjectWork::AddSource),
                     Key::Character('x' | 'X') => self.work.push(ProjectWork::AddExclusion),
                     Key::Character('r' | 'R') => self.work.push(ProjectWork::Rescan),
+                    Key::Character('b' | 'B') => self.work.push(ProjectWork::RebuildIndex),
+                    Key::Character('c' | 'C') => self.work.push(ProjectWork::ClearIndex),
                     Key::Character('d' | 'D') | Key::Backspace | Key::Delete => {
                         self.remove(&entries)
                     }
@@ -178,6 +182,21 @@ impl ProjectPanel {
                 text,
                 theme.style("content"),
             );
+        }
+        if area.height > 3 && self.message.is_empty() {
+            let mut x = area.x;
+            for (label, command) in [
+                ("[rebuild(b)]", ProjectWork::RebuildIndex),
+                ("[clear(c)]", ProjectWork::ClearIndex),
+            ] {
+                if x + label.len() as u16 > area.right() {
+                    continue;
+                }
+                let hit = Rect::new(x, area.y + 3, label.len() as u16, 1);
+                draw_text(hit, buffer, label, theme.style("lsp-button"));
+                self.buttons.push((hit, command));
+                x += (label.len() + 1) as u16;
+            }
         }
         let entries = Self::entries(project);
         self.selected = self.selected.min(entries.len().saturating_sub(1));

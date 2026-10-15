@@ -125,6 +125,24 @@ impl SemanticAdapterSession {
             )?;
             merge_fallback(&mut delta, fallback);
         }
+        let parsed = match &self.adapter {
+            Adapter::Kotlin(adapter) => adapter.last_document(),
+            Adapter::C(adapter) => adapter.last_document(),
+            Adapter::Generic(adapter) => adapter.last_document(),
+            Adapter::Heuristic => None,
+        };
+        if let Some(parsed) = parsed
+            && parsed.has_errors()
+            && parsed.snapshot().id == snapshot.id
+            && parsed.snapshot().revision == snapshot.revision
+            && parsed.source() == snapshot.text().as_ref()
+        {
+            notes.push(format!(
+                "{}: partial syntax ({} recovery diagnostics)",
+                self.language,
+                parsed.diagnostics().len()
+            ));
+        }
         Ok(ExtractionReport {
             delta,
             capability,

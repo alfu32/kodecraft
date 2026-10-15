@@ -17,6 +17,9 @@ pub struct GenericSemanticAdapter {
     parser: ParserSession,
 }
 impl GenericSemanticAdapter {
+    pub fn last_document(&self) -> Option<&ParsedDocument> {
+        self.parser.last_document()
+    }
     pub fn new(registry: &GrammarRegistry, language: &str) -> Result<Self> {
         let grammar = registry.get(language).ok_or_else(|| {
             DomainError::Unsupported(format!("native {language} grammar unavailable"))

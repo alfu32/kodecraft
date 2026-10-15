@@ -7,11 +7,18 @@ Implementation is underway. [DASHBOARD.md](DASHBOARD.md) records all 65 task sta
 ongoing work and links to acceptance evidence. Open a file or folder with
 `cargo run -p kode -- /path/to/project`; Ctrl+S saves and Ctrl+Q saves workspace
 state and quits. The shell includes file/project panels, search, text editing,
-hex inspection and portable image viewing. Native language intelligence, Git,
-SQL/JDBC, REST and remaining release tasks continue in dependency order.
+hex inspection, portable image viewing, syntax/semantic highlighting and native
+completion/navigation. Git, SQL/JDBC, REST and remaining release tasks continue in dependency order.
 `cargo check --workspace`, `--help` and `--version` work on stable Rust.
 The Rust application will remain a TUI. JDBC will run in an **external JVM**;
 the Rust process will not embed a JVM.
+
+Ctrl+Space requests native completion and Ctrl-click follows definitions/usages.
+The Project panel provides `r` rescan, `b` rebuild index and `c` clear index.
+Indexing runs on bounded workers, uses unsaved buffers and persists its cache in
+`.kode-rs/index.sqlite` without Java or language servers. `KODE_CODEINTEL_PATH`
+can select a custom definitions catalog. Kotlin/C have specialized extraction;
+other languages use conservative AST or explicit regex fallback capabilities.
 
 Use the latest Rust **stable** toolchain (`rustup update stable`). This workspace
 selects `stable` through `rust-toolchain.toml`, as requested. Dependency versions

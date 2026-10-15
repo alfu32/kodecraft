@@ -12,6 +12,9 @@ pub struct CSemanticAdapter {
     parser: ParserSession,
 }
 impl CSemanticAdapter {
+    pub fn last_document(&self) -> Option<&ParsedDocument> {
+        self.parser.last_document()
+    }
     pub fn new(registry: &GrammarRegistry) -> Result<Self> {
         let grammar = registry.get("c").ok_or_else(|| {
             kode_core::DomainError::Unsupported("native C grammar unavailable".into())

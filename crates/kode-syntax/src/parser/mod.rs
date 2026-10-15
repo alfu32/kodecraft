@@ -73,6 +73,9 @@ pub struct ParserSession {
     budget: Duration,
 }
 impl ParserSession {
+    pub fn last_document(&self) -> Option<&ParsedDocument> {
+        self.previous.as_ref()
+    }
     pub fn new(grammar: Arc<Grammar>) -> Result<Self> {
         let mut parser = Parser::new();
         parser.set_language(&grammar.language).map_err(|error| {
@@ -117,6 +120,7 @@ impl ParserSession {
         });
         if let Some(previous) = previous
             && previous.snapshot().revision == snapshot.revision
+            && (Arc::ptr_eq(&source, &previous.0.source) || source == previous.0.source)
         {
             return Ok(previous.clone());
         }

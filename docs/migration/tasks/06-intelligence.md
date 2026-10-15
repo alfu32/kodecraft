@@ -164,7 +164,7 @@ SemanticInvalidationTest and implementation-only persistence cases.
 
 ## L09 — Background index coordinator and editor facade
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** L05, L08, L10, L11, W01, F03. **Owns:**
 `kode-intelligence/src/{service,facade,tokens}.rs` and UI service wiring.
@@ -227,7 +227,7 @@ BlockTracker and completion-related Kotlin/CodeIntelService tests.
 
 ## L12 — Language and persistence parity qualification
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** L09, L10. **Owns:** `kode-intelligence/tests/parity/`,
 `docs/parity/languages.md` and grammar capability matrix.

@@ -1,4 +1,5 @@
 //! Bounded work execution and application-thread publication.
+mod intelligence;
 use super::{
     state::{AppState, AppWork, ConfigAction, OpenDestination, PickerKind},
     workspace::{self, OpenRequest, PreparedOpen, PreparedWorkspace},
@@ -49,6 +50,13 @@ use std::{
 use tokio::sync::mpsc;
 
 enum Output {
+    IndexPrepared(Box<kode_intelligence::service::PreparedIndex>),
+    IndexCommitted(
+        Box<(
+            kode_intelligence::service::PreparedIndex,
+            kode_intelligence::store::CommitReceipt,
+        )>,
+    ),
     Tree(TreeSnapshot),
     File(FileChange),
     Open(Box<PreparedOpen>),
@@ -59,6 +67,7 @@ enum Output {
     Session(Box<ProjectSessionV1>),
     Saved(DiskIdentity),
     Fold(FoldReport),
+    Overlays(crate::editor::overlays::OverlayReport),
     Search(SearchReport),
     ProjectSearch(ProjectSearchReport),
     Completion(Vec<CompletionItem>),
@@ -68,6 +77,8 @@ enum Output {
     Picker(Project),
 }
 enum Context {
+    IndexPrepared,
+    IndexCommitted,
     Tree(bool),
     Cells,
     File,
@@ -77,6 +88,7 @@ enum Context {
     Persist,
     Save(DocumentId),
     Fold,
+    Overlays,
     Search,
     ProjectSearch,
     Completion,
@@ -100,6 +112,15 @@ struct Pending {
     work: BlockingJobFactory<Output>,
 }
 pub struct AppRuntime {
+    intelligence: Option<kode_intelligence::service::CodeIntelService>,
+    intelligence_resources: Option<Arc<kode_intelligence::facade::IntelligenceResources>>,
+    overlay_worker: Option<Arc<crate::editor::overlays::OverlayWorker>>,
+    query_versions: HashMap<JobTag, kode_intelligence::service::QueryRevision>,
+    native_watch_revision: u64,
+    native_watch_due: Option<u64>,
+    native_last_poll: u64,
+    native_auto_scan: bool,
+    native_scan_cancel: Option<kode_platform::jobs::CancellationToken>,
     pub state: AppState,
     jobs: Scheduler<Output>,
     contexts: HashMap<JobTag, Context>,
@@ -136,6 +157,15 @@ impl AppRuntime {
         let detector = Self::image_detector(MimeDetector::compiled())?;
         state.detector = detector.clone();
         Ok(Self {
+            intelligence: None,
+            intelligence_resources: None,
+            overlay_worker: None,
+            query_versions: HashMap::new(),
+            native_watch_revision: 0,
+            native_watch_due: None,
+            native_last_poll: 0,
+            native_auto_scan: true,
+            native_scan_cancel: None,
             state,
             jobs,
             contexts: HashMap::new(),
@@ -257,6 +287,7 @@ impl AppRuntime {
                 self.state.notice = error.to_string();
             }
         }
+        self.pump_intelligence()?;
         if !self.config_active
             && let Some((tag, action)) = self.config_queue.pop_front()
         {
@@ -423,6 +454,11 @@ impl AppRuntime {
                 project,
                 token,
             } => {
+                if let Some(service) = &mut self.intelligence {
+                    service.rescan(project.clone(), false)?;
+                    self.native_auto_scan = true;
+                    self.native_scan_cancel = Some(token.clone());
+                }
                 let sender = self.batch_sender.clone();
                 let notify = self.notifications.clone();
                 let scan_owner = self.root_owner;
@@ -533,6 +569,8 @@ impl AppRuntime {
                         })?;
                     }
                     ProjectWork::Rescan => self.state.request_scan(true)?,
+                    ProjectWork::RebuildIndex => self.rebuild_index()?,
+                    ProjectWork::ClearIndex => self.clear_index()?,
                 }
                 Ok(())
             }
@@ -766,6 +804,7 @@ impl AppRuntime {
                 }),
             ),
             EditorWork::Completion(job) => {
+                self.stamp_query(job.tag)?;
                 let external = self.view(owner).and_then(|view| view.host.external.clone());
                 let provider = self
                     .view(owner)
@@ -785,6 +824,8 @@ impl AppRuntime {
                 )
             }
             EditorWork::Navigation(job) => {
+                self.stamp_query(job.tag)?;
+                let captured = self.intelligence.as_ref().map(|service| service.facade());
                 let provider = self
                     .view(owner)
                     .and_then(|view| view.host.intelligence.clone())
@@ -801,13 +842,39 @@ impl AppRuntime {
                         definition::prepare(
                             &job,
                             provider.as_ref(),
-                            &NativePreviewSourceReader {
-                                io: Arc::new(NativeDocumentIo),
+                            &intelligence::AppPreviewSourceReader {
+                                native: captured,
+                                disk: NativePreviewSourceReader {
+                                    io: Arc::new(NativeDocumentIo),
+                                },
                             },
-                            None,
+                            Some(&intelligence::AppPreviewHighlighter {
+                                provider: provider.clone(),
+                            }),
                             || cancel.is_cancelled(),
                         )
                         .map(Output::Navigation)
+                    }),
+                )
+            }
+            EditorWork::Overlays(job) => {
+                let worker = self.overlay_worker.clone().ok_or_else(|| {
+                    DomainError::Unsupported("highlight worker unavailable".into())
+                })?;
+                let provider = self
+                    .view(owner)
+                    .and_then(|view| view.host.intelligence.clone());
+                self.stamp_query(job.tag)?;
+                self.blocking(
+                    job.tag,
+                    owner,
+                    "overlays",
+                    false,
+                    Context::Overlays,
+                    Box::new(move |cancel| {
+                        worker
+                            .prepare(&job, provider.as_deref(), &cancel)
+                            .map(Output::Overlays)
                     }),
                 )
             }
@@ -863,6 +930,18 @@ impl AppRuntime {
         if tag.workspace != self.state.generation {
             return Ok(());
         }
+        if let Some(expected) = self.query_versions.remove(&tag)
+            && self
+                .intelligence
+                .as_ref()
+                .and_then(|service| service.query_revision().ok())
+                != Some(expected)
+        {
+            if matches!(context, Context::Overlays) {
+                return self.complete_editor(owner, tag, context, Err(DomainError::Cancelled));
+            }
+            return Ok(());
+        }
         if self.state.closing
             && matches!(
                 context,
@@ -870,6 +949,7 @@ impl AppRuntime {
                     | Context::Cells
                     | Context::Open(_)
                     | Context::Fold
+                    | Context::Overlays
                     | Context::Search
                     | Context::ProjectSearch
                     | Context::Completion
@@ -881,6 +961,8 @@ impl AppRuntime {
             return Ok(());
         }
         match context {
+            Context::IndexPrepared => self.index_prepared(tag, result)?,
+            Context::IndexCommitted => self.index_committed(tag, result)?,
             Context::Cells => {
                 if let Some(view) = &mut self.state.image
                     && OwnerId(view.id.0) == owner
@@ -923,6 +1005,7 @@ impl AppRuntime {
                     .documents
                     .finish_file_action(tag, result.as_ref().ok())?;
                 if let Some(change) = self.state.files.complete_action(tag, result)? {
+                    self.index_file_change(&change)?;
                     self.state.reconcile_hex_change(&change);
                     self.state.project = self.state.files.project.clone();
                     if let FileChange::Renamed { from, to } = change {
@@ -1043,7 +1126,9 @@ impl AppRuntime {
                 let aborted = matches!(result, Err(DomainError::Cancelled));
                 if self.state.scan.complete(tag, result) {
                     self.state.scan_token = None;
-                    if let Some(dialog) = &mut self.state.rescan {
+                    if self.intelligence.is_none()
+                        && let Some(dialog) = &mut self.state.rescan
+                    {
                         dialog.complete(
                             tag,
                             if aborted {
@@ -1208,6 +1293,19 @@ impl AppRuntime {
             return Ok(());
         };
         let result = match context {
+            Context::Overlays => view
+                .complete_overlays(
+                    tag,
+                    result.and_then(|output| {
+                        if let Output::Overlays(report) = output {
+                            Ok(report)
+                        } else {
+                            Err(DomainError::Unsupported("wrong highlight result".into()))
+                        }
+                    }),
+                    &self.state.documents,
+                )
+                .map(|_| ()),
             Context::Fold => view
                 .complete_folds(
                     tag,
@@ -1377,6 +1475,9 @@ impl AppRuntime {
         self.dispose_services().await
     }
     async fn dispose_services(&mut self) -> Result<()> {
+        if let Some(service) = &self.intelligence {
+            service.stop_queries();
+        }
         if let Some(token) = self.state.scan_token.take() {
             token.cancel();
         }
@@ -1385,6 +1486,11 @@ impl AppRuntime {
         for completion in jobs.shutdown().await {
             self.complete(completion)?;
         }
+        if let Some(service) = self.intelligence.take() {
+            service.shutdown().await?;
+        }
+        self.query_versions.clear();
+        self.overlay_worker = None;
         self.pending.clear();
         self.contexts.clear();
         self.latest.clear();
@@ -1471,6 +1577,9 @@ impl AppRuntime {
                         DomainError::Unsupported(format!("watcher restart failed: {error}"))
                     })?,
                 );
+                if let Some(resources) = self.intelligence_resources.clone() {
+                    self.start_intelligence(resources).await?;
+                }
                 return Err(error);
             }
         };
@@ -1486,6 +1595,9 @@ impl AppRuntime {
             .map_err(|error| {
                 DomainError::Unsupported(format!("workspace cleanup failed: {error}"))
             })?;
+        if let Some(resources) = self.intelligence_resources.clone() {
+            self.start_intelligence(resources).await?;
+        }
         Ok(())
     }
 }

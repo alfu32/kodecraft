@@ -117,14 +117,18 @@ impl EditorHeader {
     }
     pub fn text(&self) -> String {
         format!(
-            "{}{} [{}] {}{}",
+            "{}{}{} [{}] {}",
             if self.dirty { "*" } else { " " },
+            if self.grammar.is_empty() {
+                String::new()
+            } else {
+                format!("[{}] ", self.grammar)
+            },
             self.label,
             self.mime.as_deref().unwrap_or("unknown"),
             self.language
                 .as_ref()
                 .map_or(String::new(), |language| format!("· {language}")),
-            self.grammar
         )
     }
 }
@@ -198,8 +202,36 @@ pub fn render_editor(
                 span.range.start < row.source.end && row.source.start < span.range.end
             })
         })
+        .map(|span| OverlaySpan {
+            range: span.range,
+            style: span.style,
+            priority: span.priority,
+        })
         .collect();
-    overlays.sort_by_key(|span| span.priority);
+    for line in options.warning_lines {
+        if let Some(line) = layout.lines.get(line.0) {
+            overlays.push(OverlaySpan {
+                range: line.source,
+                priority: 25,
+                style: Style::default().bg(theme
+                    .style("code-search-active")
+                    .bg
+                    .unwrap_or(ratatui::style::Color::Reset)),
+            });
+        }
+    }
+    let overlays = super::overlays::compose_styles(&overlays);
+    let source_style = |range: TextRange| {
+        let mut style = theme.style("code-body");
+        let first = overlays.partition_point(|span| span.range.end <= range.start);
+        for overlay in overlays[first..]
+            .iter()
+            .take_while(|span| span.range.start < range.end)
+        {
+            style = style.patch(overlay.style);
+        }
+        style
+    };
     for (relative, (_, row)) in visible.iter().enumerate() {
         let y = text_area.y + relative as u16;
         let line = &layout.lines[row.line.0];
@@ -239,10 +271,21 @@ pub fn render_editor(
                     "code-body"
                 });
                 if let Some(source) = cell.source {
-                    for overlay in &overlays {
-                        if overlay.range.start < source.end && source.start < overlay.range.end {
-                            style = style.patch(overlay.style);
-                        }
+                    style = source_style(source);
+                    let source_line = layout
+                        .lines
+                        .partition_point(|line| line.source.start <= source.start)
+                        .saturating_sub(1);
+                    let source_line = &layout.lines[source_line];
+                    let run = source_line
+                        .runs
+                        .partition_point(|run| run.source.end <= source.start);
+                    if source_line
+                        .runs
+                        .get(run)
+                        .is_some_and(|run| run.glyph == Glyph::Tab)
+                    {
+                        style = style.patch(theme.style("code-tab"));
                     }
                     if selection.start < source.end && source.start < selection.end {
                         style = style.patch(theme.style("code-selection"));
@@ -270,17 +313,9 @@ pub fn render_editor(
             if column >= text_area.width as usize {
                 break;
             }
-            let mut style = theme.style(if options.warning_lines.contains(&row.line) {
-                "code-search-active"
-            } else if run.glyph == Glyph::Tab {
-                "code-tab"
-            } else {
-                "code-body"
-            });
-            for overlay in &overlays {
-                if overlay.range.start < run.source.end && run.source.start < overlay.range.end {
-                    style = style.patch(overlay.style);
-                }
+            let mut style = source_style(run.source);
+            if run.glyph == Glyph::Tab {
+                style = style.patch(theme.style("code-tab"));
             }
             if selection.start < run.source.end && run.source.start < selection.end {
                 style = style.patch(theme.style("code-selection"));

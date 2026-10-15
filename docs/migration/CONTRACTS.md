@@ -231,6 +231,35 @@ previews cap at 24 lines. The host calls the 500 ms hover deadline from its time
 drains navigation effects, forwards popup mouse capture and reconciles resulting
 navigation. Usage popups capture keys/wheel; definition-only popups capture Escape.
 
+E11's `OverlayCache` holds prepared, viewport-adjacent lexical and semantic spans.
+`OverlayJob` captures an O(1) rope snapshot, language, byte coverage and exact
+workspace/request/document/revision tag. `OverlayWorker` reuses L02 syntax sessions
+off the application thread and queries the registered intelligence provider there.
+The application also checks L09's query epoch/index revision before attaching a
+report; superseded reports reschedule current work. A dependent-file publication
+invalidates the affected editor without inventing a text revision. Worker repaint
+notifications wake the application directly; its timer still services input,
+hover/drag and debounce deadlines.
+
+Core edit deltas (one transaction, right to left) immediately shift untouched
+paint; undo/shared-view changes use a scalar-safe contiguous rope diff. Touched
+spans and identifier boundary joins are discarded, with successive edits remapped
+against the most recent cached snapshot. No parsing, query or whole-file string
+materialization runs in paint/input handlers. The documented style order is body,
+lexical, semantic, warning background, hover underline, search, active search,
+transient range, tab marker, selection, cursor. Endpoint sweeps produce disjoint
+segments and source/cell maps draw each glyph once, including folded summaries.
+Theme overlay rules patch only explicit properties. Declaration ranges feed
+Ctrl-click routing; captured-source definition previews receive native styles.
+The header places grammar/fallback status first so long paths cannot hide it.
+
+Highlight sessions retain at most 32 cached documents / 64 MiB source-accounted
+text (plus bounded running jobs); visible coverage includes 24 preceding/25
+following logical lines. Each report retains at most 32,768 lexical and semantic
+spans per layer, with explicit truncation notes. These are source/cache limits,
+not a hard process RSS bound. Provider failure preserves safely remapped semantic
+paint and shows a note; a ready empty result clears it. See `docs/parity/E11.md`.
+
 | Service | Public operations and owned output |
 |---|---|
 | Workspace | discover/open, tree entries/refresh, create/rename/delete, source-root/exclusion updates, scans, file search, session load/save |
@@ -470,3 +499,36 @@ Union suggestions require accessible common members and omit ambiguous identitie
 Optional rankers only score candidates. L09 executes this work off the UI thread,
 handles explicit stale/limit/cancellation errors and gates completed DTOs against
 workspace/document/request/index freshness. No parser is needed in E09 insertion.
+
+L09 `CodeIntelService` is a main-thread coordinator. `observe` captures O(1) Rope
+snapshots and coalesces at most 128 live file updates with a 200 ms debounce.
+`next_job` returns scan/extract/resolve preparation for the existing F03 bounded
+blocking scheduler. `prepared` gates workspace/source epoch; `IndexCommit::run`
+checks the epoch again at actual SQLite submission. Accepted transactions drain as
+critical work. `committed` publishes affected/removed-file notifications after L05
+success; a newer edit remains queued. UI queries additionally carry index/source
+epoch gates, including changes in other unsaved documents. Explicit shutdown stops
+queries, joins F03 work, drains accepted writes and awaits the SQLite worker.
+
+Intelligence now depends on kode-workspace to compose the W01 scanner and V01 MIME
+boundaries. Rescan prunes missing files only after a complete scan. Rebuild resets
+frontend sessions; clear replaces only the owned native cache facts. User sources
+and legacy H2 files remain untouched. Rescan cancellation keeps independent live
+edits and the modal waits for file/index acknowledgement. Unavailable/foreign cache
+files remain intact while a visible in-memory fallback serves the workspace.
+
+`NativeFacade` implements core definitions/references/completions/highlights from
+immutable snapshots. Current unsaved captures, including other open buffers, may
+produce a private query snapshot without persistence/publication. The hot source
+catalog and parser sessions are bounded to 32 / 64 MiB of source text each (not a
+hard process RSS guarantee). Preview reads prefer captured source over disk.
+Virtual file identities serialize owner/key, independently of display labels.
+`NativeTokenReport` carries document ID/revision, index revision and dependency
+generation. E11 composes its exact byte spans with lexical and interactive layers.
+
+Startup requalifies persisted extraction against current resource overrides once.
+Disk captures receive fresh document IDs; editor captures retain actual IDs and
+revisions for tree reuse. ParserSession additionally checks raw bytes before an
+equal-revision reuse, preventing stale revision-zero disk trees. Source watcher
+invalidation ignores cache/session/build metadata to prevent SQLite refresh loops.
+Partial parse/fallback/inference notes remain explicit and bounded in index status.

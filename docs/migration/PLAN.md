@@ -79,6 +79,7 @@ flowchart TD
     UI --> REST[kode-rest: Postman and HTTP streams]
     UI --> DB[kode-database: configuration and bridge client]
     INT --> SYN[kode-syntax: regex and Tree-sitter]
+    INT --> WS
     INT --> SQL[SQLite cache via rusqlite]
     DB --> BRIDGE[External Java JDBC helper]
     BRIDGE --> DRIVERS[Existing JDBC JARs and Maven/vendor/local drivers]

@@ -198,7 +198,7 @@ completion-related `CodeEditorViewTest` cases.
 
 ## E11 — Highlight overlays and edit remapping
 
-**Status:** todo
+**Status:** done
 
 **Depends:** E05, E07, L02, L09. **Owns:** `kode-tui/src/editor/overlays/`.
 **Read:** `HighlightEdits.kt`, `CodeEditorView.kt:375–613,1906–1958,2039–2230`,

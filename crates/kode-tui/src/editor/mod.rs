@@ -5,6 +5,7 @@ pub mod input;
 pub mod layout;
 pub mod loading;
 pub mod minimap;
+pub mod overlays;
 pub mod popups;
 pub mod render;
 pub mod search_bar;

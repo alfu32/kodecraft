@@ -58,8 +58,10 @@ async fn until(app: &mut AppRuntime, predicate: impl Fn(&AppRuntime) -> bool) {
         }
         assert!(
             start.elapsed() < Duration::from_secs(8),
-            "timeout: {}",
-            app.state.notice
+            "timeout: {}; {}; watcher={:?}",
+            app.state.notice,
+            app.state.intelligence_status,
+            app.state.watcher.as_ref().map(|w| w.source_revision())
         );
         tokio::time::sleep(Duration::from_millis(2)).await;
     }
@@ -69,6 +71,398 @@ fn paint(app: &mut AppRuntime) {
     app.state
         .render(buffer.area, &mut buffer, &Theme::compiled())
         .unwrap();
+}
+
+#[tokio::test]
+async fn native_overlays_repaint_without_input_remap_live_edits_and_refresh_unchanged_dependents() {
+    use kode_core::{ByteOffset, LineIndex};
+    use kode_intelligence::{facade::IntelligenceResources, service::IndexPhase};
+    let directory = tempfile::tempdir().unwrap();
+    fs::create_dir(directory.path().join("src")).unwrap();
+    let model = directory.path().join("src/Model.kt");
+    fs::write(&model, "class Customer { val value: Long = 0 }\n").unwrap();
+    let source = "// naïve — 😀\r\nfun inspect(customer: Customer) { customer.value; }\r\n";
+    fs::write(directory.path().join("src/Use.kt"), source).unwrap();
+    let clock = Arc::new(FakeClock::default());
+    let mut app = make(directory.path(), Some("src/Use.kt"), clock.clone());
+    app.start_intelligence(Arc::new(IntelligenceResources::compiled().unwrap()))
+        .await
+        .unwrap();
+    let mut events = app.notifications.subscribe();
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    paint(&mut app);
+    clock.0.store(300, Ordering::SeqCst);
+    until(&mut app, |app| {
+        app.intelligence().unwrap().status().unwrap().phase == IndexPhase::Ready
+            && app
+                .state
+                .editor
+                .as_ref()
+                .unwrap()
+                .overlays
+                .spans()
+                .any(|s| s.class == "semantic.property")
+    })
+    .await;
+    assert!(
+        events.has_changed().unwrap(),
+        "worker completion must emit repaint without keyboard/mouse input"
+    );
+    events.borrow_and_update();
+    let id = app.state.editor.as_ref().unwrap().document_id();
+    let original_revision = app.state.documents.document(id).unwrap().revision();
+    let byte = source.find("value").unwrap();
+    let mut buffer = Buffer::empty(Rect::new(0, 0, 100, 30));
+    app.state
+        .render(buffer.area, &mut buffer, &Theme::compiled())
+        .unwrap();
+    let geometry = app
+        .state
+        .editor
+        .as_ref()
+        .unwrap()
+        .geometry(&app.state.documents, app.state.geometry.viewer)
+        .unwrap();
+    let snapshot = app.state.documents.document(id).unwrap().snapshot();
+    let layout =
+        kode_tui::editor::layout::VisualLayout::build(&snapshot, geometry.text.width as usize, &[])
+            .unwrap();
+    let (row, column) = layout.position_to_cell(ByteOffset(byte)).unwrap();
+    assert_eq!(
+        buffer[(
+            geometry.text.x + column as u16,
+            geometry.text.y + row as u16
+        )]
+            .fg,
+        Theme::compiled().style("semantic.property").fg.unwrap()
+    );
+    fs::write(&model, "class Customer { fun value(): Long = 0 }\n").unwrap();
+    app.rebuild_index().unwrap();
+    until(&mut app, |app| {
+        app.intelligence().unwrap().status().unwrap().phase == IndexPhase::Ready
+            && app
+                .state
+                .editor
+                .as_ref()
+                .unwrap()
+                .overlays
+                .spans()
+                .any(|s| s.class == "semantic.method" && s.range.start == ByteOffset(byte))
+    })
+    .await;
+    assert_eq!(
+        app.state.documents.document(id).unwrap().revision(),
+        original_revision,
+        "dependent refresh must not fake an editor edit"
+    );
+    app.state
+        .render(buffer.area, &mut buffer, &Theme::compiled())
+        .unwrap();
+    assert_eq!(
+        buffer[(
+            geometry.text.x + column as u16,
+            geometry.text.y + row as u16
+        )]
+            .fg,
+        Theme::compiled().style("semantic.method").fg.unwrap()
+    );
+    // Two edits before a fresh analysis finishes preserve the untouched method.
+    app.state
+        .dispatch(&InputEvent::Paste("// first 😀\n".into()))
+        .unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("// second\n".into()))
+        .unwrap();
+    let current = app.state.documents.document(id).unwrap().snapshot();
+    let moved = current.text().find("value").unwrap();
+    assert_eq!(
+        current.byte_to_position(ByteOffset(moved)).unwrap().line,
+        LineIndex(3)
+    );
+    assert!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .overlays
+            .spans()
+            .any(|s| s.class == "semantic.method" && s.range.start == ByteOffset(moved))
+    );
+    clock.0.store(1000, Ordering::SeqCst);
+    until(&mut app, |app| {
+        app.state.editor.as_ref().unwrap().overlays.status.is_some()
+            && app
+                .state
+                .editor
+                .as_ref()
+                .unwrap()
+                .overlays
+                .spans()
+                .any(|s| s.class == "semantic.method" && s.range.start == ByteOffset(moved))
+    })
+    .await;
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn native_runtime_completes_through_real_editor_and_stops_old_facade_on_workspace_switch() {
+    use kode_intelligence::{facade::IntelligenceResources, service::IndexPhase};
+    let first = tempfile::tempdir().unwrap();
+    let second = tempfile::tempdir().unwrap();
+    fs::create_dir(first.path().join("src")).unwrap();
+    fs::write(
+        first.path().join("src/Customer.kt"),
+        "class Customer { val id: Int = 0; val name: String = \"\" }\n",
+    )
+    .unwrap();
+    let source = "fun use(customer: Customer) { customer.\n}\n";
+    fs::write(first.path().join("src/Use.kt"), source).unwrap();
+    let clock = Arc::new(FakeClock::default());
+    let mut app = make(first.path(), Some("src/Use.kt"), clock.clone());
+    app.start_intelligence(Arc::new(IntelligenceResources::compiled().unwrap()))
+        .await
+        .unwrap();
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    clock.0.store(300, Ordering::SeqCst);
+    until(&mut app, |app| {
+        app.intelligence().unwrap().status().unwrap().phase == IndexPhase::Ready
+    })
+    .await;
+    let id = app.state.editor.as_ref().unwrap().document_id();
+    let snapshot = app.state.documents.document(id).unwrap().snapshot();
+    let caret = kode_core::ByteOffset(source.find("customer.\n").unwrap() + 9);
+    app.state
+        .editor
+        .as_mut()
+        .unwrap()
+        .input
+        .state
+        .caret
+        .move_to(&snapshot, caret, false)
+        .unwrap();
+    paint(&mut app);
+    app.state.dispatch(&key(Key::Character(' '), true)).unwrap();
+    until(&mut app, |app| {
+        !app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .completion
+            .entries
+            .is_empty()
+    })
+    .await;
+    assert_eq!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .completion
+            .entries
+            .iter()
+            .map(|i| i.label.as_str())
+            .collect::<std::collections::BTreeSet<_>>(),
+        ["id", "name"].into_iter().collect()
+    );
+    app.state.dispatch(&key(Key::Enter, false)).unwrap();
+    assert!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .contains("customer.id")
+    );
+    assert!(app.state.intelligence_status.contains("index Ready"));
+    app.pump().unwrap();
+    paint(&mut app);
+    let document = app.state.documents.document(id).unwrap().clone();
+    let view = app.state.editor.as_mut().unwrap();
+    let geometry = view
+        .geometry(&app.state.documents, app.state.geometry.viewer)
+        .unwrap();
+    let layout = view
+        .input
+        .layout(
+            &document,
+            kode_tui::editor::input::InputViewport {
+                geometry,
+                folds: &[],
+            },
+        )
+        .unwrap();
+    let (row, column) = layout
+        .position_to_cell(kode_core::ByteOffset(source.find("Customer").unwrap()))
+        .unwrap();
+    app.state
+        .dispatch(&InputEvent::Pointer(PointerInput {
+            x: geometry.text.x + column as u16,
+            y: geometry.text.y + row as u16,
+            action: PointerAction::Down(crossterm::event::MouseButton::Left),
+            modifiers: Modifiers {
+                ctrl: true,
+                ..Default::default()
+            },
+        }))
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.editor.as_ref().is_some_and(|view| {
+            app.state
+                .documents
+                .document(view.document_id())
+                .is_ok_and(|doc| {
+                    doc.origin() == &DocumentOrigin::File(first.path().join("src/Customer.kt"))
+                })
+        })
+    })
+    .await;
+    let provider = app.intelligence().unwrap().facade();
+    let request = kode_core::intelligence::IntelligenceRequest {
+        tag: kode_core::JobTag {
+            workspace: WorkspaceGeneration(1),
+            request: kode_core::RequestId::fresh().unwrap(),
+            document: Some((snapshot.id, snapshot.revision)),
+        },
+        snapshot: snapshot.to_service_snapshot(),
+        position: caret,
+    };
+    app.switch_workspace(second.path().into()).await.unwrap();
+    assert_eq!(app.state.generation, WorkspaceGeneration(2));
+    assert!(matches!(
+        kode_core::intelligence::IntelligenceProvider::completions(provider.as_ref(), &request),
+        Err(kode_core::DomainError::Cancelled)
+    ));
+    assert!(
+        !app.intelligence()
+            .unwrap()
+            .snapshot()
+            .unwrap()
+            .workspace_symbols()
+            .any(|s| s.name == "Customer")
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn native_runtime_clear_rebuild_and_external_source_changes_do_not_loop_on_sqlite_writes() {
+    use kode_intelligence::{facade::IntelligenceResources, service::IndexPhase};
+    let directory = tempfile::tempdir().unwrap();
+    fs::create_dir(directory.path().join("src")).unwrap();
+    let file = directory.path().join("src/Model.kt");
+    fs::write(&file, "class Before\n").unwrap();
+    let clock = Arc::new(FakeClock::default());
+    let mut app = make(directory.path(), None, clock.clone());
+    app.start_intelligence(Arc::new(IntelligenceResources::compiled().unwrap()))
+        .await
+        .unwrap();
+    until(&mut app, |app| {
+        app.intelligence().unwrap().status().unwrap().phase == IndexPhase::Ready
+    })
+    .await;
+    assert!(
+        app.intelligence()
+            .unwrap()
+            .snapshot()
+            .unwrap()
+            .workspace_symbols()
+            .any(|s| s.name == "Before")
+    );
+    app.clear_index().unwrap();
+    until(&mut app, |app| {
+        let status = app.intelligence().unwrap().status().unwrap();
+        status.phase == IndexPhase::Ready && status.files == 0
+    })
+    .await;
+    clock.0.store(6_000, Ordering::SeqCst);
+    app.pump().unwrap();
+    assert_eq!(app.intelligence().unwrap().status().unwrap().files, 0);
+    app.rebuild_index().unwrap();
+    until(&mut app, |app| {
+        let status = app.intelligence().unwrap().status().unwrap();
+        status.phase == IndexPhase::Ready && status.files == 1
+    })
+    .await;
+    let watch_revision = app.state.watcher.as_ref().unwrap().source_revision();
+    fs::write(&file, "class After\n").unwrap();
+    until(&mut app, |app| {
+        app.state.watcher.as_ref().unwrap().source_revision() != watch_revision
+    })
+    .await;
+    clock.0.store(6_200, Ordering::SeqCst);
+    let deadline = Instant::now() + Duration::from_secs(8);
+    loop {
+        // Notify may deliver create/write/close events in separate batches. A
+        // fake clock must keep advancing through the trailing debounce window.
+        clock.0.fetch_add(10, Ordering::SeqCst);
+        app.pump().unwrap();
+        if app.intelligence().unwrap().status().unwrap().phase == IndexPhase::Ready
+            && app
+                .intelligence()
+                .unwrap()
+                .snapshot()
+                .unwrap()
+                .workspace_symbols()
+                .any(|s| s.name == "After")
+        {
+            break;
+        }
+        assert!(
+            Instant::now() < deadline,
+            "{}",
+            app.state.intelligence_status
+        );
+        tokio::time::sleep(Duration::from_millis(2)).await;
+    }
+    let revision = app.intelligence().unwrap().snapshot().unwrap().version();
+    let started = Instant::now();
+    while started.elapsed() < Duration::from_millis(350) {
+        clock.0.fetch_add(5, Ordering::SeqCst);
+        app.pump().unwrap();
+        tokio::time::sleep(Duration::from_millis(2)).await;
+    }
+    assert_eq!(
+        app.intelligence().unwrap().snapshot().unwrap().version(),
+        revision,
+        "native cache writes must not rescan themselves"
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn native_rescan_abort_waits_for_file_and_index_acknowledgement_without_publishing_cancelled_work()
+ {
+    use kode_intelligence::{facade::IntelligenceResources, service::IndexPhase};
+    let directory = tempfile::tempdir().unwrap();
+    fs::create_dir(directory.path().join("src")).unwrap();
+    fs::write(directory.path().join("src/Model.kt"), "class Before\n").unwrap();
+    let mut app = make(directory.path(), None, Arc::new(FakeClock::default()));
+    app.start_intelligence(Arc::new(IntelligenceResources::compiled().unwrap()))
+        .await
+        .unwrap();
+    until(&mut app, |app| {
+        app.intelligence().unwrap().status().unwrap().phase == IndexPhase::Ready
+    })
+    .await;
+    let held = app.intelligence().unwrap().snapshot().unwrap();
+    app.state.request_scan(true).unwrap();
+    app.state.dispatch(&key(Key::Escape, false)).unwrap();
+    assert!(!app.state.rescan.as_ref().unwrap().done);
+    until(&mut app, |app| app.state.rescan.as_ref().unwrap().done).await;
+    assert!(app.state.rescan.as_ref().unwrap().aborted);
+    assert_eq!(
+        app.intelligence().unwrap().status().unwrap().phase,
+        IndexPhase::Cancelled
+    );
+    assert_eq!(
+        app.intelligence().unwrap().snapshot().unwrap().version(),
+        held.version()
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
 }
 #[tokio::test]
 async fn real_shell_opens_edits_saves_flushes_and_restores_shared_dirty_session() {

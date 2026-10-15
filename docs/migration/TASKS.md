@@ -23,7 +23,7 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | E08 | [Folding and Braille minimap](tasks/02-editor.md) | E05, E06 | [done](../parity/E08.md) |
 | E09 | [Completion popup and insertion](tasks/02-editor.md) | E03, E05, E06 | [done](../parity/E09.md) |
 | E10 | [Definitions, usages and hover preview](tasks/02-editor.md) | E05, E06, F03 | [done](../parity/E10.md) |
-| E11 | [Highlight overlays and edit remapping](tasks/02-editor.md) | E05, E07, L02, L09 | todo |
+| E11 | [Highlight overlays and edit remapping](tasks/02-editor.md) | E05, E07, L02, L09 | [done](../parity/E11.md) |
 | E12 | [Reusable editor hosts and virtual/read-only documents](tasks/02-editor.md) | E04, E07, E08, F05 | [done](../parity/E12.md) |
 | E13 | [Complete editor interaction qualification](tasks/02-editor.md) | E09, E10, E11, E12, W04, W05, P03, D08, R07, G03 | todo |
 | W01 | [Source roots, exclusions and project scanning](tasks/03-workspace.md) | F03 | [done](../parity/W01.md) |
@@ -45,10 +45,10 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | L06 | [Names, scopes, imports and symbol resolution](tasks/06-intelligence.md) | L03, L04 | [done](../parity/L06.md) |
 | L07 | [Expression types and receiver member lookup](tasks/06-intelligence.md) | L06 | [done](../parity/L07.md) |
 | L08 | [Dependency invalidation and incremental generations](tasks/06-intelligence.md) | L07 | [done](../parity/L08.md) |
-| L09 | [Background index coordinator and editor facade](tasks/06-intelligence.md) | L05, L08, L10, L11, W01, F03 | in-progress |
+| L09 | [Background index coordinator and editor facade](tasks/06-intelligence.md) | L05, L08, L10, L11, W01, F03 | [done](../parity/L09.md) |
 | L10 | [Other language adapters and heuristic fallback](tasks/06-intelligence.md) | L01, L02, L06 | [done](../parity/L10.md) |
 | L11 | [Completion providers and deterministic ranking](tasks/06-intelligence.md) | L07, L02 | [done](../parity/L11.md) |
-| L12 | [Language and persistence parity qualification](tasks/06-intelligence.md) | L09, L10 | todo |
+| L12 | [Language and persistence parity qualification](tasks/06-intelligence.md) | L09, L10 | in-progress |
 | P01 | [Server catalog, discovery and installation](tasks/07-lsp.md) | F03, F05 | todo |
 | P02 | [LSP client transport and lifecycle](tasks/07-lsp.md) | P01, E01, F03 | todo |
 | P03 | [Editor enrichment and provider fallback](tasks/07-lsp.md) | P02, L09, E09, E10 | todo |
