@@ -2,7 +2,7 @@
 
 ## P01 — Server catalog, discovery and installation
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** F03, F05. **Owns:** `kode-lsp/src/{catalog,install,discovery}.rs`,
 `kode-tui/src/panels/settings/lsp.rs`, `resources/lsp/servers.json`.

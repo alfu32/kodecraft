@@ -663,6 +663,12 @@ impl<'a> Builder<'a> {
     }
     fn collect_lexical(&mut self, node: Node<'a>, depth: usize) -> Result<()> {
         self.check(depth)?;
+        // The SG grammar wraps soft keywords (e.g. a property named `field`)
+        // in identifier nodes with anonymous keyword children. They are names
+        // here, not lexical keywords. Genuine use-site targets still traverse.
+        if identifier(node) {
+            return Ok(());
+        }
         let text = self.text(node);
         let kind = if node.kind().contains("comment") {
             Some(LexicalTokenKind::Comment)

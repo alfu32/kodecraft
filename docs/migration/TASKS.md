@@ -48,8 +48,8 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | L09 | [Background index coordinator and editor facade](tasks/06-intelligence.md) | L05, L08, L10, L11, W01, F03 | [done](../parity/L09.md) |
 | L10 | [Other language adapters and heuristic fallback](tasks/06-intelligence.md) | L01, L02, L06 | [done](../parity/L10.md) |
 | L11 | [Completion providers and deterministic ranking](tasks/06-intelligence.md) | L07, L02 | [done](../parity/L11.md) |
-| L12 | [Language and persistence parity qualification](tasks/06-intelligence.md) | L09, L10 | in-progress |
-| P01 | [Server catalog, discovery and installation](tasks/07-lsp.md) | F03, F05 | todo |
+| L12 | [Language and persistence parity qualification](tasks/06-intelligence.md) | L09, L10 | [done](../parity/L12.md) |
+| P01 | [Server catalog, discovery and installation](tasks/07-lsp.md) | F03, F05 | in-progress |
 | P02 | [LSP client transport and lifecycle](tasks/07-lsp.md) | P01, E01, F03 | todo |
 | P03 | [Editor enrichment and provider fallback](tasks/07-lsp.md) | P02, L09, E09, E10 | todo |
 | R01 | [Lossless collection and environment model](tasks/08-rest.md) | F02 | todo |

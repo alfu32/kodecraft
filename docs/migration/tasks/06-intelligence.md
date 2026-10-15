@@ -227,7 +227,7 @@ BlockTracker and completion-related Kotlin/CodeIntelService tests.
 
 ## L12 — Language and persistence parity qualification
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** L09, L10. **Owns:** `kode-intelligence/tests/parity/`,
 `docs/parity/languages.md` and grammar capability matrix.

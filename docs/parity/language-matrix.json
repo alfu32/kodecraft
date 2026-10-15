@@ -1,0 +1,6479 @@
+{
+  "sourceBaseline": "7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68",
+  "runtime": "0.26.13",
+  "nativeVariants": 28,
+  "mimeRows": 281,
+  "effectiveExtensions": 270,
+  "keywordPatterns": 248,
+  "configuredHeuristicLanguages": 24,
+  "rows": [
+    {
+      "language": "7z",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".7z",
+          "mime": "application/x-7z-compressed",
+          "declaredLanguage": "7z",
+          "category": "BINARY",
+          "runtimeMime": "application/x-7z-compressed",
+          "runtimeLanguage": "7z"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "abap",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".abap",
+          "mime": "text/abap",
+          "declaredLanguage": "abap",
+          "category": "TEXT",
+          "runtimeMime": "text/abap",
+          "runtimeLanguage": "abap"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "actionscript-3",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".as",
+          "mime": "text/actionscript-3",
+          "declaredLanguage": "actionscript-3",
+          "category": "TEXT",
+          "runtimeMime": "text/actionscript-3",
+          "runtimeLanguage": "actionscript-3"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ada",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".adb",
+          "mime": "text/ada",
+          "declaredLanguage": "ada",
+          "category": "TEXT",
+          "runtimeMime": "text/ada",
+          "runtimeLanguage": "ada"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "angular-expression",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "angular-html",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "angular-inline-style",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "angular-inline-template",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "angular-let-declaration",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "angular-template",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "angular-template-blocks",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "angular-ts",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "apache",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "apex",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".cls",
+          "mime": "text/apex",
+          "declaredLanguage": "apex",
+          "category": "TEXT",
+          "runtimeMime": "text/apex",
+          "runtimeLanguage": "apex"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "apk",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".apk",
+          "mime": "application/vnd.android.package-archive",
+          "declaredLanguage": "apk",
+          "category": "BINARY",
+          "runtimeMime": "application/vnd.android.package-archive",
+          "runtimeLanguage": "apk"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "apl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".apl",
+          "mime": "text/apl",
+          "declaredLanguage": "apl",
+          "category": "TEXT",
+          "runtimeMime": "text/apl",
+          "runtimeLanguage": "apl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "applescript",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".applescript",
+          "mime": "text/applescript",
+          "declaredLanguage": "applescript",
+          "category": "TEXT",
+          "runtimeMime": "text/applescript",
+          "runtimeLanguage": "applescript"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ara",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".ara",
+          "mime": "text/ara",
+          "declaredLanguage": "ara",
+          "category": "TEXT",
+          "runtimeMime": "text/ara",
+          "runtimeLanguage": "ara"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "asciidoc",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".adoc",
+          "mime": "text/asciidoc",
+          "declaredLanguage": "asciidoc",
+          "category": "TEXT",
+          "runtimeMime": "text/asciidoc",
+          "runtimeLanguage": "asciidoc"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "asm",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".asm",
+          "mime": "text/asm",
+          "declaredLanguage": "asm",
+          "category": "TEXT",
+          "runtimeMime": "text/asm",
+          "runtimeLanguage": "asm"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "astro",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".astro",
+          "mime": "text/astro",
+          "declaredLanguage": "astro",
+          "category": "TEXT",
+          "runtimeMime": "text/astro",
+          "runtimeLanguage": "astro"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "avi",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".avi",
+          "mime": "video/x-msvideo",
+          "declaredLanguage": "avi",
+          "category": "BINARY",
+          "runtimeMime": "video/x-msvideo",
+          "runtimeLanguage": "avi"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "awk",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".awk",
+          "mime": "text/awk",
+          "declaredLanguage": "awk",
+          "category": "TEXT",
+          "runtimeMime": "text/awk",
+          "runtimeLanguage": "awk"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ballerina",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".bal",
+          "mime": "text/ballerina",
+          "declaredLanguage": "ballerina",
+          "category": "TEXT",
+          "runtimeMime": "text/ballerina",
+          "runtimeLanguage": "ballerina"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "bash",
+      "aliases": [
+        "sh",
+        "shellscript"
+      ],
+      "mime": [
+        {
+          "extension": ".sh",
+          "mime": "text/shellscript",
+          "declaredLanguage": "shellscript",
+          "category": "TEXT",
+          "runtimeMime": "text/shellscript",
+          "runtimeLanguage": "shellscript"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "bash",
+        "package": "tree-sitter-bash",
+        "version": "0.25.1",
+        "repository": "https://github.com/tree-sitter/tree-sitter-bash",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "b644629f7f9460cb0af080cb88f3bef898e6c47b6f8a76ed512b67ae16ef5ac5"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [
+        "bash"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "bat",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".bat",
+          "mime": "text/bat",
+          "declaredLanguage": "bat",
+          "category": "TEXT",
+          "runtimeMime": "text/bat",
+          "runtimeLanguage": "bat"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "beancount",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".beancount",
+          "mime": "text/beancount",
+          "declaredLanguage": "beancount",
+          "category": "TEXT",
+          "runtimeMime": "text/beancount",
+          "runtimeLanguage": "beancount"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "berry",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".be",
+          "mime": "text/berry",
+          "declaredLanguage": "berry",
+          "category": "TEXT",
+          "runtimeMime": "text/berry",
+          "runtimeLanguage": "berry"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "bibtex",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".bib",
+          "mime": "text/bibtex",
+          "declaredLanguage": "bibtex",
+          "category": "TEXT",
+          "runtimeMime": "text/bibtex",
+          "runtimeLanguage": "bibtex"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "bicep",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".bicep",
+          "mime": "text/bicep",
+          "declaredLanguage": "bicep",
+          "category": "TEXT",
+          "runtimeMime": "text/bicep",
+          "runtimeLanguage": "bicep"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "blade",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".blade.php",
+          "mime": "text/blade",
+          "declaredLanguage": "blade",
+          "category": "TEXT",
+          "runtimeMime": "text/php",
+          "runtimeLanguage": "php"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "bmp",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".bmp",
+          "mime": "image/bmp",
+          "declaredLanguage": "bmp",
+          "category": "IMAGE",
+          "runtimeMime": "image/bmp",
+          "runtimeLanguage": "bmp"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "bsl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".bsl",
+          "mime": "text/bsl",
+          "declaredLanguage": "bsl",
+          "category": "TEXT",
+          "runtimeMime": "text/bsl",
+          "runtimeLanguage": "bsl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "c",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".c",
+          "mime": "text/c",
+          "declaredLanguage": "c",
+          "category": "TEXT",
+          "runtimeMime": "text/c",
+          "runtimeLanguage": "c"
+        },
+        {
+          "extension": ".h",
+          "mime": "text/c",
+          "declaredLanguage": "c",
+          "category": "TEXT",
+          "runtimeMime": "text/c",
+          "runtimeLanguage": "c"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "c",
+        "package": "tree-sitter-c",
+        "version": "0.24.2",
+        "repository": "https://github.com/tree-sitter/tree-sitter-c",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "23e819ef1eefd357bb6eba844f47f8492f6a88da3e5046b06ec4acd4da8a9fd6"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "native-c",
+      "heuristicCatalogs": [
+        "cpp"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "cadence",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".cdc",
+          "mime": "text/cadence",
+          "declaredLanguage": "cadence",
+          "category": "TEXT",
+          "runtimeMime": "text/cadence",
+          "runtimeLanguage": "cadence"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "cairo",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".cairo",
+          "mime": "text/cairo",
+          "declaredLanguage": "cairo",
+          "category": "TEXT",
+          "runtimeMime": "text/cairo",
+          "runtimeLanguage": "cairo"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "clarity",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".clar",
+          "mime": "text/clarity",
+          "declaredLanguage": "clarity",
+          "category": "TEXT",
+          "runtimeMime": "text/clarity",
+          "runtimeLanguage": "clarity"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "clojure",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".clj",
+          "mime": "text/clojure",
+          "declaredLanguage": "clojure",
+          "category": "TEXT",
+          "runtimeMime": "text/clojure",
+          "runtimeLanguage": "clojure"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "cmake",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".cmake",
+          "mime": "text/cmake",
+          "declaredLanguage": "cmake",
+          "category": "TEXT",
+          "runtimeMime": "text/cmake",
+          "runtimeLanguage": "cmake"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "cobol",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".cob",
+          "mime": "text/cobol",
+          "declaredLanguage": "cobol",
+          "category": "TEXT",
+          "runtimeMime": "text/cobol",
+          "runtimeLanguage": "cobol"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "codeowners",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".codeowners",
+          "mime": "text/codeowners",
+          "declaredLanguage": "codeowners",
+          "category": "TEXT",
+          "runtimeMime": "text/codeowners",
+          "runtimeLanguage": "codeowners"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "codeql",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".ql",
+          "mime": "text/codeql",
+          "declaredLanguage": "codeql",
+          "category": "TEXT",
+          "runtimeMime": "text/codeql",
+          "runtimeLanguage": "codeql"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "coffee",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".coffee",
+          "mime": "text/coffee",
+          "declaredLanguage": "coffee",
+          "category": "TEXT",
+          "runtimeMime": "text/coffee",
+          "runtimeLanguage": "coffee"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "common-lisp",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".lisp",
+          "mime": "text/common-lisp",
+          "declaredLanguage": "common-lisp",
+          "category": "TEXT",
+          "runtimeMime": "text/common-lisp",
+          "runtimeLanguage": "common-lisp"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "coq",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "cpp",
+      "aliases": [
+        "c++",
+        "cc",
+        "cxx",
+        "hpp",
+        "h++",
+        "hh",
+        "hxx",
+        "c+",
+        "cplus"
+      ],
+      "mime": [
+        {
+          "extension": ".cp",
+          "mime": "text/cplus",
+          "declaredLanguage": "cplus",
+          "category": "TEXT",
+          "runtimeMime": "text/cplus",
+          "runtimeLanguage": "cplus"
+        },
+        {
+          "extension": ".cpp",
+          "mime": "text/cpp",
+          "declaredLanguage": "cpp",
+          "category": "TEXT",
+          "runtimeMime": "text/cpp",
+          "runtimeLanguage": "cpp"
+        },
+        {
+          "extension": ".hh",
+          "mime": "text/cpp",
+          "declaredLanguage": "cpp",
+          "category": "TEXT",
+          "runtimeMime": "text/cpp",
+          "runtimeLanguage": "cpp"
+        },
+        {
+          "extension": ".hpp",
+          "mime": "text/cpp",
+          "declaredLanguage": "cpp",
+          "category": "TEXT",
+          "runtimeMime": "text/cpp",
+          "runtimeLanguage": "cpp"
+        },
+        {
+          "extension": ".hxx",
+          "mime": "text/cpp",
+          "declaredLanguage": "cpp",
+          "category": "TEXT",
+          "runtimeMime": "text/cpp",
+          "runtimeLanguage": "cpp"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "cpp",
+        "package": "tree-sitter-cpp",
+        "version": "0.23.4",
+        "repository": "https://github.com/tree-sitter/tree-sitter-cpp",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "fdfd4b1f3dca1516616a1eb615bb6c1ad3082b8937ad21070d0def5dcfe7e535"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [
+        "cpp"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "cpp-macro",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "crystal",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".cr",
+          "mime": "text/crystal",
+          "declaredLanguage": "crystal",
+          "category": "TEXT",
+          "runtimeMime": "text/crystal",
+          "runtimeLanguage": "crystal"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "csharp",
+      "aliases": [
+        "c#",
+        "cs",
+        "c-sharp"
+      ],
+      "mime": [
+        {
+          "extension": ".cs",
+          "mime": "text/csharp",
+          "declaredLanguage": "csharp",
+          "category": "TEXT",
+          "runtimeMime": "text/csharp",
+          "runtimeLanguage": "csharp"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "csharp",
+        "package": "tree-sitter-c-sharp",
+        "version": "0.23.5",
+        "repository": "https://github.com/tree-sitter/tree-sitter-c-sharp",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "91d69f7e0d97c002e738a09caadd8ddfa36b1552f7ae94303cc53b03b28551c0"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [
+        "java"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "css",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".css",
+          "mime": "text/css",
+          "declaredLanguage": "css",
+          "category": "TEXT",
+          "runtimeMime": "text/css",
+          "runtimeLanguage": "css"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "css",
+        "package": "tree-sitter-css",
+        "version": "0.25.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-css",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "fbbf8d22d82608f6d2f61cfdb374e6758779754fb2f42643e9dc5af6ead0d5d2"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "csv",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".csv",
+          "mime": "text/csv",
+          "declaredLanguage": "csv",
+          "category": "TEXT",
+          "runtimeMime": "text/csv",
+          "runtimeLanguage": "csv"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "cue",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".cue",
+          "mime": "text/cue",
+          "declaredLanguage": "cue",
+          "category": "TEXT",
+          "runtimeMime": "text/cue",
+          "runtimeLanguage": "cue"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "cypher",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".cypher",
+          "mime": "text/cypher",
+          "declaredLanguage": "cypher",
+          "category": "TEXT",
+          "runtimeMime": "text/cypher",
+          "runtimeLanguage": "cypher"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "d",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".d",
+          "mime": "text/d",
+          "declaredLanguage": "d",
+          "category": "TEXT",
+          "runtimeMime": "text/d",
+          "runtimeLanguage": "d"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "d",
+        "package": "tree-sitter-d",
+        "version": "0.8.2",
+        "repository": "https://github.com/gdamore/tree-sitter-d",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "4b5eb5e707044adb264ca694d041be47be24e0b24e76e35a8a14ec80931e5e50"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "dart",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".dart",
+          "mime": "text/dart",
+          "declaredLanguage": "dart",
+          "category": "TEXT",
+          "runtimeMime": "text/dart",
+          "runtimeLanguage": "dart"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "dart"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "dax",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".dax",
+          "mime": "text/dax",
+          "declaredLanguage": "dax",
+          "category": "TEXT",
+          "runtimeMime": "text/dax",
+          "runtimeLanguage": "dax"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "desktop",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".desktop",
+          "mime": "text/desktop",
+          "declaredLanguage": "desktop",
+          "category": "TEXT",
+          "runtimeMime": "text/desktop",
+          "runtimeLanguage": "desktop"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "diff",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".diff",
+          "mime": "text/diff",
+          "declaredLanguage": "diff",
+          "category": "TEXT",
+          "runtimeMime": "text/diff",
+          "runtimeLanguage": "diff"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "doc",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".doc",
+          "mime": "application/msword",
+          "declaredLanguage": "doc",
+          "category": "BINARY",
+          "runtimeMime": "application/msword",
+          "runtimeLanguage": "doc"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "docker",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".dockerfile",
+          "mime": "text/docker",
+          "declaredLanguage": "docker",
+          "category": "TEXT",
+          "runtimeMime": "text/docker",
+          "runtimeLanguage": "docker"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "docx",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".docx",
+          "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "declaredLanguage": "docx",
+          "category": "BINARY",
+          "runtimeMime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "runtimeLanguage": "docx"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "dotenv",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".env",
+          "mime": "text/dotenv",
+          "declaredLanguage": "dotenv",
+          "category": "TEXT",
+          "runtimeMime": "text/dotenv",
+          "runtimeLanguage": "dotenv"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "dream-maker",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".dm",
+          "mime": "text/dream-maker",
+          "declaredLanguage": "dream-maker",
+          "category": "TEXT",
+          "runtimeMime": "text/dream-maker",
+          "runtimeLanguage": "dream-maker"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "edge",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".edge",
+          "mime": "text/edge",
+          "declaredLanguage": "edge",
+          "category": "TEXT",
+          "runtimeMime": "text/edge",
+          "runtimeLanguage": "edge"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "elixir",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".ex",
+          "mime": "text/elixir",
+          "declaredLanguage": "elixir",
+          "category": "TEXT",
+          "runtimeMime": "text/elixir",
+          "runtimeLanguage": "elixir"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "elm",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".elm",
+          "mime": "text/elm",
+          "declaredLanguage": "elm",
+          "category": "TEXT",
+          "runtimeMime": "text/elm",
+          "runtimeLanguage": "elm"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "emacs-lisp",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".el",
+          "mime": "text/emacs-lisp",
+          "declaredLanguage": "emacs-lisp",
+          "category": "TEXT",
+          "runtimeMime": "text/emacs-lisp",
+          "runtimeLanguage": "emacs-lisp"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "epub",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".epub",
+          "mime": "application/epub+zip",
+          "declaredLanguage": "epub",
+          "category": "BINARY",
+          "runtimeMime": "application/epub+zip",
+          "runtimeLanguage": "epub"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "erb",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".erb",
+          "mime": "text/erb",
+          "declaredLanguage": "erb",
+          "category": "TEXT",
+          "runtimeMime": "text/erb",
+          "runtimeLanguage": "erb"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "erlang",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".erl",
+          "mime": "text/erlang",
+          "declaredLanguage": "erlang",
+          "category": "TEXT",
+          "runtimeMime": "text/erlang",
+          "runtimeLanguage": "erlang"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "es-tag-css",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "es-tag-glsl",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "es-tag-html",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "es-tag-sql",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "es-tag-xml",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "fennel",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".fnl",
+          "mime": "text/fennel",
+          "declaredLanguage": "fennel",
+          "category": "TEXT",
+          "runtimeMime": "text/fennel",
+          "runtimeLanguage": "fennel"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "fish",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".fish",
+          "mime": "text/fish",
+          "declaredLanguage": "fish",
+          "category": "TEXT",
+          "runtimeMime": "text/fish",
+          "runtimeLanguage": "fish"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "fluent",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".ftl",
+          "mime": "text/fluent",
+          "declaredLanguage": "fluent",
+          "category": "TEXT",
+          "runtimeMime": "text/fluent",
+          "runtimeLanguage": "fluent"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "fortran-fixed-form",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".f",
+          "mime": "text/fortran-fixed-form",
+          "declaredLanguage": "fortran-fixed-form",
+          "category": "TEXT",
+          "runtimeMime": "text/fortran-fixed-form",
+          "runtimeLanguage": "fortran-fixed-form"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "fortran-free-form",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".f90",
+          "mime": "text/fortran-free-form",
+          "declaredLanguage": "fortran-free-form",
+          "category": "TEXT",
+          "runtimeMime": "text/fortran-free-form",
+          "runtimeLanguage": "fortran-free-form"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "fsharp",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".fs",
+          "mime": "text/fsharp",
+          "declaredLanguage": "fsharp",
+          "category": "TEXT",
+          "runtimeMime": "text/fsharp",
+          "runtimeLanguage": "fsharp"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "gdresource",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".tres",
+          "mime": "text/gdresource",
+          "declaredLanguage": "gdresource",
+          "category": "TEXT",
+          "runtimeMime": "text/gdresource",
+          "runtimeLanguage": "gdresource"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "gdscript",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".gd",
+          "mime": "text/gdscript",
+          "declaredLanguage": "gdscript",
+          "category": "TEXT",
+          "runtimeMime": "text/gdscript",
+          "runtimeLanguage": "gdscript"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "gdshader",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".gdshader",
+          "mime": "text/gdshader",
+          "declaredLanguage": "gdshader",
+          "category": "TEXT",
+          "runtimeMime": "text/gdshader",
+          "runtimeLanguage": "gdshader"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "genie",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".gs",
+          "mime": "text/genie",
+          "declaredLanguage": "genie",
+          "category": "TEXT",
+          "runtimeMime": "text/genie",
+          "runtimeLanguage": "genie"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "gherkin",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".feature",
+          "mime": "text/gherkin",
+          "declaredLanguage": "gherkin",
+          "category": "TEXT",
+          "runtimeMime": "text/gherkin",
+          "runtimeLanguage": "gherkin"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "gif",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".gif",
+          "mime": "image/gif",
+          "declaredLanguage": "gif",
+          "category": "IMAGE",
+          "runtimeMime": "image/gif",
+          "runtimeLanguage": "gif"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "git-commit",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "git-rebase",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "gleam",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".gleam",
+          "mime": "text/gleam",
+          "declaredLanguage": "gleam",
+          "category": "TEXT",
+          "runtimeMime": "text/gleam",
+          "runtimeLanguage": "gleam"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "glimmer-js",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".gjs",
+          "mime": "text/glimmer-js",
+          "declaredLanguage": "glimmer-js",
+          "category": "TEXT",
+          "runtimeMime": "text/glimmer-js",
+          "runtimeLanguage": "glimmer-js"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "glimmer-ts",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".gts",
+          "mime": "text/glimmer-ts",
+          "declaredLanguage": "glimmer-ts",
+          "category": "TEXT",
+          "runtimeMime": "text/glimmer-ts",
+          "runtimeLanguage": "glimmer-ts"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "glsl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".glsl",
+          "mime": "text/glsl",
+          "declaredLanguage": "glsl",
+          "category": "TEXT",
+          "runtimeMime": "text/glsl",
+          "runtimeLanguage": "glsl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "gnuplot",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".gp",
+          "mime": "text/gnuplot",
+          "declaredLanguage": "gnuplot",
+          "category": "TEXT",
+          "runtimeMime": "text/gnuplot",
+          "runtimeLanguage": "gnuplot"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "go",
+      "aliases": [
+        "golang"
+      ],
+      "mime": [
+        {
+          "extension": ".go",
+          "mime": "text/go",
+          "declaredLanguage": "go",
+          "category": "TEXT",
+          "runtimeMime": "text/go",
+          "runtimeLanguage": "go"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "go",
+        "package": "tree-sitter-go",
+        "version": "0.25.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-go",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "8d77e723df0f0dfccb66d4571a5c3c17ecfb6c90959044c0992146b21f383bff"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [
+        "go"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "graphql",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".graphql",
+          "mime": "text/graphql",
+          "declaredLanguage": "graphql",
+          "category": "TEXT",
+          "runtimeMime": "text/graphql",
+          "runtimeLanguage": "graphql"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "groovy",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".gradle.build",
+          "mime": "text/groovy",
+          "declaredLanguage": "groovy",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".groovy",
+          "mime": "text/groovy",
+          "declaredLanguage": "groovy",
+          "category": "TEXT",
+          "runtimeMime": "text/groovy",
+          "runtimeLanguage": "groovy"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "groovy"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "gz",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".gz",
+          "mime": "application/gzip",
+          "declaredLanguage": "gz",
+          "category": "BINARY",
+          "runtimeMime": "application/gzip",
+          "runtimeLanguage": "gz"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "hack",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".hack",
+          "mime": "text/hack",
+          "declaredLanguage": "hack",
+          "category": "TEXT",
+          "runtimeMime": "text/hack",
+          "runtimeLanguage": "hack"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "haml",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".haml",
+          "mime": "text/haml",
+          "declaredLanguage": "haml",
+          "category": "TEXT",
+          "runtimeMime": "text/haml",
+          "runtimeLanguage": "haml"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "handlebars",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".hbs",
+          "mime": "text/handlebars",
+          "declaredLanguage": "handlebars",
+          "category": "TEXT",
+          "runtimeMime": "text/handlebars",
+          "runtimeLanguage": "handlebars"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "haskell",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".hs",
+          "mime": "text/haskell",
+          "declaredLanguage": "haskell",
+          "category": "TEXT",
+          "runtimeMime": "text/haskell",
+          "runtimeLanguage": "haskell"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "haskell"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "haxe",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".hx",
+          "mime": "text/haxe",
+          "declaredLanguage": "haxe",
+          "category": "TEXT",
+          "runtimeMime": "text/haxe",
+          "runtimeLanguage": "haxe"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "hcl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".hcl",
+          "mime": "text/hcl",
+          "declaredLanguage": "hcl",
+          "category": "TEXT",
+          "runtimeMime": "text/hcl",
+          "runtimeLanguage": "hcl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "hjson",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".hjson",
+          "mime": "text/hjson",
+          "declaredLanguage": "hjson",
+          "category": "TEXT",
+          "runtimeMime": "text/hjson",
+          "runtimeLanguage": "hjson"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "hlsl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".hlsl",
+          "mime": "text/hlsl",
+          "declaredLanguage": "hlsl",
+          "category": "TEXT",
+          "runtimeMime": "text/hlsl",
+          "runtimeLanguage": "hlsl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "hs",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "haskell"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "html",
+      "aliases": [
+        "htm"
+      ],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "html",
+        "package": "tree-sitter-html",
+        "version": "0.23.2",
+        "repository": "https://github.com/tree-sitter/tree-sitter-html",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "e04d0a6e667ee3773ceeb0751466ce314f29bafc9b1c7d2466414c39c3eda178"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "html-derivative",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "http",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".http",
+          "mime": "text/http",
+          "declaredLanguage": "http",
+          "category": "TEXT",
+          "runtimeMime": "text/http",
+          "runtimeLanguage": "http"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "hurl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".hurl",
+          "mime": "text/hurl",
+          "declaredLanguage": "hurl",
+          "category": "TEXT",
+          "runtimeMime": "text/hurl",
+          "runtimeLanguage": "hurl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "hxml",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".hxml",
+          "mime": "text/hxml",
+          "declaredLanguage": "hxml",
+          "category": "TEXT",
+          "runtimeMime": "text/hxml",
+          "runtimeLanguage": "hxml"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "hy",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".hy",
+          "mime": "text/hy",
+          "declaredLanguage": "hy",
+          "category": "TEXT",
+          "runtimeMime": "text/hy",
+          "runtimeLanguage": "hy"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "imba",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".imba",
+          "mime": "text/imba",
+          "declaredLanguage": "imba",
+          "category": "TEXT",
+          "runtimeMime": "text/imba",
+          "runtimeLanguage": "imba"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ini",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".ini",
+          "mime": "text/ini",
+          "declaredLanguage": "ini",
+          "category": "TEXT",
+          "runtimeMime": "text/ini",
+          "runtimeLanguage": "ini"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "jar",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".jar",
+          "mime": "application/java-archive",
+          "declaredLanguage": "jar",
+          "category": "BINARY",
+          "runtimeMime": "application/java-archive",
+          "runtimeLanguage": "jar"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "java",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".java",
+          "mime": "text/java",
+          "declaredLanguage": "java",
+          "category": "TEXT",
+          "runtimeMime": "text/java",
+          "runtimeLanguage": "java"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "java"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "javascript",
+      "aliases": [
+        "js"
+      ],
+      "mime": [
+        {
+          "extension": ".js",
+          "mime": "text/javascript",
+          "declaredLanguage": "javascript",
+          "category": "TEXT",
+          "runtimeMime": "text/javascript",
+          "runtimeLanguage": "javascript"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "javascript",
+        "package": "tree-sitter-javascript",
+        "version": "0.25.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-javascript",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "188a8baa97018edaf63bf7ece372c07bc0d74d1301004bc8f211eb7dee5a6e70"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [
+        "javascript"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "jinja",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".jinja",
+          "mime": "text/jinja",
+          "declaredLanguage": "jinja",
+          "category": "TEXT",
+          "runtimeMime": "text/jinja",
+          "runtimeLanguage": "jinja"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "jinja-html",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "jison",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".jison",
+          "mime": "text/jison",
+          "declaredLanguage": "jison",
+          "category": "TEXT",
+          "runtimeMime": "text/jison",
+          "runtimeLanguage": "jison"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "jpeg",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".jpeg",
+          "mime": "image/jpeg",
+          "declaredLanguage": "jpeg",
+          "category": "IMAGE",
+          "runtimeMime": "image/jpeg",
+          "runtimeLanguage": "jpeg"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "jpg",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".jpg",
+          "mime": "image/jpeg",
+          "declaredLanguage": "jpg",
+          "category": "IMAGE",
+          "runtimeMime": "image/jpeg",
+          "runtimeLanguage": "jpg"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "json",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".json",
+          "mime": "text/json",
+          "declaredLanguage": "json",
+          "category": "TEXT",
+          "runtimeMime": "text/json",
+          "runtimeLanguage": "json"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "json",
+        "package": "tree-sitter-json",
+        "version": "0.24.8",
+        "repository": "https://github.com/tree-sitter/tree-sitter-json",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "620b6f5d38676a97526e9d128972d4b156ddbdf6e130cd7e6b9c35e6823e943f"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "json5",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".json5",
+          "mime": "text/json5",
+          "declaredLanguage": "json5",
+          "category": "TEXT",
+          "runtimeMime": "text/json5",
+          "runtimeLanguage": "json5"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "jsonc",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".jsonc",
+          "mime": "text/jsonc",
+          "declaredLanguage": "jsonc",
+          "category": "TEXT",
+          "runtimeMime": "text/jsonc",
+          "runtimeLanguage": "jsonc"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "jsonl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".jsonl",
+          "mime": "text/jsonl",
+          "declaredLanguage": "jsonl",
+          "category": "TEXT",
+          "runtimeMime": "text/jsonl",
+          "runtimeLanguage": "jsonl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "jsonnet",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".jsonnet",
+          "mime": "text/jsonnet",
+          "declaredLanguage": "jsonnet",
+          "category": "TEXT",
+          "runtimeMime": "text/jsonnet",
+          "runtimeLanguage": "jsonnet"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "jssm",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".jssm",
+          "mime": "text/jssm",
+          "declaredLanguage": "jssm",
+          "category": "TEXT",
+          "runtimeMime": "text/jssm",
+          "runtimeLanguage": "jssm"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "julia",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".jl",
+          "mime": "text/julia",
+          "declaredLanguage": "julia",
+          "category": "TEXT",
+          "runtimeMime": "text/julia",
+          "runtimeLanguage": "julia"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "julia"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "kdl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".kdl",
+          "mime": "text/kdl",
+          "declaredLanguage": "kdl",
+          "category": "TEXT",
+          "runtimeMime": "text/kdl",
+          "runtimeLanguage": "kdl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "kotlin",
+      "aliases": [
+        "kt",
+        "kts"
+      ],
+      "mime": [
+        {
+          "extension": ".kt",
+          "mime": "text/kotlin",
+          "declaredLanguage": "kotlin",
+          "category": "TEXT",
+          "runtimeMime": "text/kotlin",
+          "runtimeLanguage": "kotlin"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "kotlin",
+        "package": "tree-sitter-kotlin-sg",
+        "version": "0.4.1",
+        "repository": "https://github.com/ast-grep/tree-sitter-kotlin",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "1c3b024db65748d8e61b0bc461f6b6f0e20eccfc1d3e16582013ada9dabdc150"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "native-kotlin",
+      "heuristicCatalogs": [
+        "kotlin"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "kotlin-script",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".kts",
+          "mime": "text/kotlin-script",
+          "declaredLanguage": "kotlin-script",
+          "category": "TEXT",
+          "runtimeMime": "text/kotlin-script",
+          "runtimeLanguage": "kotlin-script"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "kusto",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".kql",
+          "mime": "text/kusto",
+          "declaredLanguage": "kusto",
+          "category": "TEXT",
+          "runtimeMime": "text/kusto",
+          "runtimeLanguage": "kusto"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "latex",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "lean",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".lean",
+          "mime": "text/lean",
+          "declaredLanguage": "lean",
+          "category": "TEXT",
+          "runtimeMime": "text/lean",
+          "runtimeLanguage": "lean"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "less",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".less",
+          "mime": "text/less",
+          "declaredLanguage": "less",
+          "category": "TEXT",
+          "runtimeMime": "text/less",
+          "runtimeLanguage": "less"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "liquid",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".liquid",
+          "mime": "text/liquid",
+          "declaredLanguage": "liquid",
+          "category": "TEXT",
+          "runtimeMime": "text/liquid",
+          "runtimeLanguage": "liquid"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "llvm",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".ll",
+          "mime": "text/llvm",
+          "declaredLanguage": "llvm",
+          "category": "TEXT",
+          "runtimeMime": "text/llvm",
+          "runtimeLanguage": "llvm"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "log",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".log",
+          "mime": "text/log",
+          "declaredLanguage": "log",
+          "category": "TEXT",
+          "runtimeMime": "text/log",
+          "runtimeLanguage": "log"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "logo",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".logo",
+          "mime": "text/logo",
+          "declaredLanguage": "logo",
+          "category": "TEXT",
+          "runtimeMime": "text/logo",
+          "runtimeLanguage": "logo"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "lua",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".lua",
+          "mime": "text/lua",
+          "declaredLanguage": "lua",
+          "category": "TEXT",
+          "runtimeMime": "text/lua",
+          "runtimeLanguage": "lua"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "lua",
+        "package": "tree-sitter-lua",
+        "version": "0.5.0",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-lua",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "12ea1259c9e644754a13068eafd6160a9c5561c7a69e9cb9c8cd6c968b5e09fc"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [
+        "lua"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "luau",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".luau",
+          "mime": "text/luau",
+          "declaredLanguage": "luau",
+          "category": "TEXT",
+          "runtimeMime": "text/luau",
+          "runtimeLanguage": "luau"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "make",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".makefile",
+          "mime": "text/make",
+          "declaredLanguage": "make",
+          "category": "TEXT",
+          "runtimeMime": "text/make",
+          "runtimeLanguage": "make"
+        },
+        {
+          "extension": ".mk",
+          "mime": "text/make",
+          "declaredLanguage": "make",
+          "category": "TEXT",
+          "runtimeMime": "text/make",
+          "runtimeLanguage": "make"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "markdown",
+      "aliases": [
+        "md"
+      ],
+      "mime": [
+        {
+          "extension": ".md",
+          "mime": "text/markdown",
+          "declaredLanguage": "markdown",
+          "category": "TEXT",
+          "runtimeMime": "text/markdown",
+          "runtimeLanguage": "markdown"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "markdown",
+        "package": "tree-sitter-md",
+        "version": "0.5.3",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-markdown",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "bcc2ad6e70f10473fa5d4567a0f29379b7e9ba88d5ffcfe0d329dc33ffa7dd4e"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "markdown-inline",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": {
+        "language": "markdown-inline",
+        "package": "tree-sitter-md",
+        "version": "0.5.3",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-markdown",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "701b6163dced608181dd633b4e548d8fe1520ae9ad40d7d584cb0c814c056a2c"
+      },
+      "lexical": "native-tree",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "markdown-nix",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "markdown-vue",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "marko",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".marko",
+          "mime": "text/marko",
+          "declaredLanguage": "marko",
+          "category": "TEXT",
+          "runtimeMime": "text/marko",
+          "runtimeLanguage": "marko"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "matlab",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "matlab"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "mdc",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".mdc",
+          "mime": "text/mdc",
+          "declaredLanguage": "mdc",
+          "category": "TEXT",
+          "runtimeMime": "text/mdc",
+          "runtimeLanguage": "mdc"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "mdx",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".mdx",
+          "mime": "text/mdx",
+          "declaredLanguage": "mdx",
+          "category": "TEXT",
+          "runtimeMime": "text/mdx",
+          "runtimeLanguage": "mdx"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "mermaid",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".mmd",
+          "mime": "text/mermaid",
+          "declaredLanguage": "mermaid",
+          "category": "TEXT",
+          "runtimeMime": "text/mermaid",
+          "runtimeLanguage": "mermaid"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "mipsasm",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "mojo",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".mojo",
+          "mime": "text/mojo",
+          "declaredLanguage": "mojo",
+          "category": "TEXT",
+          "runtimeMime": "text/mojo",
+          "runtimeLanguage": "mojo"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "mov",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".mov",
+          "mime": "video/quicktime",
+          "declaredLanguage": "mov",
+          "category": "BINARY",
+          "runtimeMime": "video/quicktime",
+          "runtimeLanguage": "mov"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "move",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".move",
+          "mime": "text/move",
+          "declaredLanguage": "move",
+          "category": "TEXT",
+          "runtimeMime": "text/move",
+          "runtimeLanguage": "move"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "mp3",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".mp3",
+          "mime": "audio/mpeg",
+          "declaredLanguage": "mp3",
+          "category": "BINARY",
+          "runtimeMime": "audio/mpeg",
+          "runtimeLanguage": "mp3"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "mp4",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".mp4",
+          "mime": "video/mp4",
+          "declaredLanguage": "mp4",
+          "category": "BINARY",
+          "runtimeMime": "video/mp4",
+          "runtimeLanguage": "mp4"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "mysql",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "sql"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "narrat",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".narrat",
+          "mime": "text/narrat",
+          "declaredLanguage": "narrat",
+          "category": "TEXT",
+          "runtimeMime": "text/narrat",
+          "runtimeLanguage": "narrat"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "nextflow",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".nf",
+          "mime": "text/nextflow",
+          "declaredLanguage": "nextflow",
+          "category": "TEXT",
+          "runtimeMime": "text/nextflow",
+          "runtimeLanguage": "nextflow"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "nginx",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "nim",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".nim",
+          "mime": "text/nim",
+          "declaredLanguage": "nim",
+          "category": "TEXT",
+          "runtimeMime": "text/nim",
+          "runtimeLanguage": "nim"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "nix",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".nix",
+          "mime": "text/nix",
+          "declaredLanguage": "nix",
+          "category": "TEXT",
+          "runtimeMime": "text/nix",
+          "runtimeLanguage": "nix"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "nushell",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".nu",
+          "mime": "text/nushell",
+          "declaredLanguage": "nushell",
+          "category": "TEXT",
+          "runtimeMime": "text/nushell",
+          "runtimeLanguage": "nushell"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "objc",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "objective-c"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "objective-c",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".m",
+          "mime": "text/objective-c",
+          "declaredLanguage": "objective-c",
+          "category": "TEXT",
+          "runtimeMime": "text/objective-c",
+          "runtimeLanguage": "objective-c"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "objective-c"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "objective-cpp",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".mm",
+          "mime": "text/objective-cpp",
+          "declaredLanguage": "objective-cpp",
+          "category": "TEXT",
+          "runtimeMime": "text/objective-cpp",
+          "runtimeLanguage": "objective-cpp"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ocaml",
+      "aliases": [
+        "ml"
+      ],
+      "mime": [
+        {
+          "extension": ".ml",
+          "mime": "text/ocaml",
+          "declaredLanguage": "ocaml",
+          "category": "TEXT",
+          "runtimeMime": "text/ocaml",
+          "runtimeLanguage": "ocaml"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "ocaml",
+        "package": "tree-sitter-ocaml",
+        "version": "0.26.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-ocaml",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "3be4cd8f70c23b64e74b54a8c5c49f7cc5efe8aa6dfcc29c29680a54364093b2"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ocaml-interface",
+      "aliases": [
+        "mli"
+      ],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": {
+        "language": "ocaml-interface",
+        "package": "tree-sitter-ocaml",
+        "version": "0.26.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-ocaml",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "e43768176a6ff052ae76a34a6e21f673a714c7cb470fafbd3c72e9600aebf07c"
+      },
+      "lexical": "native-tree",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ogg",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".ogg",
+          "mime": "audio/ogg",
+          "declaredLanguage": "ogg",
+          "category": "BINARY",
+          "runtimeMime": "audio/ogg",
+          "runtimeLanguage": "ogg"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "openscad",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".scad",
+          "mime": "text/openscad",
+          "declaredLanguage": "openscad",
+          "category": "TEXT",
+          "runtimeMime": "text/openscad",
+          "runtimeLanguage": "openscad"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "pascal",
+      "aliases": [
+        "pas",
+        "delphi"
+      ],
+      "mime": [
+        {
+          "extension": ".pas",
+          "mime": "text/pascal",
+          "declaredLanguage": "pascal",
+          "category": "TEXT",
+          "runtimeMime": "text/pascal",
+          "runtimeLanguage": "pascal"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "pascal",
+        "package": "tree-sitter-pascal",
+        "version": "0.10.2",
+        "repository": "https://github.com/Isopod/tree-sitter-pascal",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "bf6f054b26c91fe3d187a9e8543ef03d1d966f42038cc3ad194111a65187e009"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "pdf",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".pdf",
+          "mime": "application/pdf",
+          "declaredLanguage": "pdf",
+          "category": "BINARY",
+          "runtimeMime": "application/pdf",
+          "runtimeLanguage": "pdf"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "perl",
+      "aliases": [
+        "pl"
+      ],
+      "mime": [
+        {
+          "extension": ".pl",
+          "mime": "text/perl",
+          "declaredLanguage": "perl",
+          "category": "TEXT",
+          "runtimeMime": "text/perl",
+          "runtimeLanguage": "perl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "perl",
+        "package": "tree-sitter-perl",
+        "version": "1.1.2",
+        "repository": "https://github.com/ganezdragon/tree-sitter-perl",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "83f44dd6a37ce377c46a806fd4f05e9fa11f32ec0a69a7035d6315c06c1804b0"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [
+        "perl"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "php",
+      "aliases": [
+        "php3",
+        "php4",
+        "php5"
+      ],
+      "mime": [
+        {
+          "extension": ".php",
+          "mime": "text/php",
+          "declaredLanguage": "php",
+          "category": "TEXT",
+          "runtimeMime": "text/php",
+          "runtimeLanguage": "php"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "php",
+        "package": "tree-sitter-php",
+        "version": "0.25.1",
+        "repository": "https://github.com/tree-sitter/tree-sitter-php",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "45fddbaad542a86cf413ca204bb232ea4478f8d634dc3beac4b2c8d837ce49ff"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [
+        "php"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "pkl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".pkl",
+          "mime": "text/pkl",
+          "declaredLanguage": "pkl",
+          "category": "TEXT",
+          "runtimeMime": "text/pkl",
+          "runtimeLanguage": "pkl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "plsql",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".pls",
+          "mime": "text/plsql",
+          "declaredLanguage": "plsql",
+          "category": "TEXT",
+          "runtimeMime": "text/plsql",
+          "runtimeLanguage": "plsql"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "png",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".png",
+          "mime": "image/png",
+          "declaredLanguage": "png",
+          "category": "IMAGE",
+          "runtimeMime": "image/png",
+          "runtimeLanguage": "png"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "po",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".po",
+          "mime": "text/po",
+          "declaredLanguage": "po",
+          "category": "TEXT",
+          "runtimeMime": "text/po",
+          "runtimeLanguage": "po"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "polar",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".polar",
+          "mime": "text/polar",
+          "declaredLanguage": "polar",
+          "category": "TEXT",
+          "runtimeMime": "text/polar",
+          "runtimeLanguage": "polar"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "postcss",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".pcss",
+          "mime": "text/postcss",
+          "declaredLanguage": "postcss",
+          "category": "TEXT",
+          "runtimeMime": "text/postcss",
+          "runtimeLanguage": "postcss"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "postgres",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "sql"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "powerquery",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".pq",
+          "mime": "text/powerquery",
+          "declaredLanguage": "powerquery",
+          "category": "TEXT",
+          "runtimeMime": "text/powerquery",
+          "runtimeLanguage": "powerquery"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "powershell",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".ps1",
+          "mime": "text/powershell",
+          "declaredLanguage": "powershell",
+          "category": "TEXT",
+          "runtimeMime": "text/powershell",
+          "runtimeLanguage": "powershell"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "powershell"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ppt",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".ppt",
+          "mime": "application/vnd.ms-powerpoint",
+          "declaredLanguage": "ppt",
+          "category": "BINARY",
+          "runtimeMime": "application/vnd.ms-powerpoint",
+          "runtimeLanguage": "ppt"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "pptx",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".pptx",
+          "mime": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+          "declaredLanguage": "pptx",
+          "category": "BINARY",
+          "runtimeMime": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+          "runtimeLanguage": "pptx"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "prisma",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".prisma",
+          "mime": "text/prisma",
+          "declaredLanguage": "prisma",
+          "category": "TEXT",
+          "runtimeMime": "text/prisma",
+          "runtimeLanguage": "prisma"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "prolog",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".prolog",
+          "mime": "text/prolog",
+          "declaredLanguage": "prolog",
+          "category": "TEXT",
+          "runtimeMime": "text/prolog",
+          "runtimeLanguage": "prolog"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "proto",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".proto",
+          "mime": "text/proto",
+          "declaredLanguage": "proto",
+          "category": "TEXT",
+          "runtimeMime": "text/proto",
+          "runtimeLanguage": "proto"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ps1",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "powershell"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "pug",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".pug",
+          "mime": "text/pug",
+          "declaredLanguage": "pug",
+          "category": "TEXT",
+          "runtimeMime": "text/pug",
+          "runtimeLanguage": "pug"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "puppet",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".pp",
+          "mime": "text/puppet",
+          "declaredLanguage": "puppet",
+          "category": "TEXT",
+          "runtimeMime": "text/puppet",
+          "runtimeLanguage": "puppet"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "purescript",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".purs",
+          "mime": "text/purescript",
+          "declaredLanguage": "purescript",
+          "category": "TEXT",
+          "runtimeMime": "text/purescript",
+          "runtimeLanguage": "purescript"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "python",
+      "aliases": [
+        "py"
+      ],
+      "mime": [
+        {
+          "extension": ".py",
+          "mime": "text/python",
+          "declaredLanguage": "python",
+          "category": "TEXT",
+          "runtimeMime": "text/python",
+          "runtimeLanguage": "python"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "python",
+        "package": "tree-sitter-python",
+        "version": "0.25.0",
+        "repository": "https://github.com/tree-sitter/tree-sitter-python",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "a2456847bea3adff5b2222b2f7b03a870159470d8908622204e6eb29ee2fe45e"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [
+        "python"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "qml",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".qml",
+          "mime": "text/qml",
+          "declaredLanguage": "qml",
+          "category": "TEXT",
+          "runtimeMime": "text/qml",
+          "runtimeLanguage": "qml"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "qmldir",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".qmldir",
+          "mime": "text/qmldir",
+          "declaredLanguage": "qmldir",
+          "category": "TEXT",
+          "runtimeMime": "text/qmldir",
+          "runtimeLanguage": "qmldir"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "qss",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".qss",
+          "mime": "text/qss",
+          "declaredLanguage": "qss",
+          "category": "TEXT",
+          "runtimeMime": "text/qss",
+          "runtimeLanguage": "qss"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "r",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".r",
+          "mime": "text/r",
+          "declaredLanguage": "r",
+          "category": "TEXT",
+          "runtimeMime": "text/r",
+          "runtimeLanguage": "r"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "r"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "racket",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".rkt",
+          "mime": "text/racket",
+          "declaredLanguage": "racket",
+          "category": "TEXT",
+          "runtimeMime": "text/racket",
+          "runtimeLanguage": "racket"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "raku",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".raku",
+          "mime": "text/raku",
+          "declaredLanguage": "raku",
+          "category": "TEXT",
+          "runtimeMime": "text/raku",
+          "runtimeLanguage": "raku"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "rar",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".rar",
+          "mime": "application/vnd.rar",
+          "declaredLanguage": "rar",
+          "category": "BINARY",
+          "runtimeMime": "application/vnd.rar",
+          "runtimeLanguage": "rar"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "razor",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".cshtml",
+          "mime": "text/razor",
+          "declaredLanguage": "razor",
+          "category": "TEXT",
+          "runtimeMime": "text/razor",
+          "runtimeLanguage": "razor"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "reg",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".reg",
+          "mime": "text/reg",
+          "declaredLanguage": "reg",
+          "category": "TEXT",
+          "runtimeMime": "text/reg",
+          "runtimeLanguage": "reg"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "regexp",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".regexp",
+          "mime": "text/regexp",
+          "declaredLanguage": "regexp",
+          "category": "TEXT",
+          "runtimeMime": "text/regexp",
+          "runtimeLanguage": "regexp"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "rel",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".rel",
+          "mime": "text/rel",
+          "declaredLanguage": "rel",
+          "category": "TEXT",
+          "runtimeMime": "text/rel",
+          "runtimeLanguage": "rel"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "riscv",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".s",
+          "mime": "text/riscv",
+          "declaredLanguage": "riscv",
+          "category": "TEXT",
+          "runtimeMime": "text/riscv",
+          "runtimeLanguage": "riscv"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "rosmsg",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".msg",
+          "mime": "text/rosmsg",
+          "declaredLanguage": "rosmsg",
+          "category": "TEXT",
+          "runtimeMime": "text/rosmsg",
+          "runtimeLanguage": "rosmsg"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "rst",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".rst",
+          "mime": "text/rst",
+          "declaredLanguage": "rst",
+          "category": "TEXT",
+          "runtimeMime": "text/rst",
+          "runtimeLanguage": "rst"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ruby",
+      "aliases": [
+        "rb"
+      ],
+      "mime": [
+        {
+          "extension": ".rb",
+          "mime": "text/ruby",
+          "declaredLanguage": "ruby",
+          "category": "TEXT",
+          "runtimeMime": "text/ruby",
+          "runtimeLanguage": "ruby"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "ruby",
+        "package": "tree-sitter-ruby",
+        "version": "0.23.1",
+        "repository": "https://github.com/tree-sitter/tree-sitter-ruby",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "9683f80e7be3dd93f1d6f575800de3f3445cda8af1f313f1f80003229c328e8b"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [
+        "ruby"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "rust",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".rs",
+          "mime": "text/rust",
+          "declaredLanguage": "rust",
+          "category": "TEXT",
+          "runtimeMime": "text/rust",
+          "runtimeLanguage": "rust"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "rust"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "sas",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".sas",
+          "mime": "text/sas",
+          "declaredLanguage": "sas",
+          "category": "TEXT",
+          "runtimeMime": "text/sas",
+          "runtimeLanguage": "sas"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "sass",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".sass",
+          "mime": "text/sass",
+          "declaredLanguage": "sass",
+          "category": "TEXT",
+          "runtimeMime": "text/sass",
+          "runtimeLanguage": "sass"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "scala",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".scala",
+          "mime": "text/scala",
+          "declaredLanguage": "scala",
+          "category": "TEXT",
+          "runtimeMime": "text/scala",
+          "runtimeLanguage": "scala"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "scala"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "scheme",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".scm",
+          "mime": "text/scheme",
+          "declaredLanguage": "scheme",
+          "category": "TEXT",
+          "runtimeMime": "text/scheme",
+          "runtimeLanguage": "scheme"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "scss",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".scss",
+          "mime": "text/scss",
+          "declaredLanguage": "scss",
+          "category": "TEXT",
+          "runtimeMime": "text/scss",
+          "runtimeLanguage": "scss"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "sdbl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".sdbl",
+          "mime": "text/sdbl",
+          "declaredLanguage": "sdbl",
+          "category": "TEXT",
+          "runtimeMime": "text/sdbl",
+          "runtimeLanguage": "sdbl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "shaderlab",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".shader",
+          "mime": "text/shaderlab",
+          "declaredLanguage": "shaderlab",
+          "category": "TEXT",
+          "runtimeMime": "text/shaderlab",
+          "runtimeLanguage": "shaderlab"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "shell",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "bash"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "shellsession",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".shellsession",
+          "mime": "text/shellsession",
+          "declaredLanguage": "shellsession",
+          "category": "TEXT",
+          "runtimeMime": "text/shellsession",
+          "runtimeLanguage": "shellsession"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "smalltalk",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".st",
+          "mime": "text/smalltalk",
+          "declaredLanguage": "smalltalk",
+          "category": "TEXT",
+          "runtimeMime": "text/smalltalk",
+          "runtimeLanguage": "smalltalk"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "solidity",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".sol",
+          "mime": "text/solidity",
+          "declaredLanguage": "solidity",
+          "category": "TEXT",
+          "runtimeMime": "text/solidity",
+          "runtimeLanguage": "solidity"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "soy",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".soy",
+          "mime": "text/soy",
+          "declaredLanguage": "soy",
+          "category": "TEXT",
+          "runtimeMime": "text/soy",
+          "runtimeLanguage": "soy"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "sparql",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".rq",
+          "mime": "text/sparql",
+          "declaredLanguage": "sparql",
+          "category": "TEXT",
+          "runtimeMime": "text/sparql",
+          "runtimeLanguage": "sparql"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "splunk",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".spl",
+          "mime": "text/splunk",
+          "declaredLanguage": "splunk",
+          "category": "TEXT",
+          "runtimeMime": "text/splunk",
+          "runtimeLanguage": "splunk"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "sql",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".sql",
+          "mime": "text/sql",
+          "declaredLanguage": "sql",
+          "category": "TEXT",
+          "runtimeMime": "text/sql",
+          "runtimeLanguage": "sql"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "sql",
+        "package": "tree-sitter-sequel",
+        "version": "0.3.11",
+        "repository": "https://github.com/derekstride/tree-sitter-sql",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "227cb2197775686cc0b0064aa08e709f7f9575b724b2339371b10fb209e37d73"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [
+        "sql"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ssh-config",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".sshconfig",
+          "mime": "text/ssh-config",
+          "declaredLanguage": "ssh-config",
+          "category": "TEXT",
+          "runtimeMime": "text/ssh-config",
+          "runtimeLanguage": "ssh-config"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "stata",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".do",
+          "mime": "text/stata",
+          "declaredLanguage": "stata",
+          "category": "TEXT",
+          "runtimeMime": "text/stata",
+          "runtimeLanguage": "stata"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "stylus",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".styl",
+          "mime": "text/stylus",
+          "declaredLanguage": "stylus",
+          "category": "TEXT",
+          "runtimeMime": "text/stylus",
+          "runtimeLanguage": "stylus"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "svelte",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".svelte",
+          "mime": "text/svelte",
+          "declaredLanguage": "svelte",
+          "category": "TEXT",
+          "runtimeMime": "text/svelte",
+          "runtimeLanguage": "svelte"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "svelte",
+        "package": "tree-sitter-svelte-ng",
+        "version": "1.0.2",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-svelte",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "18aecc6d00acda9369784b5d4054d4bc9b53dbe2d21533f4af90b0b6b1537a6c"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "svg",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".svg",
+          "mime": "image/svg+xml",
+          "declaredLanguage": "svg",
+          "category": "TEXT",
+          "runtimeMime": "image/svg+xml",
+          "runtimeLanguage": "svg"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "swift",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".swift",
+          "mime": "text/swift",
+          "declaredLanguage": "swift",
+          "category": "TEXT",
+          "runtimeMime": "text/swift",
+          "runtimeLanguage": "swift"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "swift",
+        "package": "tree-sitter-swift",
+        "version": "0.7.4",
+        "repository": "https://github.com/alex-pinkus/tree-sitter-swift",
+        "license": "MIT",
+        "abi": 15,
+        "node_types_sha256": "9e9977b371d34d6c6863585a6cc4c63b83b1331b4a1536548d7ec73a83872fe1"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [
+        "swift"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "system-verilog",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".sv",
+          "mime": "text/system-verilog",
+          "declaredLanguage": "system-verilog",
+          "category": "TEXT",
+          "runtimeMime": "text/system-verilog",
+          "runtimeLanguage": "system-verilog"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "systemd",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".artifact",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".automount",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".build",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".busname",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".conf",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".container",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".image",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".kube",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".mount",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".network",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".path",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".pod",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".scope",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".service",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".slice",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".socket",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".swap",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".target",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".timer",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        },
+        {
+          "extension": ".volume",
+          "mime": "text/systemd",
+          "declaredLanguage": "systemd",
+          "category": "TEXT",
+          "runtimeMime": "text/systemd",
+          "runtimeLanguage": "systemd"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "talonscript",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".talon",
+          "mime": "text/talonscript",
+          "declaredLanguage": "talonscript",
+          "category": "TEXT",
+          "runtimeMime": "text/talonscript",
+          "runtimeLanguage": "talonscript"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "tar",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".tar",
+          "mime": "application/x-tar",
+          "declaredLanguage": "tar",
+          "category": "BINARY",
+          "runtimeMime": "application/x-tar",
+          "runtimeLanguage": "tar"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "tasl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".tasl",
+          "mime": "text/tasl",
+          "declaredLanguage": "tasl",
+          "category": "TEXT",
+          "runtimeMime": "text/tasl",
+          "runtimeLanguage": "tasl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "tcl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".tcl",
+          "mime": "text/tcl",
+          "declaredLanguage": "tcl",
+          "category": "TEXT",
+          "runtimeMime": "text/tcl",
+          "runtimeLanguage": "tcl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "templ",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".templ",
+          "mime": "text/templ",
+          "declaredLanguage": "templ",
+          "category": "TEXT",
+          "runtimeMime": "text/templ",
+          "runtimeLanguage": "templ"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "terraform",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".tf",
+          "mime": "text/terraform",
+          "declaredLanguage": "terraform",
+          "category": "TEXT",
+          "runtimeMime": "text/terraform",
+          "runtimeLanguage": "terraform"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "tex",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".tex",
+          "mime": "text/tex",
+          "declaredLanguage": "tex",
+          "category": "TEXT",
+          "runtimeMime": "text/tex",
+          "runtimeLanguage": "tex"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "text",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".txt",
+          "mime": "text/text",
+          "declaredLanguage": "text",
+          "category": "TEXT",
+          "runtimeMime": "text/text",
+          "runtimeLanguage": "text"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "tm-scopes",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "toml",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".toml",
+          "mime": "text/toml",
+          "declaredLanguage": "toml",
+          "category": "TEXT",
+          "runtimeMime": "text/toml",
+          "runtimeLanguage": "toml"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "ts-tags",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".tags",
+          "mime": "text/ts-tags",
+          "declaredLanguage": "ts-tags",
+          "category": "TEXT",
+          "runtimeMime": "text/ts-tags",
+          "runtimeLanguage": "ts-tags"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "tsql",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "sql"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "tsv",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".tsv",
+          "mime": "text/tsv",
+          "declaredLanguage": "tsv",
+          "category": "TEXT",
+          "runtimeMime": "text/tsv",
+          "runtimeLanguage": "tsv"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "tsx",
+      "aliases": [
+        "jsx"
+      ],
+      "mime": [
+        {
+          "extension": ".jsx",
+          "mime": "text/jsx",
+          "declaredLanguage": "jsx",
+          "category": "TEXT",
+          "runtimeMime": "text/jsx",
+          "runtimeLanguage": "jsx"
+        },
+        {
+          "extension": ".tsx",
+          "mime": "text/tsx",
+          "declaredLanguage": "tsx",
+          "category": "TEXT",
+          "runtimeMime": "text/tsx",
+          "runtimeLanguage": "tsx"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "tsx",
+        "package": "tree-sitter-typescript",
+        "version": "0.23.2",
+        "repository": "https://github.com/tree-sitter/tree-sitter-typescript",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "78b5789145286799a27a0a7ecc36cc1bcb151f94ec7fa631b248459867010c8c"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "turtle",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".ttl",
+          "mime": "text/turtle",
+          "declaredLanguage": "turtle",
+          "category": "TEXT",
+          "runtimeMime": "text/turtle",
+          "runtimeLanguage": "turtle"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "twig",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".twig",
+          "mime": "text/twig",
+          "declaredLanguage": "twig",
+          "category": "TEXT",
+          "runtimeMime": "text/twig",
+          "runtimeLanguage": "twig"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "typescript",
+      "aliases": [
+        "ts"
+      ],
+      "mime": [
+        {
+          "extension": ".ts",
+          "mime": "text/typescript",
+          "declaredLanguage": "typescript",
+          "category": "TEXT",
+          "runtimeMime": "text/typescript",
+          "runtimeLanguage": "typescript"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "typescript",
+        "package": "tree-sitter-typescript",
+        "version": "0.23.2",
+        "repository": "https://github.com/tree-sitter/tree-sitter-typescript",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "c790a733fc756b54d4e54dceeb7d2d51e40d8b57136e70277753a75804cce3e3"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast",
+      "heuristicCatalogs": [
+        "javascript"
+      ],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "typespec",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".tsp",
+          "mime": "text/typespec",
+          "declaredLanguage": "typespec",
+          "category": "TEXT",
+          "runtimeMime": "text/typespec",
+          "runtimeLanguage": "typespec"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "typst",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".typ",
+          "mime": "text/typst",
+          "declaredLanguage": "typst",
+          "category": "TEXT",
+          "runtimeMime": "text/typst",
+          "runtimeLanguage": "typst"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "v",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".v",
+          "mime": "text/v",
+          "declaredLanguage": "v",
+          "category": "TEXT",
+          "runtimeMime": "text/v",
+          "runtimeLanguage": "v"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "vala",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".vala",
+          "mime": "text/vala",
+          "declaredLanguage": "vala",
+          "category": "TEXT",
+          "runtimeMime": "text/vala",
+          "runtimeLanguage": "vala"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "vb",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".vb",
+          "mime": "text/vb",
+          "declaredLanguage": "vb",
+          "category": "TEXT",
+          "runtimeMime": "text/vb",
+          "runtimeLanguage": "vb"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "vb"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "vb.net",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "vb"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "verilog",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "vhdl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".vhdl",
+          "mime": "text/vhdl",
+          "declaredLanguage": "vhdl",
+          "category": "TEXT",
+          "runtimeMime": "text/vhdl",
+          "runtimeLanguage": "vhdl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "viml",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".vim",
+          "mime": "text/viml",
+          "declaredLanguage": "viml",
+          "category": "TEXT",
+          "runtimeMime": "text/viml",
+          "runtimeLanguage": "viml"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "visual basic",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [
+        "vb"
+      ],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "vue",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".vue",
+          "mime": "text/vue",
+          "declaredLanguage": "vue",
+          "category": "TEXT",
+          "runtimeMime": "text/vue",
+          "runtimeLanguage": "vue"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "vue-directives",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "vue-html",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".html",
+          "mime": "text/vue-html",
+          "declaredLanguage": "vue-html",
+          "category": "TEXT",
+          "runtimeMime": "text/vue-html",
+          "runtimeLanguage": "vue-html"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "vue-interpolations",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "vue-sfc-style-variable-injection",
+      "aliases": [],
+      "mime": [],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "vue-vine",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".vine",
+          "mime": "text/vue-vine",
+          "declaredLanguage": "vue-vine",
+          "category": "TEXT",
+          "runtimeMime": "text/vue-vine",
+          "runtimeLanguage": "vue-vine"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "vyper",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".vy",
+          "mime": "text/vyper",
+          "declaredLanguage": "vyper",
+          "category": "TEXT",
+          "runtimeMime": "text/vyper",
+          "runtimeLanguage": "vyper"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "wasm",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".wasm",
+          "mime": "application/wasm",
+          "declaredLanguage": "wasm",
+          "category": "BINARY",
+          "runtimeMime": "application/wasm",
+          "runtimeLanguage": "wasm"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "wav",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".wav",
+          "mime": "audio/wav",
+          "declaredLanguage": "wav",
+          "category": "BINARY",
+          "runtimeMime": "audio/wav",
+          "runtimeLanguage": "wav"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "webm",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".webm",
+          "mime": "video/webm",
+          "declaredLanguage": "webm",
+          "category": "BINARY",
+          "runtimeMime": "video/webm",
+          "runtimeLanguage": "webm"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "webp",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".webp",
+          "mime": "image/webp",
+          "declaredLanguage": "webp",
+          "category": "IMAGE",
+          "runtimeMime": "image/webp",
+          "runtimeLanguage": "webp"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "wenyan",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".wy",
+          "mime": "text/wenyan",
+          "declaredLanguage": "wenyan",
+          "category": "TEXT",
+          "runtimeMime": "text/wenyan",
+          "runtimeLanguage": "wenyan"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "wgsl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".wgsl",
+          "mime": "text/wgsl",
+          "declaredLanguage": "wgsl",
+          "category": "TEXT",
+          "runtimeMime": "text/wgsl",
+          "runtimeLanguage": "wgsl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "wikitext",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".wiki",
+          "mime": "text/wikitext",
+          "declaredLanguage": "wikitext",
+          "category": "TEXT",
+          "runtimeMime": "text/wikitext",
+          "runtimeLanguage": "wikitext"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "wit",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".wit",
+          "mime": "text/wit",
+          "declaredLanguage": "wit",
+          "category": "TEXT",
+          "runtimeMime": "text/wit",
+          "runtimeLanguage": "wit"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "wolfram",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".wl",
+          "mime": "text/wolfram",
+          "declaredLanguage": "wolfram",
+          "category": "TEXT",
+          "runtimeMime": "text/wolfram",
+          "runtimeLanguage": "wolfram"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "xls",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".xls",
+          "mime": "application/vnd.ms-excel",
+          "declaredLanguage": "xls",
+          "category": "BINARY",
+          "runtimeMime": "application/vnd.ms-excel",
+          "runtimeLanguage": "xls"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "xlsx",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".xlsx",
+          "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "declaredLanguage": "xlsx",
+          "category": "BINARY",
+          "runtimeMime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "runtimeLanguage": "xlsx"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "xml",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".xml",
+          "mime": "text/xml",
+          "declaredLanguage": "xml",
+          "category": "TEXT",
+          "runtimeMime": "text/xml",
+          "runtimeLanguage": "xml"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "xsl",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".xsl",
+          "mime": "text/xsl",
+          "declaredLanguage": "xsl",
+          "category": "TEXT",
+          "runtimeMime": "text/xsl",
+          "runtimeLanguage": "xsl"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "yaml",
+      "aliases": [
+        "yml"
+      ],
+      "mime": [
+        {
+          "extension": ".yaml",
+          "mime": "text/yaml",
+          "declaredLanguage": "yaml",
+          "category": "TEXT",
+          "runtimeMime": "text/yaml",
+          "runtimeLanguage": "yaml"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "yaml",
+        "package": "tree-sitter-yaml",
+        "version": "0.7.2",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-yaml",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "1238b6c89fc6afb9723b6463a365843aa87e478025490660e5acfc9adaaf809b"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "zenscript",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".zs",
+          "mime": "text/zenscript",
+          "declaredLanguage": "zenscript",
+          "category": "TEXT",
+          "runtimeMime": "text/zenscript",
+          "runtimeLanguage": "zenscript"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": null,
+      "lexical": "keywords",
+      "semantic": "heuristic-regex-only",
+      "heuristicCatalogs": [],
+      "qualification": "catalog-routing-and-explicit-fallback",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "zig",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".zig",
+          "mime": "text/zig",
+          "declaredLanguage": "zig",
+          "category": "TEXT",
+          "runtimeMime": "text/zig",
+          "runtimeLanguage": "zig"
+        }
+      ],
+      "indexableText": true,
+      "keywordSupport": true,
+      "grammar": {
+        "language": "zig",
+        "package": "tree-sitter-zig",
+        "version": "1.1.2",
+        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-zig",
+        "license": "MIT",
+        "abi": 14,
+        "node_types_sha256": "dd85513d4bf1b5f03fe6404376162b66924ee23c8b6d5a18e20d9360000be4d0"
+      },
+      "lexical": "native-tree-and-keywords",
+      "semantic": "conservative-ast-plus-regex",
+      "heuristicCatalogs": [],
+      "qualification": "live-fresh-sqlite-reload",
+      "compilerGuarantees": false
+    },
+    {
+      "language": "zip",
+      "aliases": [],
+      "mime": [
+        {
+          "extension": ".zip",
+          "mime": "application/zip",
+          "declaredLanguage": "zip",
+          "category": "BINARY",
+          "runtimeMime": "application/zip",
+          "runtimeLanguage": "zip"
+        }
+      ],
+      "indexableText": false,
+      "keywordSupport": false,
+      "grammar": null,
+      "lexical": "plain",
+      "semantic": "viewer-only-no-index",
+      "heuristicCatalogs": [],
+      "qualification": "mime-viewer-routing",
+      "compilerGuarantees": false
+    }
+  ]
+}

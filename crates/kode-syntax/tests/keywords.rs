@@ -60,6 +60,27 @@ fn all_shipped_patterns_compile_and_cplus_systemd_aliases_have_real_tokens() {
         provider.diagnostics
     );
     assert!(provider.languages().len() > 200);
+    for language in ["shellscript", "bash", "sh"] {
+        assert!(provider.supports(language), "{language}");
+        assert!(
+            !provider
+                .tokens_for_lines(
+                    LineIndex(0),
+                    &["if ready; then echo yes; fi"],
+                    language,
+                    || false
+                )
+                .unwrap()
+                .is_empty(),
+            "{language}"
+        );
+        assert!(
+            provider
+                .keywords(language)
+                .iter()
+                .any(|keyword| keyword == "then")
+        );
+    }
     assert!(
         !provider
             .tokens_for_lines(

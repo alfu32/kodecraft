@@ -42,7 +42,7 @@ fn normalize(language: &str) -> String {
         "ts" => "typescript",
         "c+" => "cplus",
         "c++" | "cc" | "cxx" | "hpp" | "hxx" => "cpp",
-        "sh" | "shellscript" => "bash",
+        "sh" | "shellscript" | "bash" => "shellscript",
         "py" => "python",
         "rb" => "ruby",
         "golang" => "go",
