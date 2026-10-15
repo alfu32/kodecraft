@@ -129,6 +129,7 @@ impl Content {
 pub struct DiffContents {
     pub path: PathBuf,
     pub staged: bool,
+    pub revision: Option<String>,
     pub old: Content,
     pub new: Content,
 }

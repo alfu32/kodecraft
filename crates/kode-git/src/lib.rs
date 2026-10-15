@@ -4,3 +4,4 @@ pub mod model;
 pub mod read;
 pub mod repository;
 pub mod status;
+pub mod write;

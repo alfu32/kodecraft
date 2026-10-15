@@ -277,6 +277,25 @@ pub(super) fn diff(
     Ok(DiffContents {
         path,
         staged,
+        revision: None,
+        old,
+        new,
+    })
+}
+pub(super) fn historical(
+    repo: &Repository,
+    revision: &str,
+    path: &Path,
+    limits: &ReadLimits,
+    cancel: &CancellationToken,
+) -> Result<DiffContents> {
+    let path = relative(path)?;
+    let old = at_commit(repo, revision, &path, limits, cancel)?;
+    let new = working(repo, &path, limits, cancel)?;
+    Ok(DiffContents {
+        path,
+        staged: false,
+        revision: Some(revision.into()),
         old,
         new,
     })

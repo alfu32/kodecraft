@@ -40,6 +40,7 @@ use std::{collections::HashMap, path::PathBuf, sync::Arc};
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum HostRole {
     File,
+    CommitMessage,
     ProjectSearch,
     Sql,
     RestBody,

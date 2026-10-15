@@ -20,6 +20,7 @@ pub enum ReadRequest {
     Files { revision: String },
     Content { revision: String, path: PathBuf },
     Diff { path: PathBuf, staged: bool },
+    HistoricalDiff { revision: String, path: PathBuf },
     IgnoredPatterns,
     Snapshot { history_limit: Option<usize> },
 }
@@ -88,6 +89,9 @@ impl ReadJob {
             }
             ReadRequest::Diff { path, staged } => {
                 ReadOutput::Diff(content::diff(&repo, path, *staged, &limits, cancel)?)
+            }
+            ReadRequest::HistoricalDiff { revision, path } => {
+                ReadOutput::Diff(content::historical(&repo, revision, path, &limits, cancel)?)
             }
             ReadRequest::IgnoredPatterns => {
                 ReadOutput::IgnoredPatterns(ignored_patterns(&repo, cancel)?)

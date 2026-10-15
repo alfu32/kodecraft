@@ -14,7 +14,7 @@ use std::path::PathBuf;
 pub struct GitReadPanel {
     pub id: FocusId,
     pub root: PathBuf,
-    pub snapshot: Option<RepositorySnapshot>,
+    pub snapshot: Option<std::sync::Arc<RepositorySnapshot>>,
     pub error: Option<String>,
     pub busy: Option<JobTag>,
     pub selected_status: usize,
@@ -87,7 +87,7 @@ impl GitReadPanel {
                     .history_scroll
                     .min(snapshot.commits.entries.len().saturating_sub(1));
                 self.error = (!snapshot.errors.is_empty()).then(|| snapshot.errors.join(" | "));
-                self.snapshot = Some(snapshot);
+                self.snapshot = Some(std::sync::Arc::new(snapshot));
             }
             Err(DomainError::Cancelled) => {}
             Err(error) => self.error = Some(error.to_string()),

@@ -832,7 +832,9 @@ impl AppRuntime {
                 let provider = self
                     .view(owner)
                     .and_then(|view| view.host.intelligence.clone());
-                let lsp = self.editor_lsp();
+                let lsp = self
+                    .editor_lsp()
+                    .filter(|_| matches!(&job.snapshot.origin, DocumentOrigin::File(_)));
                 self.blocking(
                     job.tag,
                     owner,
