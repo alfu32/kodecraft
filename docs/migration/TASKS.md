@@ -50,8 +50,8 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | L11 | [Completion providers and deterministic ranking](tasks/06-intelligence.md) | L07, L02 | [done](../parity/L11.md) |
 | L12 | [Language and persistence parity qualification](tasks/06-intelligence.md) | L09, L10 | [done](../parity/L12.md) |
 | P01 | [Server catalog, discovery and installation](tasks/07-lsp.md) | F03, F05 | [done](../parity/P01.md) |
-| P02 | [LSP client transport and lifecycle](tasks/07-lsp.md) | P01, E01, F03 | in-progress |
-| P03 | [Editor enrichment and provider fallback](tasks/07-lsp.md) | P02, L09, E09, E10 | todo |
+| P02 | [LSP client transport and lifecycle](tasks/07-lsp.md) | P01, E01, F03 | [done](../parity/P02.md) |
+| P03 | [Editor enrichment and provider fallback](tasks/07-lsp.md) | P02, L09, E09, E10 | in-progress |
 | R01 | [Lossless collection and environment model](tasks/08-rest.md) | F02 | todo |
 | R02 | [Variables, auth, headers, URLs and request bodies](tasks/08-rest.md) | R01, F03 | todo |
 | R03 | [Postman and OpenAPI import/export](tasks/08-rest.md) | R01 | todo |

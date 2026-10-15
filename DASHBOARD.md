@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    26 |           1 |   38 |       0 |    65 |
+|    25 |           1 |   39 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **P02** — [LSP client transport and lifecycle](docs/migration/tasks/07-lsp.md#p02--lsp-client-transport-and-lifecycle)
+- **P03** — [Editor enrichment and provider fallback](docs/migration/tasks/07-lsp.md#p03--editor-enrichment-and-provider-fallback)
 
 ## Task status
 
@@ -56,8 +56,8 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | L11  | [Completion providers and deterministic ranking](docs/migration/tasks/06-intelligence.md)       | done        | [Report](docs/parity/L11.md) |
 | L12  | [Language and persistence parity qualification](docs/migration/tasks/06-intelligence.md)        | done        | [Report](docs/parity/L12.md) |
 | P01  | [Server catalog, discovery and installation](docs/migration/tasks/07-lsp.md)                    | done        | [Report](docs/parity/P01.md) |
-| P02  | [LSP client transport and lifecycle](docs/migration/tasks/07-lsp.md)                            | in-progress | —                            |
-| P03  | [Editor enrichment and provider fallback](docs/migration/tasks/07-lsp.md)                       | todo        | —                            |
+| P02  | [LSP client transport and lifecycle](docs/migration/tasks/07-lsp.md)                            | done        | [Report](docs/parity/P02.md) |
+| P03  | [Editor enrichment and provider fallback](docs/migration/tasks/07-lsp.md)                       | in-progress | —                            |
 | R01  | [Lossless collection and environment model](docs/migration/tasks/08-rest.md)                    | todo        | —                            |
 | R02  | [Variables, auth, headers, URLs and request bodies](docs/migration/tasks/08-rest.md)            | todo        | —                            |
 | R03  | [Postman and OpenAPI import/export](docs/migration/tasks/08-rest.md)                            | todo        | —                            |

@@ -23,7 +23,7 @@
 
 ## P02 — LSP client transport and lifecycle
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** P01, E01, F03. **Owns:** `kode-lsp/src/{transport,client,documents}.rs`.
 **Read:** LspClient.kt, LspService.kt; lsp-types docs and server fixture protocol.
@@ -42,7 +42,7 @@
 
 ## P03 — Editor enrichment and provider fallback
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** P02, L09, E09, E10. **Owns:** `kode-lsp/src/provider.rs`,
 `kode-tui/src/app/intelligence.rs`.
