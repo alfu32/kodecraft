@@ -13,7 +13,9 @@ public final class Main {
         var protocol = new FileOutputStream(FileDescriptor.out);
         System.setOut(new PrintStream(System.err,true,StandardCharsets.UTF_8));
         var server=new RpcServer(System.in,protocol);
-        kode.jdbc.drivers.DriverService.fromEnvironment().register(server);
+        var drivers=kode.jdbc.drivers.DriverService.fromEnvironment();
+        drivers.register(server);
+        new kode.jdbc.connections.ConnectionService(drivers.loaders).register(server);
         return server;
     }
     public static void main(String[] args) {

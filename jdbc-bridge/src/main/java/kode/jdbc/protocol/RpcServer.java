@@ -41,6 +41,9 @@ public final class RpcServer implements AutoCloseable {
     private final Semaphore calls = new Semaphore(64), controlCalls = new Semaphore(16);
     private final ThreadPoolExecutor workers = pool("jdbc-dispatch", 4, 32);
     private final ThreadPoolExecutor controls = pool("jdbc-control", 2, 16);
+    // Active request permits remain held until a reply is queued, bounding this
+    // executor to 64 ordinary completions. A slow pipe must not pin a JDBC owner.
+    private final java.util.concurrent.ExecutorService replies = java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor();
     private final CountDownLatch done = new CountDownLatch(1);
     private final AtomicBoolean stopped = new AtomicBoolean();
     private final AtomicBoolean closed = new AtomicBoolean();
@@ -129,17 +132,21 @@ public final class RpcServer implements AutoCloseable {
     private void dispatch(String id,ObjectNode params,Method target,Runnable release) {
         try {
             target.handler().call(params,new Context(id)).whenComplete((value,failure) -> {
-                try {
-                    if (failure == null) respond(id,value,target.control());
-                    else operationError(id,failure,target.control());
-                } catch (Exception exception) { fatal(); }
-                finally { release.run(); }
+                finish(id,value,failure,target.control(),release);
             });
         } catch (Throwable failure) {
-            try { operationError(id,failure,target.control()); }
-            catch (Exception exception) { fatal(); }
-            finally { release.run(); }
+            finish(id,null,failure,target.control(),release);
         }
+    }
+    private void finish(String id,JsonNode value,Throwable failure,boolean control,Runnable release) {
+        Runnable reply=()->{
+            try {if(failure==null)respond(id,value,control);else operationError(id,failure,control);}
+            catch(Exception exception){if(!stopped.get())fatal();}
+            finally{release.run();}
+        };
+        if(control){reply.run();return;}
+        try{replies.execute(reply);}
+        catch(java.util.concurrent.RejectedExecutionException rejected){release.run();if(!stopped.get())fatal();}
     }
     private void operationError(String id,Throwable failure,boolean priority) throws Exception {
         while (failure instanceof java.util.concurrent.CompletionException && failure.getCause()!=null) failure=failure.getCause();
@@ -160,8 +167,8 @@ public final class RpcServer implements AutoCloseable {
     }
     @Override public void close() {
         if(!closed.compareAndSet(false,true))return;
-        stopped.set(true); workers.shutdownNow(); controls.shutdownNow();
-        try { workers.awaitTermination(500,TimeUnit.MILLISECONDS); controls.awaitTermination(500,TimeUnit.MILLISECONDS); }
+        stopped.set(true); workers.shutdownNow(); controls.shutdownNow(); replies.shutdownNow();
+        try { workers.awaitTermination(500,TimeUnit.MILLISECONDS); controls.awaitTermination(500,TimeUnit.MILLISECONDS); replies.awaitTermination(500,TimeUnit.MILLISECONDS); }
         catch (InterruptedException failure) { Thread.currentThread().interrupt(); }
         for(int index=closeActions.size()-1;index>=0;index--)try{closeActions.get(index).close();}catch(Exception failure){System.err.println("JDBC component close failed ("+failure.getClass().getSimpleName()+")");}
         output.close();

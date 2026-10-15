@@ -82,4 +82,15 @@ class RpcServerTest {
         for(int i=1;i<=31;i++)assertEquals(i,FrameCodec.read(input).value().path("params").path("sequence").intValue());
         assertEquals("execute",FrameCodec.read(input).value().path("id").asText());assertNull(FrameCodec.read(input));
     }
+    @Test void fullResponsePipeCannotHoldAConnectionOwnerOrItsCloseCommand() throws Exception {
+        ExecutorService owner=Executors.newSingleThreadExecutor(Thread.ofPlatform().daemon(true).name("fixture-jdbc-owner").factory());
+        try(Peer peer=new Peer()){
+            CountDownLatch filled=new CountDownLatch(40),next=new CountDownLatch(1),ownerReturned=new CountDownLatch(1);String body="x".repeat(1024*1024);
+            peer.server.register("fake.big",false,(p,c)->{filled.countDown();return RpcServer.result(empty().put("body",body));});
+            peer.server.register("fake.owner",false,(p,c)->{CompletableFuture<JsonNode> response=new CompletableFuture<>();owner.execute(()->{response.complete(empty().put("done",true));ownerReturned.countDown();});return response;});
+            peer.server.register("connection.close",true,(p,c)->{owner.execute(next::countDown);return RpcServer.result(empty().put("closing",true));});
+            peer.start();peer.hello();for(int i=0;i<40;i++)peer.send("fill-"+i,"fake.big",empty());assertTrue(filled.await(3,TimeUnit.SECONDS));
+            Thread.sleep(100);peer.send("owner","fake.owner",empty());assertTrue(ownerReturned.await(2,TimeUnit.SECONDS),"Completing a JDBC operation must not block its owner on reply capacity");peer.send("close","connection.close",empty());assertTrue(next.await(2,TimeUnit.SECONDS),"JDBC owner must be available while replies await pipe capacity");
+        }finally{owner.shutdownNow();}
+    }
 }

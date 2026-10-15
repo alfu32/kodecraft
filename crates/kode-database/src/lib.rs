@@ -3,6 +3,7 @@
 pub mod bridge;
 pub mod catalog;
 pub mod config;
+pub mod connections;
 pub mod credentials;
 pub mod drivers;
 pub mod model;

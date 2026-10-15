@@ -8,6 +8,12 @@ if mode == 'descendant':
 write_lock = threading.Lock()
 finished = threading.Event()
 epoch = str(uuid.uuid4())
+connections = {}
+attempts = {}
+cancelled_attempts = set()
+connection_lock = threading.Lock()
+def connection_info(params):
+    return {'connectionId':str(uuid.uuid4()),'dataSourceId':params['dataSourceId'],'capabilities':{'transactions':True,'savepoints':True,'catalogs':True,'schemas':True},'productName':'Synthetic','productVersion':'1','driverName':'Fixture','driverVersion':'1','autoCommit':params.get('autoCommit',True),'readOnly':params.get('readOnly',False),'catalog':params.get('catalog'),'schema':params.get('schema'),'contextRevision':1,'stateRevision':1,'transactionUsable':True}
 def send(value, fragmented=False):
     data = json.dumps(value, ensure_ascii=False).encode()
     frame = struct.pack('>I',len(data)) + data
@@ -47,6 +53,40 @@ def perform(message):
             result(id,{'providerId':'synthetic','resolvedVersion':'1.0','classpathDigest':'0'*64,'source':'local-classpath','manifestPath':'/synthetic/install-v1.json','classpath':['/synthetic/driver.jar'],'reused':False})
     elif method == 'driver.cancel':
         finished.set();result(id,{'status':'requested'})
+    elif method == 'driver.inspect':
+        result(id,{'providerId':'synthetic','classpathDigest':'application-classpath','loaderId':'fixture-loader','driverClasses':['fixture.Driver'],'selectedDriverClass':'fixture.Driver','driverMajorVersion':1,'driverMinorVersion':0,'source':'application-classpath','classpath':[]})
+    elif method in ('connection.open','connection.test'):
+        attempt=params['attemptId']
+        if 'blocked' in params['jdbcUrl']:
+            deadline=time.monotonic()+20
+            while attempt not in cancelled_attempts and time.monotonic()<deadline: time.sleep(0.005)
+        with connection_lock:
+            if attempt in cancelled_attempts:
+                send({'jsonrpc':'2.0','id':id,'error':{'code':-32021,'message':'Opening cancelled','data':{'notStarted':True}}});return
+            state=connection_info(params)
+            if 'credentials' in params['jdbcUrl'] and (params['properties'].get('password')!='synthetic-password' or params['properties'].get('token')!='synthetic-token' or params['properties'].get('user')!='synthetic-user'):
+                send({'jsonrpc':'2.0','id':id,'error':{'code':-32020,'message':'Operation failed','data':{'sqlError':{'message':'Synthetic authentication failure','sqlState':'28000','vendorCode':42,'chained':[]}}}});return
+            if method=='connection.test':
+                state.pop('connectionId');state['success']=True;state['latencyMs']=1
+            else:
+                connections[state['connectionId']]=(state,params);attempts[attempt]=state['connectionId']
+            result(id,state)
+    elif method == 'connection.close':
+        with connection_lock:
+            cancelled_attempts.add(params['attemptId']);connection=attempts.pop(params['attemptId'],None)
+            if connection: connections.pop(connection,None)
+            finished.set();result(id,{'closed':True})
+    elif method in ('connection.setContext','connection.commit','connection.rollback'):
+        with connection_lock:
+            pair=connections.get(params['connectionId'])
+            if pair is None:
+                send({'jsonrpc':'2.0','id':id,'error':{'code':-32021,'message':'Stale connection','data':{'notStarted':True}}});return
+            state,opening=pair
+        if opening['properties'].get('fixtureMode')=='blockCommit' and method=='connection.commit': finished.wait(20)
+        with connection_lock:
+            for key in ('catalog','schema','autoCommit','readOnly'):
+                if key in params: state[key]=params[key]
+            state['contextRevision']+=1;state['stateRevision']+=1;result(id,state)
     else: send({'jsonrpc':'2.0','id':id,'error':{'code':-32601,'message':'Unknown method'}})
 while True:
     header=sys.stdin.buffer.read(4)

@@ -357,6 +357,10 @@ impl Client {
     pub fn state(&self) -> State {
         self.owner.shared.state()
     }
+    /// Observe loss of this epoch without polling or starting another helper.
+    pub async fn wait_stopped(&self) {
+        self.owner.shared.stop.cancelled().await;
+    }
     pub fn process_id(&self) -> u32 {
         self.owner.shared.pid
     }

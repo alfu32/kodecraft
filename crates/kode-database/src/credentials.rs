@@ -88,6 +88,28 @@ impl CredentialStore {
         };
         Ok(self.read()?.0.values.remove(reference).map(Secret))
     }
+    /// Resolve one connection's references from a single bounded private-file
+    /// snapshot. Missing values stay missing; callers decide whether required.
+    pub fn get_many(
+        &self,
+        references: &std::collections::BTreeSet<String>,
+    ) -> Result<BTreeMap<String, Secret>> {
+        if references.is_empty() {
+            return Ok(BTreeMap::new());
+        }
+        if references.len() > 4096
+            || references
+                .iter()
+                .any(|value| value.trim().is_empty() || value.len() > 1024)
+        {
+            return Err(failure("credential reference set exceeds supported bounds"));
+        }
+        let mut data = self.read()?.0.values;
+        Ok(references
+            .iter()
+            .filter_map(|key| data.remove(key).map(|value| (key.clone(), Secret(value))))
+            .collect())
+    }
     pub fn put(&self, reference: &str, secret: &Secret) -> Result<()> {
         let _lock = ConfigLock::acquire(&self.root)?;
         let (mut data, identity) = self.read()?;

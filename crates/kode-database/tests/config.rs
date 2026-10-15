@@ -13,6 +13,33 @@ fn definition(id: &str, name: &str) -> DataSourceDefinition {
     serde_json::from_value(json!({"id":id,"name":name,"driver":{"id":"h2","displayName":"H2","driverClass":"org.h2.Driver","coordinates":"com.h2database:h2:2.2.224"},"jdbcUrl":"jdbc:h2:mem:test","username":"sa","credentialReference":"synthetic.password"})).unwrap()
 }
 #[test]
+fn credential_reference_batch_is_a_private_snapshot_and_empty_requests_do_no_io() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().join("private");
+    let store = CredentialStore::new(root.clone());
+    assert!(store.get_many(&Default::default()).unwrap().is_empty());
+    assert!(!root.exists());
+    store
+        .put("one", &Secret::new("synthetic-one".into()))
+        .unwrap();
+    store
+        .put("two", &Secret::new("synthetic-two".into()))
+        .unwrap();
+    let before = fs::read(root.join("credentials-v1.json")).unwrap();
+    let values = store
+        .get_many(&["two".into(), "missing".into()].into())
+        .unwrap();
+    assert_eq!(values.len(), 1);
+    assert_eq!(values["two"].expose(), "synthetic-two");
+    assert!(!format!("{values:?}").contains("synthetic-two"));
+    assert_eq!(fs::read(root.join("credentials-v1.json")).unwrap(), before);
+    assert!(store.get_many(&[" ".into()].into()).is_err());
+    assert!(store.get_many(&["x".repeat(1025)].into()).is_err());
+    fs::write(root.join("credentials-v1.json"), b"malformed").unwrap();
+    assert!(store.get_many(&Default::default()).unwrap().is_empty());
+    assert!(store.get_many(&["one".into()].into()).is_err());
+}
+#[test]
 fn datasource_repository_and_private_credentials_match_source_upsert_remove_and_name_order_without_exporting_values()
  {
     let directory = tempfile::tempdir().unwrap();

@@ -13,8 +13,9 @@ bytes without control characters. Params are objects. Responses have a string ID
 and exactly one result/error. Notifications omit IDs. Unknown optional fields
 remain available to operation decoders. [Operation definitions](operations.schema.json)
 cover every planned method, SQL events, typed cells and results. The `x-methods`
-map selects the parameter definition; connection close/commit/rollback use
-`connectionId`. [Query fixtures](query-fixtures.json) are shared by Rust and Java.
+map selects the parameter definition; commit/rollback use `connectionId`.
+Close also accepts `dataSourceId` or `attemptId`. [Query fixtures](query-fixtures.json)
+are shared by Rust and Java.
 Schema character lengths are supplemented by the stricter runtime UTF-8 byte
 limits above. No request body is a log record. Connection properties are ephemeral
 and may contain resolved secrets; never persist wire request objects as settings.
@@ -37,6 +38,38 @@ control threads with a 16-item queue; accepted calls retain bounded byte permits
 until their completion. Its writer has separate eight-frame/1 MiB control and
 32-frame/32 MiB ordinary queues (plus a currently written frame, whose bytes stay
 charged). Query events and their own final response use the same FIFO.
+
+Ordinary response delivery runs independently from JDBC owners. Its virtual tasks
+remain bounded by the 64 accepted ordinary request permits, which are released
+only after the reply is queued. A full output queue cannot pin a connection worker
+while it completes a future. Close uses the independent reserved control route.
+
+Connections have one platform owner per datasource (32 live connections, 16 queued
+ordinary jobs per owner, plus a reserved close command). Four temporary-test
+workers have 16 queued slots; two abort workers have 32 queued slots. Tests close
+their temporary connection before replying and leave live sessions unchanged.
+Only explicit cancellation/abort crosses JDBC ownership; statements, result sets,
+metadata and transaction operations stay on the owner. Driver leases remain held
+until closure is confirmed or the helper dies. An unconfirmed close requires
+explicit helper restart, never a fabricated disconnect or rollback.
+
+Native open/test calls supply a unique `attemptId`. Priority close records a
+tombstone even if ordinary open dispatch has not happened yet; a later open/test
+with that attempt cannot create a hidden connection. Tombstones are bounded to
+4,096 per helper epoch; exhaustion requests explicit restart. Close by attempt
+cannot target a newer connection. Omission remains supported for older callers,
+but they cannot cancel before a connection ID exists with this guarantee.
+
+`contextRevision` changes when context mutation is attempted, including partial
+failure; metadata uses it for invalidation. `stateRevision` orders owner snapshots
+so independently delivered replies cannot restore older transaction/context state.
+Omitted setContext fields remain unchanged; explicit null catalog/schema restores
+login defaults. Driver setters are checked against actual getters; ignored
+read-only/context changes are errors. Enabling autocommit occurs last because it
+can commit work. Manual transaction failures preserve SQLSTATE/vendor/chained
+errors and actual context; failed transactions require rollback before commit.
+Known property values and named credential assignments are redacted from bounded
+error messages. Driver stderr is drained but never exposed as raw diagnostics.
 
 The Rust reader retains up to 32 notifications/32 MiB independently of rendering.
 Overflow disconnects the helper visibly, keeps the already received preview,

@@ -26,7 +26,7 @@ impl Drop for Pending {
 pub(super) fn control(method: &str) -> bool {
     matches!(
         method,
-        "hello" | "ping" | "shutdown" | "query.cancel" | "driver.cancel"
+        "hello" | "ping" | "shutdown" | "query.cancel" | "driver.cancel" | "connection.close"
     )
 }
 impl Client {
@@ -48,6 +48,7 @@ impl Client {
                     | "connection.rollback"
                     | "connection.setContext"
                     | "connection.open"
+                    | "connection.test"
                     | "connection.close"
             );
         if cancel.is_cancelled() {
