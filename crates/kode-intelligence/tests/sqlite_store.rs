@@ -480,6 +480,23 @@ async fn owned_incompatible_cache_rebuilds_and_foreign_or_corrupt_files_are_pres
         0
     );
     worker.shutdown().await.unwrap();
+    let db = rusqlite::Connection::open(root.join(".kode-rs/index.sqlite")).unwrap();
+    db.execute(
+        "UPDATE meta SET value='old-byte-model' WHERE key='format'",
+        [],
+    )
+    .unwrap();
+    drop(db);
+    let worker = StoreWorker::start(StoreLocation::Project(root.into()))
+        .await
+        .unwrap();
+    assert_eq!(
+        worker.status,
+        CacheStatus::Rebuilt {
+            previous_version: 1
+        }
+    );
+    worker.shutdown().await.unwrap();
     let worker = StoreWorker::rebuild(StoreLocation::Project(root.into()))
         .await
         .unwrap();

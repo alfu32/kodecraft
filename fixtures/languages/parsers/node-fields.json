@@ -2979,12 +2979,12 @@
     {
       "grammar": {
         "language": "kotlin",
-        "package": "tree-sitter-kotlin-ng",
-        "version": "1.1.0",
-        "repository": "https://github.com/tree-sitter-grammars/tree-sitter-kotlin",
+        "package": "tree-sitter-kotlin-sg",
+        "version": "0.4.1",
+        "repository": "https://github.com/ast-grep/tree-sitter-kotlin",
         "license": "MIT",
         "abi": 14,
-        "node_types_sha256": "0f21509031ad37902dc05d5828f178fed3545c466ffcf38ef30d969cb64e8e9d"
+        "node_types_sha256": "1c3b024db65748d8e61b0bc461f6b6f0e20eccfc1d3e16582013ada9dabdc150"
       },
       "source": "package demo\nclass Café(val name: String) {\n fun greet(): String {\n return name\n }\n}\n",
       "root": "source_file",
@@ -3025,7 +3025,7 @@
           "text": "package"
         },
         {
-          "kind": "qualified_identifier",
+          "kind": "identifier",
           "parent": "package_header",
           "field": null,
           "named": true,
@@ -3036,8 +3036,8 @@
           "text": "demo"
         },
         {
-          "kind": "identifier",
-          "parent": "qualified_identifier",
+          "kind": "simple_identifier",
+          "parent": "identifier",
           "field": null,
           "named": true,
           "range": {
@@ -3069,9 +3069,9 @@
           "text": "class"
         },
         {
-          "kind": "identifier",
+          "kind": "type_identifier",
           "parent": "class_declaration",
-          "field": "name",
+          "field": null,
           "named": true,
           "range": {
             "start": 19,
@@ -3091,19 +3091,8 @@
           "text": "(val name: String)"
         },
         {
-          "kind": "class_parameters",
-          "parent": "primary_constructor",
-          "field": null,
-          "named": true,
-          "range": {
-            "start": 24,
-            "end": 42
-          },
-          "text": "(val name: String)"
-        },
-        {
           "kind": "(",
-          "parent": "class_parameters",
+          "parent": "primary_constructor",
           "field": null,
           "named": false,
           "range": {
@@ -3114,7 +3103,7 @@
         },
         {
           "kind": "class_parameter",
-          "parent": "class_parameters",
+          "parent": "primary_constructor",
           "field": null,
           "named": true,
           "range": {
@@ -3124,8 +3113,19 @@
           "text": "val name: String"
         },
         {
-          "kind": "val",
+          "kind": "binding_pattern_kind",
           "parent": "class_parameter",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 25,
+            "end": 28
+          },
+          "text": "val"
+        },
+        {
+          "kind": "val",
+          "parent": "binding_pattern_kind",
           "field": null,
           "named": false,
           "range": {
@@ -3135,7 +3135,7 @@
           "text": "val"
         },
         {
-          "kind": "identifier",
+          "kind": "simple_identifier",
           "parent": "class_parameter",
           "field": null,
           "named": true,
@@ -3168,7 +3168,7 @@
           "text": "String"
         },
         {
-          "kind": "identifier",
+          "kind": "type_identifier",
           "parent": "user_type",
           "field": null,
           "named": true,
@@ -3180,7 +3180,7 @@
         },
         {
           "kind": ")",
-          "parent": "class_parameters",
+          "parent": "primary_constructor",
           "field": null,
           "named": false,
           "range": {
@@ -3234,9 +3234,9 @@
           "text": "fun"
         },
         {
-          "kind": "identifier",
+          "kind": "simple_identifier",
           "parent": "function_declaration",
-          "field": "name",
+          "field": null,
           "named": true,
           "range": {
             "start": 50,
@@ -3300,7 +3300,7 @@
           "text": "String"
         },
         {
-          "kind": "identifier",
+          "kind": "type_identifier",
           "parent": "user_type",
           "field": null,
           "named": true,
@@ -3322,19 +3322,8 @@
           "text": "{\n return name\n }"
         },
         {
-          "kind": "block",
-          "parent": "function_body",
-          "field": null,
-          "named": true,
-          "range": {
-            "start": 66,
-            "end": 83
-          },
-          "text": "{\n return name\n }"
-        },
-        {
           "kind": "{",
-          "parent": "block",
+          "parent": "function_body",
           "field": null,
           "named": false,
           "range": {
@@ -3344,8 +3333,19 @@
           "text": "{"
         },
         {
-          "kind": "return_expression",
-          "parent": "block",
+          "kind": "statements",
+          "parent": "function_body",
+          "field": null,
+          "named": true,
+          "range": {
+            "start": 69,
+            "end": 80
+          },
+          "text": "return name"
+        },
+        {
+          "kind": "jump_expression",
+          "parent": "statements",
           "field": null,
           "named": true,
           "range": {
@@ -3356,7 +3356,7 @@
         },
         {
           "kind": "return",
-          "parent": "return_expression",
+          "parent": "jump_expression",
           "field": null,
           "named": false,
           "range": {
@@ -3366,8 +3366,8 @@
           "text": "return"
         },
         {
-          "kind": "identifier",
-          "parent": "return_expression",
+          "kind": "simple_identifier",
+          "parent": "jump_expression",
           "field": null,
           "named": true,
           "range": {
@@ -3378,7 +3378,7 @@
         },
         {
           "kind": "}",
-          "parent": "block",
+          "parent": "function_body",
           "field": null,
           "named": false,
           "range": {

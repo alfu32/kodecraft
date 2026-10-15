@@ -62,12 +62,12 @@ impl GrammarRegistry {
         }
         add!(
             "kotlin",
-            tree_sitter_kotlin_ng,
+            tree_sitter_kotlin_sg,
             LANGUAGE,
             NODE_TYPES,
-            "tree-sitter-kotlin-ng",
-            "1.1.0",
-            "https://github.com/tree-sitter-grammars/tree-sitter-kotlin"
+            "tree-sitter-kotlin-sg",
+            "0.4.1",
+            "https://github.com/ast-grep/tree-sitter-kotlin"
         );
         add!(
             "c",

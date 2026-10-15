@@ -108,9 +108,9 @@ H2SemanticStoreTest and DbServerManagerTest.
 
 ## L06 — Names, scopes, imports and symbol resolution
 
-**Status:** in-progress
+**Status:** done
 
-**Depends:** L03, L04. **Owns:** `kode-intelligence/src/resolver/{names,scopes,imports,relations}.rs`.
+**Depends:** L03, L04. **Owns:** `kode-intelligence/src/resolver/{mod,names,scopes,imports,relations,declared_types}.rs`.
 **Read:** `resolver/SemanticResolver.kt`, SemanticIndex visibleSymbols/isAccessible;
 KotlinSemanticVerticalSliceTest and CSemanticTest.
 
@@ -127,7 +127,7 @@ KotlinSemanticVerticalSliceTest and CSemanticTest.
 
 ## L07 — Expression types and receiver member lookup
 
-**Status:** todo
+**Status:** done
 
 **Depends:** L06. **Owns:** `kode-intelligence/src/resolver/{expressions,types,members}.rs`.
 **Read:** `ExpressionTypeResolver.kt`, remaining SemanticResolver type-inference
@@ -146,7 +146,7 @@ sections; KotlinExpressionSemanticsTest and member-related vertical-slice tests.
 
 ## L08 — Dependency invalidation and incremental generations
 
-**Status:** todo
+**Status:** done
 
 **Depends:** L07. **Owns:** `kode-intelligence/src/index/{dependencies,invalidation}.rs`.
 **Read:** `DependencyGraph.kt`, `SemanticInvalidationPlanner.kt`, SemanticIndex;
@@ -164,7 +164,7 @@ SemanticInvalidationTest and implementation-only persistence cases.
 
 ## L09 — Background index coordinator and editor facade
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** L05, L08, L10, L11, W01, F03. **Owns:**
 `kode-intelligence/src/{service,facade,tokens}.rs` and UI service wiring.
@@ -185,7 +185,7 @@ SemanticInvalidationTest and implementation-only persistence cases.
 
 ## L10 — Other language adapters and heuristic fallback
 
-**Status:** todo
+**Status:** done
 
 **Depends:** L01, L02, L06. **Owns:** `kode-intelligence/src/frontend/{generic,legacy}/`,
 `resources/codeintel/definitions.json`, adapter registry.
@@ -207,7 +207,7 @@ adapters, `codeintel/definitions.json`; TreeSitterSemanticAdapterTest.
 
 ## L11 — Completion providers and deterministic ranking
 
-**Status:** todo
+**Status:** done
 
 **Depends:** L07, L02. **Owns:** `kode-intelligence/src/completion/`.
 **Read:** `completion/CompletionPipeline.kt`, `ml/CompletionRanker.kt`,

@@ -95,12 +95,12 @@
     },
     {
       "language": "kotlin",
-      "package": "tree-sitter-kotlin-ng",
-      "version": "1.1.0",
-      "repository": "https://github.com/tree-sitter-grammars/tree-sitter-kotlin",
+      "package": "tree-sitter-kotlin-sg",
+      "version": "0.4.1",
+      "repository": "https://github.com/ast-grep/tree-sitter-kotlin",
       "license": "MIT",
       "abi": 14,
-      "node_types_sha256": "0f21509031ad37902dc05d5828f178fed3545c466ffcf38ef30d969cb64e8e9d"
+      "node_types_sha256": "1c3b024db65748d8e61b0bc461f6b6f0e20eccfc1d3e16582013ada9dabdc150"
     },
     {
       "language": "lua",

@@ -73,6 +73,7 @@ fn delta(name: &str) -> FileSemanticDelta {
         type_hints: vec![],
         expression_types: vec![],
         lexical_tokens: vec![],
+        syntax_expressions: vec![],
         exported_surface_hash: "fixture".into(),
     }
 }

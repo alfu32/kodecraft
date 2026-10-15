@@ -53,6 +53,7 @@ impl<'a> Builder<'a> {
                 type_hints: vec![],
                 expression_types: vec![],
                 lexical_tokens: vec![],
+                syntax_expressions: vec![],
                 exported_surface_hash: String::new(),
             },
             symbols: HashMap::new(),
@@ -215,6 +216,13 @@ impl<'a> Builder<'a> {
         let scope = self.add_scope(root, ScopeKind::File, None, None);
         self.visit(root, scope, None, 0)?;
         self.collect_occurrences(root, scope, 0)?;
+        self.delta.syntax_expressions = crate::frontend::expressions::collect(
+            self.parsed,
+            &self.delta,
+            &self.contexts,
+            &HashMap::new(),
+            self.cancel,
+        )?;
         self.delta
             .scopes
             .sort_by_key(|s| (s.range.start, s.range.end, s.kind));
@@ -301,11 +309,16 @@ impl<'a> Builder<'a> {
                 }
             }
             "enumerator" => {
+                let declaration_scope = self
+                    .scopes
+                    .get(&scope)
+                    .and_then(|index| self.delta.scopes[*index].parent_id)
+                    .unwrap_or(scope);
                 self.declare(
                     n,
                     n.child_by_field_name("name"),
                     SymbolKind::EnumMember,
-                    scope,
+                    declaration_scope,
                     owner,
                 );
             }
@@ -372,7 +385,9 @@ impl<'a> Builder<'a> {
         if matches!(
             n.kind(),
             "identifier" | "field_identifier" | "type_identifier"
-        ) {
+        ) && !n.is_missing()
+            && n.end_byte() > n.start_byte()
+        {
             let span = range(n);
             let declaration = self.declarations.get(&span).copied();
             let parent = n.parent();
@@ -440,7 +455,7 @@ fn declarator_name(mut n: Node<'_>) -> Option<Node<'_>> {
             n.kind(),
             "identifier" | "field_identifier" | "type_identifier"
         ) {
-            return Some(n);
+            return (!n.is_missing() && n.end_byte() > n.start_byte()).then_some(n);
         }
         n = n.child_by_field_name("declarator").or_else(|| {
             if n.kind() == "parenthesized_declarator" {

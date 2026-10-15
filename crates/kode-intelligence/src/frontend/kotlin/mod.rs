@@ -1,4 +1,4 @@
-//! Kotlin extraction against the pinned kotlin-ng AST. No cross-file resolution.
+//! Kotlin extraction against the pinned ast-grep grammar. No cross-file resolution.
 mod builder;
 use crate::model::FileSemanticDelta;
 use kode_core::{Result, WorkspaceGeneration, document::TextSnapshot};

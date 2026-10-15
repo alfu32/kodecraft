@@ -505,3 +505,73 @@ async fn actual_completion_worker_calls_injected_host_and_drains_shutdown() {
     assert_eq!(h.popup.entries[0].label, "Header");
     assert!(scheduler.shutdown().await.is_empty());
 }
+
+#[test]
+fn native_completion_items_render_and_apply_unicode_member_and_qualified_import_replacements() {
+    use kode_intelligence::{
+        completion::{CompletionContext, CompletionEngine},
+        frontend::kotlin::KotlinSemanticAdapter,
+        ids::SemanticIds,
+        resolver::SemanticResolver,
+        snapshot::SemanticSnapshot,
+    };
+    use kode_platform::jobs::CancellationToken;
+    use kode_syntax::{keywords::KeywordProvider, registry::GrammarRegistry};
+    for (marked, label, inserted) in [
+        (
+            "class Box { val café: Int = 0 }\nfun use(box: Box?) { box?.ca/*caret*/ + 12 }\n",
+            "café",
+            "box?.café + 12",
+        ),
+        (
+            "package demo\nimport demo.Cu/*caret*/\nclass Customer\n",
+            "Customer",
+            "import demo.Customer\n",
+        ),
+    ] {
+        let caret = marked.find("/*caret*/").unwrap();
+        let source = marked.replace("/*caret*/", "");
+        let mut harness = Harness::new(&source, caret);
+        let delta = KotlinSemanticAdapter::new(&GrammarRegistry::compiled())
+            .unwrap()
+            .extract(
+                "Native.kt",
+                &harness.doc.snapshot(),
+                WorkspaceGeneration(1),
+                &CancellationToken::new(),
+            )
+            .unwrap();
+        let snapshot = SemanticSnapshot::new(
+            1,
+            SemanticResolver::resolve([delta], &CancellationToken::new())
+                .unwrap()
+                .project,
+        )
+        .unwrap();
+        let context = CompletionContext::at(
+            SemanticIds::file("Native.kt"),
+            "kotlin",
+            &source,
+            ByteOffset(caret),
+        )
+        .unwrap();
+        let candidates = CompletionEngine::native(Arc::new(KeywordProvider::compiled().unwrap()))
+            .complete(&context, &snapshot, 50, &CancellationToken::new())
+            .unwrap();
+        assert_eq!(candidates.len(), 1);
+        assert_eq!(candidates[0].label, label);
+        let provider = Provider(candidates.iter().map(|c| c.item(&context)).collect());
+        harness.open(None, Some(&provider));
+        harness.render();
+        assert!(
+            harness
+                .popup
+                .accept(&mut harness.doc, &mut harness.input.state)
+                .unwrap()
+        );
+        assert!(harness.doc.snapshot().text().contains(inserted));
+        assert!(harness.popup.entries.is_empty());
+        assert!(harness.doc.undo(&mut harness.input.state.caret).unwrap());
+        assert_eq!(harness.doc.snapshot().text().as_ref(), source);
+    }
+}

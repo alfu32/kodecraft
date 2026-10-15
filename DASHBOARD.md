@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    35 |           1 |   29 |       0 |    65 |
+|    30 |           1 |   34 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **L06** — [Names, scopes, imports and symbol resolution](docs/migration/tasks/06-intelligence.md#l06--names-scopes-imports-and-symbol-resolution)
+- **L09** — [Background index coordinator and editor facade](docs/migration/tasks/06-intelligence.md#l09--background-index-coordinator-and-editor-facade)
 
 ## Task status
 
@@ -48,12 +48,12 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | L03  | [Kotlin semantic extraction](docs/migration/tasks/06-intelligence.md)                           | done        | [Report](docs/parity/L03.md) |
 | L04  | [C semantic extraction](docs/migration/tasks/06-intelligence.md)                                | done        | [Report](docs/parity/L04.md) |
 | L05  | [SQLite semantic store and atomic publication](docs/migration/tasks/06-intelligence.md)         | done        | [Report](docs/parity/L05.md) |
-| L06  | [Names, scopes, imports and symbol resolution](docs/migration/tasks/06-intelligence.md)         | in-progress | —                            |
-| L07  | [Expression types and receiver member lookup](docs/migration/tasks/06-intelligence.md)          | todo        | —                            |
-| L08  | [Dependency invalidation and incremental generations](docs/migration/tasks/06-intelligence.md)  | todo        | —                            |
-| L09  | [Background index coordinator and editor facade](docs/migration/tasks/06-intelligence.md)       | todo        | —                            |
-| L10  | [Other language adapters and heuristic fallback](docs/migration/tasks/06-intelligence.md)       | todo        | —                            |
-| L11  | [Completion providers and deterministic ranking](docs/migration/tasks/06-intelligence.md)       | todo        | —                            |
+| L06  | [Names, scopes, imports and symbol resolution](docs/migration/tasks/06-intelligence.md)         | done        | [Report](docs/parity/L06.md) |
+| L07  | [Expression types and receiver member lookup](docs/migration/tasks/06-intelligence.md)          | done        | [Report](docs/parity/L07.md) |
+| L08  | [Dependency invalidation and incremental generations](docs/migration/tasks/06-intelligence.md)  | done        | [Report](docs/parity/L08.md) |
+| L09  | [Background index coordinator and editor facade](docs/migration/tasks/06-intelligence.md)       | in-progress | —                            |
+| L10  | [Other language adapters and heuristic fallback](docs/migration/tasks/06-intelligence.md)       | done        | [Report](docs/parity/L10.md) |
+| L11  | [Completion providers and deterministic ranking](docs/migration/tasks/06-intelligence.md)       | done        | [Report](docs/parity/L11.md) |
 | L12  | [Language and persistence parity qualification](docs/migration/tasks/06-intelligence.md)        | todo        | —                            |
 | P01  | [Server catalog, discovery and installation](docs/migration/tasks/07-lsp.md)                    | todo        | —                            |
 | P02  | [LSP client transport and lifecycle](docs/migration/tasks/07-lsp.md)                            | todo        | —                            |

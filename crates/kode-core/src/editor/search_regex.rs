@@ -12,6 +12,46 @@ fn error(message: impl Into<String>) -> DomainError {
     }
 }
 impl SearchRegex {
+    pub fn capture_count(&self) -> usize {
+        match &self.0 {
+            Engine::Linear(pattern) => pattern.captures_len(),
+            Engine::Backtracking(pattern) => pattern.captures_len(),
+        }
+    }
+    /// Numbered capture ranges for configurable definition extractors. The
+    /// callback owns emission/cancellation limits, as for named captures.
+    pub fn for_each_capture(
+        &self,
+        text: &str,
+        group: usize,
+        mut found: impl FnMut(TextRange) -> Result<()>,
+    ) -> Result<()> {
+        if group >= self.capture_count() {
+            return Err(error("capture group does not exist"));
+        }
+        let span = |start, end| TextRange {
+            start: ByteOffset(start),
+            end: ByteOffset(end),
+        };
+        match &self.0 {
+            Engine::Linear(pattern) => {
+                for captures in pattern.captures_iter(text) {
+                    if let Some(value) = captures.get(group) {
+                        found(span(value.start(), value.end()))?;
+                    }
+                }
+            }
+            Engine::Backtracking(pattern) => {
+                for captures in pattern.captures_iter(text) {
+                    let captures = captures.map_err(|failure| error(failure.to_string()))?;
+                    if let Some(value) = captures.get(group) {
+                        found(span(value.start(), value.end()))?;
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
     pub fn compile(query: &str) -> Result<Self> {
         if query.len() > super::search::MAX_PATTERN_BYTES {
             return Err(error("pattern exceeds 65536 bytes"));

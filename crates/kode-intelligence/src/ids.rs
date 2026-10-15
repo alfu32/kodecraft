@@ -164,10 +164,43 @@ pub fn public_surface_hash(delta: &super::model::FileSemanticDelta) -> String {
         })
         .collect();
     imports.sort();
-    SemanticIds::content_hash(&format!(
+    let mut signature = format!(
         "{declarations}#types={}#hints={}#imports={}",
         types.join("|"),
         hints.join("|"),
         imports.join("|")
-    ))
+    );
+    let mut expressions = Vec::new();
+    for expression in &delta.syntax_expressions {
+        for target in expression.assigned_to.iter().filter(|id| ids.contains(id)) {
+            if delta.unresolved_types.iter().any(|ty| {
+                ty.owner_symbol_id == *target && ty.role != super::model::TypeRole::SuperType
+            }) {
+                continue;
+            }
+            if let super::model::SyntaxExpression::Call { type_arguments, .. } =
+                &expression.expression
+                && !type_arguments.is_empty()
+            {
+                expressions.push(format!(
+                    "{}:arguments:{}",
+                    target.0,
+                    type_arguments.join(",")
+                ));
+            } else if !delta.type_hints.iter().any(|hint| {
+                hint.target_symbol_id == *target
+                    && hint.expression_range.start >= expression.range.start
+                    && hint.expression_range.end <= expression.range.end
+            }) && let Some(hash) = &expression.binding_hash
+            {
+                expressions.push(format!("{}:{hash}", target.0));
+            }
+        }
+    }
+    if !expressions.is_empty() {
+        expressions.sort();
+        signature.push_str("#expressions=");
+        signature.push_str(&expressions.join("|"));
+    }
+    SemanticIds::content_hash(&signature)
 }

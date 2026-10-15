@@ -1,5 +1,6 @@
 //! Stateful worker parser with immutable results and an explicit work budget.
 mod incremental;
+mod kotlin;
 use crate::{model::SyntaxSpan, regex_grammar::color_for_qualifier, registry::Grammar};
 use kode_core::{
     ByteOffset, DomainError, Result, TextRange, WorkspaceGeneration, document::TextSnapshot,
@@ -26,6 +27,7 @@ struct ParsedData {
     generation: WorkspaceGeneration,
     snapshot: TextSnapshot,
     source: Arc<str>,
+    input: Arc<str>,
     tree: Tree,
     grammar: Arc<Grammar>,
     lexical: Vec<SyntaxSpan>,
@@ -58,7 +60,7 @@ impl ParsedDocument {
         &self.0.diagnostics
     }
     pub fn has_errors(&self) -> bool {
-        self.root_node().has_error()
+        self.root_node().has_error() || !self.diagnostics().is_empty()
     }
     pub fn changed_ranges(&self) -> &[TextRange] {
         &self.0.changed
@@ -103,6 +105,11 @@ impl ParserSession {
         }
         let started = Instant::now();
         let source = snapshot.text();
+        let (input, recovery) = if self.grammar.id == "kotlin" {
+            kotlin::prepare(source.clone(), cancel)?
+        } else {
+            (source.clone(), vec![])
+        };
         let previous = self.previous.as_ref().filter(|old| {
             old.generation() == generation
                 && old.snapshot().id == snapshot.id
@@ -115,7 +122,7 @@ impl ParserSession {
         }
         let mut old_tree = previous.map(|old| old.tree().clone());
         if let (Some(old_tree), Some(previous)) = (&mut old_tree, previous)
-            && let Some(edit) = incremental::edit(previous.source(), &source)
+            && let Some(edit) = incremental::edit(&previous.0.input, &input)
         {
             old_tree.edit(&edit);
         }
@@ -132,7 +139,7 @@ impl ParserSession {
             ));
         }
         let mut read =
-            |byte: usize, _: tree_sitter::Point| source.as_bytes().get(byte..).unwrap_or_default();
+            |byte: usize, _: tree_sitter::Point| input.as_bytes().get(byte..).unwrap_or_default();
         let tree = self.parser.parse_with_options(
             &mut read,
             old_tree.as_ref(),
@@ -173,11 +180,14 @@ impl ParserSession {
                 "native syntax tree exceeds node limit".into(),
             ));
         }
-        let (lexical, diagnostics) = collect(&tree, &source, cancel, started, self.budget)?;
+        let (lexical, mut diagnostics) = collect(&tree, &source, cancel, started, self.budget)?;
+        diagnostics.extend(recovery);
+        diagnostics.truncate(256);
         let parsed = ParsedDocument(Arc::new(ParsedData {
             generation,
             snapshot: snapshot.clone(),
             source,
+            input,
             tree,
             grammar: self.grammar.clone(),
             lexical,
@@ -269,7 +279,15 @@ fn lexical_class(node: Node<'_>, source: &str) -> Option<&'static str> {
     if (kind.contains("number") || kind.contains("integer") || kind.contains("float"))
         && !kind.ends_with("_type")
         && !kind.ends_with("_expression")
-        || matches!(kind, "decimal_literal" | "real_literal")
+        || matches!(
+            kind,
+            "decimal_literal"
+                | "real_literal"
+                | "long_literal"
+                | "hex_literal"
+                | "bin_literal"
+                | "unsigned_literal"
+        )
     {
         return Some("number");
     }

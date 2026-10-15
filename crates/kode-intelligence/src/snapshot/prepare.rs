@@ -195,6 +195,51 @@ pub(super) fn normalize(project: &mut ResolvedSemanticProject) -> Result<()> {
         validate_type(&ty.r#ref, &symbols)?;
     }
     for delta in project.deltas.values() {
+        let file_occurrences: BTreeMap<_, _> =
+            delta.occurrences.iter().map(|o| (o.id, o.range)).collect();
+        for expression in &delta.syntax_expressions {
+            if !scopes
+                .get(&expression.scope_id)
+                .is_some_and(|scope| scope.file_id == delta.file.id)
+                || expression.assigned_to.iter().any(|id| {
+                    !symbols
+                        .get(id)
+                        .is_some_and(|symbol| symbol.file_id == delta.file.id)
+                })
+            {
+                return Err(invalid("expression scope or binding is absent/foreign"));
+            }
+            for child in expression.ranges() {
+                if child.start < expression.range.start || child.end > expression.range.end {
+                    return Err(invalid(
+                        "expression operand extends outside its source range",
+                    ));
+                }
+            }
+            if let SyntaxExpression::Reference { occurrence_id }
+            | SyntaxExpression::Member { occurrence_id, .. } = &expression.expression
+                && !file_occurrences.contains_key(occurrence_id)
+            {
+                return Err(invalid("expression occurrence is absent"));
+            }
+            match &expression.expression {
+                SyntaxExpression::Reference { occurrence_id }
+                    if file_occurrences.get(occurrence_id) != Some(&expression.range) =>
+                {
+                    return Err(invalid(
+                        "expression reference range does not match its occurrence",
+                    ));
+                }
+                SyntaxExpression::Member { occurrence_id, .. }
+                    if file_occurrences.get(occurrence_id).is_some_and(|range| {
+                        range.start < expression.range.start || range.end > expression.range.end
+                    }) =>
+                {
+                    return Err(invalid("member occurrence extends outside its expression"));
+                }
+                _ => {}
+            }
+        }
         for import in &delta.imports {
             if !scopes
                 .get(&import.scope_id)

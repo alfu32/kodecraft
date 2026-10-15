@@ -1,6 +1,41 @@
 //! Native parser frontends emit unresolved file facts; resolution is separate.
 pub mod c;
+mod expressions;
+pub mod generic;
 pub mod kotlin;
+pub mod legacy;
+pub mod registry;
+
+fn empty_delta(
+    path: &str,
+    language: &str,
+    text: &str,
+    version: u64,
+) -> crate::model::FileSemanticDelta {
+    use crate::{ids::SemanticIds, model::*};
+    FileSemanticDelta {
+        file: FileRecord {
+            id: SemanticIds::file(path),
+            path: path.into(),
+            language_id: language.into(),
+            content_hash: SemanticIds::content_hash(text),
+            parse_version: version,
+            semantic_version: version,
+            dependency_generation: 0,
+        },
+        scopes: vec![],
+        symbols: vec![],
+        occurrences: vec![],
+        relations: vec![],
+        unresolved_types: vec![],
+        imports: vec![],
+        type_hints: vec![],
+        expression_types: vec![],
+        lexical_tokens: vec![],
+        syntax_expressions: vec![],
+        exported_surface_hash: String::new(),
+    }
+}
 
 /// Pick the occurrence denoting a receiver's value, excluding call arguments and
 /// index expressions. The resolver can inspect the enclosing expression later.
@@ -9,6 +44,8 @@ fn receiver_node(mut node: tree_sitter::Node<'_>) -> Option<tree_sitter::Node<'_
         if matches!(
             node.kind(),
             "identifier"
+                | "simple_identifier"
+                | "interpolated_identifier"
                 | "field_identifier"
                 | "type_identifier"
                 | "this_expression"
@@ -25,6 +62,7 @@ fn receiver_node(mut node: tree_sitter::Node<'_>) -> Option<tree_sitter::Node<'_
             "call_expression" => node
                 .child_by_field_name("function")
                 .or_else(|| children.first().copied())?,
+            "navigation_suffix" => *children.first()?,
             "parenthesized_expression" => *children.first()?,
             "pointer_expression" | "subscript_expression" => {
                 node.child_by_field_name("argument")?

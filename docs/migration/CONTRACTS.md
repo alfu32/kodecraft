@@ -403,3 +403,70 @@ visible in-memory fallback. Compatibility facts retain native byte ranges plus
 explicit zero-based lines/UTF-16 columns and source syntax metadata. They are native
 cache records, not an implicit import of the old H2 database. Snapshot validation
 checks referenced type records/symbols and raw hint/import/type scope ownership.
+
+L06 `SemanticResolver::resolve` consumes source deltas and returns an enriched
+project plus explicit unresolved occurrences. Lexical lookup, imports/packages,
+visibility and C namespaces are distinct from workspace candidate search. Unknown
+or ambiguous bindings retain no resolved identity. Declared type/alias/inheritance
+relations and file dependencies are prepared without filesystem I/O. L07 extends
+the same worker state with expression inference; L08 owns incremental generation
+changes. The immutable raw deltas remain available separately from enriched facts.
+Kotlin uses the requalified ast-grep 0.4.1 binding and regenerated L02 ABI fixtures;
+upstream recovery markers are not compiler validation.
+
+L07 adds defaulted unresolved `ExpressionSyntaxRecord` facts to each native delta.
+References, call/member operands, casts, parentheses, literal shape, explicit type
+arguments and binding targets use validated raw byte ranges/semantic identities.
+They survive SQLite reload under the v2 semantic format signature; enriched
+ExpressionTypeRecords remain separate. Inference is bounded, union-aware and
+returns explicit partial-inference notes. Unknown AST calls do not invoke a naming
+heuristic. Ambiguous union member declarations retain no arbitrary resolved ID.
+
+`BestEffortExpressionTypeResolver` reads prepared snapshot facts; the widest
+contained expression (including an explicit unknown result) takes precedence over
+argument literals. No query reparses source or scans unrelated workspace text.
+Scope/member/C-type lookup indexes remain worker-owned. L09 must surface inference
+notes and validate the document/index revision before using range results.
+
+For incomplete Kotlin access, parser input may mask dangling operators with ASCII
+spaces while preserving byte length/positions. Published source/snapshots remain
+raw, recovery diagnostics are explicit, and InputEdit compares prepared inputs.
+Adapters still derive text and semantic coordinates from the original snapshot.
+
+L08 `IncrementalSemanticIndex::prepare` accepts a previously resolved project,
+replacement raw deltas and explicit removed file IDs. Its affected-file plan
+distinguishes content/surface/removal changes; unchanged extraction Arcs and
+enriched facts remain available while affected files resolve again. Export changes
+invalidate reverse dependencies and matching name facts, including definitions
+appearing without prior dependency edges. Path rename is remove plus insert.
+Resolution generations are separate from raw document/parser versions and advance
+only for affected surviving files. `SemanticCacheKey` includes both kinds of
+freshness. Cancellation, conflicting input or generation exhaustion cannot mutate
+the previous project. Preparation performs no I/O or publication. L09 must persist
+the prepared snapshot through L05 before delivering affected/removed files to
+token/completion consumers, and must still apply workspace/document revision gates.
+
+L10 `SemanticAdapterSession` selects canonical language aliases and owns one
+document's mutable parser. `ExtractionReport` carries a raw delta, explicit
+Kotlin/C/generic/heuristic capability and fallback notes. Native cancellation never
+silently becomes fallback. Generic AST facts retain scopes and unresolved binding
+identities; they do not claim specialized Kotlin/C type semantics. Secondary source
+parser registrations merge configurable heuristic definitions behind native
+declaration ranges. Unsupported grammars use low-confidence regex facts.
+
+`DefinitionRegistry::load` is worker-only, regular-file/size bounded, and accepts an
+explicit definitions path ahead of ResourcePaths. L09 supplies KODE_CODEINTEL_PATH
+and surfaces catalog diagnostics plus extraction fallback notes. Registry objects
+may be shared immutably; adapter sessions may not be shared mutably across document
+workers. L09 owns cache bounds/eviction and workspace/document result gates.
+
+L11 `CompletionContext::at` computes raw UTF-8 prefix/receiver/replacement ranges
+from the captured source. CompletionEngine reads a matching-content prepared
+snapshot and returns bounded, identity-preserving ranked candidates; candidate
+conversion supplies core CompletionItems directly to E09. Import candidates insert
+qualified names over the complete typed path; member/plain candidates preserve
+receiver/operator/suffix. Unknown receivers have no workspace-text member fallback.
+Union suggestions require accessible common members and omit ambiguous identities.
+Optional rankers only score candidates. L09 executes this work off the UI thread,
+handles explicit stale/limit/cancellation errors and gates completed DTOs against
+workspace/document/request/index freshness. No parser is needed in E09 insertion.

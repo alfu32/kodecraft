@@ -24,6 +24,7 @@ pub(super) struct Builder<'a> {
     node_scopes: HashMap<usize, ScopeId>,
     symbols: HashMap<SymbolId, usize>,
     assignments: Vec<Node<'a>>,
+    bindings: HashMap<TextRange, Vec<SymbolId>>,
 }
 impl<'a> Builder<'a> {
     pub(super) fn new(
@@ -56,6 +57,7 @@ impl<'a> Builder<'a> {
                 type_hints: vec![],
                 expression_types: vec![],
                 lexical_tokens: vec![],
+                syntax_expressions: vec![],
                 exported_surface_hash: String::new(),
             },
             package: None,
@@ -64,6 +66,7 @@ impl<'a> Builder<'a> {
             node_scopes: HashMap::new(),
             symbols: HashMap::new(),
             assignments: vec![],
+            bindings: HashMap::new(),
         }
     }
     fn check(&mut self, depth: usize) -> Result<()> {
@@ -135,13 +138,9 @@ impl<'a> Builder<'a> {
             }
             let qualified = children(node)
                 .into_iter()
-                .find(|n| n.kind() == "qualified_identifier");
-            let name_node = qualified.and_then(|n| {
-                children(n)
-                    .into_iter()
-                    .rev()
-                    .find(|n| n.kind() == "identifier")
-            });
+                .find(|n| matches!(n.kind(), "qualified_identifier" | "identifier"));
+            let name_node =
+                qualified.and_then(|n| children(n).into_iter().rev().find(|n| identifier(*n)));
             if let Some(name_node) = name_node {
                 let id = self.add_symbol(node, name_node, SymbolKind::Package, file_scope, None);
                 self.delta.symbols[self.symbols[&id]].qualified_name = Some(name.to_owned());
@@ -158,8 +157,16 @@ impl<'a> Builder<'a> {
         // The package scope covers declarations after the header, including
         // imports. Root context is explicit rather than inferred by string names.
         self.node_scopes.insert(root.id(), content_scope);
+        let mut headers = vec![];
         for node in children(root) {
-            if node.kind() == "import" {
+            if node.kind() == "import_list" {
+                headers.extend(children(node));
+            } else {
+                headers.push(node);
+            }
+        }
+        for node in headers {
+            if matches!(node.kind(), "import" | "import_header") {
                 let raw = self
                     .text(node)
                     .trim_start_matches("import")
@@ -183,6 +190,13 @@ impl<'a> Builder<'a> {
         }
         self.collect_occurrences(root, content_scope, false, false, 0)?;
         self.collect_assignments()?;
+        self.delta.syntax_expressions = crate::frontend::expressions::collect(
+            self.parsed,
+            &self.delta,
+            &self.node_scopes,
+            &self.bindings,
+            self.cancel,
+        )?;
         self.collect_lexical(root, 0)?;
         self.delta
             .scopes
@@ -284,7 +298,11 @@ impl<'a> Builder<'a> {
                         self.add_scope(node, Some(scope), Some(id), ScopeKind::Type, range(node));
                     owner = Some(id);
                     for child in children(node) {
-                        if child.kind() == "delegation_specifiers" {
+                        if child.kind() == "delegation_specifier" {
+                            if let Some(ty) = first_type(child) {
+                                self.add_type(id, scope, ty, TypeRole::SuperType);
+                            }
+                        } else if child.kind() == "delegation_specifiers" {
                             for specifier in children(child) {
                                 if let Some(ty) = first_type(specifier) {
                                     self.add_type(id, scope, ty, TypeRole::SuperType);
@@ -397,7 +415,14 @@ impl<'a> Builder<'a> {
                     }
                 }
             }
-            "block" | "lambda_literal" | "for_statement" | "catch_block" => {
+            "function_body" if children(node).iter().any(|n| n.kind() == "statements") => {
+                scope = self.add_scope(node, Some(scope), owner, ScopeKind::Block, range(node));
+            }
+            "block"
+            | "control_structure_body"
+            | "lambda_literal"
+            | "for_statement"
+            | "catch_block" => {
                 let kind = if node.kind() == "lambda_literal" {
                     ScopeKind::Lambda
                 } else {
@@ -425,15 +450,19 @@ impl<'a> Builder<'a> {
         });
     }
     fn add_hint(&mut self, target: SymbolId, scope: ScopeId, raw: Node<'_>) {
+        self.bindings.entry(range(raw)).or_default().push(target);
         let expression = unwrap(raw);
         let hint = if expression.kind() == "as_expression" {
-            expression.child_by_field_name("right").map(|ty| {
-                (
-                    self.text(ty).to_owned(),
-                    TypeHintKind::Cast,
-                    range(expression),
-                )
-            })
+            expression
+                .child_by_field_name("right")
+                .or_else(|| children(expression).into_iter().rev().find(|n| is_type(*n)))
+                .map(|ty| {
+                    (
+                        self.text(ty).to_owned(),
+                        TypeHintKind::Cast,
+                        range(expression),
+                    )
+                })
         } else if expression.kind() == "navigation_expression" {
             None // Requires receiver-aware expression resolution, never the first identifier.
         } else if expression.kind() == "call_expression"
@@ -441,7 +470,7 @@ impl<'a> Builder<'a> {
         {
             children(expression)
                 .first()
-                .filter(|n| matches!(n.kind(), "identifier" | "user_type"))
+                .filter(|n| identifier(**n) || n.kind() == "user_type")
                 .map(|callee| {
                     let name = self.text(*callee).trim_matches('`').to_owned();
                     let kind = if name.chars().next().is_some_and(char::is_uppercase) {
@@ -453,10 +482,9 @@ impl<'a> Builder<'a> {
                 })
         } else if let Some(primitive) = literal_type(self.text(expression), expression.kind()) {
             Some((primitive.into(), TypeHintKind::Literal, range(expression)))
-        } else if matches!(
-            expression.kind(),
-            "identifier" | "this_expression" | "super_expression"
-        ) && self.text(expression) != "null"
+        } else if (identifier(expression)
+            || matches!(expression.kind(), "this_expression" | "super_expression"))
+            && self.text(expression) != "null"
         {
             Some((
                 self.text(expression).trim_matches('`').into(),
@@ -480,13 +508,24 @@ impl<'a> Builder<'a> {
     fn collect_assignments(&mut self) -> Result<()> {
         for node in self.assignments.clone() {
             self.check(0)?;
-            let Some(left) = node.child_by_field_name("left") else {
+            let Some(mut left) = node
+                .child_by_field_name("left")
+                .or_else(|| children(node).first().copied())
+            else {
                 continue;
             };
-            let Some(right) = node.child_by_field_name("right") else {
+            let Some(right) = node
+                .child_by_field_name("right")
+                .or_else(|| children(node).last().copied())
+            else {
                 continue;
             };
-            if left.kind() != "identifier" {
+            if left.kind() == "directly_assignable_expression"
+                && let Some(inner) = children(left).first()
+            {
+                left = *inner;
+            }
+            if !identifier(left) {
                 continue;
             } // Members need receiver resolution.
             let name = self.text(left).trim_matches('`');
@@ -533,7 +572,7 @@ impl<'a> Builder<'a> {
                 node.kind(),
                 "type_arguments" | "type_projection" | "type_constraint"
             );
-        let in_import = in_import || node.kind() == "import";
+        let in_import = in_import || matches!(node.kind(), "import" | "import_header");
         if let Some(primitive) = literal_type(self.text(node), node.kind()) {
             self.delta.expression_types.push(ExpressionTypeRecord {
                 file_id: self.delta.file.id,
@@ -546,27 +585,35 @@ impl<'a> Builder<'a> {
                 return Ok(());
             }
         }
-        if matches!(node.kind(), "string_literal" | "multiline_string_literal") {
-            self.short_interpolations(node, scope)?;
-        }
         if node.kind().contains("comment")
-            || (node.kind() == "identifier" && matches!(self.text(node), "null" | "_"))
+            || node.kind() == "null_literal"
+            || (identifier(node) && self.text(node) == "_")
         {
             return Ok(());
         }
-        if matches!(
-            node.kind(),
-            "identifier" | "this_expression" | "super_expression"
-        ) {
+        if (identifier(node) || matches!(node.kind(), "this_expression" | "super_expression"))
+            && !node.is_missing()
+            && node.end_byte() > node.start_byte()
+        {
             let span = range(node);
             let declaration = self.declarations.get(&span).copied();
             let parent = node.parent();
             let member = parent
+                .and_then(|n| {
+                    if n.kind() == "navigation_suffix" {
+                        n.parent()
+                    } else {
+                        Some(n)
+                    }
+                })
                 .filter(|n| n.kind() == "navigation_expression")
                 .filter(|n| {
-                    children(*n)
-                        .last()
-                        .is_some_and(|last| last.id() == node.id())
+                    children(*n).last().is_some_and(|last| {
+                        last.id() == node.id()
+                            || (last.kind() == "navigation_suffix"
+                                && node.start_byte() >= last.start_byte()
+                                && node.end_byte() <= last.end_byte())
+                    })
                 });
             let kind = if declaration.is_some() {
                 OccurrenceKind::Declaration
@@ -614,50 +661,6 @@ impl<'a> Builder<'a> {
         }
         Ok(())
     }
-    fn short_interpolations(&mut self, node: Node<'a>, scope: ScopeId) -> Result<()> {
-        // kotlin-ng 1.1.0 can tokenize "$name" as two string_content nodes.
-        // Recover only the language's short identifier form from those nodes;
-        // ${expression} remains the grammar's responsibility. Escape sequences
-        // have separate nodes, so an escaped dollar never enters this scan.
-        for content in children(node)
-            .into_iter()
-            .filter(|n| n.kind() == "string_content")
-        {
-            for (relative, ch) in self.text(content).char_indices() {
-                if ch != '$' {
-                    continue;
-                }
-                self.check(0)?;
-                let start = content.start_byte() + relative + 1;
-                let suffix = &self.source[start..node.end_byte()];
-                if !suffix
-                    .chars()
-                    .next()
-                    .is_some_and(|ch| ch == '_' || ch.is_alphabetic())
-                {
-                    continue;
-                }
-                let length: usize = suffix
-                    .chars()
-                    .take_while(|ch| ch.is_alphanumeric() || *ch == '_')
-                    .map(char::len_utf8)
-                    .sum();
-                let span = TextRange::new(ByteOffset(start), ByteOffset(start + length))?;
-                self.delta.occurrences.push(OccurrenceRecord {
-                    id: SemanticIds::occurrence(self.delta.file.id, span),
-                    file_id: self.delta.file.id,
-                    range: span,
-                    text: self.source[start..start + length].into(),
-                    kind: OccurrenceKind::Read,
-                    scope_id: scope,
-                    resolved_symbol_id: None,
-                    receiver_occurrence_id: None,
-                    confidence: Confidence::tree_sitter(),
-                });
-            }
-        }
-        Ok(())
-    }
     fn collect_lexical(&mut self, node: Node<'a>, depth: usize) -> Result<()> {
         self.check(depth)?;
         let text = self.text(node);
@@ -668,7 +671,7 @@ impl<'a> Builder<'a> {
             "string_literal" | "multiline_string_literal" | "character_literal"
         ) {
             Some(LexicalTokenKind::String)
-        } else if matches!(node.kind(), "number_literal" | "float_literal") {
+        } else if number(node.kind()) {
             Some(LexicalTokenKind::Number)
         } else if matches!(text, "true" | "false" | "null")
             || (!node.is_named()
@@ -706,15 +709,14 @@ fn range(node: Node<'_>) -> TextRange {
         .expect("ordered tree-sitter range")
 }
 fn declaration_name(node: Node<'_>) -> Option<Node<'_>> {
-    node.child_by_field_name("name").or_else(|| {
-        children(node)
-            .into_iter()
-            .find(|n| n.kind() == "identifier")
-    })
+    node.child_by_field_name("name")
+        .or_else(|| children(node).into_iter().find(|n| identifier(*n)))
+        .filter(|node| !node.is_missing() && node.end_byte() > node.start_byte())
 }
 fn has_token(node: Node<'_>, kind: &str) -> bool {
     let mut cursor = node.walk();
-    node.children(&mut cursor).any(|n| n.kind() == kind)
+    node.children(&mut cursor)
+        .any(|n| n.kind() == kind || (n.kind() == "binding_pattern_kind" && has_token(n, kind)))
 }
 fn is_type(node: Node<'_>) -> bool {
     matches!(
@@ -724,21 +726,25 @@ fn is_type(node: Node<'_>) -> bool {
             | "function_type"
             | "parenthesized_type"
             | "non_nullable_type"
+            | "not_nullable_type"
     )
 }
 fn first_type(node: Node<'_>) -> Option<Node<'_>> {
     if is_type(node) {
         return Some(node);
     }
-    children(node).into_iter().find_map(|child| {
-        if is_type(child) {
-            Some(child)
-        } else if child.kind() == "constructor_invocation" {
-            children(child).into_iter().find(|n| is_type(*n))
-        } else {
-            None
-        }
-    })
+    children(node)
+        .into_iter()
+        .find_map(|child| {
+            if is_type(child) {
+                Some(child)
+            } else if child.kind() == "constructor_invocation" {
+                children(child).into_iter().find(|n| is_type(*n))
+            } else {
+                None
+            }
+        })
+        .filter(|node| !node.is_missing() && node.end_byte() > node.start_byte())
 }
 fn initializer(node: Node<'_>) -> Option<Node<'_>> {
     let mut cursor = node.walk();
@@ -783,7 +789,7 @@ fn literal_type(text: &str, kind: &str) -> Option<&'static str> {
     match kind {
         "string_literal" | "multiline_string_literal" => Some("String"),
         "character_literal" => Some("Char"),
-        "number_literal" | "float_literal" => {
+        kind if number(kind) => {
             let text = text.replace('_', "");
             if text.ends_with(['f', 'F']) && !text.starts_with("0x") {
                 Some("Float")
@@ -795,7 +801,33 @@ fn literal_type(text: &str, kind: &str) -> Option<&'static str> {
                 Some("Int")
             }
         }
+        "boolean_literal" => Some("Boolean"),
         "identifier" if matches!(text, "true" | "false") => Some("Boolean"),
         _ => None,
     }
+}
+fn identifier(node: Node<'_>) -> bool {
+    matches!(
+        node.kind(),
+        "simple_identifier" | "type_identifier" | "interpolated_identifier"
+    ) || (node.kind() == "identifier"
+        && !children(node).iter().any(|n| {
+            matches!(
+                n.kind(),
+                "identifier" | "simple_identifier" | "type_identifier"
+            )
+        }))
+}
+fn number(kind: &str) -> bool {
+    matches!(
+        kind,
+        "integer_literal"
+            | "real_literal"
+            | "long_literal"
+            | "hex_literal"
+            | "bin_literal"
+            | "unsigned_literal"
+            | "number_literal"
+            | "float_literal"
+    )
 }

@@ -264,6 +264,9 @@ pub struct FileSemanticDelta {
     pub expression_types: Vec<ExpressionTypeRecord>,
     #[serde(default)]
     pub lexical_tokens: Vec<LexicalTokenRecord>,
+    /// Native unresolved expression structure survives cache reload/invalidation.
+    #[serde(default)]
+    pub syntax_expressions: Vec<ExpressionSyntaxRecord>,
     pub exported_surface_hash: String,
 }
 impl FileSemanticDelta {
@@ -288,6 +291,11 @@ impl FileSemanticDelta {
             .chain(self.type_hints.iter().map(|r| r.expression_range))
             .chain(self.expression_types.iter().map(|r| r.range))
             .chain(self.lexical_tokens.iter().map(|r| r.range))
+            .chain(
+                self.syntax_expressions
+                    .iter()
+                    .flat_map(ExpressionSyntaxRecord::ranges),
+            )
     }
     pub fn validate_source(&self, text: &str) -> Result<()> {
         for range in self.ranges() {
@@ -295,6 +303,59 @@ impl FileSemanticDelta {
         }
         Ok(())
     }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExpressionSyntaxRecord {
+    pub range: SourceRange,
+    pub scope_id: ScopeId,
+    pub expression: SyntaxExpression,
+    #[serde(default)]
+    pub assigned_to: Vec<SymbolId>,
+    pub binding_hash: Option<String>,
+}
+impl ExpressionSyntaxRecord {
+    pub fn ranges(&self) -> impl Iterator<Item = SourceRange> {
+        let child = match &self.expression {
+            SyntaxExpression::Call { callee, .. } => Some(*callee),
+            SyntaxExpression::Member { receiver, .. } => Some(*receiver),
+            SyntaxExpression::Cast { value, .. } => Some(*value),
+            SyntaxExpression::Parenthesized { inner } => Some(*inner),
+            _ => None,
+        };
+        std::iter::once(self.range).chain(child)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(
+    tag = "kind",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase"
+)]
+pub enum SyntaxExpression {
+    Reference {
+        occurrence_id: OccurrenceId,
+    },
+    Call {
+        callee: SourceRange,
+        #[serde(default)]
+        type_arguments: Vec<String>,
+    },
+    Member {
+        receiver: SourceRange,
+        occurrence_id: OccurrenceId,
+    },
+    Cast {
+        value: SourceRange,
+        type_name: String,
+    },
+    Parenthesized {
+        inner: SourceRange,
+    },
+    Literal {
+        type_name: String,
+    },
+    Unknown,
 }
 /// Resolver output and stored extraction facts have separate ownership. Queries
 /// can use enriched records without changing the original file deltas.

@@ -226,3 +226,76 @@ fn every_enabled_grammar_matches_its_pinned_abi_node_fields_and_unicode_byte_fix
         }
     }
 }
+
+#[test]
+fn kotlin_incomplete_access_recovery_keeps_raw_bytes_scopes_and_incremental_equivalence() {
+    let registry = GrammarRegistry::compiled();
+    let grammar = registry.get("kotlin").unwrap();
+    let cancel = CancellationToken::new();
+    let initial = "class Child { fun inspect() { this. } }\r\n";
+    let mut doc = document("kotlin", initial);
+    let mut parser = ParserSession::new(grammar.clone()).unwrap();
+    let old = parser
+        .parse(&doc.snapshot(), WorkspaceGeneration(1), &cancel)
+        .unwrap();
+    assert!(old.root_node().to_sexp().contains("class_declaration"));
+    assert!(
+        old.diagnostics()
+            .iter()
+            .any(|d| d.kind == "incomplete_member_access")
+    );
+    assert_eq!(old.source(), initial);
+    for insertion in ["name", ""] {
+        let source = doc.snapshot().text();
+        let start = source.find("this.").unwrap() + 5;
+        let end = source[start..]
+            .find(' ')
+            .map_or(start, |count| start + count);
+        doc.apply_edit(
+            doc.revision(),
+            TextRange::new(ByteOffset(start), ByteOffset(end)).unwrap(),
+            insertion,
+            EditKind::Typing,
+        )
+        .unwrap();
+        let reused = parser
+            .parse(&doc.snapshot(), WorkspaceGeneration(1), &cancel)
+            .unwrap();
+        let fresh = ParserSession::new(grammar.clone())
+            .unwrap()
+            .parse(&doc.snapshot(), WorkspaceGeneration(1), &cancel)
+            .unwrap();
+        assert_eq!(reused.root_node().to_sexp(), fresh.root_node().to_sexp());
+        assert_eq!(reused.lexical(), fresh.lexical());
+        assert_eq!(reused.diagnostics(), fresh.diagnostics());
+        assert_eq!(old.source(), initial);
+    }
+    for source in [
+        "fun inspect(box: Box?) { box?. }\n",
+        "fun inspect() { source.member.",
+        "fun inspect() { source.\nmember }\n",
+        "import demo.*\nfun inspect() { val text = \"this.\"; /* nested /* x. */ y. */ val range = 0..3 }\n",
+    ] {
+        let parsed = ParserSession::new(grammar.clone())
+            .unwrap()
+            .parse(
+                &document("kotlin", source).snapshot(),
+                WorkspaceGeneration(1),
+                &cancel,
+            )
+            .unwrap();
+        assert_eq!(parsed.source(), source);
+        let expected = source.contains("box?.") || source.ends_with("member.");
+        assert_eq!(
+            parsed
+                .diagnostics()
+                .iter()
+                .any(|d| d.kind == "incomplete_member_access"),
+            expected,
+            "{source}"
+        );
+        for span in parsed.lexical() {
+            span.range.validate(source).unwrap();
+        }
+    }
+}

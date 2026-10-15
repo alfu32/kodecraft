@@ -160,7 +160,7 @@ impl SqliteStore {
             ));
         }
         let format = format!(
-            "utf8-semantic-v1/{:x}",
+            "utf8-semantic-v2/{:x}",
             Sha256::digest(include_bytes!(
                 "../../../../resources/grammars/manifest.json"
             ))

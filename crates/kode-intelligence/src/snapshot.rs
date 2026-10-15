@@ -272,7 +272,7 @@ impl SemanticSnapshot {
             .filter(|expression| {
                 expression.range.start >= range.start && expression.range.end <= range.end
             })
-            .min_by_key(|expression| expression.range.len())
+            .max_by_key(|expression| expression.range.len())
             .map(|expression| &expression.r#type)
     }
     pub fn symbols(&self, file: FileId) -> impl Iterator<Item = &SymbolRecord> {
@@ -467,20 +467,7 @@ impl SemanticSnapshot {
                 }
             }
         }
-        let owning_type = chain
-            .iter()
-            .filter_map(|id| self.scope(*id))
-            .filter_map(|scope| scope.owner_symbol_id)
-            .filter_map(|id| self.symbol(id))
-            .find_map(|owner| {
-                if is_type(owner.kind) {
-                    Some(owner.id)
-                } else {
-                    self.relations(owner.id, Some(RelationKind::MemberOf))
-                        .next()
-                        .map(|relation| relation.to)
-                }
-            });
+        let owning_type = self.owner_type_at(file, offset).map(|owner| owner.id);
         if let Some(owner) = owning_type {
             for member in self.members(&TypeRef::named(owner)) {
                 if self.is_accessible(member, file, offset) && names.insert(&member.name) {
@@ -489,7 +476,12 @@ impl SemanticSnapshot {
             }
         }
         for symbol in self.workspace_symbols().filter(|symbol| {
-            is_type(symbol.kind)
+            self.scope(symbol.scope_id).is_some_and(|scope| {
+                matches!(
+                    scope.kind,
+                    ScopeKind::File | ScopeKind::Package | ScopeKind::Module | ScopeKind::Namespace
+                )
+            }) && (is_type(symbol.kind)
                 || matches!(
                     symbol.kind,
                     SymbolKind::Package
@@ -497,7 +489,7 @@ impl SemanticSnapshot {
                         | SymbolKind::Namespace
                         | SymbolKind::Function
                         | SymbolKind::Constant
-                )
+                ))
         }) {
             if self.is_accessible(symbol, file, offset) && names.insert(&symbol.name) {
                 result.push(symbol);
