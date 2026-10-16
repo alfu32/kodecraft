@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+kode_appdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+exec "$kode_appdir/usr/lib/kode/kode" "$@"

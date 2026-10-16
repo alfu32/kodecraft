@@ -347,6 +347,7 @@ pub struct CapturedDocument {
 }
 #[derive(Clone)]
 pub enum SessionChange {
+    FullFilePaths(bool),
     Recent(Box<kode_workspace::session::RecentFileV1>),
     RemoveRecent(PathBuf),
     Move { from: PathBuf, to: PathBuf },
@@ -361,6 +362,7 @@ pub fn capture_changes(
     let mut base = (*base).clone();
     for change in changes {
         match change {
+            SessionChange::FullFilePaths(full) => base.full_file_paths = full,
             SessionChange::Recent(mut recent) => {
                 if let Some(old) = base.recent_files.iter().find(|old| old.path == recent.path) {
                     recent.extra = old.extra.clone();

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Kode
+Comment=Terminal-first code editor
+Exec=kode %F
+Icon=kode
+Terminal=true
+Type=Application
+Categories=Development;IDE;
+MimeType=text/plain;inode/directory;
+StartupNotify=false

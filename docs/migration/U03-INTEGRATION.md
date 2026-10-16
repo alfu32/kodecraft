@@ -4,17 +4,19 @@ U03 implements the optional Java runtime for the qualified **Linux x86_64 GNU**
 target. See [acceptance evidence](../parity/U03.md), the
 [terminal report](../parity/U03-pty.json) and
 [package separation report](../parity/U03-package.json).
-Full distribution/publication work continues under Z03; no remote release upload
-or untested platform success is claimed.
+Z03 qualifies the local distribution and implements coordinated draft upload;
+Z04 retains final release execution. No remote release upload or untested platform
+success is claimed.
 
 ## Artifact and installer boundary
 
 - `scripts/build-java-runtime.py` uses the user's `jlink-build/bundle.sh` module
   baseline plus common driver modules. It writes a standalone runtime ZIP, exact
   file manifest and SHA-256 sidecar. User jlink scripts/bundles are unchanged.
-- `.github/workflows/java-runtime.yaml` has immutable action pins, a read-only
-  Linux build/artifact job and a release-only publication job. It has not been
-  executed remotely. The public latest-release endpoint returned HTTP 404 during
+- `.github/workflows/java-runtime.yaml` has immutable action pins and a read-only
+  reusable Linux build/artifact job. Z03's distribution workflow coordinates
+  draft creation with the full asset set. Neither has been executed remotely.
+  The public latest-release endpoint returned HTTP 404 during
   qualification; failure is handled in the production UI.
 - `Options::from_environment(storage_root(database_home))` selects the native
   target and `KODE_RUNTIME_RELEASE_URL` or the repository's latest-release URL.

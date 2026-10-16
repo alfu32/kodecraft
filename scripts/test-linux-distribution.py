@@ -75,7 +75,7 @@ def main():
         for launcher in ("kode.sh", "kode.ps1"):
             command = [str(package / launcher), "--version"] if launcher.endswith(".sh") else ["pwsh","-NoProfile","-File",str(package / launcher),"--version"]
             result = subprocess.run(command,cwd=unrelated,capture_output=True,text=True)
-            assert result.returncode==0 and "kode 0.1.0" in result.stdout
+            assert result.returncode==0 and "kode "+manifest['version'] in result.stdout
             invalid = subprocess.run(command[:-1]+["--unknown-qualification-option"],cwd=unrelated,capture_output=True,text=True)
             assert invalid.returncode!=0
         cases.append({"case":"manifest-notices-source-paths-launchers", "status":"passed", "files":len(actual), "rustNoticeComponents":sum(c["kind"]=="rust" for c in notices["components"]), "javaNoticeComponents":sum(c["kind"]=="java" for c in notices["components"]), "windowsCmdQualification":"not run; no Windows artifact claimed"})

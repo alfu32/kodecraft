@@ -315,6 +315,14 @@ pub static BINDINGS: &[Binding] = &[
         Files,
         0,
         SHIFT,
+        true,
+        [Key::Character('p')],
+        "Toggle project-relative / full paths in Recent (also click [paths:rel/full])"
+    ),
+    chord!(
+        Files,
+        0,
+        SHIFT,
         false,
         [Key::Left, Key::Right, Key::Enter],
         "Collapse / open file or toggle folder"

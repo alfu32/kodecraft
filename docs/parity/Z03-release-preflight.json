@@ -1,0 +1,66 @@
+{
+  "status": "passed",
+  "actualArtifactIntegrity": true,
+  "syntheticCleanSourceForPositiveCases": true,
+  "realRemoteWrites": 0,
+  "passed": 13,
+  "cases": [
+    {
+      "case": "modified-source",
+      "status": "passed"
+    },
+    {
+      "case": "complete-actual-assets-synthetic-clean-source",
+      "status": "passed",
+      "assets": 13
+    },
+    {
+      "case": "wrong-version",
+      "status": "passed"
+    },
+    {
+      "case": "different-source",
+      "status": "passed"
+    },
+    {
+      "case": "bad-checksum",
+      "status": "passed"
+    },
+    {
+      "case": "missing-runtime",
+      "status": "passed"
+    },
+    {
+      "case": "duplicate-name",
+      "status": "passed"
+    },
+    {
+      "case": "stale-output",
+      "status": "passed"
+    },
+    {
+      "case": "nested-output",
+      "status": "passed"
+    },
+    {
+      "case": "mock-gh-wrong-tag",
+      "status": "passed",
+      "realRemoteWrites": 0
+    },
+    {
+      "case": "mock-gh-existing",
+      "status": "passed",
+      "realRemoteWrites": 0
+    },
+    {
+      "case": "mock-gh-forbidden",
+      "status": "passed",
+      "realRemoteWrites": 0
+    },
+    {
+      "case": "mock-gh-new-draft",
+      "status": "passed",
+      "realRemoteWrites": 0
+    }
+  ]
+}

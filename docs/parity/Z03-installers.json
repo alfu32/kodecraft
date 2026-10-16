@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "sourceDateEpoch": 1767225600,
+  "scope": "Repeat assembly of verified payload; independent Rust/native rebuild recorded separately",
+  "artifacts": [
+    {
+      "artifact": "kode-0.1.0-x86_64.AppImage",
+      "sha256": "2d6bff3c25760fbaa02d3512cc921a5df78e8f9c7683d6b2ecc1be664d28c91a",
+      "size": 31001080,
+      "repeatBuildIdentical": true,
+      "payloadArchiveSha256": "e16bc9d3668e9de49285b5da05f68a47d1eebd039b7fc173bf38c880b1653f59",
+      "javaRuntimeBundled": false,
+      "runtimeVersion": "20251108",
+      "runtimeSha256": "2fca8b443c92510f1483a883f60061ad09b46b978b2631c807cd873a47ec260d"
+    },
+    {
+      "artifact": "kode-rs_0.1.0_amd64.snap",
+      "sha256": "08e602843a838204502292b15711f5644c93533a33b01c6b528d1647b2475859",
+      "size": 28508160,
+      "repeatBuildIdentical": true,
+      "payloadArchiveSha256": "e16bc9d3668e9de49285b5da05f68a47d1eebd039b7fc173bf38c880b1653f59",
+      "javaRuntimeBundled": false,
+      "snapcraftVersion": "9.0.1",
+      "snapPackVersion": "2.77.1",
+      "differentPackersIdentical": true,
+      "base": "core24",
+      "confinement": "strict",
+      "grade": "devel"
+    }
+  ]
+}

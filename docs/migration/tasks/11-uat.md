@@ -50,7 +50,8 @@ optional runtime installation UI and release metadata. **UAT:** M003.
 **Read:** [integration checkpoint](../U03-INTEGRATION.md) and
 [acceptance evidence](../../parity/U03.md). Production download/progress/cancel/
 retry and actual no-Java H2 terminal/package separation are qualified on Linux
-x86_64 GNU. Z03 retains full distribution/publication qualification.
+x86_64 GNU. Z03 qualifies the local distribution; Z04 retains final release
+execution/publication qualification.
 
 1. Build a separate, platform-specific Java 21+ jlink runtime artifact in CI and
    publish it with checksums alongside releases. Keep it out of the main app
@@ -92,7 +93,7 @@ keyboard reducers, search match commands and all shared editor hosts. **UAT:** B
 
 ## U05 — Hex layouts and text or binary find
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** V02, Z02. **Owns:** hex viewer layout, controls, search and fixtures.
 **UAT:** M004.
@@ -151,7 +152,7 @@ and path-field integration across file/project, database and REST dialogs.
 
 ## U08 — Project-relative paths in the open-file list
 
-**Status:** todo
+**Status:** done
 
 **Depends:** W05, W03. **Owns:** open-file presentation and display preference.
 **UAT:** B005.
@@ -205,7 +206,7 @@ adapters and Settings installation diagnostics. **UAT:** B006, images 5–8.
 
 ## U11 — Connection-type JDBC URL template dropdown
 
-**Status:** todo
+**Status:** done
 
 **Depends:** D07. **Owns:** datasource URL field, template catalog and suggestions.
 **UAT:** M007, image 9.

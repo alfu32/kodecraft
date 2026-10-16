@@ -37,6 +37,7 @@ pub enum FilesWork {
     Action { tag: JobTag, action: FileAction },
     Open(PathBuf),
     RemoveRecent(PathBuf),
+    FullPaths(bool),
     ChangeWorkspace,
     ClipboardCopy(String),
     ClipboardRead { tag: JobTag },
@@ -44,6 +45,7 @@ pub enum FilesWork {
 #[derive(Debug, Clone)]
 enum ButtonAction {
     Change,
+    FullPaths,
     NewFile(PathBuf),
     NewDirectory(PathBuf),
     Rename(PathBuf),
@@ -74,6 +76,7 @@ pub struct FilesPanel {
     pub tree: FileTree,
     pub project: Project,
     pub recents: Vec<RecentEntry>,
+    pub full_paths: bool,
     pub selected: Option<PathBuf>,
     pub active_path: Option<PathBuf>,
     pub scroll: usize,
@@ -98,6 +101,7 @@ impl FilesPanel {
             tree: FileTree::new(&project),
             project,
             recents: vec![],
+            full_paths: false,
             selected: None,
             active_path: None,
             scroll: 0,
@@ -260,6 +264,7 @@ impl FilesPanel {
     fn action(&mut self, action: ButtonAction, focus: &mut FocusState) -> Result<()> {
         match action {
             ButtonAction::Change => self.work.push(FilesWork::ChangeWorkspace),
+            ButtonAction::FullPaths => self.toggle_full_paths(),
             ButtonAction::NewFile(parent) => self.open_dialog(NameAction::NewFile(parent), focus),
             ButtonAction::NewDirectory(parent) => {
                 self.open_dialog(NameAction::NewDirectory(parent), focus)
@@ -268,6 +273,22 @@ impl FilesPanel {
             ButtonAction::Delete(path) => self.queue_action(FileAction::Delete { path })?,
         }
         Ok(())
+    }
+    fn toggle_full_paths(&mut self) {
+        self.full_paths = !self.full_paths;
+        self.work.push(FilesWork::FullPaths(self.full_paths));
+    }
+    fn recent_label(&self, path: &Path) -> String {
+        let label = if self.full_paths {
+            path
+        } else {
+            path.strip_prefix(&self.project.root).unwrap_or(path)
+        };
+        display_text(&if label.as_os_str().is_empty() {
+            ".".into()
+        } else {
+            label.to_string_lossy()
+        })
     }
     fn visible(&mut self, index: usize, total: usize) {
         let rows = self.tree_area.height as usize;
@@ -442,15 +463,19 @@ impl FilesPanel {
                     && !input.modifiers.alt
                     && !input.modifiers.meta =>
             {
-                if entries.is_empty() {
-                    return Ok(false);
-                }
                 let Some(input) = crate::input::shortcuts::command_key(
                     crate::input::shortcuts::Scope::Files,
                     *input,
                 ) else {
                     return Ok(false);
                 };
+                if input.key == Key::Character('p') {
+                    self.toggle_full_paths();
+                    return Ok(true);
+                }
+                if entries.is_empty() {
+                    return Ok(false);
+                }
                 let mut index = self
                     .selected
                     .as_ref()
@@ -566,6 +591,19 @@ impl FilesPanel {
                 "Recent",
                 theme.style("file-entry"),
             );
+            self.buttons(
+                Rect::new(area.x, y, area.width, 1),
+                vec![(
+                    if self.full_paths {
+                        "[paths:full]"
+                    } else {
+                        "[paths:rel]"
+                    },
+                    ButtonAction::FullPaths,
+                )],
+                buffer,
+                theme,
+            );
             self.recent_area = Rect::new(area.x, y + 1, area.width, rows.saturating_sub(2));
             self.recent_scroll = self.recent_scroll.min(
                 self.recents
@@ -590,7 +628,7 @@ impl FilesPanel {
                     &format!(
                         "{} {}",
                         if recent.dirty { '*' } else { 'x' },
-                        display_text(&recent.path.to_string_lossy())
+                        self.recent_label(&recent.path)
                     ),
                     style,
                 );

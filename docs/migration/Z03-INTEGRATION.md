@@ -1,8 +1,8 @@
 # Z03 distribution continuation
 
-Z03 is **in-progress**. The Linux archive, dependency notices, relocated native
-browser terminal and clean-image acceptance are now implemented and qualified.
-Full installer/release work remains; do not mark this task or the goal complete.
+Z03 is **done** for Linux x86_64 GNU. The archive, AppImage, strict Snap, notices,
+relocated browser terminal and local acceptance are qualified. The full migration
+goal remains active; Z04 owns final release qualification after remaining UAT work.
 
 ## Implemented and qualified
 
@@ -42,8 +42,27 @@ Full installer/release work remains; do not mark this task or the goal complete.
   The JVM, Kotlin app, developer configuration and driver/build caches are absent.
 - The current archive has **984 files**, **32,813,172 compressed bytes**, SHA-256
   `e16bc9d3668e9de49285b5da05f68a47d1eebd039b7fc173bf38c880b1653f59`.
-  Two assemblies of the same inputs/epoch match. This is archive assembly
-  reproducibility, not independent Rust compiler output reproducibility.
+  Fresh Rust/native builds in separate directories reproduce this hash on the
+  same host/toolchain. This does not claim cross-toolchain or cross-OS equality.
+  See [rebuild evidence](../parity/Z03-rebuild.json) and
+  [source/compiler/native provenance](../parity/Z03-build-source.json).
+- [Actual AppImage and strict Snap artifacts](../parity/Z03-installers.json)
+  rebuild identically; Snapcraft and service-free `snap pack` produce identical
+  Snap bytes. Runtime/tool inputs and their static native dependency legal texts
+  are pinned for AppImage. Neither installer contains a JVM.
+- [Four actual AppImage PTY cases](../parity/Z03-appimage-pty.json) and
+  [five AppImage browser/SSH cases](../parity/Z03-appimage-browser.json) pass.
+- [Three actual strict Snap cases](../parity/Z03-snap-vm.json) run inside an owned
+  Ubuntu KVM guest: no-Java editing, external-Java H2 SQL, and browser editing/save
+  over SSH, with child/helper cleanup. Host Snap installations remain untouched.
+- [All Rust workspace targets compile without Java/Maven](../parity/Z03-no-java-build.json)
+  in an owned clean pinned container, using read-only source/registry mounts.
+- CI orchestrates stable/locked Rust checks, helper/JDBC tests, notice/native
+  builds, installer reproducibility and actual AppImage/Snap/no-Java acceptance.
+  The optional JVM is built separately and attached with the full asset set to a
+  new draft, before publication. Published-release append/upload is removed.
+  Thirteen [preflight/CLI integrity cases](../parity/Z03-release-preflight.json)
+  pass using actual artifacts and a mocked GitHub CLI; no real upload is claimed.
 
 ## Acceptance and discovered startup fix
 
@@ -72,7 +91,8 @@ Full installer/release work remains; do not mark this task or the goal complete.
   reach its confirmed listening socket locally; no bridge-network success or host
   network configuration change is claimed.
 - Optional Java remains separate under [U03](../parity/U03.md). No remote Actions
-  run, release upload, platform/installer support or publication is inferred.
+  run, release upload or publication is inferred. Installer support is limited to
+  the actual locally qualified Linux x86_64 artifacts described above.
 
 See [the distribution guide](../../packaging/README.md) for prerequisites and exact
 commands. Browser tests require Python Playwright, Chrome and (for SSH) OpenSSH;
@@ -90,19 +110,15 @@ native Rust release artifacts**. Current qualification covers only Linux x86_64
 GNU. Preserve the source's other platform branches as unqualified; do not claim
 that they work or that the former library resources were standalone releases.
 
-## Work still required
+## Final release boundaries
 
-1. Build and qualify actual Linux AppImage and Snap equivalents, preserving the
-   optional/external-Java design and native resource/helper discovery. Complete
-   install/run documentation for these formats and the actual host prerequisites.
-2. Finish CI/release orchestration for locked native/helper builds, notice and
-   native bundles, platform checks, checksums/manifests and distinct runtime assets.
-   Coordinate release lifecycle/upload timing: the existing optional-Java workflow
-   uploads on published releases, which may conflict with immutable releases.
-   Remote CI execution and actual publication have not happened in this workspace.
-3. Qualify independent Rust/native build reproducibility and record full native
-   package/compiler provenance. Current evidence proves deterministic assembly and
-   helper rebuilds, not a clean independent Rust rebuild.
-4. Complete the installer/platform/browser matrix for the actual supported
-   artifacts. Windows launcher execution and macOS/Windows/other-architecture
-   artifacts remain unqualified. Z04 retains final full parity orchestration.
+Remote Actions execution and actual publication have not happened in this
+workspace. Workflows pass local actionlint 1.7.7 validation (shellcheck unavailable
+and disabled); Python compilation, credits/task checks and local artifact cases
+pass. The local build provenance correctly says `sourceDirty: true`, so these
+uncommitted-source assets are rejected for draft publication. Synthetic clean
+metadata exists only inside temporary preflight test copies.
+
+Z04 retains the final full parity/platform matrix and release execution after all
+editor and UAT tasks pass. Windows launcher execution and macOS/Windows/other
+architecture artifacts remain unqualified; no release artifacts are inferred.

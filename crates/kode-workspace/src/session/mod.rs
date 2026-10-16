@@ -44,6 +44,8 @@ pub struct ProjectSessionV1 {
     #[serde(default)]
     pub recent_files: Vec<RecentFileV1>,
     #[serde(default)]
+    pub full_file_paths: bool,
+    #[serde(default)]
     pub open_editors: Vec<EditorStateV1>,
     #[serde(default)]
     pub source_roots: Vec<PathBuf>,
@@ -67,6 +69,7 @@ impl Default for ProjectSessionV1 {
         Self {
             version: SESSION_VERSION,
             recent_files: vec![],
+            full_file_paths: false,
             open_editors: vec![],
             source_roots: vec![],
             scan_exclusions: vec![],

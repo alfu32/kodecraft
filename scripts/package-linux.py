@@ -63,8 +63,9 @@ def main():
     add("LICENSE.md", ROOT / "LICENSE.md", "license")
     add("README.md", ROOT / "README.md", "documentation")
     add("packaging/README.md", ROOT / "packaging/README.md", "documentation")
-    for launcher in sorted((ROOT / "packaging/launchers").iterdir()):
-        add(launcher.name, launcher, "launcher", launcher.suffix == ".sh")
+    for name in ("kode.sh", "kode.cmd", "kode.bat", "kode.ps1"):
+        launcher = ROOT / "packaging/launchers" / name
+        add(name, launcher, "launcher", launcher.suffix == ".sh")
     notices = json.loads((args.notices / "manifest.json").read_text())
     if notices["target"] != TARGET or notices["cargoLockSha256"] != sha((ROOT / "Cargo.lock").read_bytes()) or notices["helperSha256"] != sha(args.helper.read_bytes()):
         raise ValueError("Notice inputs differ from the current lock/helper; regenerate distribution notices")

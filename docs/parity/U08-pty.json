@@ -1,0 +1,56 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "case": "relative-full-keyboard-mouse-and-save-identity",
+      "duplicateBasenames": true,
+      "outsideRootAbsolute": true,
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restart-restores-preference-and-selected-file",
+      "physicalFilesUnchanged": true,
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "relative-full-keyboard-mouse-and-save-identity",
+      "duplicateBasenames": true,
+      "outsideRootAbsolute": true,
+      "size": [
+        60,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restart-restores-preference-and-selected-file",
+      "physicalFilesUnchanged": true,
+      "size": [
+        60,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 4
+}

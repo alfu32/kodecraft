@@ -1,6 +1,6 @@
 # Linux distribution build and qualification
 
-Z03 remains in progress. The verified target is **x86_64 Linux GNU**, with
+Z03 build/distribution qualification is complete for **x86_64 Linux GNU**, with
 **glibc 2.39 or newer** (Ubuntu 24.04 baseline). The application uses system glibc,
 libgcc, libm and zlib. The optional ttyd executable has its own bundled json-c,
 OpenSSL and zlib libraries, with paths relative to the executable. Its pinned
@@ -42,7 +42,11 @@ The Rust build remaps developer paths for Rust and C/C++ diagnostics. All 30 Jav
 runtime dependency versions are fixed in `jdbc-bridge/pom.xml`; the artifact/POM
 hashes are locked in `packaging/java-dependencies.json`. Build-time Maven plugins
 and the helper output timestamp are pinned too. The helper was rebuilt with
-identical output. Independent Rust build reproducibility remains unqualified.
+identical output. A fresh Cargo/native build in separate directories reproduced
+the archive byte-for-byte on the same host/toolchain; cross-toolchain equality is
+not claimed. `build-release.py --target-dir /owned/path/cargo` and
+`build-linux-native.py --build-root /owned/path/native` isolate these builds from
+an active developer build. Release x86_64 code uses the portable x86-64 CPU target.
 
 The notice collector verifies locked Cargo archive hashes and includes full legal
 texts for every normal/build Linux dependency and every original shaded runtime
@@ -84,10 +88,97 @@ The packaged browser fixture uses the adjacent ttyd and helper, with no develope
 library or helper override. It checks SSH, all eight panel shortcuts, editing,
 clipboard, streaming REST and real H2 SQL with disconnect persistence/reaping.
 
-## Remaining Z03 gates
+## AppImage and Snap
 
-Linux AppImage/Snap installers, complete CI/release orchestration and actual
-publication remain required. The optional-runtime workflow has not run remotely;
-its published-release upload timing must be coordinated with the final release
-lifecycle. macOS, Windows and other architectures remain unqualified. The full
-migration and final integration matrix are still tracked in `DASHBOARD.md` and Z04.
+Build actual installers from the verified main archive, without a bundled JVM:
+
+```sh
+python3 scripts/package-appimage.py --archive target/distribution-z03/kode-0.1.0-x86_64-unknown-linux-gnu.tar.gz
+python3 scripts/package-snap.py --archive target/distribution-z03/kode-0.1.0-x86_64-unknown-linux-gnu.tar.gz
+```
+
+AppImage needs `desktop-file-validate` and its downloaded checksummed
+appimagetool/runtime inputs, pinned in `appimage-inputs.json`. Runtime legal texts
+for its static dependencies are included. Snap needs Snapcraft; `--packer snap`
+uses `snap pack` without a running host snapd service. Both packers produced
+identical bytes locally. Both formats have checksum and payload manifest sidecars.
+Repeat assembly with the same inputs and epoch to reproduce the installer bytes.
+
+To launch an AppImage, make it executable and pass ordinary Kode arguments:
+
+```sh
+chmod +x kode-0.1.0-x86_64.AppImage
+./kode-0.1.0-x86_64.AppImage /path/to/project
+APPIMAGE_EXTRACT_AND_RUN=1 ./kode-0.1.0-x86_64.AppImage /path/to/project
+```
+
+The first launch uses FUSE and requires access to `/dev/fuse` and the host FUSE
+mount helper. The second uses the runtime's extraction mode when FUSE is
+unavailable. Both use the packaged helper and ttyd next to the actual executable;
+they retain the glibc 2.39 minimum. No root installation is required.
+
+The development Snap is named **kode-rs**, uses **strict** confinement and core24,
+and has grade `devel`. It can coexist with the original `kode` Snap. Installing
+this local, checksummed artifact requires a working host snapd:
+
+```sh
+sudo snap install --dangerous ./kode-rs_0.1.0_amd64.snap
+kode-rs /path/to/project
+```
+
+`--dangerous` permits a local unsigned artifact; confinement remains strict.
+The home/network interfaces support editing and browser mode; removable-media
+access requires the normal explicit Snap interface connection. Configuration,
+database, drivers and LSP data live under `~/snap/kode-rs/common`. A configured
+JVM must be executable within confinement, for example an external runtime under
+that directory. A host JDK outside the Snap's visible filesystem is not assumed
+accessible. The separate Get Java installation remains outside the immutable Snap.
+
+Qualification commands:
+
+```sh
+python3 scripts/test-appimage-terminal.py --appimage target/installers/kode-0.1.0-x86_64.AppImage
+python3 scripts/test-serve-browser.py --package /path/to/extracted/package --appimage target/installers/kode-0.1.0-x86_64.AppImage --ssh
+python3 scripts/prepare-snap-guest.py
+python3 scripts/test-snap-guest.py --snap target/installers/kode-rs_0.1.0_amd64.snap --runtime target/java-runtime-artifacts/kode-jdbc-runtime-x86_64-unknown-linux-gnu.zip
+python3 scripts/test-rust-without-java.py
+```
+
+Snap acceptance needs KVM access, QEMU, xorriso, OpenSSH and Python Playwright/
+Chrome. It downloads a dated, checksummed Ubuntu image and pinned core24 base,
+then installs only inside an owned temporary VM. Canonical's signed assertions
+are verified inside the guest. No host Snap installation or existing `kode`
+installation is changed. The VM, SSH keys, ports and overlay are cleaned up.
+
+## Release review and CI
+
+`.github/workflows/distribution.yaml` runs stable/locked checks, the Java helper
+suite, real JDBC checks, native builds/notices, all installer formats, actual
+AppImage/Snap acceptance and no-Java compilation. GitHub-hosted Linux runners
+must expose KVM; the job fails if it is unavailable. Action references are pinned.
+The reusable optional-runtime workflow builds the JVM artifact separately.
+
+`build-provenance.py --output /path/to/assets/build-source.json` records exact
+source/dirty state, compilers, native package versions/hashes and static libuv.
+It expects the normal build directories unless overridden. For a network-free
+review, collect the main archive and its sidecars, AppImage/Snap and their sidecars,
+the separate Java runtime ZIP/manifest/checksum and `build-source.json` under an
+input directory, then run:
+
+```sh
+python3 scripts/release-assets.py --directory /path/to/incoming --output /new/empty/review --tag v0.1.0 --source-revision FULL_GIT_COMMIT
+```
+
+The review rejects dirty/stale source, a mismatched version, altered assets,
+missing runtime, duplicate names and nonempty output. It emits an exact review
+manifest, checksums and release notes without accessing GitHub.
+
+Only a tag push or explicit workflow dispatch with an existing tag can invoke the
+CI draft adapter. It verifies that the remote tag identifies the built commit,
+requires no release already exists and creates a new draft with the full set of
+assets. It never creates tags, overwrites drafts, publishes automatically or
+appends runtime assets to an already published release. Release publication and
+remote Actions execution have not been performed in the local qualification.
+
+macOS, Windows and other architectures remain unqualified. The full migration
+and final integration matrix are tracked in `DASHBOARD.md` and Z04.

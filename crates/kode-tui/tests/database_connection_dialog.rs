@@ -1,8 +1,10 @@
+use crossterm::event::MouseButton;
 use kode_core::{JobTag, RequestId, WorkspaceGeneration};
 use kode_database::{
     catalog::{DriverRegistry, UrlCatalog},
     model::DataSourceDefinition,
 };
+use kode_tui::input::terminal::{PointerAction, PointerInput};
 use kode_tui::{
     focus::EventTarget,
     input::terminal::{InputEvent, Key, KeyInput, Modifiers},
@@ -12,6 +14,109 @@ use kode_tui::{
 use ratatui::{buffer::Buffer, layout::Rect};
 use serde_json::json;
 use std::sync::Arc;
+
+fn paint(form: &mut ConnectionDialog, width: u16, height: u16) -> Buffer {
+    let area = Rect::new(0, 0, width, height);
+    let mut buffer = Buffer::empty(area);
+    form.render(area, &mut buffer, &Theme::compiled());
+    buffer
+}
+fn rendered(buffer: &Buffer) -> String {
+    buffer.content().iter().map(|cell| cell.symbol()).collect()
+}
+fn click(form: &mut ConnectionDialog, label: &str, width: u16, height: u16) {
+    let buffer = paint(form, width, height);
+    for y in 0..height {
+        let line: String = (0..width).map(|x| buffer[(x, y)].symbol()).collect();
+        if let Some(x) = line.find(label) {
+            assert!(form.dispatch(&InputEvent::Pointer(PointerInput {
+                x: x as u16,
+                y,
+                action: PointerAction::Down(MouseButton::Left),
+                modifiers: Modifiers::default(),
+            })));
+            return;
+        }
+    }
+    panic!("missing button/choice: {label}");
+}
+
+#[test]
+fn url_button_current_type_keyboard_mouse_and_cancel_preserve_manual_values() {
+    let registry = DriverRegistry::compiled().unwrap();
+    let urls = UrlCatalog::compiled(&registry).unwrap();
+    let mut form = form(Some(existing()));
+    for id in ["postgresql", "mysql", "oracle", "sqlserver", "h2"] {
+        let index = registry
+            .definitions()
+            .iter()
+            .position(|driver| driver.id == id)
+            .unwrap();
+        form.fields[1].value = "jdbc:manual:keep".into();
+        form.fields[1].cursor = form.fields[1].value.len();
+        form.select_driver(index, false);
+        assert_eq!(form.fields[1].value, "jdbc:manual:keep");
+        form.focus = 2;
+        for (width, height) in [(100, 34), (60, 18)] {
+            click(&mut form, "[Templates]", width, height);
+            assert!(
+                form.take_actions()
+                    .iter()
+                    .any(|action| matches!(action, Action::Suggestions(driver) if driver == id))
+            );
+            let popup = rendered(&paint(&mut form, width, height));
+            assert!(popup.contains("Standard"));
+            assert!(popup.contains(&urls.templates(id)[0].label));
+            form.dispatch(&key(Key::Escape));
+            assert_eq!(form.fields[1].value, "jdbc:manual:keep");
+            assert_eq!(form.focus, 2);
+        }
+        form.dispatch(&key(Key::Down));
+        form.dispatch(&key(Key::Home));
+        form.dispatch(&key(Key::Down));
+        form.dispatch(&key(Key::Enter));
+        assert_eq!(form.fields[1].value, urls.templates(id)[1].template);
+        assert_eq!(form.focus, 2);
+        let name = form.fields[0].value.clone();
+        form.dispatch(&key(Key::End));
+        form.dispatch(&InputEvent::Paste("-edited".into()));
+        assert!(form.fields[1].value.ends_with("-edited"));
+        assert_eq!(form.fields[0].value, name);
+    }
+}
+
+#[test]
+fn late_recents_keep_selected_template_and_ignore_other_types_and_credentials() {
+    let registry = DriverRegistry::compiled().unwrap();
+    let urls = UrlCatalog::compiled(&registry).unwrap();
+    let expected = urls.templates("h2").last().unwrap().template.clone();
+    let mut form = form(Some(existing()));
+    form.focus = 2;
+    form.dispatch(&key(Key::Down));
+    form.dispatch(&key(Key::End));
+    form.set_recents("postgresql", vec!["jdbc:postgresql:other-type".into()]);
+    form.set_recents(
+        "h2",
+        vec![
+            "jdbc:h2:mem:recent".into(),
+            "jdbc:h2:mem:x;password=secret".into(),
+        ],
+    );
+    form.dispatch(&key(Key::Enter));
+    assert_eq!(form.fields[1].value, expected);
+    form.dispatch(&key(Key::Down));
+    form.dispatch(&key(Key::Home));
+    let popup = rendered(&paint(&mut form, 100, 34));
+    assert!(popup.contains("Recents: jdbc:h2:mem:recent"));
+    assert!(!popup.contains("other-type") && !popup.contains("password=secret"));
+    click(&mut form, "Recents: jdbc:h2:mem:recent", 100, 34);
+    assert_eq!(form.fields[1].value, "jdbc:h2:mem:recent");
+    assert!(
+        form.take_actions()
+            .iter()
+            .all(|action| !matches!(action, Action::Save(_)))
+    );
+}
 fn key(key: Key) -> InputEvent {
     InputEvent::Key(KeyInput {
         key,

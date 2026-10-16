@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "referenceArchiveSha256": "e16bc9d3668e9de49285b5da05f68a47d1eebd039b7fc173bf38c880b1653f59",
+  "rebuiltArchiveSha256": "e16bc9d3668e9de49285b5da05f68a47d1eebd039b7fc173bf38c880b1653f59",
+  "freshRustTargetDirectory": true,
+  "freshNativeBuildDirectory": true,
+  "compiler": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "portableCpu": "x86-64",
+  "sameLockedSourcesAndBuildEnvironment": true,
+  "scope": "Two clean builds in separate target/native source directories on the same qualified host; no cross-compiler or cross-OS equality claimed"
+}

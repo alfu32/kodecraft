@@ -1,0 +1,96 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "case": "type-switch-manual-preservation-template-save-and-cancel",
+      "driver": "h2",
+      "choice": "mouse",
+      "template": "jdbc:h2:mem:",
+      "noDatabaseContact": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "type-switch-manual-preservation-template-save-and-cancel",
+      "driver": "postgresql",
+      "choice": "keyboard",
+      "template": "jdbc:postgresql://{host}/{database}",
+      "noDatabaseContact": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "type-switch-manual-preservation-template-save-and-cancel",
+      "driver": "oracle",
+      "choice": "mouse",
+      "template": "jdbc:oracle:thin:@//{host}:1521/{serviceName}",
+      "noDatabaseContact": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "type-switch-manual-preservation-template-save-and-cancel",
+      "driver": "h2",
+      "choice": "mouse",
+      "template": "jdbc:h2:mem:",
+      "noDatabaseContact": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "type-switch-manual-preservation-template-save-and-cancel",
+      "driver": "postgresql",
+      "choice": "keyboard",
+      "template": "jdbc:postgresql://{host}/{database}",
+      "noDatabaseContact": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "type-switch-manual-preservation-template-save-and-cancel",
+      "driver": "oracle",
+      "choice": "mouse",
+      "template": "jdbc:oracle:thin:@//{host}:1521/{serviceName}",
+      "noDatabaseContact": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 6
+}

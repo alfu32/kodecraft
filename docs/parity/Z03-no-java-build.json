@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "image": "ubuntu@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "command": "cargo check --locked --workspace --all-targets",
+  "javaAbsent": true,
+  "javacAbsent": true,
+  "mavenAbsent": true,
+  "sourceReadOnly": true,
+  "cargoRegistryReadOnly": true,
+  "userCargoCredentialsMounted": false
+}

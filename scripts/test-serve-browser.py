@@ -52,8 +52,29 @@ def click_text(page, text):
 
 
 def child_pids(parent):
-    path = Path(f'/proc/{parent}/task/{parent}/children')
-    return [int(value) for value in path.read_text().split()] if path.exists() else []
+    """Actual Rust children, including those below an AppImage runtime wrapper."""
+    try:
+        owner = Path(f'/proc/{parent}/exe').resolve(strict=True)
+    except OSError:
+        return []
+    pending = [parent]
+    result = []
+    while pending:
+        current = pending.pop()
+        children = Path(f'/proc/{current}/task/{current}/children')
+        try:
+            descendants = [int(value) for value in children.read_text().split()]
+        except OSError:
+            continue
+        pending.extend(descendants)
+        for pid in descendants:
+            try:
+                executable = Path(f'/proc/{pid}/exe').resolve(strict=True)
+                if executable.name == 'kode' and executable != owner:
+                    result.append(pid)
+            except OSError:
+                pass
+    return result
 
 
 @contextmanager
@@ -257,10 +278,15 @@ def qualify_sql(pw, args, binary, base, environment, cases):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--ttyd', default=os.environ.get('KODE_TTYD'))
+    parser.add_argument('--appimage', type=Path, help='Execute this actual AppImage using the matching package as the fixture inventory')
     parser.add_argument('--package', type=Path, help='Qualify a complete extracted Linux package with its adjacent ttyd/helper')
     parser.add_argument('--chrome', default=shutil.which('google-chrome') or shutil.which('chromium'))
     parser.add_argument('--ssh', action='store_true', help='Use isolated local OpenSSH servers and real -L tunnels for browser traffic')
     args = parser.parse_args()
+    if args.appimage:
+        assert args.package, '--appimage requires the matching extracted --package inventory'
+        metadata=json.loads(args.appimage.with_name(args.appimage.name+'.manifest.json').read_text())
+        assert metadata['payloadManifestSha256']==__import__('hashlib').sha256((args.package / 'package-manifest.json').read_bytes()).hexdigest()
     assert (args.ttyd or args.package) and args.chrome, 'Provide a package or real ttyd executable, and Chrome'
     cases = []
     with tempfile.TemporaryDirectory(prefix='kode-serve-browser-') as directory, sync_playwright() as pw:
@@ -274,6 +300,8 @@ def main():
         binary = bin_dir / 'kode'
         if args.package:
             shutil.copytree(args.package, bin_dir, dirs_exist_ok=True)
+            if args.appimage:
+                shutil.copy2(args.appimage, binary)
         else:
             try:
                 os.link(ROOT / 'target/debug/kode', binary)
@@ -414,7 +442,7 @@ def main():
         qualify_stream(pw, args, binary, base, env, cases)
         qualify_sql(pw, args, binary, base, env, cases)
     if args.package:
-        (ROOT / 'docs/parity/Z03-browser.json').write_text(json.dumps({'package_manifest_sha256':__import__('hashlib').sha256((args.package / 'package-manifest.json').read_bytes()).hexdigest(),'transport':'ssh-forwarded-loopback' if args.ssh else 'loopback','packaged':True,'adjacent_ttyd':True,'adjacent_helper':True,'developer_library_path':False,'cases':cases,'passed':len(cases)},indent=2)+'\n')
+        (ROOT / ('docs/parity/Z03-appimage-browser.json' if args.appimage else 'docs/parity/Z03-browser.json')).write_text(json.dumps({'appimage_sha256':__import__('hashlib').sha256(args.appimage.read_bytes()).hexdigest() if args.appimage else None,'package_manifest_sha256':__import__('hashlib').sha256((args.package / 'package-manifest.json').read_bytes()).hexdigest(),'transport':'ssh-forwarded-loopback' if args.ssh else 'loopback','packaged':True,'adjacent_ttyd':True,'adjacent_helper':True,'developer_library_path':False,'cases':cases,'passed':len(cases)},indent=2)+'\n')
     else:
         (ROOT / 'docs/parity/Z01-browser.json').write_text(json.dumps({'transport': 'ssh-forwarded-loopback' if args.ssh else 'loopback', 'cases': cases, 'passed': len(cases)}, indent=2) + '\n')
         panel_cases=[case for case in cases if case['case']=='browser-all-eight-panel-shortcuts-visual-order']

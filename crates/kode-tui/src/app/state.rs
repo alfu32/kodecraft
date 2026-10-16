@@ -252,7 +252,8 @@ impl AppState {
     ) -> Result<Self> {
         let generation = prepared.project.generation;
         let project = prepared.project;
-        let files = FilesPanel::new(project.clone())?;
+        let mut files = FilesPanel::new(project.clone())?;
+        files.full_paths = prepared.session.session.full_file_paths;
         let focus = FocusState {
             focused: Some(files.id),
             ..Default::default()
@@ -376,6 +377,7 @@ impl AppState {
             .collect::<Result<Vec<_>>>()?;
         for (_, change) in &self.session_changes {
             match change {
+                SessionChange::FullFilePaths(_) => {}
                 SessionChange::Recent(recent) => {
                     let path =
                         kode_workspace::session::resolve_path(&self.project.root, &recent.path)?;
@@ -936,6 +938,11 @@ impl AppState {
                     self.session_changes
                         .push((self.sequence, SessionChange::RemoveRecent(path)));
                     self.update_recents()?;
+                }
+                FilesWork::FullPaths(full) => {
+                    self.changed()?;
+                    self.session_changes
+                        .push((self.sequence, SessionChange::FullFilePaths(full)));
                 }
                 FilesWork::ChangeWorkspace => {
                     let tag = self.tag()?;

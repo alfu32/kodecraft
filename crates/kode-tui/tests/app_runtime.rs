@@ -1600,6 +1600,86 @@ async fn workspace_switch_persists_old_state_advances_generation_and_rejects_old
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
 }
+
+#[tokio::test]
+async fn full_file_path_preference_survives_save_project_switch_and_restart_without_retargeting() {
+    let first = tempfile::tempdir().unwrap();
+    let second = tempfile::tempdir().unwrap();
+    fs::create_dir(first.path().join("src")).unwrap();
+    fs::create_dir(first.path().join("tests")).unwrap();
+    let source = first.path().join("src/Note.txt");
+    let other = first.path().join("tests/Note.txt");
+    fs::write(&source, "source\n").unwrap();
+    fs::write(&other, "other\n").unwrap();
+    let clock = Arc::new(FakeClock::default());
+    let mut app = make(first.path(), Some("src/Note.txt"), clock.clone());
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    let id = app.state.editor.as_ref().unwrap().document_id();
+    let origin = app.state.documents.document(id).unwrap().origin().clone();
+    assert!(!app.state.files.full_paths);
+    app.state.focus.focused = Some(app.state.files.id);
+    app.state
+        .dispatch(&key(Key::Character('p'), false))
+        .unwrap();
+    app.pump().unwrap();
+    assert!(app.state.files.full_paths);
+    assert_eq!(app.state.editor.as_ref().unwrap().document_id(), id);
+    assert_eq!(app.state.documents.document(id).unwrap().origin(), &origin);
+    app.state.focus.focused = app.state.viewer_id();
+    paint(&mut app);
+    app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("saved source\n".into()))
+        .unwrap();
+    app.state.dispatch(&key(Key::Character('s'), true)).unwrap();
+    until(&mut app, |app| {
+        !app.state.documents.document(id).unwrap().is_dirty()
+    })
+    .await;
+    assert_eq!(fs::read_to_string(&source).unwrap(), "saved source\n");
+    assert_eq!(fs::read_to_string(&other).unwrap(), "other\n");
+    app.switch_workspace(second.path().into()).await.unwrap();
+    assert!(
+        !app.state.files.full_paths,
+        "preference belongs to its project"
+    );
+    let saved: serde_json::Value =
+        serde_json::from_slice(&fs::read(first.path().join(".kode-rs.json")).unwrap()).unwrap();
+    assert_eq!(saved["fullFilePaths"], true);
+    assert!(
+        saved["recentFiles"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|entry| entry["path"] == "src/Note.txt")
+    );
+    app.switch_workspace(first.path().into()).await.unwrap();
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    assert!(app.state.files.full_paths);
+    assert_eq!(app.state.files.active_path.as_ref(), Some(&source));
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    let mut restored = make(first.path(), None, clock);
+    until(&mut restored, |app| app.state.editor.is_some()).await;
+    assert!(restored.state.files.full_paths);
+    assert_eq!(restored.state.files.active_path.as_ref(), Some(&source));
+    // Virtual Git/SQL/REST buffers retain their owners and are never turned into
+    // physical recent-file targets by a presentation preference.
+    assert!(restored.state.documents.ids().any(|id| matches!(
+        restored.state.documents.document(id).unwrap().origin(),
+        DocumentOrigin::Virtual { .. }
+    )));
+    assert!(
+        restored
+            .state
+            .files
+            .recents
+            .iter()
+            .all(|entry| entry.path == source)
+    );
+    restored.flush_before_leave().await.unwrap();
+    restored.quiesce().await.unwrap();
+}
 #[tokio::test]
 async fn project_changes_serialize_and_failed_persistence_keeps_workspace_and_dirty_buffers_open() {
     let directory = tempfile::tempdir().unwrap();

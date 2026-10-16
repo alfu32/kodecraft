@@ -228,6 +228,117 @@ fn file_tree_keys_mouse_hover_actions_and_recents_keep_absolute_coordinates_and_
     assert!(!panel.has_modal());
     assert_eq!(focus.focused, Some(panel.id));
 }
+
+#[test]
+fn recent_relative_labels_preserve_duplicate_names_and_absolute_mouse_targets() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    put(root, "src/Note.txt");
+    put(root, "tests/Note.txt");
+    let first = root.join("src/Note.txt");
+    let second = root.join("tests/Note.txt");
+    let mut panel = FilesPanel::new(project(root)).unwrap();
+    panel.recents = vec![
+        RecentEntry {
+            path: first.clone(),
+            dirty: false,
+        },
+        RecentEntry {
+            path: second.clone(),
+            dirty: true,
+        },
+    ];
+    panel.active_path = Some(second.clone());
+    panel.selected = Some(first.clone());
+    let mut focus = FocusState {
+        focused: Some(panel.id),
+        ..Default::default()
+    };
+    let buffer = paint(&mut panel);
+    assert!(text(&buffer, AREA.y + 2).starts_with("x src/Note.txt"));
+    assert!(text(&buffer, AREA.y + 3).starts_with("* tests/Note.txt"));
+    click_label(&mut panel, "[paths:rel]", AREA.y + 1, &mut focus);
+    assert!(matches!(
+        panel.take_work().as_slice(),
+        [FilesWork::FullPaths(true)]
+    ));
+    let buffer = paint(&mut panel);
+    assert!(text(&buffer, AREA.y + 2).starts_with(&format!("x {}", first.display())));
+    assert!(text(&buffer, AREA.y + 3).starts_with(&format!("* {}", second.display())));
+    assert_eq!(panel.selected.as_ref(), Some(&first));
+    assert_eq!(panel.active_path.as_ref(), Some(&second));
+    assert_eq!(panel.recent_scroll, 0);
+    panel
+        .dispatch(&key(Key::Character('p')), &mut focus)
+        .unwrap();
+    assert!(matches!(
+        panel.take_work().as_slice(),
+        [FilesWork::FullPaths(false)]
+    ));
+    paint(&mut panel);
+    panel
+        .dispatch(
+            &mouse(
+                AREA.x + 2,
+                AREA.y + 3,
+                PointerAction::Down(MouseButton::Left),
+            ),
+            &mut focus,
+        )
+        .unwrap();
+    assert!(matches!(panel.take_work().as_slice(), [FilesWork::Open(path)] if path == &second));
+    panel
+        .dispatch(
+            &mouse(AREA.x, AREA.y + 2, PointerAction::Down(MouseButton::Left)),
+            &mut focus,
+        )
+        .unwrap();
+    assert!(
+        matches!(panel.take_work().as_slice(), [FilesWork::RemoveRecent(path)] if path == &first)
+    );
+}
+
+#[test]
+fn recent_root_outside_unicode_and_narrow_paths_remain_display_only() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().join("project");
+    fs::create_dir(&root).unwrap();
+    let mut panel = FilesPanel::new(project(&root)).unwrap();
+    let outside = directory.path().join("outside.txt");
+    let paths = [root.clone(), root.join("café/界.txt"), outside.clone()];
+    panel.recents = paths
+        .iter()
+        .map(|path| RecentEntry {
+            path: path.clone(),
+            dirty: false,
+        })
+        .collect();
+    let area = Rect::new(3, 2, 80, 30);
+    let mut buffer = Buffer::empty(Rect::new(0, 0, 85, 34));
+    panel.render(area, &mut buffer, &Theme::compiled());
+    let row = |y| {
+        (area.x..area.right())
+            .map(|x| buffer[(x, y)].symbol())
+            .collect::<String>()
+    };
+    assert!(row(area.y + 2).starts_with("x . "));
+    assert!(row(area.y + 3).starts_with("x café/\\x754C.txt"));
+    assert!(row(area.y + 4).starts_with(&format!("x {}", outside.display())));
+    for width in [0, 1, 8, 12] {
+        let area = Rect::new(0, 0, width, 8);
+        let mut buffer = Buffer::empty(area);
+        panel.render(area, &mut buffer, &Theme::compiled());
+    }
+    assert_eq!(
+        panel
+            .recents
+            .iter()
+            .map(|entry| &entry.path)
+            .collect::<Vec<_>>(),
+        paths.iter().collect::<Vec<_>>()
+    );
+    assert!(panel.take_work().is_empty());
+}
 #[test]
 fn name_dialog_worker_action_failure_and_stale_completion_leave_selection_and_dirty_recents_intact()
 {

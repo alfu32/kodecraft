@@ -1,0 +1,145 @@
+name: Native Linux distribution
+on:
+  pull_request:
+  push:
+    branches: [main, work]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      draft_tag:
+        description: Existing tag matching this source; empty builds without creating a draft
+        type: string
+        required: false
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: distribution-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  java-runtime:
+    uses: ./.github/workflows/java-runtime.yaml
+  linux:
+    needs: java-runtime
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      SOURCE_DATE_EPOCH: '1767225600'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: kode-jdbc-runtime-x86_64-unknown-linux-gnu
+          path: target/java-runtime-artifacts
+      - name: Native build and archive tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends build-essential cmake ninja-build pkg-config libuv1-dev libjson-c-dev libssl-dev zlib1g-dev patchelf binutils desktop-file-utils squashfs-tools snapd python3-venv qemu-system-x86 qemu-utils xorriso acl libfuse2t64 openssh-server
+          rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+          python3 -m venv /tmp/kode-distribution-venv
+          /tmp/kode-distribution-venv/bin/pip install playwright==1.64.0
+          /tmp/kode-distribution-venv/bin/python -m playwright install --with-deps chromium
+      - name: Locked checks and tests
+        run: |
+          cargo +stable fmt --all --check
+          cargo +stable test --locked --workspace
+          cargo +stable clippy --locked --workspace --all-targets -- -D warnings
+          python3 scripts/credits.py --check
+          python3 scripts/tasks.py --check
+      - name: Native and separate helper builds
+        run: |
+          python3 scripts/build-release.py
+          bash scripts/build-jdbc-helper.sh
+          python3 scripts/distribution_notices.py
+          python3 scripts/build-linux-native.py
+          python3 scripts/native_bundle.py --ttyd-bundle target/ttyd-release-bundle --output target/native-release-bundle
+      - name: Real JDBC qualification
+        run: |
+          export KODE_TEST_JDBC_HELPER="$GITHUB_WORKSPACE/jdbc-bridge/target/kode-jdbc-bridge.jar"
+          export KODE_TEST_H2_JAR="/tmp/kode-rs-jdbc-maven-repository/com/h2database/h2/2.2.224/h2-2.2.224.jar"
+          cargo +stable test --locked -p kode-database --test bridge --test drivers --test connections --test execution --test metadata --test java_runtime -- --include-ignored
+          cargo +stable test --locked -p kode-tui --test database_app --test database_services --test jdbc_qualification -- --include-ignored
+      - name: Assemble distinct application formats
+        run: |
+          distribution_version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')
+          python3 scripts/package-linux.py --native-bundle target/native-release-bundle --output target/release-assets
+          python3 scripts/package-appimage.py --archive "target/release-assets/kode-${distribution_version}-x86_64-unknown-linux-gnu.tar.gz" --output target/release-assets
+          python3 scripts/package-snap.py --packer snap --archive "target/release-assets/kode-${distribution_version}-x86_64-unknown-linux-gnu.tar.gz" --output target/release-assets
+          python3 scripts/build-provenance.py --output target/release-assets/build-source.json
+      - name: Archive and installer assembly reproducibility
+        run: |
+          distribution_version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')
+          python3 scripts/package-linux.py --native-bundle target/native-release-bundle --output target/release-repro
+          python3 scripts/package-appimage.py --archive "target/release-repro/kode-${distribution_version}-x86_64-unknown-linux-gnu.tar.gz" --output target/release-repro
+          python3 scripts/package-snap.py --packer snap --archive "target/release-repro/kode-${distribution_version}-x86_64-unknown-linux-gnu.tar.gz" --output target/release-repro
+          cmp "target/release-assets/kode-${distribution_version}-x86_64-unknown-linux-gnu.tar.gz" "target/release-repro/kode-${distribution_version}-x86_64-unknown-linux-gnu.tar.gz"
+          cmp "target/release-assets/kode-rs_${distribution_version}_amd64.snap" "target/release-repro/kode-rs_${distribution_version}_amd64.snap"
+          python3 scripts/test-appimage-terminal.py --appimage "target/release-assets/kode-${distribution_version}-x86_64.AppImage" --repro "target/release-repro/kode-${distribution_version}-x86_64.AppImage"
+          python3 scripts/test-file-paths-terminal.py --binary target/release/kode
+          python3 scripts/test-url-templates-terminal.py --binary target/release/kode
+      - name: Actual archive and no-Java Rust build acceptance
+        run: |
+          distribution_version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')
+          distribution_chrome=$(/tmp/kode-distribution-venv/bin/python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')
+          command -v pwsh
+          /tmp/kode-distribution-venv/bin/python scripts/test-linux-distribution.py --archive "target/release-assets/kode-${distribution_version}-x86_64-unknown-linux-gnu.tar.gz" --repro-archive "target/release-repro/kode-${distribution_version}-x86_64-unknown-linux-gnu.tar.gz" --chrome "$distribution_chrome"
+          python3 scripts/test-rust-without-java.py
+      - name: Actual AppImage browser and strict Snap acceptance
+        run: |
+          distribution_version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')
+          distribution_chrome=$(/tmp/kode-distribution-venv/bin/python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')
+          mkdir -p target/acceptance-payload
+          tar -xzf "target/release-assets/kode-${distribution_version}-x86_64-unknown-linux-gnu.tar.gz" -C target/acceptance-payload
+          /tmp/kode-distribution-venv/bin/python scripts/test-serve-browser.py --package "target/acceptance-payload/kode-${distribution_version}-x86_64-unknown-linux-gnu" --appimage "target/release-assets/kode-${distribution_version}-x86_64.AppImage" --ssh --chrome "$distribution_chrome"
+          test -c /dev/kvm
+          sudo setfacl -m "u:$(id -un):rw" /dev/kvm
+          python3 scripts/prepare-snap-guest.py
+          /tmp/kode-distribution-venv/bin/python scripts/test-snap-guest.py --snap "target/release-assets/kode-rs_${distribution_version}_amd64.snap" --runtime target/java-runtime-artifacts/kode-jdbc-runtime-x86_64-unknown-linux-gnu.zip --chrome "$distribution_chrome"
+      - name: Release integrity and draft-only adapter qualification
+        run: |
+          python3 scripts/test-release-assets.py --archive-directory target/release-assets --runtime-directory target/java-runtime-artifacts --provenance target/release-assets/build-source.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: kode-linux-x86_64
+          path: target/release-assets/*
+          if-no-files-found: error
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: linux-qualification-evidence
+          path: docs/parity/Z03-*.json
+          if-no-files-found: error
+  draft:
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) || (github.event_name == 'workflow_dispatch' && inputs.draft_tag != '')
+    needs: [linux, java-runtime]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.draft_tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: kode-linux-x86_64
+          path: incoming/linux
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: kode-jdbc-runtime-x86_64-unknown-linux-gnu
+          path: incoming/java-runtime
+      - name: Verify all assets and the existing remote tag before creating a new draft
+        run: |
+          python3 scripts/publish-draft-release.py --directory incoming --output target/release-review --tag "$RELEASE_TAG" --repository "$GH_REPO"

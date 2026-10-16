@@ -100,6 +100,7 @@ pub struct ConnectionDialog {
     buttons: [Rect; 4],
     checkboxes: [Rect; 2],
     driver_hit: Rect,
+    url_hit: Rect,
     details_hit: Rect,
     popup_hits: Vec<(usize, Rect)>,
     scroll: usize,
@@ -172,6 +173,7 @@ impl ConnectionDialog {
             buttons: [Rect::default(); 4],
             checkboxes: [Rect::default(); 2],
             driver_hit: Rect::default(),
+            url_hit: Rect::default(),
             details_hit: Rect::default(),
             popup_hits: vec![],
             scroll: 0,
@@ -284,6 +286,10 @@ impl ConnectionDialog {
         }
     }
     fn build_urls(&mut self) {
+        let selected = self
+            .url_choices
+            .get(self.popup_selected)
+            .map(|choice| choice.1.clone());
         self.url_choices = self
             .recents
             .get(self.selected_id())
@@ -297,9 +303,12 @@ impl ConnectionDialog {
                 template.template.clone(),
             ));
         }
-        self.popup_selected = self
-            .popup_selected
-            .min(self.url_choices.len().saturating_sub(1));
+        self.popup_selected = selected
+            .and_then(|value| self.url_choices.iter().position(|choice| choice.1 == value))
+            .unwrap_or_else(|| {
+                self.popup_selected
+                    .min(self.url_choices.len().saturating_sub(1))
+            });
     }
     fn open_urls(&mut self) {
         self.build_urls();
@@ -450,6 +459,7 @@ impl ConnectionDialog {
         self.buttons = [Rect::default(); 4];
         self.checkboxes = [Rect::default(); 2];
         self.driver_hit = Rect::default();
+        self.url_hit = Rect::default();
         self.details_hit = Rect::default();
         self.java_hit = Rect::default();
         let modal = centered(area.intersection(buffer.area), 86, 34);
@@ -476,8 +486,7 @@ impl ConnectionDialog {
         if content.height <= 4 && self.popup.is_none() {
             let hit = Rect::new(content.x, content.y, content.width, 1);
             if self.focus > 0 && self.focus < AUTO {
-                self.field_hits.push((self.focus - 1, hit));
-                return self.fields[self.focus - 1].render(hit, buffer, theme, true);
+                return self.render_field(self.focus - 1, hit, buffer, theme);
             }
             if self.focus >= BUTTONS {
                 let index = self.focus - BUTTONS;
@@ -522,6 +531,14 @@ impl ConnectionDialog {
                 self.url_choices.iter().map(|c| c.0.clone()).collect()
             };
             let visible = content.height as usize;
+            if labels.is_empty() {
+                draw_text(
+                    content,
+                    buffer,
+                    "No URL templates. Esc returns to manual entry.",
+                    theme.style("content"),
+                );
+            }
             let start = self
                 .popup_selected
                 .saturating_sub(visible.saturating_sub(1));
@@ -565,11 +582,12 @@ impl ConnectionDialog {
                 self.scroll = focus_row + 1 - body_height as usize;
             }
         }
+        let scroll = self.scroll;
         let row = |offset: usize| -> Option<Rect> {
-            (offset >= self.scroll && offset < self.scroll + body_height as usize).then(|| {
+            (offset >= scroll && offset < scroll + body_height as usize).then(|| {
                 Rect::new(
                     content.x,
-                    content.y + (offset - self.scroll) as u16,
+                    content.y + (offset - scroll) as u16,
                     content.width,
                     1,
                 )
@@ -595,15 +613,21 @@ impl ConnectionDialog {
         let mut cursor = None;
         for (index, label) in LABELS.iter().enumerate() {
             if let Some(hit) = row(index * 2 + 1) {
-                draw_text(hit, buffer, label, theme.style("content"));
+                draw_text(
+                    hit,
+                    buffer,
+                    if index == URL {
+                        "JDBC URL (Down: templates)"
+                    } else {
+                        label
+                    },
+                    theme.style("content"),
+                );
             }
-            if let Some(hit) = row(index * 2 + 2) {
-                self.field_hits.push((index, hit));
-                if let Some(position) =
-                    self.fields[index].render(hit, buffer, theme, self.focus == index + 1)
-                {
-                    cursor = Some(position);
-                }
+            if let Some(hit) = row(index * 2 + 2)
+                && let Some(position) = self.render_field(index, hit, buffer, theme)
+            {
+                cursor = Some(position);
             }
         }
         for (index, label, checked) in [
@@ -707,6 +731,27 @@ impl ConnectionDialog {
             }
         }
         cursor
+    }
+    fn render_field(
+        &mut self,
+        index: usize,
+        mut area: Rect,
+        buffer: &mut Buffer,
+        theme: &Theme,
+    ) -> Option<Position> {
+        if index == URL && area.width >= 5 {
+            let label = if area.width >= 16 {
+                "[Templates]"
+            } else {
+                "[v]"
+            };
+            let width = label.len() as u16;
+            self.url_hit = Rect::new(area.right() - width, area.y, width, 1);
+            area.width -= width + 1;
+            draw_text(self.url_hit, buffer, label, theme.style("lsp-button"));
+        }
+        self.field_hits.push((index, area));
+        self.fields[index].render(area, buffer, theme, self.focus == index + 1)
     }
     fn choose_popup(&mut self, index: usize) {
         match self.popup {
@@ -849,6 +894,11 @@ impl EventTarget for ConnectionDialog {
             self.focus = 0;
             self.popup = Some(Popup::Drivers);
             self.popup_selected = self.selected_driver;
+            return true;
+        }
+        if button(event, self.url_hit, false) {
+            self.focus = URL + 1;
+            self.open_urls();
             return true;
         }
         if let Some(index) = self

@@ -1,0 +1,100 @@
+{
+  "binarySha256": "3f1c1da2dd4130f8c2dd32a40b8188fb03c86cbeb1ea3cfce05ef085f069a06b",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "cargoLockSha256": "f4c1df13a3e0924f7cf5f4c479fba74de93241fd4c86930b4cd4ba2ff59c1ae2",
+  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "changedSourcePaths": [
+    ".github/workflows/java-runtime.yaml",
+    ".gitignore",
+    "scripts/build-linux-native.py",
+    "scripts/build-release.py",
+    "scripts/package-linux.py",
+    "scripts/test-serve-browser.py",
+    ".github/workflows/distribution.yaml",
+    "packaging/appimage-inputs.json",
+    "packaging/kode.desktop",
+    "packaging/kode.svg",
+    "packaging/launchers/AppRun",
+    "packaging/launchers/kode-snap",
+    "packaging/licenses/appimage-runtime/",
+    "scripts/build-provenance.py",
+    "scripts/installer_support.py",
+    "scripts/package-appimage.py",
+    "scripts/package-snap.py",
+    "scripts/prepare-snap-guest.py",
+    "scripts/publish-draft-release.py",
+    "scripts/release-assets.py",
+    "scripts/snap_guest.py",
+    "scripts/test-appimage-terminal.py",
+    "scripts/test-release-assets.py",
+    "scripts/test-rust-without-java.py",
+    "scripts/test-snap-guest.py"
+  ],
+  "libuv": {
+    "linkage": "static",
+    "linkedLibrarySha256": "feb7cfb7790906bd41c65394c0d32cadfd498b88c21bcccd21e80c9b8b77d24f",
+    "sourceArchive": "https://dist.libuv.org/dist/v1.48.0/libuv-v1.48.0.tar.gz",
+    "version": "1.48.0"
+  },
+  "minimumGlibc": "2.39",
+  "nativeLibraries": {
+    "libcrypto.so.3": {
+      "binaryPackage": "libssl3t64:amd64",
+      "originalSha256": "6866ed711dab8927e1bf82bf1cd30e828bdfc34f3cc1e83b1c9eb01ce6c37d9a",
+      "sourcePackage": "openssl",
+      "sourceVersion": "3.0.13-0ubuntu3.16",
+      "version": "3.0.13-0ubuntu3.16"
+    },
+    "libjson-c.so.5": {
+      "binaryPackage": "libjson-c5:amd64",
+      "originalSha256": "5cb4dfc866c13becb4d447440c4efbbd4114a469e348209f6f86d9741c12661f",
+      "sourcePackage": "json-c",
+      "sourceVersion": "0.17-1build1",
+      "version": "0.17-1build1"
+    },
+    "libssl.so.3": {
+      "binaryPackage": "libssl3t64:amd64",
+      "originalSha256": "a40e7b67489bbd257e432c700ff8f6a1ad796425b5eccecdc2930127fdd86624",
+      "sourcePackage": "openssl",
+      "sourceVersion": "3.0.13-0ubuntu3.16",
+      "version": "3.0.13-0ubuntu3.16"
+    },
+    "libz.so.1": {
+      "binaryPackage": "zlib1g:amd64",
+      "originalSha256": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892",
+      "sourcePackage": "zlib",
+      "sourceVersion": "1:1.3.dfsg-3.1ubuntu2.2",
+      "version": "1:1.3.dfsg-3.1ubuntu2.2"
+    }
+  },
+  "nativeManifestSha256": "769e967a9b2b6716a2f2ea487b3818b79d5cedcd2e3f9e05d2f2bfe3a7739fa1",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: x86_64-unknown-linux-gnu\nrelease: 1.99.0\nLLVM version: 23.1.1",
+  "schemaVersion": 1,
+  "sourceDirty": true,
+  "sourceRevision": "eae08abfd80dc52355103402adcc9d8c6e9e0cb2",
+  "target": "x86_64-unknown-linux-gnu",
+  "ttyd": {
+    "component": "ttyd",
+    "event_loop": "built-in-libuv",
+    "executable_sha256": "e1776d80d1c5e91d76c1b1d8ef9b4a6e5e9cdeb4077460a9ba9efdc4e32d945a",
+    "host": {
+      "architecture": "x86_64",
+      "os": "Linux"
+    },
+    "jni": false,
+    "kind": "standalone-executable",
+    "pathRemapping": true,
+    "runtime_dependencies": "Native libwebsockets event library, json-c, zlib, OpenSSL and C runtime as linked; qualify release bundle separately.",
+    "shared_launcher": false,
+    "source_revision": "a8ae135643c0ed7164f59f14f537b0b11f7a9788",
+    "source_sha256": "5b3092f1de2c9e472cf85ea32ae8bab3d91f04945134429478224dea13968524",
+    "source_url": "https://codeload.github.com/alfu32/ttyd/tar.gz/a8ae135643c0ed7164f59f14f537b0b11f7a9788",
+    "staticLibwebsockets": {
+      "eventLoopPlugins": false,
+      "sourceSha256": "6fd33527b410a37ebc91bb64ca51bdabab12b076bc99d153d7c5dd405e4bdf90",
+      "sourceUrl": "https://codeload.github.com/warmcat/libwebsockets/tar.gz/refs/tags/v4.3.3",
+      "version": "4.3.3"
+    },
+    "version_output": "ttyd version 1.8.3-unknown"
+  }
+}

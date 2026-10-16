@@ -23,13 +23,14 @@ SHA256 = "6fd33527b410a37ebc91bb64ca51bdabab12b076bc99d153d7c5dd405e4bdf90"
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dependency-prefix", type=Path)
+    parser.add_argument("--build-root", type=Path, default=ROOT / "target", help="Keep native qualification state separate from other Cargo builds")
     parser.add_argument("--output", type=Path, default=ROOT / "target/ttyd-release-bundle")
     parser.add_argument("--jobs", type=int, default=min(os.cpu_count() or 1,8))
     args = parser.parse_args()
-    build = ROOT / "target/native-release-build"
-    dependency = ROOT / "target/native-release-deps"
+    build = args.build_root / "native-release-build"
+    dependency = args.build_root / "native-release-deps"
     build.mkdir(parents=True,exist_ok=True)
-    archive = ROOT / "target/native-sources/libwebsockets-4.3.3.tar.gz"
+    archive = args.build_root / "native-sources/libwebsockets-4.3.3.tar.gz"
     archive.parent.mkdir(parents=True,exist_ok=True)
     if not archive.exists():
         with urllib.request.urlopen(URL,timeout=30) as response:
@@ -62,7 +63,7 @@ def main():
         if old not in configured:
             raise ValueError("Unexpected pinned libwebsockets CMake config")
         config.write_text(configured.replace(old,"set(LIBWEBSOCKETS_LIBRARIES websockets)"))
-        command = [sys.executable, ROOT / "scripts/build-ttyd.py","--build-dir",ROOT / "target/ttyd-native-built-in","--output",args.output,"--cmake-prefix",dependency,"--builtin-libuv","--jobs",args.jobs]
+        command = [sys.executable, ROOT / "scripts/build-ttyd.py","--build-dir",args.build_root / "ttyd-native-built-in","--output",args.output,"--cmake-prefix",dependency,"--builtin-libuv","--jobs",args.jobs]
         if args.dependency_prefix:
             command.extend(["--extra-cmake-prefix",args.dependency_prefix])
         run(command)

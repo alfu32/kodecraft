@@ -9,7 +9,7 @@ ongoing work and links to acceptance evidence. Open a file or folder with
 state and quits. The shell includes file/project panels, search, text editing,
 hex inspection, portable image viewing, syntax/semantic highlighting and native
 completion/navigation, local Git operations and diff views, SQL/JDBC and REST.
-OAuth acquisition, the [finalized UAT requests](docs/migration/UAT.md), final editor
+The remaining [finalized UAT requests](docs/migration/UAT.md), final editor
 qualification and release work continue in dependency order.
 `cargo check --workspace`, `--help` and `--version` work on stable Rust.
 The Rust application is a TUI. JDBC runs in an **external JVM**;
@@ -25,8 +25,9 @@ place its executable beside `kode`, or set `KODE_TTYD` to its executable path.
 records provenance; native development libraries listed by its `--help` are
 required. Linux x86_64 GNU archive builds now include the standalone ttyd, its
 relative native library closure, and full dependency notices. Build and acceptance
-commands are in [the distribution guide](packaging/README.md). AppImage/Snap, final
-release CI and publication remain in progress.
+commands are in [the distribution guide](packaging/README.md). Linux AppImage and
+strict core24 Snap builds are also qualified locally. CI and draft orchestration
+are implemented; remote execution and final publication remain unperformed.
 `--resources DIRECTORY` within `serve` selects the child IDE's resource override.
 Remaining arguments after `--` pass literally to ttyd; an unknown option also
 starts forwarding, matching the original CLI.
@@ -50,6 +51,12 @@ Remote sessions can paste the complete redirect URL instead. Refresh and Clear
 are explicit actions; acquired tokens are kept only for the current workspace
 session and are omitted from saved collections and exports.
 
+Files → Recent shows project-relative paths by default, including directories
+that distinguish equal filenames. Outside-project files stay absolute. Click
+`[paths:rel]` / `[paths:full]`, or press **P** while Files is focused, to toggle
+full paths. Each project remembers this display preference; file identity and
+save targets stay the same.
+
 The external JDBC protocol/bootstrap/supervisor is available as a backend. Build
 and test it with `bash scripts/test-jdbc-bridge.sh` using Java 21 and Maven; the
 packaged helper needs only Java at runtime. `KODE_JAVA` selects Java and
@@ -71,8 +78,10 @@ bounded previews and supports independent cancellation; helper failure retains
 received rows and never replays SQL. Open **Databases** with Alt+4: `n` creates a
 datasource, F2 edits, `c` connects/disconnects, `r` refreshes metadata, `R` explicitly
 restarts the database service and `s` opens a SQL editor. The connection dialog
-uses Alt+T to test, Alt+D to install a driver and Ctrl+S to save. URL Down opens
-Recents/Standard suggestions. Passwords are masked and stored separately from
+uses Alt+T to test, Alt+D to install a driver and Ctrl+S to save. Click Templates
+beside JDBC URL, or press Down in that field, for the current type's recent URLs
+and standard templates. Changing type preserves a typed URL; Escape cancels
+the menu. Passwords are masked and stored separately from
 public definitions. SQL consoles share the editor: Ctrl+Enter executes the current
 statement or selection, Ctrl+Shift+Enter executes the script, Escape requests
 cancellation, and Ctrl+Alt+A/C/R changes shared autocommit/commit/rollback state.

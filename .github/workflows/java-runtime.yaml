@@ -9,8 +9,7 @@ on:
       - scripts/build-java-runtime.py
       - .github/workflows/java-runtime.yaml
   workflow_dispatch:
-  release:
-    types: [published]
+  workflow_call:
 permissions:
   contents: read
 jobs:
@@ -29,20 +28,3 @@ jobs:
           name: kode-jdbc-runtime-x86_64-unknown-linux-gnu
           path: target/java-runtime-artifacts/*
           if-no-files-found: error
-  publish:
-    if: github.event_name == 'release'
-    needs: runtime
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: kode-jdbc-runtime-x86_64-unknown-linux-gnu
-          path: runtime-assets
-      - name: Attach the optional runtime and checksums to the release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: gh release upload "$RELEASE_TAG" runtime-assets/* --clobber

@@ -1,0 +1,66 @@
+{
+  "status": "passed",
+  "artifact": "kode-0.1.0-x86_64.AppImage",
+  "sha256": "2d6bff3c25760fbaa02d3512cc921a5df78e8f9c7683d6b2ecc1be664d28c91a",
+  "reproducible": true,
+  "runtimeVersion": "20251108",
+  "cases": [
+    {
+      "case": "no-java-edit-save",
+      "launch": "fuse",
+      "adjacentHelper": false,
+      "installationPathWithSpaces": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "external-java-h2",
+      "launch": "fuse",
+      "adjacentHelper": true,
+      "installationPathWithSpaces": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "no-java-edit-save",
+      "launch": "extract-and-run",
+      "adjacentHelper": false,
+      "installationPathWithSpaces": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "external-java-h2",
+      "launch": "extract-and-run",
+      "adjacentHelper": true,
+      "installationPathWithSpaces": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 4
+}
