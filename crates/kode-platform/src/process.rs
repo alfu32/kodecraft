@@ -1,8 +1,9 @@
 //! Child ownership: bounded streams, cancellation, termination and reaping.
 use crate::jobs::CancellationToken;
 use kode_core::{DomainError, Result};
+#[cfg(unix)]
+use std::cell::Cell;
 use std::{
-    cell::Cell,
     collections::VecDeque,
     path::PathBuf,
     process::{ExitStatus, Stdio},
@@ -129,7 +130,10 @@ pub struct ManagedChild {
     group: ProcessGroup,
 }
 
+#[cfg(unix)]
 struct ProcessGroup(Cell<Option<u32>>);
+#[cfg(not(unix))]
+struct ProcessGroup;
 impl ProcessGroup {
     fn kill(&self) -> std::io::Result<()> {
         #[cfg(unix)]
@@ -167,7 +171,10 @@ impl ManagedChild {
             .ok_or_else(|| process_error(&spec, "stderr pipe missing"))?;
         let tail = stderr.clone();
         let stderr_task = tokio::spawn(async move { drain_tail(error_pipe, tail).await });
+        #[cfg(unix)]
         let group = ProcessGroup(Cell::new(child.id()));
+        #[cfg(not(unix))]
+        let group = ProcessGroup;
         Ok(Self {
             spec,
             child,
