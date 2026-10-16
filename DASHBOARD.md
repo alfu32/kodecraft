@@ -89,7 +89,7 @@ Full Kode → Rust migration, including the [finalized UAT batch](docs/migration
 | U06  | [Word selection with double-click and Alt+double-click](docs/migration/tasks/11-uat.md)         | done        | [Report](docs/parity/U06.md) |
 | U07  | [File-tree picker buttons for path fields](docs/migration/tasks/11-uat.md)                      | done        | [Report](docs/parity/U07.md) |
 | U08  | [Project-relative paths in the open-file list](docs/migration/tasks/11-uat.md)                  | done        | [Report](docs/parity/U08.md) |
-| U09  | [Repair language server installations](docs/migration/tasks/11-uat.md)                          | in-progress | —                            |
+| U09  | [Repair language server installations](docs/migration/tasks/11-uat.md)                          | in-progress | [Report](docs/parity/U09.md) |
 | U10  | [Panel shortcuts follow visual tab order](docs/migration/tasks/11-uat.md)                       | done        | [Report](docs/parity/U10.md) |
 | U11  | [Connection-type JDBC URL template dropdown](docs/migration/tasks/11-uat.md)                    | done        | [Report](docs/parity/U11.md) |
 | U12  | [Database package listing and DDL](docs/migration/tasks/11-uat.md)                              | todo        | —                            |

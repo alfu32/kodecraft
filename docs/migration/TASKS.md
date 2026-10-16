@@ -83,7 +83,7 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | U06 | [Word selection with double-click and Alt+double-click](tasks/11-uat.md) | U04 | [done](../parity/U06.md) |
 | U07 | [File-tree picker buttons for path fields](tasks/11-uat.md) | W05, D07, R07 | [done](../parity/U07.md) |
 | U08 | [Project-relative paths in the open-file list](tasks/11-uat.md) | W05, W03 | [done](../parity/U08.md) |
-| U09 | [Repair language server installations](tasks/11-uat.md) | P01, P02, Z02 | in-progress |
+| U09 | [Repair language server installations](tasks/11-uat.md) | P01, P02, Z02 | [in-progress](../parity/U09.md) |
 | U10 | [Panel shortcuts follow visual tab order](tasks/11-uat.md) | Z02 | [done](../parity/U10.md) |
 | U11 | [Connection-type JDBC URL template dropdown](tasks/11-uat.md) | D07 | [done](../parity/U11.md) |
 | U12 | [Database package listing and DDL](tasks/11-uat.md) | D09 | todo |

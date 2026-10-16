@@ -37,6 +37,7 @@ pub trait ServerLifecycle: Send + Sync {
 }
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SettingsAction {
+    Details { title: String, text: String },
     Refresh,
     Install(String),
     Uninstall(String),
@@ -53,6 +54,12 @@ pub struct SettingsReport {
     pub catalog_path: Option<PathBuf>,
     pub install_root: PathBuf,
     pub message: String,
+    pub operation_error: Option<String>,
+}
+struct Failure {
+    server: Option<String>,
+    title: String,
+    text: String,
 }
 pub struct LspSettings {
     pub id: FocusId,
@@ -64,6 +71,8 @@ pub struct LspSettings {
     pub catalog_path: Option<PathBuf>,
     pub busy: Option<JobTag>,
     cancel: Option<CancellationToken>,
+    operation: Option<SettingsAction>,
+    failure: Option<Failure>,
     work: Vec<SettingsAction>,
     area: Rect,
     hits: Vec<(Rect, usize, SettingsAction)>,
@@ -81,6 +90,8 @@ impl LspSettings {
             catalog_path: None,
             busy: None,
             cancel: None,
+            operation: None,
+            failure: None,
             work: vec![],
             area: Rect::default(),
             hits: vec![],
@@ -110,6 +121,7 @@ impl LspSettings {
         };
         let cancel = CancellationToken::new();
         self.busy = Some(tag);
+        self.operation = Some(action.clone());
         self.cancel = Some(cancel.clone());
         self.message = format!("Working: {action:?}; Escape cancels");
         Ok(Some(SettingsJob {
@@ -135,22 +147,91 @@ impl LspSettings {
         }
         self.busy = None;
         self.cancel = None;
-        match result {
+        let operation = self.operation.take();
+        let error = match result {
             Ok(report) => {
-                let selected = self.statuses.get(self.selected).map(|s| s.entry.id.clone());
+                let selected = self
+                    .statuses
+                    .get(self.selected)
+                    .map(|status| status.entry.id.clone());
                 self.statuses = report.statuses;
                 self.selected = selected
-                    .and_then(|id| self.statuses.iter().position(|s| s.entry.id == id))
+                    .and_then(|id| {
+                        self.statuses
+                            .iter()
+                            .position(|status| status.entry.id == id)
+                    })
                     .unwrap_or(self.selected)
                     .min(self.statuses.len().saturating_sub(1));
                 self.install_root = Some(report.install_root);
                 self.catalog_path = report.catalog_path;
                 self.message = report.message;
+                report.operation_error
             }
-            Err(error) => self.message = error.to_string(),
-        }
+            Err(error) => {
+                self.message = error.to_string();
+                Some(self.message.clone())
+            }
+        };
+        self.failure = error.map(|text| {
+            let server = match &operation {
+                Some(
+                    SettingsAction::Install(id)
+                    | SettingsAction::Uninstall(id)
+                    | SettingsAction::Lifecycle(id, _),
+                ) => Some(id.clone()),
+                _ => None,
+            };
+            let label = match operation {
+                Some(SettingsAction::Install(id)) => format!("Install {id}"),
+                Some(SettingsAction::Uninstall(id)) => format!("Remove {id}"),
+                Some(SettingsAction::Lifecycle(id, action)) => format!("{action:?} {id}"),
+                _ => "Refresh language-server catalog".into(),
+            };
+            Failure {
+                server,
+                title: format!("LSP {label} / request {}", tag.request.0),
+                text,
+            }
+        });
         self.reveal();
         true
+    }
+    pub fn details(&self) -> Option<SettingsAction> {
+        let status = self.statuses.get(self.selected);
+        let failure = self.failure.as_ref().filter(|failure| {
+            failure.server.is_none()
+                || status.is_some_and(|status| failure.server.as_deref() == Some(&status.entry.id))
+        });
+        if let Some(failure) = failure {
+            return Some(SettingsAction::Details {
+                title: failure.title.clone(),
+                text: failure.text.clone(),
+            });
+        }
+        let status = status?;
+        let mut text = format!(
+            "{} ({})\nStatus: {:?}\nVersion: {}\nInstall directory: {}\n",
+            status.entry.name,
+            status.entry.id,
+            status.install_state,
+            status
+                .installed_version
+                .as_deref()
+                .unwrap_or("local / not installed"),
+            status.install_path.display()
+        );
+        if let Some(command) = &status.command {
+            text.push_str(&format!("Executable: {}\n", command.args[0]));
+        }
+        if let Some(message) = &status.message {
+            text.push('\n');
+            text.push_str(message);
+        }
+        Some(SettingsAction::Details {
+            title: format!("LSP {} details", status.entry.name),
+            text,
+        })
     }
     fn selected_action(&self, key: Key) -> Option<SettingsAction> {
         let status = self.statuses.get(self.selected)?;
@@ -193,7 +274,7 @@ impl LspSettings {
                     self.hits.iter().find(|(area, _, _)| area.contains(point))
                 {
                     self.selected = *index;
-                    if self.busy.is_none() {
+                    if self.busy.is_none() || matches!(action, SettingsAction::Details { .. }) {
                         self.work.push(action.clone());
                     }
                 } else if let Some((_, index)) =
@@ -233,6 +314,11 @@ impl LspSettings {
                 };
                 match key {
                     Key::Escape => self.cancel(),
+                    Key::Function(4) => {
+                        if let Some(action) = self.details() {
+                            self.work.push(action);
+                        }
+                    }
                     Key::Character('f') | Key::Function(5) => self.request_refresh(),
                     Key::Up if count > 0 => {
                         self.selected = (self.selected + count - 1) % count;
@@ -322,7 +408,19 @@ impl LspSettings {
             buffer,
             theme.style("lsp-list"),
         );
-        line(3, &self.message, buffer, theme.style("lsp-error"));
+        line(
+            3,
+            &crate::widgets::diagnostic::summary(&self.message),
+            buffer,
+            theme.style("lsp-error"),
+        );
+        if let Some(action) = self.details() {
+            let y = area.y + area.height.saturating_sub(1).min(3);
+            let width = area.width.min(12);
+            let hit = Rect::new(area.right() - width, y, width, 1);
+            draw_text(hit, buffer, "[F4 Details]", theme.style("lsp-button"));
+            self.hits.push((hit, self.selected, action));
+        }
         line(4, "f refresh | Esc cancel", buffer, theme.style("lsp-list"));
         self.scroll = self.scroll.min(self.statuses.len().saturating_sub(1));
         for (relative, status) in self.statuses.iter().skip(self.scroll).enumerate() {
@@ -378,7 +476,7 @@ impl LspSettings {
             );
             line(
                 row as u16 + 5,
-                status.message.as_deref().unwrap_or(""),
+                &crate::widgets::diagnostic::summary(status.message.as_deref().unwrap_or("")),
                 buffer,
                 style,
             );

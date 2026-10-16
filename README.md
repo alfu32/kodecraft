@@ -175,8 +175,16 @@ cache. The panel shows scan/extract/resolve/persist progress and scrolls with
 Up/Down/Page/Home/End or the mouse wheel. These controls leave user JDBC databases
 and dirty editor buffers intact.
 Use `f` to refresh, Enter to install/update, `y` to remove, and Escape to cancel.
+F4 Details opens the full operation error or selected server details. The dialog
+wraps text, scrolls with arrows/Page/Home/End, and copies all text with Ctrl+C.
 `KODE_LSP_CATALOG` selects a custom catalog and `KODE_LSP_HOME` selects the install
 root. Existing local executables and manifest command arrays are supported.
+The shipped TypeScript server needs Node.js 22.22.2 or newer; HTML, CSS and JSON
+servers need Node.js 18 or newer. Their pinned packages install inside the selected
+LSP root without global npm installs or package lifecycle scripts. The pinned
+JDT LS milestone needs Java 25 or newer; select it with `JAVA_HOME` or PATH.
+JDT configuration and data are kept separately for each project. These runtimes
+remain optional: native editing and intelligence do not require Node or Java.
 Use `s` to start/stop and `r` to restart a server. Running state follows the actual
 initialized child; workspace changes and exit stop and reap owned servers.
 Opening a file attempts to start its first matching local server in the background;

@@ -3,10 +3,14 @@
     {
       "id": "rust-analyzer",
       "name": "rust-analyzer",
-      "languages": ["rust"],
+      "languages": [
+        "rust"
+      ],
       "homepage": "https://rust-analyzer.github.io/",
       "license": "Apache-2.0 / MIT",
-      "preferredCommand": ["rust-analyzer"],
+      "preferredCommand": [
+        "rust-analyzer"
+      ],
       "versions": [
         {
           "version": "2024-09-23",
@@ -38,10 +42,14 @@
     {
       "id": "gopls",
       "name": "gopls",
-      "languages": ["go"],
+      "languages": [
+        "go"
+      ],
       "homepage": "https://pkg.go.dev/golang.org/x/tools/gopls",
       "license": "BSD-3-Clause",
-      "preferredCommand": ["gopls"],
+      "preferredCommand": [
+        "gopls"
+      ],
       "versions": [
         {
           "version": "0.16.2",
@@ -68,10 +76,14 @@
     {
       "id": "pylsp",
       "name": "Python LSP Server",
-      "languages": ["python"],
+      "languages": [
+        "python"
+      ],
       "homepage": "https://github.com/python-lsp/python-lsp-server",
       "license": "MIT",
-      "preferredCommand": ["pylsp"],
+      "preferredCommand": [
+        "pylsp"
+      ],
       "versions": [
         {
           "version": "manual",
@@ -82,10 +94,14 @@
     {
       "id": "lua-language-server",
       "name": "Lua Language Server",
-      "languages": ["lua"],
+      "languages": [
+        "lua"
+      ],
       "homepage": "https://github.com/LuaLS/lua-language-server",
       "license": "MIT",
-      "preferredCommand": ["lua-language-server"],
+      "preferredCommand": [
+        "lua-language-server"
+      ],
       "versions": [
         {
           "version": "3.7.0",
@@ -112,36 +128,102 @@
     {
       "id": "jdtls",
       "name": "Eclipse JDT Language Server",
-      "languages": ["java"],
+      "languages": [
+        "java"
+      ],
       "homepage": "https://projects.eclipse.org/projects/eclipse.jdt.ls",
       "license": "EPL-2.0",
-      "preferredCommand": ["jdtls"],
+      "preferredCommand": [
+        "jdtls"
+      ],
       "versions": [
         {
-          "version": "1.33.0",
+          "version": "1.62.0",
           "downloads": [
             {
-          "os": "linux",
-          "arch": "x86_64",
-          "url": "https://download.eclipse.org/jdtls/milestones/1.33.0/jdt-language-server-1.33.0-202409121444.tar.gz",
-          "command": ["bin/jdtls"]
-        },
-        {
-          "os": "macos",
-          "arch": "x86_64",
-          "url": "https://download.eclipse.org/jdtls/milestones/1.33.0/jdt-language-server-1.33.0-202409121444.tar.gz",
-          "command": ["bin/jdtls"]
-        },
-        {
-          "os": "macos",
-          "arch": "arm64",
-          "url": "https://download.eclipse.org/jdtls/milestones/1.33.0/jdt-language-server-1.33.0-202409121444.tar.gz",
-          "command": ["bin/jdtls"]
-        },
-        {
-          "os": "windows",
-          "arch": "x86_64",
-              "url": "https://download.eclipse.org/jdtls/milestones/1.33.0/jdt-language-server-1.33.0-202409121444.zip"
+              "os": "linux",
+              "arch": "x86_64",
+              "url": "https://download.eclipse.org/jdtls/milestones/1.62.0/jdt-language-server-1.62.0-202610131109.tar.gz",
+              "sha256": "f587dafd8410633c2c2bf005e853a2bbb03cddee88933d49bfe6d9cb1cf09342",
+              "command": [
+                "java"
+              ],
+              "kodeRsPackage": {
+                "version": 1,
+                "runtime": {
+                  "kind": "java",
+                  "minimum": "25.0.0"
+                },
+                "launcher": "jdtls"
+              }
+            },
+            {
+              "os": "linux",
+              "arch": "arm64",
+              "url": "https://download.eclipse.org/jdtls/milestones/1.62.0/jdt-language-server-1.62.0-202610131109.tar.gz",
+              "sha256": "f587dafd8410633c2c2bf005e853a2bbb03cddee88933d49bfe6d9cb1cf09342",
+              "command": [
+                "java"
+              ],
+              "kodeRsPackage": {
+                "version": 1,
+                "runtime": {
+                  "kind": "java",
+                  "minimum": "25.0.0"
+                },
+                "launcher": "jdtls"
+              }
+            },
+            {
+              "os": "macos",
+              "arch": "x86_64",
+              "url": "https://download.eclipse.org/jdtls/milestones/1.62.0/jdt-language-server-1.62.0-202610131109.tar.gz",
+              "sha256": "f587dafd8410633c2c2bf005e853a2bbb03cddee88933d49bfe6d9cb1cf09342",
+              "command": [
+                "java"
+              ],
+              "kodeRsPackage": {
+                "version": 1,
+                "runtime": {
+                  "kind": "java",
+                  "minimum": "25.0.0"
+                },
+                "launcher": "jdtls"
+              }
+            },
+            {
+              "os": "macos",
+              "arch": "arm64",
+              "url": "https://download.eclipse.org/jdtls/milestones/1.62.0/jdt-language-server-1.62.0-202610131109.tar.gz",
+              "sha256": "f587dafd8410633c2c2bf005e853a2bbb03cddee88933d49bfe6d9cb1cf09342",
+              "command": [
+                "java"
+              ],
+              "kodeRsPackage": {
+                "version": 1,
+                "runtime": {
+                  "kind": "java",
+                  "minimum": "25.0.0"
+                },
+                "launcher": "jdtls"
+              }
+            },
+            {
+              "os": "windows",
+              "arch": "x86_64",
+              "url": "https://download.eclipse.org/jdtls/milestones/1.62.0/jdt-language-server-1.62.0-202610131109.tar.gz",
+              "sha256": "f587dafd8410633c2c2bf005e853a2bbb03cddee88933d49bfe6d9cb1cf09342",
+              "command": [
+                "java"
+              ],
+              "kodeRsPackage": {
+                "version": 1,
+                "runtime": {
+                  "kind": "java",
+                  "minimum": "25.0.0"
+                },
+                "launcher": "jdtls"
+              }
             }
           ]
         }
@@ -150,10 +232,14 @@
     {
       "id": "kotlin-language-server",
       "name": "Kotlin Language Server",
-      "languages": ["kotlin"],
+      "languages": [
+        "kotlin"
+      ],
       "homepage": "https://github.com/fwcd/kotlin-language-server",
       "license": "MIT",
-      "preferredCommand": ["server/bin/kotlin-language-server"],
+      "preferredCommand": [
+        "server/bin/kotlin-language-server"
+      ],
       "versions": [
         {
           "version": "1.3.3",
@@ -162,7 +248,9 @@
               "os": "any",
               "arch": "any",
               "url": "https://github.com/fwcd/kotlin-language-server/releases/download/1.3.3/server.zip",
-              "command": ["server/bin/kotlin-language-server"]
+              "command": [
+                "server/bin/kotlin-language-server"
+              ]
             }
           ]
         }
@@ -180,69 +268,787 @@
         "tsx"
       ],
       "homepage": "https://github.com/typescript-language-server/typescript-language-server",
-      "license": "MIT",
-      "preferredCommand": ["typescript-language-server", "--stdio"],
+      "license": "Apache-2.0",
+      "preferredCommand": [
+        "typescript-language-server",
+        "--stdio"
+      ],
       "versions": [
         {
-          "version": "5.1.3",
-          "installInstructions": {
-            "npm": "npm install -g typescript-language-server@5.1.3 typescript@5.9.3"
-          }
+          "version": "6.0.2",
+          "downloads": [
+            {
+              "os": "any",
+              "arch": "any",
+              "url": "https://registry.npmjs.org/typescript-language-server/-/typescript-language-server-6.0.2.tgz",
+              "sha256": "d225b223a8a4764ecbd94bdba85d2ef185eaa7b9842a1a31c38c2bbe7f2fe9b9",
+              "command": [
+                "node",
+                "package/lib/cli.mjs",
+                "--stdio"
+              ],
+              "kodeRsPackage": {
+                "version": 1,
+                "runtime": {
+                  "kind": "node",
+                  "minimum": "22.22.2"
+                },
+                "dependencies": [
+                  {
+                    "url": "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz",
+                    "sha256": "33cd0ee1beaa8c9e9d15a9da836c62ddea4c34a42d7c2d349dbc80d94165d22a",
+                    "directory": "node_modules/typescript",
+                    "unpackSubdir": "package"
+                  }
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
       "id": "vscode-langservers-extracted",
-      "name": "VSCode LangServers Extracted",
-      "languages": ["html", "css", "json"],
+      "name": "VSCode HTML Language Server",
+      "languages": [
+        "html"
+      ],
       "homepage": "https://github.com/hrsh7th/vscode-langservers-extracted",
       "license": "MIT",
-      "preferredCommand": ["vscode-html-language-server", "--stdio"],
+      "preferredCommand": [
+        "vscode-html-language-server",
+        "--stdio"
+      ],
       "versions": [
         {
           "version": "4.10.0",
-          "installInstructions": {
-            "npm": "npm install -g vscode-langservers-extracted@4.10.0"
-          }
+          "downloads": [
+            {
+              "os": "any",
+              "arch": "any",
+              "url": "https://registry.npmjs.org/vscode-langservers-extracted/-/vscode-langservers-extracted-4.10.0.tgz",
+              "sha256": "d6e2d090d09c4b91daa74e9e7462a3d3f244efb96aa5111004cfffa49d6dc9ef",
+              "command": [
+                "node",
+                "package/bin/vscode-html-language-server",
+                "--stdio"
+              ],
+              "kodeRsPackage": {
+                "version": 1,
+                "runtime": {
+                  "kind": "node",
+                  "minimum": "18.0.0"
+                },
+                "dependencies": [
+                  {
+                    "url": "https://registry.npmjs.org/@vscode/l10n/-/l10n-0.0.18.tgz",
+                    "sha256": "f1c2dc897488595f6bb42121869f525c6c6a5f7c8dca550754199c3251ed7c5c",
+                    "directory": "node_modules/@vscode/l10n",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/boolbase/-/boolbase-1.0.0.tgz",
+                    "sha256": "69628ff8092c5ff940ea4a0f29da98d520615bae138755c9e059033606c6caa8",
+                    "directory": "node_modules/boolbase",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/core-js/-/core-js-3.50.0.tgz",
+                    "sha256": "fc99658f513a6ff0292e5680a48c01fc86d709b316dc96cffef4697ff8fe38c5",
+                    "directory": "node_modules/core-js",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/css-select/-/css-select-5.2.2.tgz",
+                    "sha256": "ab3c2a9c47abc354e4bb539f66746da87c80ed9e9623f4b0940147d0a1b2ae75",
+                    "directory": "node_modules/css-select",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/css-what/-/css-what-6.2.2.tgz",
+                    "sha256": "275ef51d6c04b5f6e2441d73fa3503c5ac525cd82ef4ca55f022eeacaf227ab0",
+                    "directory": "node_modules/css-what",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/dom-serializer/-/dom-serializer-2.0.0.tgz",
+                    "sha256": "e34511f144fc6b34ce536bd60fb1ed27dd965f07a7c317407e79dd6be9e8f399",
+                    "directory": "node_modules/dom-serializer",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/domelementtype/-/domelementtype-2.3.0.tgz",
+                    "sha256": "c67164b4a994eaeaecbd968c2e5e5415407ae6fb4486bbb470594154e25feb45",
+                    "directory": "node_modules/domelementtype",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/domhandler/-/domhandler-5.0.3.tgz",
+                    "sha256": "f3952abb7e2635d8e942822d68cfb1fdaba61148d17a1a5692bdd163d6ca4784",
+                    "directory": "node_modules/domhandler",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/domutils/-/domutils-3.2.2.tgz",
+                    "sha256": "272918a13e7e093ddc983666954164e098fb2443f06f476f34bf47005e12c140",
+                    "directory": "node_modules/domutils",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/entities/-/entities-4.5.0.tgz",
+                    "sha256": "6b0c60f7351a0b65bb1fc8dbb9299f09e7ecf6d89103d0651bf369e6f463a632",
+                    "directory": "node_modules/entities",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/he/-/he-1.2.0.tgz",
+                    "sha256": "777a7c030c1b6c0bbe8638136dcc5cedbb36b1082f821b06648de5d7d11c1b68",
+                    "directory": "node_modules/he",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-3.3.1.tgz",
+                    "sha256": "4a0315b8671e7463bae7af7c142cdf19e9aa7ba39eb36dc2df383b8648e3cbc9",
+                    "directory": "node_modules/jsonc-parser",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/node-html-parser/-/node-html-parser-6.1.13.tgz",
+                    "sha256": "333e55a8f4ebdaf60126f796295dca085cd088899282180782dd38a4ea9295b7",
+                    "directory": "node_modules/node-html-parser",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/nth-check/-/nth-check-2.1.1.tgz",
+                    "sha256": "45dc0a2bc34205656c0fbe8374c725c04b71b40e739b74c9fc763480c8063642",
+                    "directory": "node_modules/nth-check",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/picomatch/-/picomatch-2.3.2.tgz",
+                    "sha256": "4c843ba015bec815ac52116162559ab7b4b4efbd3b86f7fcf38f3d770decace6",
+                    "directory": "node_modules/picomatch",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz",
+                    "sha256": "96a0a849ceb83d2cd717d775dc60ddb7c2384564f76a75d0d1e6849af04c2b8c",
+                    "directory": "node_modules/regenerator-runtime",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/request-light/-/request-light-0.7.0.tgz",
+                    "sha256": "15d60d0da12c1e9eff0bc8f0f00417e760b672165fe9a77b64639de29285ace5",
+                    "directory": "node_modules/request-light",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/semver/-/semver-7.8.5.tgz",
+                    "sha256": "d85045d4300d7d57c891336b95df532e73f34c22ffcd222452b6d08b9d127d5d",
+                    "directory": "node_modules/semver",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/typescript/-/typescript-4.9.5.tgz",
+                    "sha256": "6e2faae079c9047aa921e8a307f0cec0da4dc4853e20bb31d18acc678f5bf505",
+                    "directory": "node_modules/typescript",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-css-languageservice/-/vscode-css-languageservice-6.3.10.tgz",
+                    "sha256": "75dfff4a7b2a9b8df08c17d5444a8224a3701e29fc30c2539db12a7a9ffc9448",
+                    "directory": "node_modules/vscode-css-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.17.5.tgz",
+                    "sha256": "d673f9e7f8bbe51351be51c58f32d4dcfa97a670ebb86bc633368394c609cac0",
+                    "directory": "node_modules/vscode-css-languageservice/node_modules/vscode-languageserver-types",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-html-languageservice/-/vscode-html-languageservice-5.6.2.tgz",
+                    "sha256": "a519e4029da8cf4d7d4cf6d882307038635f203c505862a4ef68f18fa194322a",
+                    "directory": "node_modules/vscode-html-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-json-languageservice/-/vscode-json-languageservice-5.7.2.tgz",
+                    "sha256": "18dc41edc48bdcab2da866a5b5f53956ee722b66fffe9d89740d04ba7f505459",
+                    "directory": "node_modules/vscode-json-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-jsonrpc/-/vscode-jsonrpc-9.0.3.tgz",
+                    "sha256": "282d3d574a565ab9bea0af6518eadac91221dfd0cd55cfd308662b816a7920a7",
+                    "directory": "node_modules/vscode-jsonrpc",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver/-/vscode-languageserver-10.1.2.tgz",
+                    "sha256": "991c66235ffb604630599a611bbd888768468f4707a6fb8691a977cf72bb286b",
+                    "directory": "node_modules/vscode-languageserver",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.18.4.tgz",
+                    "sha256": "76ff8f83f7f1bac53e351cd30740ff75610277b65b4043141d359660d88f0dcd",
+                    "directory": "node_modules/vscode-languageserver-protocol",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-textdocument/-/vscode-languageserver-textdocument-1.0.15.tgz",
+                    "sha256": "2a133b20d5c5b1ff6d8627c628807c28d771b8741c8c6fca2aef3dd77cac669c",
+                    "directory": "node_modules/vscode-languageserver-textdocument",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.18.4.tgz",
+                    "sha256": "83c119b73d1895194087e9376d0916161b5550c210e9e892b65a3e04a43ea68e",
+                    "directory": "node_modules/vscode-languageserver-types",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-markdown-languageservice/-/vscode-markdown-languageservice-0.5.0-alpha.13.tgz",
+                    "sha256": "4455a8700113936b88f5249c9960066ccc302b972c3e5254b023dff186a87b64",
+                    "directory": "node_modules/vscode-markdown-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-nls/-/vscode-nls-5.2.0.tgz",
+                    "sha256": "441f95396ae52a4eff2f69770219a522ed13dc0ba69deb982ac9456eda9ca779",
+                    "directory": "node_modules/vscode-nls",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-uri/-/vscode-uri-3.2.0.tgz",
+                    "sha256": "12fa4a47728ca404c3a679e351eda6c54030c8ed3dd9bc6762ab0be1bf04014b",
+                    "directory": "node_modules/vscode-uri",
+                    "unpackSubdir": "package"
+                  }
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
       "id": "vscode-css-language-server",
       "name": "VSCode CSS Language Server",
-      "languages": ["css", "scss", "less"],
+      "languages": [
+        "css",
+        "scss",
+        "less"
+      ],
       "homepage": "https://github.com/hrsh7th/vscode-langservers-extracted",
       "license": "MIT",
-      "preferredCommand": ["vscode-css-language-server", "--stdio"],
+      "preferredCommand": [
+        "vscode-css-language-server",
+        "--stdio"
+      ],
       "versions": [
         {
           "version": "4.10.0",
-          "installInstructions": {
-            "npm": "npm install -g vscode-langservers-extracted@4.10.0"
-          }
+          "downloads": [
+            {
+              "os": "any",
+              "arch": "any",
+              "url": "https://registry.npmjs.org/vscode-langservers-extracted/-/vscode-langservers-extracted-4.10.0.tgz",
+              "sha256": "d6e2d090d09c4b91daa74e9e7462a3d3f244efb96aa5111004cfffa49d6dc9ef",
+              "command": [
+                "node",
+                "package/bin/vscode-css-language-server",
+                "--stdio"
+              ],
+              "kodeRsPackage": {
+                "version": 1,
+                "runtime": {
+                  "kind": "node",
+                  "minimum": "18.0.0"
+                },
+                "dependencies": [
+                  {
+                    "url": "https://registry.npmjs.org/@vscode/l10n/-/l10n-0.0.18.tgz",
+                    "sha256": "f1c2dc897488595f6bb42121869f525c6c6a5f7c8dca550754199c3251ed7c5c",
+                    "directory": "node_modules/@vscode/l10n",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/boolbase/-/boolbase-1.0.0.tgz",
+                    "sha256": "69628ff8092c5ff940ea4a0f29da98d520615bae138755c9e059033606c6caa8",
+                    "directory": "node_modules/boolbase",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/core-js/-/core-js-3.50.0.tgz",
+                    "sha256": "fc99658f513a6ff0292e5680a48c01fc86d709b316dc96cffef4697ff8fe38c5",
+                    "directory": "node_modules/core-js",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/css-select/-/css-select-5.2.2.tgz",
+                    "sha256": "ab3c2a9c47abc354e4bb539f66746da87c80ed9e9623f4b0940147d0a1b2ae75",
+                    "directory": "node_modules/css-select",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/css-what/-/css-what-6.2.2.tgz",
+                    "sha256": "275ef51d6c04b5f6e2441d73fa3503c5ac525cd82ef4ca55f022eeacaf227ab0",
+                    "directory": "node_modules/css-what",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/dom-serializer/-/dom-serializer-2.0.0.tgz",
+                    "sha256": "e34511f144fc6b34ce536bd60fb1ed27dd965f07a7c317407e79dd6be9e8f399",
+                    "directory": "node_modules/dom-serializer",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/domelementtype/-/domelementtype-2.3.0.tgz",
+                    "sha256": "c67164b4a994eaeaecbd968c2e5e5415407ae6fb4486bbb470594154e25feb45",
+                    "directory": "node_modules/domelementtype",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/domhandler/-/domhandler-5.0.3.tgz",
+                    "sha256": "f3952abb7e2635d8e942822d68cfb1fdaba61148d17a1a5692bdd163d6ca4784",
+                    "directory": "node_modules/domhandler",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/domutils/-/domutils-3.2.2.tgz",
+                    "sha256": "272918a13e7e093ddc983666954164e098fb2443f06f476f34bf47005e12c140",
+                    "directory": "node_modules/domutils",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/entities/-/entities-4.5.0.tgz",
+                    "sha256": "6b0c60f7351a0b65bb1fc8dbb9299f09e7ecf6d89103d0651bf369e6f463a632",
+                    "directory": "node_modules/entities",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/he/-/he-1.2.0.tgz",
+                    "sha256": "777a7c030c1b6c0bbe8638136dcc5cedbb36b1082f821b06648de5d7d11c1b68",
+                    "directory": "node_modules/he",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-3.3.1.tgz",
+                    "sha256": "4a0315b8671e7463bae7af7c142cdf19e9aa7ba39eb36dc2df383b8648e3cbc9",
+                    "directory": "node_modules/jsonc-parser",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/node-html-parser/-/node-html-parser-6.1.13.tgz",
+                    "sha256": "333e55a8f4ebdaf60126f796295dca085cd088899282180782dd38a4ea9295b7",
+                    "directory": "node_modules/node-html-parser",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/nth-check/-/nth-check-2.1.1.tgz",
+                    "sha256": "45dc0a2bc34205656c0fbe8374c725c04b71b40e739b74c9fc763480c8063642",
+                    "directory": "node_modules/nth-check",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/picomatch/-/picomatch-2.3.2.tgz",
+                    "sha256": "4c843ba015bec815ac52116162559ab7b4b4efbd3b86f7fcf38f3d770decace6",
+                    "directory": "node_modules/picomatch",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz",
+                    "sha256": "96a0a849ceb83d2cd717d775dc60ddb7c2384564f76a75d0d1e6849af04c2b8c",
+                    "directory": "node_modules/regenerator-runtime",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/request-light/-/request-light-0.7.0.tgz",
+                    "sha256": "15d60d0da12c1e9eff0bc8f0f00417e760b672165fe9a77b64639de29285ace5",
+                    "directory": "node_modules/request-light",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/semver/-/semver-7.8.5.tgz",
+                    "sha256": "d85045d4300d7d57c891336b95df532e73f34c22ffcd222452b6d08b9d127d5d",
+                    "directory": "node_modules/semver",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/typescript/-/typescript-4.9.5.tgz",
+                    "sha256": "6e2faae079c9047aa921e8a307f0cec0da4dc4853e20bb31d18acc678f5bf505",
+                    "directory": "node_modules/typescript",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-css-languageservice/-/vscode-css-languageservice-6.3.10.tgz",
+                    "sha256": "75dfff4a7b2a9b8df08c17d5444a8224a3701e29fc30c2539db12a7a9ffc9448",
+                    "directory": "node_modules/vscode-css-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.17.5.tgz",
+                    "sha256": "d673f9e7f8bbe51351be51c58f32d4dcfa97a670ebb86bc633368394c609cac0",
+                    "directory": "node_modules/vscode-css-languageservice/node_modules/vscode-languageserver-types",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-html-languageservice/-/vscode-html-languageservice-5.6.2.tgz",
+                    "sha256": "a519e4029da8cf4d7d4cf6d882307038635f203c505862a4ef68f18fa194322a",
+                    "directory": "node_modules/vscode-html-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-json-languageservice/-/vscode-json-languageservice-5.7.2.tgz",
+                    "sha256": "18dc41edc48bdcab2da866a5b5f53956ee722b66fffe9d89740d04ba7f505459",
+                    "directory": "node_modules/vscode-json-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-jsonrpc/-/vscode-jsonrpc-9.0.3.tgz",
+                    "sha256": "282d3d574a565ab9bea0af6518eadac91221dfd0cd55cfd308662b816a7920a7",
+                    "directory": "node_modules/vscode-jsonrpc",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver/-/vscode-languageserver-10.1.2.tgz",
+                    "sha256": "991c66235ffb604630599a611bbd888768468f4707a6fb8691a977cf72bb286b",
+                    "directory": "node_modules/vscode-languageserver",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.18.4.tgz",
+                    "sha256": "76ff8f83f7f1bac53e351cd30740ff75610277b65b4043141d359660d88f0dcd",
+                    "directory": "node_modules/vscode-languageserver-protocol",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-textdocument/-/vscode-languageserver-textdocument-1.0.15.tgz",
+                    "sha256": "2a133b20d5c5b1ff6d8627c628807c28d771b8741c8c6fca2aef3dd77cac669c",
+                    "directory": "node_modules/vscode-languageserver-textdocument",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.18.4.tgz",
+                    "sha256": "83c119b73d1895194087e9376d0916161b5550c210e9e892b65a3e04a43ea68e",
+                    "directory": "node_modules/vscode-languageserver-types",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-markdown-languageservice/-/vscode-markdown-languageservice-0.5.0-alpha.13.tgz",
+                    "sha256": "4455a8700113936b88f5249c9960066ccc302b972c3e5254b023dff186a87b64",
+                    "directory": "node_modules/vscode-markdown-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-nls/-/vscode-nls-5.2.0.tgz",
+                    "sha256": "441f95396ae52a4eff2f69770219a522ed13dc0ba69deb982ac9456eda9ca779",
+                    "directory": "node_modules/vscode-nls",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-uri/-/vscode-uri-3.2.0.tgz",
+                    "sha256": "12fa4a47728ca404c3a679e351eda6c54030c8ed3dd9bc6762ab0be1bf04014b",
+                    "directory": "node_modules/vscode-uri",
+                    "unpackSubdir": "package"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vscode-json-language-server",
+      "name": "VSCode JSON Language Server",
+      "languages": [
+        "json",
+        "jsonc"
+      ],
+      "homepage": "https://github.com/hrsh7th/vscode-langservers-extracted",
+      "license": "MIT",
+      "preferredCommand": [
+        "vscode-json-language-server",
+        "--stdio"
+      ],
+      "versions": [
+        {
+          "version": "4.10.0",
+          "downloads": [
+            {
+              "os": "any",
+              "arch": "any",
+              "url": "https://registry.npmjs.org/vscode-langservers-extracted/-/vscode-langservers-extracted-4.10.0.tgz",
+              "sha256": "d6e2d090d09c4b91daa74e9e7462a3d3f244efb96aa5111004cfffa49d6dc9ef",
+              "command": [
+                "node",
+                "package/bin/vscode-json-language-server",
+                "--stdio"
+              ],
+              "kodeRsPackage": {
+                "version": 1,
+                "runtime": {
+                  "kind": "node",
+                  "minimum": "18.0.0"
+                },
+                "dependencies": [
+                  {
+                    "url": "https://registry.npmjs.org/@vscode/l10n/-/l10n-0.0.18.tgz",
+                    "sha256": "f1c2dc897488595f6bb42121869f525c6c6a5f7c8dca550754199c3251ed7c5c",
+                    "directory": "node_modules/@vscode/l10n",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/boolbase/-/boolbase-1.0.0.tgz",
+                    "sha256": "69628ff8092c5ff940ea4a0f29da98d520615bae138755c9e059033606c6caa8",
+                    "directory": "node_modules/boolbase",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/core-js/-/core-js-3.50.0.tgz",
+                    "sha256": "fc99658f513a6ff0292e5680a48c01fc86d709b316dc96cffef4697ff8fe38c5",
+                    "directory": "node_modules/core-js",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/css-select/-/css-select-5.2.2.tgz",
+                    "sha256": "ab3c2a9c47abc354e4bb539f66746da87c80ed9e9623f4b0940147d0a1b2ae75",
+                    "directory": "node_modules/css-select",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/css-what/-/css-what-6.2.2.tgz",
+                    "sha256": "275ef51d6c04b5f6e2441d73fa3503c5ac525cd82ef4ca55f022eeacaf227ab0",
+                    "directory": "node_modules/css-what",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/dom-serializer/-/dom-serializer-2.0.0.tgz",
+                    "sha256": "e34511f144fc6b34ce536bd60fb1ed27dd965f07a7c317407e79dd6be9e8f399",
+                    "directory": "node_modules/dom-serializer",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/domelementtype/-/domelementtype-2.3.0.tgz",
+                    "sha256": "c67164b4a994eaeaecbd968c2e5e5415407ae6fb4486bbb470594154e25feb45",
+                    "directory": "node_modules/domelementtype",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/domhandler/-/domhandler-5.0.3.tgz",
+                    "sha256": "f3952abb7e2635d8e942822d68cfb1fdaba61148d17a1a5692bdd163d6ca4784",
+                    "directory": "node_modules/domhandler",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/domutils/-/domutils-3.2.2.tgz",
+                    "sha256": "272918a13e7e093ddc983666954164e098fb2443f06f476f34bf47005e12c140",
+                    "directory": "node_modules/domutils",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/entities/-/entities-4.5.0.tgz",
+                    "sha256": "6b0c60f7351a0b65bb1fc8dbb9299f09e7ecf6d89103d0651bf369e6f463a632",
+                    "directory": "node_modules/entities",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/he/-/he-1.2.0.tgz",
+                    "sha256": "777a7c030c1b6c0bbe8638136dcc5cedbb36b1082f821b06648de5d7d11c1b68",
+                    "directory": "node_modules/he",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-3.3.1.tgz",
+                    "sha256": "4a0315b8671e7463bae7af7c142cdf19e9aa7ba39eb36dc2df383b8648e3cbc9",
+                    "directory": "node_modules/jsonc-parser",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/node-html-parser/-/node-html-parser-6.1.13.tgz",
+                    "sha256": "333e55a8f4ebdaf60126f796295dca085cd088899282180782dd38a4ea9295b7",
+                    "directory": "node_modules/node-html-parser",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/nth-check/-/nth-check-2.1.1.tgz",
+                    "sha256": "45dc0a2bc34205656c0fbe8374c725c04b71b40e739b74c9fc763480c8063642",
+                    "directory": "node_modules/nth-check",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/picomatch/-/picomatch-2.3.2.tgz",
+                    "sha256": "4c843ba015bec815ac52116162559ab7b4b4efbd3b86f7fcf38f3d770decace6",
+                    "directory": "node_modules/picomatch",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz",
+                    "sha256": "96a0a849ceb83d2cd717d775dc60ddb7c2384564f76a75d0d1e6849af04c2b8c",
+                    "directory": "node_modules/regenerator-runtime",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/request-light/-/request-light-0.7.0.tgz",
+                    "sha256": "15d60d0da12c1e9eff0bc8f0f00417e760b672165fe9a77b64639de29285ace5",
+                    "directory": "node_modules/request-light",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/semver/-/semver-7.8.5.tgz",
+                    "sha256": "d85045d4300d7d57c891336b95df532e73f34c22ffcd222452b6d08b9d127d5d",
+                    "directory": "node_modules/semver",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/typescript/-/typescript-4.9.5.tgz",
+                    "sha256": "6e2faae079c9047aa921e8a307f0cec0da4dc4853e20bb31d18acc678f5bf505",
+                    "directory": "node_modules/typescript",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-css-languageservice/-/vscode-css-languageservice-6.3.10.tgz",
+                    "sha256": "75dfff4a7b2a9b8df08c17d5444a8224a3701e29fc30c2539db12a7a9ffc9448",
+                    "directory": "node_modules/vscode-css-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.17.5.tgz",
+                    "sha256": "d673f9e7f8bbe51351be51c58f32d4dcfa97a670ebb86bc633368394c609cac0",
+                    "directory": "node_modules/vscode-css-languageservice/node_modules/vscode-languageserver-types",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-html-languageservice/-/vscode-html-languageservice-5.6.2.tgz",
+                    "sha256": "a519e4029da8cf4d7d4cf6d882307038635f203c505862a4ef68f18fa194322a",
+                    "directory": "node_modules/vscode-html-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-json-languageservice/-/vscode-json-languageservice-5.7.2.tgz",
+                    "sha256": "18dc41edc48bdcab2da866a5b5f53956ee722b66fffe9d89740d04ba7f505459",
+                    "directory": "node_modules/vscode-json-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-jsonrpc/-/vscode-jsonrpc-9.0.3.tgz",
+                    "sha256": "282d3d574a565ab9bea0af6518eadac91221dfd0cd55cfd308662b816a7920a7",
+                    "directory": "node_modules/vscode-jsonrpc",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver/-/vscode-languageserver-10.1.2.tgz",
+                    "sha256": "991c66235ffb604630599a611bbd888768468f4707a6fb8691a977cf72bb286b",
+                    "directory": "node_modules/vscode-languageserver",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.18.4.tgz",
+                    "sha256": "76ff8f83f7f1bac53e351cd30740ff75610277b65b4043141d359660d88f0dcd",
+                    "directory": "node_modules/vscode-languageserver-protocol",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-textdocument/-/vscode-languageserver-textdocument-1.0.15.tgz",
+                    "sha256": "2a133b20d5c5b1ff6d8627c628807c28d771b8741c8c6fca2aef3dd77cac669c",
+                    "directory": "node_modules/vscode-languageserver-textdocument",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.18.4.tgz",
+                    "sha256": "83c119b73d1895194087e9376d0916161b5550c210e9e892b65a3e04a43ea68e",
+                    "directory": "node_modules/vscode-languageserver-types",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-markdown-languageservice/-/vscode-markdown-languageservice-0.5.0-alpha.13.tgz",
+                    "sha256": "4455a8700113936b88f5249c9960066ccc302b972c3e5254b023dff186a87b64",
+                    "directory": "node_modules/vscode-markdown-languageservice",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-nls/-/vscode-nls-5.2.0.tgz",
+                    "sha256": "441f95396ae52a4eff2f69770219a522ed13dc0ba69deb982ac9456eda9ca779",
+                    "directory": "node_modules/vscode-nls",
+                    "unpackSubdir": "package"
+                  },
+                  {
+                    "url": "https://registry.npmjs.org/vscode-uri/-/vscode-uri-3.2.0.tgz",
+                    "sha256": "12fa4a47728ca404c3a679e351eda6c54030c8ed3dd9bc6762ab0be1bf04014b",
+                    "directory": "node_modules/vscode-uri",
+                    "unpackSubdir": "package"
+                  }
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
       "id": "clangd",
       "name": "clangd",
-      "languages": ["c", "cpp", "objective-c", "objective-cpp"],
+      "languages": [
+        "c",
+        "cpp",
+        "objective-c",
+        "objective-cpp"
+      ],
       "homepage": "https://clangd.llvm.org/",
       "license": "Apache-2.0",
-      "preferredCommand": ["clangd"],
+      "preferredCommand": [
+        "clangd"
+      ],
       "versions": [
         {
-          "version": "21.1.0",
-          "installInstructions": {
-            "download": "Download prebuilt binaries from https://releases.llvm.org/21.1.0/",
-            "packageManagers": {
-              "apt": "apt install clangd-21",
-              "brew": "brew install llvm@21"
+          "version": "23.1.0",
+          "downloads": [
+            {
+              "os": "linux",
+              "arch": "x86_64",
+              "url": "https://github.com/clangd/clangd/releases/download/23.1.0/clangd-linux-23.1.0.zip",
+              "sha256": "e53b1a96196095faedb7642cf64964f7fb9ad4a0c1f00dd2c172a3d9dcbafdfd",
+              "unpackSubdir": "clangd_23.1.0",
+              "command": [
+                "bin/clangd"
+              ]
+            },
+            {
+              "os": "windows",
+              "arch": "x86_64",
+              "url": "https://github.com/clangd/clangd/releases/download/23.1.0/clangd-windows-23.1.0.zip",
+              "sha256": "23412a240756a162e7b98a282f36aa2a23a88db5ce16a0cbc4fef7253768c810",
+              "unpackSubdir": "clangd_23.1.0",
+              "command": [
+                "bin/clangd.exe"
+              ]
+            },
+            {
+              "os": "macos",
+              "arch": "x86_64",
+              "url": "https://github.com/clangd/clangd/releases/download/23.1.0/clangd-mac-23.1.0.zip",
+              "sha256": "1082e6638223b785ca2daf0939f13afcd0bb95c84ee9a4bbaff4745365159253",
+              "unpackSubdir": "clangd_23.1.0",
+              "command": [
+                "bin/clangd"
+              ]
+            },
+            {
+              "os": "macos",
+              "arch": "arm64",
+              "url": "https://github.com/clangd/clangd/releases/download/23.1.0/clangd-mac-23.1.0.zip",
+              "sha256": "1082e6638223b785ca2daf0939f13afcd0bb95c84ee9a4bbaff4745365159253",
+              "unpackSubdir": "clangd_23.1.0",
+              "command": [
+                "bin/clangd"
+              ]
             }
-          }
+          ]
         }
       ]
     }
-
   ]
 }

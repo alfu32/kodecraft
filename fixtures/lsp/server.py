@@ -26,7 +26,7 @@ def read():
             length = int(line.split(b":", 1)[1].strip())
     body = sys.stdin.buffer.read(length)
     value = json.loads(body)
-    with open(trace_path, "a") as trace:
+    with open(trace_path, "a", encoding="utf-8") as trace:
         trace.write(json.dumps(value, ensure_ascii=False) + "\n")
     return value
 

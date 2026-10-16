@@ -82,6 +82,14 @@ macro_rules! nav {
 }
 pub static BINDINGS: &[Binding] = &[
     chord!(
+        Lsp,
+        0,
+        0,
+        false,
+        [Key::Function(4)],
+        "Read, scroll and copy selected server details or installation/start failure"
+    ),
+    chord!(
         Editor,
         CTRL | SHIFT,
         CTRL | SHIFT,

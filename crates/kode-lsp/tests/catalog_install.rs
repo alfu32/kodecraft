@@ -81,19 +81,41 @@ fn tar() -> Vec<u8> {
 #[test]
 fn frozen_catalog_unknown_fields_platform_aliases_and_preference_order_are_preserved() {
     let catalog = Catalog::compiled().unwrap();
-    assert_eq!(catalog.servers.len(), 10);
+    assert_eq!(catalog.servers.len(), 11);
     assert_eq!(
         catalog.for_language("TYPEscript").next().unwrap().id,
         "typescript-language-server"
     );
+    let download = catalog
+        .entry("typescript-language-server")
+        .unwrap()
+        .download(&Platform::detect())
+        .unwrap()
+        .1;
+    assert!(download.sha256.is_some());
     assert_eq!(
-        catalog
-            .entry("typescript-language-server")
+        kode_lsp::package::plan(&download.extra)
             .unwrap()
-            .versions[0]
-            .install_instructions["npm"],
-        "npm install -g typescript-language-server@5.1.3 typescript@5.9.3"
+            .unwrap()
+            .runtime
+            .unwrap()
+            .minimum,
+        "22.22.2"
     );
+    for (language, id) in [
+        ("html", "vscode-langservers-extracted"),
+        ("css", "vscode-css-language-server"),
+        ("json", "vscode-json-language-server"),
+    ] {
+        assert_eq!(catalog.for_language(language).next().unwrap().id, id);
+        assert!(
+            catalog
+                .entry(id)
+                .unwrap()
+                .download(&Platform::detect())
+                .is_some()
+        );
+    }
     for (os, arch, expected) in [
         ("GNU/Linux", "AMD64", ("linux", "x86_64")),
         ("Darwin", "aarch64", ("macos", "arm64")),

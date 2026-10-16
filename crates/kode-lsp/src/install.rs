@@ -160,6 +160,63 @@ impl Drop for InstallLock {
     }
 }
 
+fn fetch_package(
+    fetcher: &dyn PackageFetcher,
+    url: &str,
+    expected: Option<&String>,
+    package: &Path,
+    cancel: &CancellationToken,
+    progress: &mut dyn FnMut(InstallProgress),
+) -> Result<(String, u64)> {
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(package)
+        .map_err(|e| io("create package download", package, e))?;
+    fetcher.fetch(url, &mut file, cancel, &mut |completed, total| {
+        progress(InstallProgress {
+            phase: "Downloading",
+            completed,
+            total,
+        })
+    })?;
+    file.sync_all()
+        .map_err(|e| io("sync package", package, e))?;
+    drop(file);
+    check(cancel)?;
+    let size = fs::metadata(package)
+        .map_err(|e| io("stat package", package, e))?
+        .len();
+    if size > MAX_DOWNLOAD_BYTES {
+        return Err(invalid("package exceeds download limit"));
+    }
+    progress(InstallProgress {
+        phase: "Checking checksum",
+        completed: 0,
+        total: Some(size),
+    });
+    let mut digest = Sha256::new();
+    let mut buffer = [0; 64 * 1024];
+    let mut file = File::open(package).map_err(|e| io("read package checksum", package, e))?;
+    loop {
+        check(cancel)?;
+        let count = file
+            .read(&mut buffer)
+            .map_err(|e| io("read package checksum", package, e))?;
+        if count == 0 {
+            break;
+        }
+        digest.update(&buffer[..count]);
+    }
+    let checksum = format!("{:x}", digest.finalize());
+    if expected.is_some_and(|expected| !expected.eq_ignore_ascii_case(&checksum)) {
+        return Err(invalid(
+            "package SHA-256 checksum mismatch; previous installation retained",
+        ));
+    }
+    Ok((checksum, size))
+}
+
 #[derive(Debug, Clone)]
 pub struct InstallJob {
     pub entry: ServerEntry,
@@ -191,6 +248,11 @@ impl InstallJob {
                 self.entry.name, self.options.platform.os, self.options.platform.arch
             ))
         })?;
+        let plan = crate::package::plan(&download.extra)?;
+        if let Some(requirement) = plan.as_ref().and_then(|plan| plan.runtime.as_ref()) {
+            let program = self.options.runtime_program(requirement)?;
+            crate::runtime::verify(&program, requirement, cancel)?;
+        }
         let _lock = InstallLock::acquire(&self.options.install_root)?;
         let destination = self.options.directory(&self.entry.id)?;
         if destination
@@ -211,57 +273,14 @@ impl InstallJob {
             completed: 0,
             total: None,
         });
-        let mut file = OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(&package)
-            .map_err(|e| io("create package download", &package, e))?;
-        fetcher.fetch(&download.url, &mut file, cancel, &mut |completed, total| {
-            progress(InstallProgress {
-                phase: "Downloading",
-                completed,
-                total,
-            })
-        })?;
-        file.sync_all()
-            .map_err(|e| io("sync package", &package, e))?;
-        drop(file);
-        check(cancel)?;
-        let size = fs::metadata(&package)
-            .map_err(|e| io("stat package", &package, e))?
-            .len();
-        if size > MAX_DOWNLOAD_BYTES {
-            return Err(invalid("package exceeds download limit"));
-        }
-        progress(InstallProgress {
-            phase: "Checking checksum",
-            completed: 0,
-            total: Some(size),
-        });
-        let mut digest = Sha256::new();
-        let mut buffer = [0; 64 * 1024];
-        let mut file =
-            File::open(&package).map_err(|e| io("read package checksum", &package, e))?;
-        loop {
-            check(cancel)?;
-            let count = file
-                .read(&mut buffer)
-                .map_err(|e| io("read package checksum", &package, e))?;
-            if count == 0 {
-                break;
-            }
-            digest.update(&buffer[..count]);
-        }
-        let checksum = format!("{:x}", digest.finalize());
-        if download
-            .sha256
-            .as_ref()
-            .is_some_and(|expected| !expected.eq_ignore_ascii_case(&checksum))
-        {
-            return Err(invalid(
-                "package SHA-256 checksum mismatch; previous installation retained",
-            ));
-        }
+        let (checksum, mut downloaded) = fetch_package(
+            fetcher,
+            &download.url,
+            download.sha256.as_ref(),
+            &package,
+            cancel,
+            &mut progress,
+        )?;
         progress(InstallProgress {
             phase: "Extracting",
             completed: 0,
@@ -271,12 +290,14 @@ impl InstallJob {
             .command
             .clone()
             .or_else(|| self.entry.preferred_command.clone());
+        let mut extracted = archive::Extraction { bytes: 0, files: 0 };
         archive::extract(
             &package,
             &contents,
             download,
             command.as_deref(),
             cancel,
+            &mut extracted,
             &mut |completed| {
                 progress(InstallProgress {
                     phase: "Extracting",
@@ -285,13 +306,92 @@ impl InstallJob {
                 })
             },
         )?;
+        if let Some(plan) = &plan {
+            for (index, dependency) in plan.dependencies.iter().enumerate() {
+                check(cancel)?;
+                progress(InstallProgress {
+                    phase: "Downloading dependencies",
+                    completed: 0,
+                    total: None,
+                });
+                let package = temporary
+                    .path()
+                    .join(format!("dependency-{index}.download"));
+                let (_, size) = fetch_package(
+                    fetcher,
+                    &dependency.url,
+                    Some(&dependency.sha256),
+                    &package,
+                    cancel,
+                    &mut progress,
+                )?;
+                downloaded = downloaded
+                    .checked_add(size)
+                    .ok_or_else(|| invalid("Package download size overflow"))?;
+                if downloaded > MAX_DOWNLOAD_BYTES {
+                    return Err(invalid("Combined package downloads exceed 256 MiB"));
+                }
+                let staging = temporary.path().join(format!("dependency-{index}"));
+                fs::create_dir(&staging)
+                    .map_err(|error| io("stage dependency", &staging, error))?;
+                let mut archive_download = download.clone();
+                archive_download.url = dependency.url.clone();
+                archive_download.command = None;
+                archive::extract(
+                    &package,
+                    &staging,
+                    &archive_download,
+                    None,
+                    cancel,
+                    &mut extracted,
+                    &mut |completed| {
+                        progress(InstallProgress {
+                            phase: "Extracting dependencies",
+                            completed,
+                            total: None,
+                        })
+                    },
+                )?;
+                let source = if let Some(path) = &dependency.unpack_subdir {
+                    staging.join(crate::catalog::relative_path(path)?)
+                } else {
+                    staging
+                };
+                directory(&source)?;
+                let destination =
+                    contents.join(crate::catalog::relative_path(&dependency.directory)?);
+                if destination
+                    .try_exists()
+                    .map_err(|error| io("inspect dependency destination", &destination, error))?
+                {
+                    return Err(invalid("Dependency would overwrite existing package files"));
+                }
+                fs::create_dir_all(destination.parent().expect("dependency below contents"))
+                    .map_err(|error| io("create dependency parent", &destination, error))?;
+                fs::rename(&source, &destination)
+                    .map_err(|error| io("publish staged dependency", &destination, error))?;
+                fs::remove_file(&package)
+                    .map_err(|error| io("remove staged dependency download", &package, error))?;
+            }
+        }
+        let command = if plan
+            .as_ref()
+            .is_some_and(|plan| plan.launcher == Some(crate::package::Launcher::Jdtls))
+        {
+            Some(crate::jdtls::installed_command(
+                &contents,
+                &self.options.platform,
+            )?)
+        } else {
+            command
+        };
         let command = archive::installed_command(
             &contents,
             download.unpack_subdir.as_deref(),
             command,
             &self.options.platform,
         )?;
-        let manifest = InstallManifest {
+        let mut manifest = InstallManifest {
             id: self.entry.id.clone(),
             version: version.version.clone(),
             installed_at: SystemTime::now()
@@ -310,6 +410,17 @@ impl InstallJob {
                 ("archiveSha256".into(), checksum.into()),
             ]),
         };
+        if let Some(plan) = &plan {
+            manifest.extra.insert(
+                crate::package::PLAN_KEY.into(),
+                serde_json::to_value(plan).map_err(|error| invalid(error.to_string()))?,
+            );
+            manifest.extra.insert(
+                crate::package::COMMAND_KEY.into(),
+                serde_json::to_value(&manifest.command)
+                    .map_err(|error| invalid(error.to_string()))?,
+            );
+        }
         // Resolve inside staging before touching the old installation, including
         // interpreter commands and arguments relative to unpackSubdir.
         let mut staged_options = self.options.clone();

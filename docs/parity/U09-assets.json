@@ -1,0 +1,336 @@
+{
+  "status": "verified-downloads",
+  "verifiedOn": "2026-10-16",
+  "assets": [
+    {
+      "name": "node_modules/@vscode/l10n",
+      "url": "https://registry.npmjs.org/@vscode/l10n/-/l10n-0.0.18.tgz",
+      "integrity": "sha512-KYSIHVmslkaCDyw013pphY+d7x1qV8IZupYfeIfzNA+nsaWHbn5uPuQRvdRFsa9zFzGeudPuoGoZ1Op4jrJXIQ==",
+      "sha256": "f1c2dc897488595f6bb42121869f525c6c6a5f7c8dca550754199c3251ed7c5c",
+      "bytes": 4548,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/boolbase",
+      "url": "https://registry.npmjs.org/boolbase/-/boolbase-1.0.0.tgz",
+      "integrity": "sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==",
+      "sha256": "69628ff8092c5ff940ea4a0f29da98d520615bae138755c9e059033606c6caa8",
+      "bytes": 851,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/core-js",
+      "url": "https://registry.npmjs.org/core-js/-/core-js-3.50.0.tgz",
+      "integrity": "sha512-BRWgOLKkFeCgRudR6zrs8p9XJZcE14grzKMMssoYrk6krtuEZ7MTKPIY5RzOnqsEKIR9kst7wNzphttraT+Yqw==",
+      "sha256": "fc99658f513a6ff0292e5680a48c01fc86d709b316dc96cffef4697ff8fe38c5",
+      "bytes": 316257,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/css-select",
+      "url": "https://registry.npmjs.org/css-select/-/css-select-5.2.2.tgz",
+      "integrity": "sha512-TizTzUddG/xYLA3NXodFM0fSbNizXjOKhqiQQwvhlspadZokn1KDy0NZFS0wuEubIYAV5/c1/lAr0TaaFXEXzw==",
+      "sha256": "ab3c2a9c47abc354e4bb539f66746da87c80ed9e9623f4b0940147d0a1b2ae75",
+      "bytes": 39643,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/css-what",
+      "url": "https://registry.npmjs.org/css-what/-/css-what-6.2.2.tgz",
+      "integrity": "sha512-u/O3vwbptzhMs3L1fQE82ZSLHQQfto5gyZzwteVIEyeaY5Fc7R4dapF/BvRoSYFeqfBk4m0V1Vafq5Pjv25wvA==",
+      "sha256": "275ef51d6c04b5f6e2441d73fa3503c5ac525cd82ef4ca55f022eeacaf227ab0",
+      "bytes": 11158,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/dom-serializer",
+      "url": "https://registry.npmjs.org/dom-serializer/-/dom-serializer-2.0.0.tgz",
+      "integrity": "sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==",
+      "sha256": "e34511f144fc6b34ce536bd60fb1ed27dd965f07a7c317407e79dd6be9e8f399",
+      "bytes": 6820,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/domelementtype",
+      "url": "https://registry.npmjs.org/domelementtype/-/domelementtype-2.3.0.tgz",
+      "integrity": "sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==",
+      "sha256": "c67164b4a994eaeaecbd968c2e5e5415407ae6fb4486bbb470594154e25feb45",
+      "bytes": 2909,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/domhandler",
+      "url": "https://registry.npmjs.org/domhandler/-/domhandler-5.0.3.tgz",
+      "integrity": "sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==",
+      "sha256": "f3952abb7e2635d8e942822d68cfb1fdaba61148d17a1a5692bdd163d6ca4784",
+      "bytes": 12587,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/domutils",
+      "url": "https://registry.npmjs.org/domutils/-/domutils-3.2.2.tgz",
+      "integrity": "sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==",
+      "sha256": "272918a13e7e093ddc983666954164e098fb2443f06f476f34bf47005e12c140",
+      "bytes": 23891,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/entities",
+      "url": "https://registry.npmjs.org/entities/-/entities-4.5.0.tgz",
+      "integrity": "sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==",
+      "sha256": "6b0c60f7351a0b65bb1fc8dbb9299f09e7ecf6d89103d0651bf369e6f463a632",
+      "bytes": 77368,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/he",
+      "url": "https://registry.npmjs.org/he/-/he-1.2.0.tgz",
+      "integrity": "sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==",
+      "sha256": "777a7c030c1b6c0bbe8638136dcc5cedbb36b1082f821b06648de5d7d11c1b68",
+      "bytes": 40278,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/jsonc-parser",
+      "url": "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-3.3.1.tgz",
+      "integrity": "sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ==",
+      "sha256": "4a0315b8671e7463bae7af7c142cdf19e9aa7ba39eb36dc2df383b8648e3cbc9",
+      "bytes": 27354,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/node-html-parser",
+      "url": "https://registry.npmjs.org/node-html-parser/-/node-html-parser-6.1.13.tgz",
+      "integrity": "sha512-qIsTMOY4C/dAa5Q5vsobRpOOvPfC4pB61UVW2uSwZNUp0QU/jCekTal1vMmbO0DgdHeLUJpv/ARmDqErVxA3Sg==",
+      "sha256": "333e55a8f4ebdaf60126f796295dca085cd088899282180782dd38a4ea9295b7",
+      "bytes": 34971,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/nth-check",
+      "url": "https://registry.npmjs.org/nth-check/-/nth-check-2.1.1.tgz",
+      "integrity": "sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==",
+      "sha256": "45dc0a2bc34205656c0fbe8374c725c04b71b40e739b74c9fc763480c8063642",
+      "bytes": 8576,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/picomatch",
+      "url": "https://registry.npmjs.org/picomatch/-/picomatch-2.3.2.tgz",
+      "integrity": "sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA==",
+      "sha256": "4c843ba015bec815ac52116162559ab7b4b4efbd3b86f7fcf38f3d770decace6",
+      "bytes": 23492,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/regenerator-runtime",
+      "url": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz",
+      "integrity": "sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==",
+      "sha256": "96a0a849ceb83d2cd717d775dc60ddb7c2384564f76a75d0d1e6849af04c2b8c",
+      "bytes": 8520,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/request-light",
+      "url": "https://registry.npmjs.org/request-light/-/request-light-0.7.0.tgz",
+      "integrity": "sha512-lMbBMrDoxgsyO+yB3sDcrDuX85yYt7sS8BfQd11jtbW/z5ZWgLZRcEGLsLoYw7I0WSUGQBs8CC8ScIxkTX1+6Q==",
+      "sha256": "15d60d0da12c1e9eff0bc8f0f00417e760b672165fe9a77b64639de29285ace5",
+      "bytes": 12422,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/semver",
+      "url": "https://registry.npmjs.org/semver/-/semver-7.8.5.tgz",
+      "integrity": "sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==",
+      "sha256": "d85045d4300d7d57c891336b95df532e73f34c22ffcd222452b6d08b9d127d5d",
+      "bytes": 29399,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/typescript",
+      "url": "https://registry.npmjs.org/typescript/-/typescript-4.9.5.tgz",
+      "integrity": "sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==",
+      "sha256": "6e2faae079c9047aa921e8a307f0cec0da4dc4853e20bb31d18acc678f5bf505",
+      "bytes": 11620433,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-css-languageservice",
+      "url": "https://registry.npmjs.org/vscode-css-languageservice/-/vscode-css-languageservice-6.3.10.tgz",
+      "integrity": "sha512-eq5N9Er3fC4vA9zd9EFhyBG90wtCCuXgRSpAndaOgXMh1Wgep5lBgRIeDgjZBW9pa+332yC9+49cZMW8jcL3MA==",
+      "sha256": "75dfff4a7b2a9b8df08c17d5444a8224a3701e29fc30c2539db12a7a9ffc9448",
+      "bytes": 451792,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-css-languageservice/node_modules/vscode-languageserver-types",
+      "url": "https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.17.5.tgz",
+      "integrity": "sha512-Ld1VelNuX9pdF39h2Hgaeb5hEZM2Z3jUrrMgWQAu82jMtZp7p3vJT3BzToKtZI7NgQssZje5o0zryOrhQvzQAg==",
+      "sha256": "d673f9e7f8bbe51351be51c58f32d4dcfa97a670ebb86bc633368394c609cac0",
+      "bytes": 71382,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-html-languageservice",
+      "url": "https://registry.npmjs.org/vscode-html-languageservice/-/vscode-html-languageservice-5.6.2.tgz",
+      "integrity": "sha512-ulCrSnFnfQ16YzvwnYUgEbUEl/ZG7u2eV27YhvLObSHKkb8fw1Z9cgsnUwjTEeDIdJDoTDTDpxuhQwoenoLNMg==",
+      "sha256": "a519e4029da8cf4d7d4cf6d882307038635f203c505862a4ef68f18fa194322a",
+      "bytes": 279402,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-json-languageservice",
+      "url": "https://registry.npmjs.org/vscode-json-languageservice/-/vscode-json-languageservice-5.7.2.tgz",
+      "integrity": "sha512-WtKRDtJfFEmLrgtu+ODexOHm/6/krRF0k6t+uvkKIKW1Jh9ZIyxZQwJJwB3qhrEgvAxa37zbUg+vn+UyUK/U2w==",
+      "sha256": "18dc41edc48bdcab2da866a5b5f53956ee722b66fffe9d89740d04ba7f505459",
+      "bytes": 84771,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-jsonrpc",
+      "url": "https://registry.npmjs.org/vscode-jsonrpc/-/vscode-jsonrpc-9.0.3.tgz",
+      "integrity": "sha512-qETYf9PCl1lVfwR+oBmMfc4vP2nqLNA35ABxorw3j06+xlKRgDVxbLgKm4Y/xPL0YWdeDjLoI4ImICIT3nB0zQ==",
+      "sha256": "282d3d574a565ab9bea0af6518eadac91221dfd0cd55cfd308662b816a7920a7",
+      "bytes": 37477,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-langservers-extracted",
+      "url": "https://registry.npmjs.org/vscode-langservers-extracted/-/vscode-langservers-extracted-4.10.0.tgz",
+      "integrity": "sha512-EFf9uQI4dAKbzMQFjDvVm1xJq1DXAQvBEuEfPGrK/xzfsL5xWTfIuRr90NgfmqwO+IEt6vLZm9EOj6R66xIifg==",
+      "sha256": "d6e2d090d09c4b91daa74e9e7462a3d3f244efb96aa5111004cfffa49d6dc9ef",
+      "bytes": 135843,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-languageserver",
+      "url": "https://registry.npmjs.org/vscode-languageserver/-/vscode-languageserver-10.1.2.tgz",
+      "integrity": "sha512-pXPWde3RytdeBVEs6PulOOT5OpeXC5GkWRpcT11f5rNn41jviQsAYPyAqJ/0oVGETQLKPJtYbHNiMPlfLb0NTQ==",
+      "sha256": "991c66235ffb604630599a611bbd888768468f4707a6fb8691a977cf72bb286b",
+      "bytes": 34520,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-languageserver-protocol",
+      "url": "https://registry.npmjs.org/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.18.4.tgz",
+      "integrity": "sha512-CCXbyr99dafRJzJH/0Ryk7ly5T8XPmSR0//OuF2w4m+9JiOin7zcAT5iET8GRE7Z9taFBejb3GbM0a0mbjdbrg==",
+      "sha256": "76ff8f83f7f1bac53e351cd30740ff75610277b65b4043141d359660d88f0dcd",
+      "bytes": 64345,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-languageserver-textdocument",
+      "url": "https://registry.npmjs.org/vscode-languageserver-textdocument/-/vscode-languageserver-textdocument-1.0.15.tgz",
+      "integrity": "sha512-Gsfr9S8LU3S6885cS+NaleasJ0n3V5y/SOTqHCifQiXWFw3G9w9/YItDfwHrlCz+dSZWWZ8ilYVMcJe7Sz7Sxw==",
+      "sha256": "2a133b20d5c5b1ff6d8627c628807c28d771b8741c8c6fca2aef3dd77cac669c",
+      "bytes": 8372,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-languageserver-types",
+      "url": "https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.18.4.tgz",
+      "integrity": "sha512-nQsacoiijvl0fRf2q28uFDrAVwRhdCa3QveiF7/CX0r18mLR5FU/1WskSsCKOjmEbtteKUnY8x8Yzxop+k0zwg==",
+      "sha256": "83c119b73d1895194087e9376d0916161b5550c210e9e892b65a3e04a43ea68e",
+      "bytes": 79419,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-markdown-languageservice",
+      "url": "https://registry.npmjs.org/vscode-markdown-languageservice/-/vscode-markdown-languageservice-0.5.0-alpha.13.tgz",
+      "integrity": "sha512-uxEdsSXdh5Bi/q1kymcqv0JziAN4gi02YPOXhqlEahsgiVGd/5cWGSJIL6hIaRtql3wBgRDNqI7CrOsODh0Yqg==",
+      "sha256": "4455a8700113936b88f5249c9960066ccc302b972c3e5254b023dff186a87b64",
+      "bytes": 58721,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-nls",
+      "url": "https://registry.npmjs.org/vscode-nls/-/vscode-nls-5.2.0.tgz",
+      "integrity": "sha512-RAaHx7B14ZU04EU31pT+rKz2/zSl7xMsfIZuo8pd+KZO6PXtQmpevpq3vxvWNcrGbdmhM/rr5Uw5Mz+NBfhVng==",
+      "sha256": "441f95396ae52a4eff2f69770219a522ed13dc0ba69deb982ac9456eda9ca779",
+      "bytes": 20283,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "node_modules/vscode-uri",
+      "url": "https://registry.npmjs.org/vscode-uri/-/vscode-uri-3.2.0.tgz",
+      "integrity": "sha512-m2gXo3bn0G1kT9InzMf07fTbqMbGtyckj3bH5ktLO+1Ssv+yiATZ4dhwaQv9UZWxJh6E9IFGnQyjgWVDWVBDrg==",
+      "sha256": "12fa4a47728ca404c3a679e351eda6c54030c8ed3dd9bc6762ab0be1bf04014b",
+      "bytes": 59281,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "typescript-language-server",
+      "url": "https://registry.npmjs.org/typescript-language-server/-/typescript-language-server-6.0.2.tgz",
+      "integrity": "sha512-Ph7Ql+xkUJvMamnkh1h+aKP6HxLR7lrWIYkPn9/LZBkJdJZgtIj7OoVhkDYtQ7zFPTPmqZHOVXaUKGyz9M2q1Q==",
+      "sha256": "d225b223a8a4764ecbd94bdba85d2ef185eaa7b9842a1a31c38c2bbe7f2fe9b9",
+      "bytes": 517038,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "typescript-6",
+      "url": "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz",
+      "integrity": "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==",
+      "sha256": "33cd0ee1beaa8c9e9d15a9da836c62ddea4c34a42d7c2d349dbc80d94165d22a",
+      "bytes": 4515854,
+      "source": "npm registry integrity metadata"
+    },
+    {
+      "name": "jdtls",
+      "url": "https://download.eclipse.org/jdtls/milestones/1.62.0/jdt-language-server-1.62.0-202610131109.tar.gz",
+      "integrity": "sha256-9Yfa/YQQYzwsK/AF6FOiu7A83e6Ikz1Jv+bZyxzwk0I=",
+      "sha256": "f587dafd8410633c2c2bf005e853a2bbb03cddee88933d49bfe6d9cb1cf09342",
+      "bytes": 51488555,
+      "source": "official Eclipse checksum file"
+    },
+    {
+      "name": "clangd",
+      "url": "https://github.com/clangd/clangd/releases/download/23.1.0/clangd-linux-23.1.0.zip",
+      "integrity": "sha256-5Tsalhlglfrtt2Qs9klk9/ua1KDB8A3SwXKj2dy6/f0=",
+      "sha256": "e53b1a96196095faedb7642cf64964f7fb9ad4a0c1f00dd2c172a3d9dcbafdfd",
+      "bytes": 117949007,
+      "source": "official clangd GitHub release asset digest"
+    },
+    {
+      "name": "clangd-mac-23.1.0.zip",
+      "url": "https://github.com/clangd/clangd/releases/download/23.1.0/clangd-mac-23.1.0.zip",
+      "sha256": "1082e6638223b785ca2daf0939f13afcd0bb95c84ee9a4bbaff4745365159253",
+      "bytes": 100060151,
+      "source": "official clangd GitHub release asset digest"
+    },
+    {
+      "name": "clangd-windows-23.1.0.zip",
+      "url": "https://github.com/clangd/clangd/releases/download/23.1.0/clangd-windows-23.1.0.zip",
+      "sha256": "23412a240756a162e7b98a282f36aa2a23a88db5ce16a0cbc4fef7253768c810",
+      "bytes": 29690805,
+      "source": "official clangd GitHub release asset digest"
+    }
+  ],
+  "jdtRuntimeRequirement": {
+    "archiveSha256": "f587dafd8410633c2c2bf005e853a2bbb03cddee88933d49bfe6d9cb1cf09342",
+    "bundle": "plugins/org.eclipse.core.filesystem_1.12.0.v20260927-0940.jar",
+    "manifestRequirement": "Bundle-RequiredExecutionEnvironment: JavaSE-25",
+    "requiredMajor": 25,
+    "note": "Actual pinned bundle requires Java 25; current upstream README and Python wrapper still mention Java 21."
+  },
+  "clangdArchitectures": {
+    "clangd-linux-23.1.0.zip": "ELF x86_64; actual initialize/shutdown passed",
+    "clangd-windows-23.1.0.zip": "PE AMD64; downloaded, digest/layout/header verified; native execution pending",
+    "clangd-mac-23.1.0.zip": "Universal Mach-O x86_64 + arm64; downloaded, digest/layout/header verified; native execution pending"
+  },
+  "clangdLinuxLibraries": {
+    "maxRequiredGLIBC": "2.18",
+    "needed": [
+      "libpthread.so.0",
+      "librt.so.1",
+      "libdl.so.2",
+      "libm.so.6",
+      "libc.so.6",
+      "ld-linux-x86-64.so.2"
+    ]
+  },
+  "pending": [
+    "Linux arm64 clangd installer artifact/adapter",
+    "Windows arm64 clangd installer artifact/adapter",
+    "Native Windows and macOS install/start/shutdown qualification"
+  ]
+}

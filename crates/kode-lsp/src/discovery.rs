@@ -62,14 +62,18 @@ impl DiscoveryOptions {
             .or_else(|| paths.rust_home.as_ref().map(|root| root.join("lsp")))
             .or_else(|| paths.legacy_home.as_ref().map(|root| root.join("lsp")))
             .unwrap_or_else(|| paths.config_dir.join("lsp"));
+        let mut search_path = std::env::var_os("PATH").map_or(vec![], |path| {
+            std::env::split_paths(&path)
+                .filter(|path| !path.as_os_str().is_empty())
+                .collect::<Vec<_>>()
+        });
+        if let Some(java_home) = std::env::var_os("JAVA_HOME") {
+            search_path.insert(0, PathBuf::from(java_home).join("bin"));
+        }
         Self {
             platform: Platform::detect(),
             install_root,
-            search_path: std::env::var_os("PATH").map_or(vec![], |path| {
-                std::env::split_paths(&path)
-                    .filter(|path| !path.as_os_str().is_empty())
-                    .collect()
-            }),
+            search_path,
             configured_commands: BTreeMap::new(),
         }
     }
@@ -129,6 +133,66 @@ impl DiscoveryOptions {
             }
         }
         true
+    }
+    /// Resolve the external runtime without reading or creating server configuration.
+    pub fn runtime_program(
+        &self,
+        requirement: &crate::package::RuntimeRequirement,
+    ) -> Result<PathBuf> {
+        let name = requirement.kind.program();
+        for directory in &self.search_path {
+            let path = directory.join(if self.platform.os == "windows" {
+                format!("{name}.exe")
+            } else {
+                name.into()
+            });
+            if self.executable(&path) {
+                return Ok(path);
+            }
+        }
+        Err(invalid(format!(
+            "{} {} or newer is required; {} was not found on PATH. Install the runtime or configure a local server executable.",
+            requirement.kind.label(),
+            requirement.minimum,
+            name
+        )))
+    }
+    /// Start/restart preparation runs on a worker. Explicit user commands retain precedence.
+    pub fn resolve_for_launch(
+        &self,
+        entry: &ServerEntry,
+        manifest: Option<&InstallManifest>,
+        workspace: &Path,
+        cancel: &kode_platform::jobs::CancellationToken,
+    ) -> Result<ResolvedCommand> {
+        let command = self.resolve_command(entry, manifest)?;
+        if !self.configured_commands.contains_key(&entry.id)
+            && let Some(manifest) = manifest
+            && manifest
+                .extra
+                .get(crate::package::COMMAND_KEY)
+                .is_none_or(|generated| generated == &serde_json::json!(manifest.command))
+            && let Some(plan) = crate::package::plan(&manifest.extra)?
+        {
+            if let Some(requirement) = plan.runtime {
+                crate::runtime::verify(Path::new(&command.args[0]), &requirement, cancel)?;
+            }
+            if plan.launcher == Some(crate::package::Launcher::Jdtls) {
+                return crate::jdtls::workspace_command(
+                    command,
+                    &self.install_root,
+                    &entry.id,
+                    workspace,
+                    manifest
+                        .extra
+                        .get("archiveSha256")
+                        .and_then(serde_json::Value::as_str)
+                        .unwrap_or(&manifest.version),
+                    cancel,
+                );
+            }
+        }
+        Ok(command)
     }
     pub fn resolve_command(
         &self,

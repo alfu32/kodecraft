@@ -10,7 +10,7 @@ use lsp_types::{
 fn doc(text: &str) -> Document {
     Document::new(
         DocumentId::fresh().unwrap(),
-        DocumentOrigin::File("/tmp/synthetic source 😀.kt".into()),
+        DocumentOrigin::File(std::env::temp_dir().join("synthetic source 😀.kt")),
         Some("kotlin".into()),
         text,
     )
@@ -77,12 +77,10 @@ fn negotiated_encodings_unicode_tabs_crlf_and_bare_cr_use_protocol_lines_without
     assert_eq!(mapper.byte(Position::new(0, 3)).unwrap(), ByteOffset(2));
     let mapper = PositionMapper::new(snapshot.clone(), PositionEncoding::Utf8).unwrap();
     assert_eq!(mapper.byte(Position::new(0, 3)).unwrap(), ByteOffset(2));
-    let uri = file_uri(std::path::Path::new("/tmp/a b#😀.kt")).unwrap();
+    let path = std::env::temp_dir().join("a b#😀.kt");
+    let uri = file_uri(&path).unwrap();
     assert!(uri.as_str().contains("%20") && uri.as_str().contains("%23"));
-    assert_eq!(
-        uri_path(&uri).unwrap(),
-        std::path::Path::new("/tmp/a b#😀.kt")
-    );
+    assert_eq!(uri_path(&uri).unwrap(), path);
     assert_eq!(snapshot.text().as_ref(), "a\t😀é\r\nz\rlast");
 }
 #[test]
@@ -90,7 +88,7 @@ fn document_open_incremental_save_close_order_and_revision_identity_are_explicit
     let mut document = doc("a\t😀é\r\nz\rlast");
     let mut tracker = DocumentTracker::default();
     let mode = mode(TextDocumentSyncKind::INCREMENTAL);
-    let uri = file_uri(std::path::Path::new("/tmp/synthetic source 😀.kt")).unwrap();
+    let uri = file_uri(&std::env::temp_dir().join("synthetic source 😀.kt")).unwrap();
     let old = document.snapshot();
     let open = tracker
         .synchronize(old.clone(), mode, PositionEncoding::Utf16)

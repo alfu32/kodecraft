@@ -488,6 +488,20 @@ rolls back failed replacement; uninstall removes only the selected server direct
 Root locks serialize operations. A crash-retained lock/stage/previous directory is
 preserved for inspection, not silently removed.
 
+U09 adds the versioned `kodeRsPackage` plan for checksum-pinned dependency archives,
+external Node/Java version requirements and the JDT launcher. Known plans validate
+strictly; other catalog fields remain lossless. Dependencies share the primary
+archive's combined download/extraction/entry limits, never replace existing staged
+files, and publish in the same transaction. No package manager or lifecycle script
+runs. Runtime probes execute on the existing worker/runtime through managed
+processes, with cancellation and a five-second deadline, before creating an install
+root and again before launch. `JAVA_HOME/bin` precedes PATH; explicitly configured
+server commands bypass package launch preparation. Editing a generated manifest's
+command also overrides its retained recipe; an installer command snapshot identifies
+that change. JDT invokes Java directly and
+copies its configuration to a bounded, project-specific cache with separate data,
+leaving installed templates unchanged.
+
 LSP settings actions are acknowledged F03 jobs. Install/removal/lifecycle work is
 critical; its own cancel token aborts preparation, but a started publication finishes
 or rolls back before acknowledgement/shutdown. `ServerLifecycle` delegates
@@ -495,6 +509,13 @@ start/stop/restart and running state to P02's process registry; settings never f
 running flags. A missing process service is an explicit error. Workspace changes
 drain jobs and stop registered services; old owner/request/workspace results cannot
 populate new settings. See `docs/parity/P01.md` for evidence and limits.
+
+Settings retain a complete operation error with its server/action/request identity,
+even when status refresh succeeds after the failed action. F4 Details opens an owned
+snapshot through the wrapped, scrollable diagnostic dialog, and Ctrl+C copies the
+entire text. Escape restores the previous focus. A new action does not relabel an
+earlier failure; details remain available while another operation runs. See
+`docs/migration/U09-INTEGRATION.md` for current platform qualification and gaps.
 
 P02's `LspService` owns at most 16 ordered server clients per workspace. Discovery
 does not auto-start them. Command arrays launch directly through F03's managed

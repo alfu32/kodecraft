@@ -205,6 +205,7 @@ impl Catalog {
                     return Err(invalid("invalid server version"));
                 }
                 for download in &version.downloads {
+                    crate::package::plan(&download.extra)?;
                     let url =
                         reqwest::Url::parse(&download.url).map_err(|e| invalid(e.to_string()))?;
                     if !matches!(url.scheme(), "http" | "https")

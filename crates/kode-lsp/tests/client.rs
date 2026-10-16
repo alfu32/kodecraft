@@ -18,6 +18,9 @@ use std::{
     sync::Arc,
     time::{Duration, Instant},
 };
+#[path = "support/process.rs"]
+mod process;
+mod support;
 struct Fixture {
     directory: tempfile::TempDir,
     spec: ProcessSpec,
@@ -26,7 +29,7 @@ struct Fixture {
 impl Fixture {
     fn new(mode: &str) -> Self {
         let directory = tempfile::tempdir().unwrap();
-        let mut spec = ProcessSpec::new("python3");
+        let mut spec = ProcessSpec::new(support::python());
         spec.args = vec![
             Path::new(env!("CARGO_MANIFEST_DIR"))
                 .join("../../fixtures/lsp/server.py")
@@ -74,13 +77,7 @@ async fn until(predicate: impl Fn() -> bool) {
     }
 }
 fn assert_reaped(pid: u32) {
-    #[cfg(target_os = "linux")]
-    assert!(
-        !Path::new("/proc").join(pid.to_string()).exists(),
-        "child {pid} was not reaped"
-    );
-    #[cfg(not(target_os = "linux"))]
-    let _ = pid;
+    assert!(!process::running(pid), "child {pid} was not reaped");
 }
 #[tokio::test]
 async fn real_child_initializes_server_requests_fragments_document_order_typed_queries_and_graceful_exit()
@@ -413,15 +410,13 @@ async fn blocked_pipe_dropped_start_future_and_dropped_client_cannot_leave_a_ser
         .unwrap()
         .parse()
         .unwrap();
-    #[cfg(target_os = "linux")]
-    until(|| !Path::new("/proc").join(pid.to_string()).exists()).await;
+    until(|| !process::running(pid)).await;
     assert_reaped(pid);
     let fixture = Fixture::new("normal");
     let client = fixture.start().await.unwrap();
     let pid = client.process_id();
     drop(client);
-    #[cfg(target_os = "linux")]
-    until(|| !Path::new("/proc").join(pid.to_string()).exists()).await;
+    until(|| !process::running(pid)).await;
     assert_reaped(pid);
 }
 

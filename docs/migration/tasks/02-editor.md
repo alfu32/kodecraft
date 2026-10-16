@@ -249,6 +249,12 @@ RestEditorView and RestKeyValueDialog integration sites.
 3. Run PTY/manual terminal matrix, record performance on the fixture corpus, and
    close every UX row with evidence or a named blocking defect.
 
+**Open qualification defect (U09 terminal replay):** selecting Settings before the
+initial file load completes can lose focus when `install_main` installs the editor.
+Cover delayed main/image/hex opens against later panel/modal focus changes and
+retain the user's newer focus choice. U09's install replay waits for the initial
+file to render; it does not qualify this startup race.
+
 **Accept:** all UX-001–110 covered; no implemented Kotlin behavior missing and no
    silent UX substitution. Rendering/typing remains responsive while Git, SQL,
    REST and indexing jobs run. E13 is a release blocker, not optional polish.

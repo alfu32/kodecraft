@@ -41,6 +41,7 @@ struct NativeLspLifecycle {
     service: Arc<kode_lsp::service::LspService>,
     config: LspConfiguration,
     runtime: tokio::runtime::Handle,
+    root: PathBuf,
 }
 impl ServerLifecycle for NativeLspLifecycle {
     fn running(&self, id: &str) -> bool {
@@ -65,10 +66,12 @@ impl ServerLifecycle for NativeLspLifecycle {
             .cloned()
             .ok_or_else(|| DomainError::Unsupported(format!("unknown language server: {id}")))?;
         let manifest = self.config.discovery.read_manifest(id)?;
-        let command = self
-            .config
-            .discovery
-            .resolve_command(&entry, manifest.as_ref())?;
+        let command = self.config.discovery.resolve_for_launch(
+            &entry,
+            manifest.as_ref(),
+            &self.root,
+            cancel,
+        )?;
         if action == LifecycleAction::Restart {
             self.runtime
                 .block_on(self.service.restart(entry, command, cancel))?;
@@ -165,6 +168,7 @@ impl AppRuntime {
             service: service.clone(),
             config: runtime.config.clone(),
             runtime: handle,
+            root: self.state.project.root.clone(),
         }));
         runtime.service = Some(service);
         runtime.revision = 0;
@@ -303,6 +307,9 @@ impl AppRuntime {
         )
     }
     pub(super) fn lsp_work(&mut self, action: SettingsAction) -> Result<()> {
+        if let SettingsAction::Details { title, text } = action {
+            return self.state.show_diagnostic(title, text);
+        }
         let Some(job) = self
             .state
             .lsp_settings
@@ -356,6 +363,9 @@ impl AppRuntime {
                 };
                 let outcome: Result<String> = (|| {
                     Ok(match job.action {
+                        SettingsAction::Details { .. } => {
+                            unreachable!("Details are handled on the application thread")
+                        }
                         SettingsAction::Refresh => "Catalog refreshed".into(),
                         SettingsAction::Install(ref id) => {
                             if lifecycle
@@ -411,7 +421,13 @@ impl AppRuntime {
                         }
                     })
                 })();
-                let message = outcome.unwrap_or_else(|error| error.to_string());
+                let (message, operation_error) = match outcome {
+                    Ok(message) => (message, None),
+                    Err(error) => {
+                        let message = error.to_string();
+                        (message.clone(), Some(message))
+                    }
+                };
                 let mut statuses = config.discovery.statuses(&catalog, |id| {
                     lifecycle
                         .as_ref()
@@ -429,6 +445,7 @@ impl AppRuntime {
                     catalog_path,
                     install_root: config.discovery.install_root,
                     message,
+                    operation_error,
                 })))
             }),
         )

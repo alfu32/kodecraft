@@ -27,6 +27,7 @@ fn report(root: &std::path::Path) -> SettingsReport {
         catalog_path: None,
         install_root: root.into(),
         message: "Catalog refreshed".into(),
+        operation_error: None,
     }
 }
 fn install_report(panel: &mut LspSettings, report: SettingsReport) {
@@ -51,7 +52,7 @@ fn settings_keyboard_mouse_selection_and_worker_acknowledgement_keep_installatio
     let mut buffer = Buffer::empty(Rect::new(0, 0, 100, 50));
     panel.render(area, &mut buffer, &Theme::compiled(), true);
     panel.dispatch(&key(Key::Up), &mut focus);
-    assert_eq!(panel.selected, 9);
+    assert_eq!(panel.selected, panel.statuses.len() - 1);
     assert!(panel.scroll > 0);
     panel.dispatch(&key(Key::Down), &mut focus);
     assert_eq!(panel.selected, 0);
@@ -137,4 +138,64 @@ fn settings_refresh_preserves_selected_server_identity_and_tiny_surfaces_do_not_
         assert!(!panel.dispatch(&key(Key::Enter), &mut FocusState::default()));
         assert!(panel.take_work().is_empty());
     }
+}
+
+#[test]
+fn failure_details_keep_full_text_and_operation_identity_and_remain_available_while_busy() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().join("not-created");
+    let mut panel = LspSettings::new().unwrap();
+    install_report(&mut panel, report(&root));
+    let source = panel.statuses[0].entry.id.clone();
+    let job = panel
+        .begin(
+            WorkspaceGeneration(1),
+            SettingsAction::Install(source.clone()),
+        )
+        .unwrap()
+        .unwrap();
+    let message = format!(
+        "download failed\n{}\nACTIONABLE-END",
+        "path segment ".repeat(1500)
+    );
+    panel.complete(job.tag, Err(DomainError::Unsupported(message.clone())));
+    let mut focus = FocusState {
+        focused: Some(panel.id),
+        ..Default::default()
+    };
+    panel.dispatch(&key(Key::Function(4)), &mut focus);
+    let snapshot = panel.take_work().pop().unwrap();
+    let SettingsAction::Details { title, text } = snapshot else {
+        panic!("details action expected");
+    };
+    assert!(title.contains(&source) && title.contains(&job.tag.request.0.to_string()));
+    assert!(text.ends_with("ACTIONABLE-END") && text.len() > 16000);
+    let busy = panel
+        .begin(WorkspaceGeneration(1), SettingsAction::Refresh)
+        .unwrap()
+        .unwrap();
+    for (width, height) in [(48, 25), (19, 8), (1, 1)] {
+        let area = Rect::new(12, 6, width, height);
+        let mut buffer = Buffer::empty(Rect::new(0, 0, 90, 50));
+        panel.render(area, &mut buffer, &Theme::compiled(), true);
+        panel.dispatch(
+            &InputEvent::Pointer(PointerInput {
+                x: area.right() - 1,
+                y: area.y + area.height.saturating_sub(1).min(3),
+                action: PointerAction::Down(MouseButton::Left),
+                modifiers: Modifiers::default(),
+            }),
+            &mut focus,
+        );
+        assert!(
+            matches!(panel.take_work().pop(),Some(SettingsAction::Details {text,..}) if text.ends_with("ACTIONABLE-END"))
+        );
+        assert_eq!(panel.busy, Some(busy.tag));
+    }
+    panel.complete(busy.tag, Ok(report(&root)));
+    assert!(
+        text.ends_with("ACTIONABLE-END"),
+        "the captured snapshot remains independent of new results"
+    );
+    assert!(!root.exists());
 }

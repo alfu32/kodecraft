@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "binarySha256": "3a89899a8256e2552fb084dc56eae3ea93ec893106a7162a9027575ae1349056",
+  "passed": 4,
+  "cases": [
+    {
+      "case": "http-failure-details-wrap-scroll-full-copy-to-file",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "old-node-prerequisite-before-download",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "http-failure-details-wrap-scroll-full-copy-to-file",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "old-node-prerequisite-before-download",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ]
+}

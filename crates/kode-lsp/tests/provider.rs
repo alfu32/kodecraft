@@ -27,6 +27,7 @@ use std::{
     },
     time::Duration,
 };
+mod support;
 struct Fallback(AtomicUsize);
 impl IntelligenceProvider for Fallback {
     fn definitions(&self, _: &IntelligenceRequest) -> Result<Vec<NavigationTarget>> {
@@ -90,7 +91,7 @@ impl Fixture {
         .unwrap();
         let command = ResolvedCommand {
             args: vec![
-                "python3".into(),
+                support::python(),
                 script.display().to_string(),
                 mode.into(),
                 directory.path().join("trace.jsonl").display().to_string(),

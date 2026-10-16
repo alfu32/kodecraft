@@ -53,6 +53,9 @@ preserve unrelated files. Discover the actual OS, CPU, shell and available build
 installer tools when this stage begins. Record which CPU/platform the machine
 actually qualifies; CI or another matching host must qualify the other CPU.
 
-No connection, remote modification, installer run, remote CI job or new platform
-success is claimed by this planning document. The current Uxx implementation
-continues first, as requested.
+U09 has connected to this host and confirmed Windows x86_64. Its isolated language
+server qualification project is
+`C:/Users/alfu64/Development/kode-rs-u09-20261016-01`; an isolated stable GNU Rust
+toolchain is installed there without changing the user's PATH. This does not
+qualify Z03's MSVC application artifacts or another CPU. Z03 packaging, installer
+runs and remote release CI remain pending until the Uxx implementation finishes.

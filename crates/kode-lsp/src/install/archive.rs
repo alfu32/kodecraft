@@ -84,12 +84,17 @@ impl Extract<'_> {
         Ok(())
     }
 }
+pub(super) struct Extraction {
+    pub bytes: u64,
+    pub files: usize,
+}
 pub(super) fn extract(
     package: &Path,
     root: &Path,
     download: &ServerDownload,
     command: Option<&[String]>,
     cancel: &CancellationToken,
+    budget: &mut Extraction,
     progress: &mut dyn FnMut(u64),
 ) -> Result<()> {
     let url = reqwest::Url::parse(&download.url).map_err(|e| invalid(e.to_string()))?;
@@ -102,8 +107,8 @@ pub(super) fn extract(
     let mut extract = Extract {
         root,
         cancel,
-        bytes: 0,
-        files: 0,
+        bytes: budget.bytes,
+        files: budget.files,
         progress,
     };
     if lower.ends_with(".zip") {
@@ -229,6 +234,8 @@ pub(super) fn extract(
         let mut file = File::open(package).map_err(|e| io("open raw package", package, e))?;
         extract.entry(name, false, None, None, &mut file)?;
     }
+    budget.bytes = extract.bytes;
+    budget.files = extract.files;
     Ok(())
 }
 fn executable(path: &Path) -> Result<()> {
