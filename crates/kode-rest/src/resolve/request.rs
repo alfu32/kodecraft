@@ -21,10 +21,17 @@ pub(super) struct Context<'a> {
     pub variables: &'a VariableResolver,
     pub unresolved: IndexSet<String>,
     pub cycles: IndexSet<String>,
+    resolved_bytes: usize,
 }
 impl Context<'_> {
     pub fn value(&mut self, value: &str) -> Result<String> {
         let result = self.variables.resolve(value)?;
+        if result.value.len() > MAX_RESOLVED_BYTES.saturating_sub(self.resolved_bytes) {
+            return Err(invalid(
+                "Expanded request values exceed the 64 MiB planning limit",
+            ));
+        }
+        self.resolved_bytes += result.value.len();
         self.unresolved.extend(result.unresolved);
         self.cycles.extend(result.cycles);
         Ok(result.value)
@@ -170,6 +177,7 @@ impl<'a> RequestResolver<'a> {
             variables: &self.variables,
             unresolved: IndexSet::new(),
             cycles: IndexSet::new(),
+            resolved_bytes: 0,
         };
         let method = primitive(request.get("method"))
             .filter(|method| !method.trim().is_empty())
@@ -379,7 +387,7 @@ fn resolve_url(request: &Value, context: &mut Context<'_>) -> Result<UrlPlan> {
             entries.sort_by_key(|(key, _)| std::cmp::Reverse(key.len()));
             for (key, entry) in entries {
                 let value = context.value(&primitive(entry.get("value")).unwrap_or_default())?;
-                path = path_variable(&path, &key, &value);
+                path = path_variable(&path, &key, &value)?;
             }
             resolved.replace_range(path_start..end, &path);
         }
@@ -424,39 +432,48 @@ fn structured_url(url: &Value) -> String {
         .map_or_else(String::new, |port| format!(":{port}"));
     format!("{protocol}://{host}{port}/{}", path.trim_start_matches('/'))
 }
-fn path_variable(path: &str, key: &str, value: &str) -> String {
+fn path_variable(path: &str, key: &str, value: &str) -> Result<String> {
     if key.is_empty() {
-        return path.into();
+        return Ok(path.into());
     }
     let token = format!(":{key}");
-    let encoded: String = value
-        .as_bytes()
-        .iter()
-        .map(|byte| {
-            if byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.' | b'_' | b'~') {
-                (*byte as char).to_string()
-            } else {
-                format!("%{byte:02X}")
-            }
-        })
-        .collect();
+    let mut encoded = String::with_capacity(value.len());
+    const HEX: &[u8; 16] = b"0123456789ABCDEF";
+    for &byte in value.as_bytes() {
+        if byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.' | b'_' | b'~') {
+            encoded.push(char::from(byte));
+        } else {
+            encoded.push('%');
+            encoded.push(char::from(HEX[(byte >> 4) as usize]));
+            encoded.push(char::from(HEX[(byte & 15) as usize]));
+        }
+    }
     let mut out = String::new();
+    fn append(out: &mut String, text: &str) -> Result<()> {
+        if text.len() > MAX_RESOLVED_BYTES.saturating_sub(out.len()) {
+            return Err(invalid(
+                "Expanded URL path exceeds the 64 MiB planning limit",
+            ));
+        }
+        out.push_str(text);
+        Ok(())
+    }
     let mut at = 0;
     while let Some(offset) = path[at..].find(&token) {
         let start = at + offset;
         let end = start + token.len();
-        out.push_str(&path[at..start]);
+        append(&mut out, &path[at..start])?;
         if path[end..]
             .chars()
             .next()
             .is_some_and(|ch| ch.is_alphanumeric() || matches!(ch, '_' | '-'))
         {
-            out.push_str(&token);
+            append(&mut out, &token)?;
         } else {
-            out.push_str(&encoded);
+            append(&mut out, &encoded)?;
         }
         at = end;
     }
-    out.push_str(&path[at..]);
-    out
+    append(&mut out, &path[at..])?;
+    Ok(out)
 }

@@ -15,7 +15,9 @@ use std::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ExecutionKey {
     pub tag: JobTag,
-    /// Persisted collection item's ID, captured before any edits or tree moves.
+    /// Stable workspace item identity, captured before any edits or tree moves.
+    /// Imported documents may omit IDs or contain duplicates; the UI can assign
+    /// runtime identities without modifying the lossless collection document.
     pub item_id: String,
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -28,6 +28,25 @@ fn header<'a>(request: &'a ResolvedRequest, name: &str) -> Option<&'a str> {
         .map(|header| header.value.as_str())
 }
 #[test]
+fn repeated_large_variables_and_path_parameters_fail_with_an_aggregate_planning_limit() {
+    let variable = "x".repeat(1024 * 1024);
+    let mut document = collection(
+        json!({"url":"https://example.test/","body":{"mode":"formdata","formdata":(0..70).map(|index|json!({"key":format!("field-{index}"),"value":"{{large}}"})).collect::<Vec<_>>()}}),
+    );
+    document["variable"] = json!([{"key":"large","value":variable}]);
+    let error = RequestResolver::new(&document, NodePath(vec![0]), Path::new("."), None)
+        .unwrap()
+        .plan()
+        .unwrap_err();
+    assert!(error.to_string().contains("64 MiB planning limit"));
+    document["item"][0]["request"] = json!({"url":{"raw":format!("https://example.test/{}",":id/".repeat(70)),"variable":[{"key":"id","value":"{{large}}"}]}});
+    let error = RequestResolver::new(&document, NodePath(vec![0]), Path::new("."), None)
+        .unwrap()
+        .plan()
+        .unwrap_err();
+    assert!(error.to_string().contains("Expanded URL path exceeds"));
+}
+#[test]
 fn original_nested_variables_path_variables_and_inherited_bearer_auth() {
     let collection = json!({"info":{"name":"API"},"variable":[{"key":"host","value":"prod.example.test"},{"key":"version","value":"v1"},{"key":"environment","value":"prod"},{"key":"token","value":"synthetic-secret"}],"auth":{"type":"bearer","bearer":[{"key":"token","value":"{{token}}"}]},"item":[{"name":"Folder","variable":[{"key":"host","value":"test.example.test"},{"key":"page","value":"2"}],"item":[{"name":"Call","variable":[{"key":"user","value":"42"}],"request":{"method":"GET","url":{"raw":"https://{{host}}/{{version}}/users/:user","variable":[{"key":"user","value":"{{user}}"}],"query":[{"key":"page","value":"{{page}}"}]},"header":[{"key":"X-Env","value":"{{environment}}"}]}}]}]});
     let request = RequestResolver::new(

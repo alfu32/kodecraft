@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|     7 |           2 |   56 |       0 |    65 |
+|     6 |           2 |   57 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **R06** — [REST tree, environments and management dialogs](docs/migration/tasks/08-rest.md#r06--rest-tree-environments-and-management-dialogs)
+- **R07** — [Request/response editors and complete REST UX](docs/migration/tasks/08-rest.md#r07--requestresponse-editors-and-complete-rest-ux)
 - **D09** — [End-to-end external JDBC qualification](docs/migration/tasks/09-database.md#d09--end-to-end-external-jdbc-qualification)
 
 ## Task status
@@ -64,8 +64,8 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | R03  | [Postman and OpenAPI import/export](docs/migration/tasks/08-rest.md)                            | done        | [Report](docs/parity/R03.md) |
 | R04  | [HTTP execution, cookies and cancellation](docs/migration/tasks/08-rest.md)                     | done        | [Report](docs/parity/R04.md) |
 | R05  | [SSE and WebSocket execution](docs/migration/tasks/08-rest.md)                                  | done        | [Report](docs/parity/R05.md) |
-| R06  | [REST tree, environments and management dialogs](docs/migration/tasks/08-rest.md)               | in-progress | —                            |
-| R07  | [Request/response editors and complete REST UX](docs/migration/tasks/08-rest.md)                | todo        | —                            |
+| R06  | [REST tree, environments and management dialogs](docs/migration/tasks/08-rest.md)               | done        | [Report](docs/parity/R06.md) |
+| R07  | [Request/response editors and complete REST UX](docs/migration/tasks/08-rest.md)                | in-progress | [Report](docs/parity/R07.md) |
 | R08  | [Collection runner, persistence and REST qualification](docs/migration/tasks/08-rest.md)        | todo        | —                            |
 | D01  | [Database models, settings, credentials and URL catalogs](docs/migration/tasks/09-database.md)  | done        | [Report](docs/parity/D01.md) |
 | D02  | [Protocol, Java bootstrap and Rust process supervisor](docs/migration/tasks/09-database.md)     | done        | [Report](docs/parity/D02.md) |

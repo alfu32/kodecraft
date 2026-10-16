@@ -54,11 +54,16 @@ pub enum Action {
     EnvironmentMenu(String),
 }
 pub enum Intent {
+    TreeChanged(TreeChange),
     Open(NodePath),
     Environment(String),
+    CopiedEnvironment {
+        source: String,
+        target: String,
+    },
     EnvironmentRemoved(String),
     Run(NodePath),
-    InspectNotices(Vec<Notice>),
+    InspectNotices,
     Import {
         nonce: RequestId,
         kind: Kind,
@@ -75,6 +80,13 @@ pub enum Intent {
         action: FieldAction,
         proof: Option<PasteProof>,
     },
+}
+#[derive(Clone)]
+pub enum TreeChange {
+    Inserted(NodePath),
+    Removed(NodePath),
+    Moved { from: NodePath, to: NodePath },
+    Replaced,
 }
 #[derive(Clone)]
 pub struct PasteProof {
@@ -152,9 +164,14 @@ impl Sidebar {
     pub fn new(model: &Workspace) -> Result<Self> {
         let mut filter = TextField::new(String::new());
         filter.max_chars = 1024;
+        let cursor = model.selected_path();
+        let mut expanded = BTreeSet::from([NodePath::default()]);
+        for length in 1..cursor.0.len() {
+            expanded.insert(NodePath(cursor.0[..length].to_vec()));
+        }
         Ok(Self {
             id: FocusId(RequestId::fresh()?.0),
-            cursor: model.selected_path(),
+            cursor,
             environment: model
                 .active_environment()
                 .map(|environment| environment.id.clone()),
@@ -164,7 +181,7 @@ impl Sidebar {
             geometry: Geometry::default(),
             visible: vec![],
             notices: vec![],
-            expanded: BTreeSet::from([NodePath::default()]),
+            expanded,
             scroll: 0,
             environment_scroll: 0,
             environment_focus: false,
@@ -206,6 +223,8 @@ impl Sidebar {
         self.dirty = true;
     }
     fn inserted(&mut self, path: &NodePath) {
+        self.intents
+            .push(Intent::TreeChanged(TreeChange::Inserted(path.clone())));
         self.expanded = self
             .expanded
             .iter()
@@ -215,6 +234,8 @@ impl Sidebar {
         self.dirty = true;
     }
     fn removed(&mut self, path: &NodePath, model: &Workspace) {
+        self.intents
+            .push(Intent::TreeChanged(TreeChange::Removed(path.clone())));
         self.expanded = self
             .expanded
             .iter()
@@ -227,6 +248,10 @@ impl Sidebar {
         self.dirty = true;
     }
     fn moved(&mut self, from: &NodePath, to: &NodePath) {
+        self.intents.push(Intent::TreeChanged(TreeChange::Moved {
+            from: from.clone(),
+            to: to.clone(),
+        }));
         let rebase = |path: &NodePath| {
             if path.starts_with(from) {
                 let mut moved = to.clone();
@@ -318,12 +343,22 @@ impl Sidebar {
             return Ok(false);
         }
         let kind = imported.kind;
-        let paths = imported.apply(model, parent)?;
+        let paths = match imported.apply(model, parent) {
+            Ok(paths) => paths,
+            Err(error) => {
+                self.message = error.to_string();
+                return Err(error);
+            }
+        };
         if kind == Kind::Postman && parent.is_root() {
+            self.intents.push(Intent::TreeChanged(TreeChange::Replaced));
             self.expanded = BTreeSet::from([NodePath::default()]);
             self.cursor = NodePath::default();
         } else {
             for path in paths {
+                // Imports append to this parent. Existing indices and runtime
+                // item keys cannot shift; avoid rebasing a large run's keys for
+                // every imported sibling.
                 self.expand_ancestors(&path);
             }
         }

@@ -47,6 +47,9 @@ impl AppState {
         }
         if let InputEvent::Focus(active) = event {
             self.window_focused = *active;
+            self.rest
+                .sidebar
+                .dispatch(event, &mut self.rest.model, &mut self.focus)?;
             if !active {
                 self.focus.captured = None;
             }
@@ -86,6 +89,7 @@ impl AppState {
             self.closing = true;
             self.pending_open = None;
             self.dismiss_sql_dialog()?;
+            self.rest.sidebar.dismiss(&mut self.focus);
             return self.drain_ui();
         }
         if let Some(dialog) = &mut self.rescan {
@@ -93,6 +97,12 @@ impl AppState {
             if dialog.finished {
                 self.rescan = None;
             }
+            return self.drain_ui();
+        }
+        if self.rest.sidebar.has_modal() {
+            self.rest
+                .sidebar
+                .dispatch(event, &mut self.rest.model, &mut self.focus)?;
             return self.drain_ui();
         }
         if self.database.has_modal() {
@@ -155,13 +165,16 @@ impl AppState {
         }
         if let InputEvent::Key(input) = event {
             if input.modifiers.alt
-                && let Key::Character(number @ '1'..='6') = input.key
+                && let Key::Character(number @ '1'..='7') = input.key
             {
                 if number != '5' {
                     self.clear_diff()?;
                     self.git.deactivate(&mut self.documents, &mut self.focus)?;
                 }
                 self.tabs.selected = (number as u8 - b'1') as usize;
+                if self.tabs.selected != 6 {
+                    self.rest.sidebar.dismiss(&mut self.focus);
+                }
                 if self.tabs.selected == 5 {
                     self.database.initialize()?;
                 }
@@ -229,6 +242,14 @@ impl AppState {
         {
             return Ok(());
         }
+        if self.rest.sidebar.is_dragging()
+            && self
+                .rest
+                .sidebar
+                .dispatch(event, &mut self.rest.model, &mut self.focus)?
+        {
+            return self.drain_ui();
+        }
         if self.dispatch_sql(event)? {
             return self.drain_ui();
         }
@@ -250,6 +271,8 @@ impl AppState {
                     self.files.id
                 } else if self.tabs.selected == 5 {
                     self.database.tree.id
+                } else if self.tabs.selected == 6 {
+                    self.rest.sidebar.id
                 } else {
                     self.project_panel.id
                 })
@@ -269,6 +292,9 @@ impl AppState {
             .tabs
             .handle(event, self.focus.focused == Some(self.tabs_id))
         {
+            if self.tabs.selected != 6 {
+                self.rest.sidebar.dismiss(&mut self.focus);
+            }
             if self.tabs.selected == 5 {
                 self.database.initialize()?;
             }
@@ -294,6 +320,8 @@ impl AppState {
                             self.files.id
                         } else if self.tabs.selected == 5 {
                             self.database.tree.id
+                        } else if self.tabs.selected == 6 {
+                            self.rest.sidebar.id
                         } else {
                             self.project_panel.id
                         })
@@ -313,6 +341,14 @@ impl AppState {
                     .dispatch(event, &mut self.documents, &mut self.focus)?;
             } else if self.tabs.selected == 5 {
                 self.database.dispatch(event, &mut self.focus)?;
+            } else if self.tabs.selected == 6 {
+                if self.rest.persistence_enabled {
+                    self.rest
+                        .sidebar
+                        .dispatch(event, &mut self.rest.model, &mut self.focus)?;
+                } else if let Some(warning) = &self.rest.warning {
+                    self.notice = warning.clone();
+                }
             }
         } else if let Some(diff) = &mut self.diff {
             diff.dispatch(event, &mut self.documents, &mut self.focus)?;
@@ -339,6 +375,7 @@ impl AppState {
             3 => self.lsp_settings.id,
             4 => self.git.focus_id(),
             5 => self.database.tree.id,
+            6 => self.rest.sidebar.id,
             _ => self.tabs_id,
         });
         if let Some(view) = &mut self.editor {

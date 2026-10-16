@@ -112,9 +112,9 @@ RestHttpTest.
 
 ## R06 — REST tree, environments and management dialogs
 
-**Status:** in-progress
+**Status:** done
 
-**Depends:** R01, R03, F05, E12, W03. **Owns:** `kode-tui/src/panels/rest/sidebar/`.
+**Depends:** R01, R03, R05, F05, E12, W03. **Owns:** `kode-tui/src/panels/rest/sidebar/`.
 **Read:** RestPanelView.kt, RestKeyValueDialog.kt, Main REST management wiring.
 
 1. Port collection/folder/request tree, keyboard and mouse expansion/selection,
@@ -133,12 +133,17 @@ RestHttpTest.
 
 ## R07 — Request/response editors and complete REST UX
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** R02, R04, R05, R06, E09, E12, L02.
 **Owns:** `kode-tui/src/panels/rest/editor/`, `kode-rest/src/format.rs`.
 **Read:** RestEditorView.kt, RestCodeFormatting.kt, HttpHeaderCatalog.kt;
 RestEditorViewTest and RestCodeFormattingTest.
+
+R06 provides application-owned environment buffers, rebased runtime item keys,
+the sidebar's real execution callback and bounded response owners. Extend these
+owners for editable request/response views; preserve unknown fields and associate
+results by captured runtime identity even when imported IDs are absent/duplicated.
 
 1. Port method/URL/Send controls and request tabs: params, auth, headers, body,
    variables and settings as actually exposed; enabled/inherited rows, secret
@@ -165,6 +170,11 @@ RestEditorViewTest and RestCodeFormattingTest.
 `kode-tui/src/panels/rest/runner.rs`, REST integration fixtures/report.
 **Read:** Main's REST collection/folder run selection/state, RestRunSummary and
 all source REST test suites.
+
+R06 introduced the small immutable `runner::execute` boundary so the sidebar Run
+action executes real requests. This card still owns the complete runner UI/history,
+remaining persistence controls and end-to-end HTTP/SSE/WS qualification; backend
+availability and completion counts alone do not satisfy it.
 
 1. Port selectable sequential collection/folder runs, per-request outcomes,
    progress/summary, cancellation and original ordering/selection rules.

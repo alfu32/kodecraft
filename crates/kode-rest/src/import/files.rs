@@ -7,7 +7,66 @@ use kode_core::{
 };
 use kode_platform::files::{NativeDocumentIo, open_regular_file};
 use kode_platform::jobs::CancellationToken;
+use sha2::{Digest, Sha256};
 use std::{io::Read, path::Path, sync::Arc};
+/// Capture an explicitly selected export target on a worker. First-time Save As
+/// may replace that reviewed path; known exports keep their previous identity.
+/// Inspection is bounded just like import/export, including files growing mid-read.
+pub fn export_target_identity(
+    path: &Path,
+    cancel: &CancellationToken,
+) -> Result<Option<DiskIdentity>> {
+    if cancel.is_cancelled() {
+        return Err(DomainError::Cancelled);
+    }
+    let io_error = |source| DomainError::Io {
+        operation: "inspect REST export target",
+        path: path.into(),
+        source,
+    };
+    match std::fs::metadata(path) {
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(io_error(error)),
+        Ok(_) => {}
+    }
+    let canonical = std::fs::canonicalize(path).map_err(io_error)?;
+    let mut file = open_regular_file(&canonical)?;
+    let before = file.metadata().map_err(io_error)?;
+    let mut length = 0usize;
+    let mut digest = Sha256::new();
+    let mut chunk = [0; 64 * 1024];
+    loop {
+        if cancel.is_cancelled() {
+            return Err(DomainError::Cancelled);
+        }
+        let count = file.read(&mut chunk).map_err(io_error)?;
+        if count == 0 {
+            break;
+        }
+        if count > MAX_DOCUMENT_BYTES.saturating_sub(length) {
+            return Err(invalid(
+                "/",
+                "existing export target exceeds the 16 MiB inspection limit",
+            ));
+        }
+        length += count;
+        digest.update(&chunk[..count]);
+    }
+    let after = file.metadata().map_err(io_error)?;
+    if before.len() != after.len() || before.modified().ok() != after.modified().ok() {
+        return Err(DomainError::SaveConflict(path.into()));
+    }
+    Ok(Some(DiskIdentity {
+        canonical_path: canonical,
+        length: length as u64,
+        modified_nanos: after
+            .modified()
+            .ok()
+            .and_then(|time| time.duration_since(std::time::UNIX_EPOCH).ok())
+            .map(|duration| duration.as_nanos()),
+        content_hash: format!("{:x}", digest.finalize()),
+    }))
+}
 
 /// Blocking worker I/O. The UI receives only a completely parsed import.
 pub fn read_file(path: &Path, cancel: &CancellationToken) -> Result<Import> {

@@ -267,6 +267,7 @@ impl Sidebar {
             Key::Character('i') => Some(Action::ImportPostman),
             Key::Character('e') => Some(Action::Export),
             Key::Character('m') => Some(Action::Menu(self.cursor.clone())),
+            Key::Character('!') => Some(Action::Notices),
             Key::Function(2) => Some(Action::Rename(self.cursor.clone())),
             Key::Delete => Some(Action::Delete(self.cursor.clone())),
             _ => None,

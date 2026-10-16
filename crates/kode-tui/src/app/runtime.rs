@@ -3,6 +3,7 @@ pub mod database;
 mod git;
 mod intelligence;
 pub mod lsp;
+mod rest;
 mod sql;
 use super::{
     state::{AppState, AppWork, ConfigAction, OpenDestination, PickerKind},
@@ -54,6 +55,8 @@ use std::{
 use tokio::sync::mpsc;
 
 enum Output {
+    RestRun(kode_rest::runner::Summary),
+    Rest(Box<crate::panels::rest::state::Reply>),
     SqlCancelled,
     SqlControl(kode_database::connections::SessionInfo),
     SqlHighlight(Option<kode_core::TextRange>),
@@ -96,6 +99,8 @@ enum Output {
     Picker(Project),
 }
 enum Context {
+    RestRun,
+    Rest(Box<crate::panels::rest::state::Context>),
     SqlCancel {
         console: String,
         request: kode_core::RequestId,
@@ -136,6 +141,7 @@ enum Context {
     Picker(PickerKind),
 }
 enum ClipboardTarget {
+    Rest(crate::panels::rest::sidebar::PasteProof),
     Sql(crate::panels::database::session_dialog::PasteProof),
     Database(crate::panels::database::controller::PasteProof),
     Git,
@@ -299,6 +305,7 @@ impl AppRuntime {
         })
     }
     pub fn pump(&mut self) -> Result<()> {
+        self.pump_rest();
         self.capture_lsp();
         while let Ok(batch) = self.batches.try_recv() {
             self.state.scan.batch(batch);
@@ -322,6 +329,13 @@ impl AppRuntime {
             self.clipboard_owner,
             OwnerId(self.state.files.id.0),
         ];
+        active.extend(
+            self.state
+                .rest
+                .documents
+                .keys()
+                .filter_map(|id| self.state.documents.save_owner(*id).ok()),
+        );
         if let Some(view) = &self.state.git.commit_editor {
             active.push(view.owner());
         }
@@ -472,6 +486,12 @@ impl AppRuntime {
                 tag,
                 job,
                 proof.map_or(ClipboardTarget::None, ClipboardTarget::Sql),
+            ),
+            AppWork::Rest(work) => self.rest_work(*work),
+            AppWork::RestClipboard { tag, job, proof } => self.clipboard_work(
+                tag,
+                job,
+                proof.map_or(ClipboardTarget::None, ClipboardTarget::Rest),
             ),
             AppWork::Database(work) => self.database_work(*work),
             AppWork::DatabaseClipboard { tag, job, proof } => self.clipboard_work(
@@ -691,6 +711,7 @@ impl AppRuntime {
                 active,
                 changes,
                 sql,
+                rest,
             } => self.blocking(
                 tag,
                 self.root_owner,
@@ -707,6 +728,7 @@ impl AppRuntime {
                             Some((id.clone(), captured.document.snapshot().text().to_string()))
                         }))
                     });
+                    let rest = rest.map(|rest| rest.into_value(&documents)).transpose()?;
                     let mut session =
                         workspace::capture_changes(base, &project, documents, active, changes)?;
                     if let Some(database) = database {
@@ -715,6 +737,9 @@ impl AppRuntime {
                                 format: "SQL sessions",
                                 message: error.to_string(),
                             })?;
+                    }
+                    if let Some(rest) = rest {
+                        session.rest_api = rest;
                     }
                     Ok(Output::Session(Box::new(session)))
                 }),
@@ -1135,7 +1160,8 @@ impl AppRuntime {
                     ClipboardTarget::Editor(owner, target),
                 )
             }
-            EditorWork::Changed(_) => {
+            EditorWork::Changed(change) => {
+                self.state.rest_environment_changed(change.snapshot)?;
                 self.state.changed()?;
                 Ok(())
             }
@@ -1221,6 +1247,8 @@ impl AppRuntime {
             return Ok(());
         }
         match context {
+            Context::RestRun => self.rest_run_complete(tag, result)?,
+            Context::Rest(context) => self.rest_complete(tag, *context, result)?,
             Context::SqlCancel { console, request } => {
                 if let Some(running) = self.state.sql.running.get_mut(&console).filter(|running| {
                     running.tag.request == request && running.cancel_retry == Some(tag)
@@ -1863,6 +1891,16 @@ impl AppRuntime {
             }
         });
         match target {
+            ClipboardTarget::Rest(proof) => match result {
+                Ok(ClipboardResult::Read(text)) => {
+                    self.state
+                        .rest
+                        .sidebar
+                        .paste(proof, text, &self.state.focus)
+                }
+                Err(error) => self.state.notice = error.to_string(),
+                _ => {}
+            },
             ClipboardTarget::Sql(proof) => match result {
                 Ok(ClipboardResult::Read(text)) => {
                     if let Some(dialog) = &mut self.state.sql.dialog {
@@ -1951,7 +1989,7 @@ impl AppRuntime {
                 .ids()
                 .any(|id| self.state.documents.save_in_progress(id))
             && !self.contexts.values().any(|context| {
-                matches!(
+                matches!(context,Context::Rest(rest)if matches!(**rest,crate::panels::rest::state::Context::Export{..})) || matches!(
                     context,
                     Context::File
                         | Context::Persist
@@ -1973,7 +2011,10 @@ impl AppRuntime {
     }
     pub async fn flush_before_leave(&mut self) -> Result<()> {
         self.state.closing = true;
+        self.state.rest.run.pending = None;
+        self.state.rest.run.cancel();
         self.state.dismiss_sql_dialog()?;
+        self.state.rest.sidebar.dismiss(&mut self.state.focus);
         loop {
             self.pump()?;
             if self.ready_to_leave() {

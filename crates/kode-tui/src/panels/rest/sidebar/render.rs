@@ -85,17 +85,15 @@ impl Sidebar {
             area.width,
             area.height.saturating_sub(1).min(3),
         );
-        let mut buttons = vec![
+        let buttons = vec![
             ("+Req", Action::AddRequest(NodePath::default())),
             ("+Dir", Action::AddFolder(NodePath::default())),
             ("Run", Action::Run(NodePath::default())),
             ("Import", Action::ImportPostman),
             ("OAS", Action::ImportOpenApi(NodePath::default())),
             ("Export", Action::Export),
+            ("!", Action::Notices),
         ];
-        if !self.notices.is_empty() {
-            buttons.push(("!", Action::Notices));
-        }
         let tool_rows = self.buttons(tool_area, buffer, theme, buttons);
         let message_y = tool_area.y.saturating_add(tool_rows);
         if message_y < area.bottom() {

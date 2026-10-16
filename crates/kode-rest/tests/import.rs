@@ -1,7 +1,7 @@
 use kode_core::DomainError;
 use kode_platform::jobs::CancellationToken;
 use kode_rest::{
-    import::{Format, Import, Kind, export_file, parse, read_file},
+    import::{Format, Import, Kind, export_file, export_target_identity, parse, read_file},
     model::{Environment, EnvironmentValue, NodePath, Workspace},
     resolve::RequestResolver,
 };
@@ -535,4 +535,30 @@ fn vendor_path_extensions_and_ref_sibling_constraints_are_retained_without_false
             .any(|notice| notice.code == "reference-siblings")
     );
     assert_eq!(imported.collection["x-kode-openapi"]["document"], document);
+}
+
+#[test]
+fn explicitly_selected_export_target_is_bounded_regular_cancelable_and_still_guarded() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("chosen.json");
+    let cancel = CancellationToken::new();
+    let collection = json!({"info":{},"item":[]});
+    assert!(export_target_identity(&path, &cancel).unwrap().is_none());
+    fs::write(&path, "previous contents").unwrap();
+    let identity = export_target_identity(&path, &cancel).unwrap().unwrap();
+    export_file(&path, &collection, Some(&identity), &cancel).unwrap();
+    assert_eq!(read_file(&path, &cancel).unwrap().collection, collection);
+    assert!(matches!(
+        export_file(&path, &collection, Some(&identity), &cancel),
+        Err(DomainError::SaveConflict(_))
+    ));
+    assert!(export_target_identity(dir.path(), &cancel).is_err());
+    let file = fs::File::create(&path).unwrap();
+    file.set_len(16 * 1024 * 1024 + 1).unwrap();
+    assert!(export_target_identity(&path, &cancel).is_err());
+    cancel.cancel();
+    assert!(matches!(
+        export_target_identity(&path, &cancel),
+        Err(DomainError::Cancelled)
+    ));
 }

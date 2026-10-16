@@ -1,0 +1,51 @@
+{
+  "cases": [
+    {
+      "case": "import-run-export-environment-edit-copy-quit",
+      "unknown_fields_retained": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restore-environment-buffer-without-java",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "import-run-export-environment-edit-copy-quit",
+      "unknown_fields_retained": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restore-environment-buffer-without-java",
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 4
+}

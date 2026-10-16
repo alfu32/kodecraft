@@ -69,6 +69,12 @@ pub enum ConfigAction {
     RemoveExclusion(PathBuf),
 }
 pub enum AppWork {
+    Rest(Box<crate::panels::rest::state::Work>),
+    RestClipboard {
+        tag: JobTag,
+        job: ClipboardJob,
+        proof: Option<crate::panels::rest::sidebar::PasteProof>,
+    },
     SqlCancel {
         tag: JobTag,
         console: String,
@@ -149,6 +155,7 @@ pub enum AppWork {
             kode_database::console::PersistenceSnapshot,
             HashMap<DocumentId, String>,
         )>,
+        rest: Option<Box<crate::panels::rest::state::Capture>>,
     },
     Persist(SessionWriteJob),
     Picker {
@@ -189,6 +196,7 @@ pub struct AppState {
     pub database: crate::panels::database::controller::DatabasePanel,
     pub sql_sources: HashMap<DocumentId, String>,
     pub sql: crate::panels::database::console::SqlConsoles,
+    pub rest: crate::panels::rest::state::RestState,
     pub diff: Option<crate::panels::git::diff::DiffViewer>,
     pub tabs: Tabs,
     pub tabs_id: FocusId,
@@ -239,6 +247,7 @@ impl AppState {
             ..Default::default()
         };
         let initial = prepared.initial;
+        let rest = crate::panels::rest::state::RestState::new(&prepared.session.session.rest_api)?;
         let notice = prepared.session.warning.clone().unwrap_or_default();
         let mut documents = EditorDocuments::default();
         let git = crate::panels::git::GitPanel::new(
@@ -265,6 +274,7 @@ impl AppState {
             database: crate::panels::database::controller::DatabasePanel::new(generation)?,
             sql_sources: HashMap::new(),
             sql: Default::default(),
+            rest,
             tabs: Tabs::new(
                 vec![
                     "Files".into(),
@@ -273,6 +283,7 @@ impl AppState {
                     "Settings".into(),
                     "Git".into(),
                     "Databases".into(),
+                    "REST".into(),
                 ],
                 Axis::Vertical,
             ),
@@ -318,6 +329,7 @@ impl AppState {
             state.open(initial, OpenDestination::Main)?;
         }
         state.restore_sql()?;
+        state.restore_rest()?;
         Ok(state)
     }
     pub fn tag(&self) -> Result<JobTag> {
@@ -625,6 +637,10 @@ impl AppState {
         destination: OpenDestination,
         clear: bool,
     ) -> Result<()> {
+        if destination == OpenDestination::Main {
+            self.rest.pending_open = None;
+            self.rest.ready_open = None;
+        }
         let tag = self.tag()?;
         if destination == OpenDestination::Main {
             if clear {
@@ -843,6 +859,7 @@ impl AppState {
                 .sql
                 .persistence_enabled
                 .then(|| (self.sql.manager.snapshot(), self.sql.documents.clone())),
+            rest: self.rest.capture().map(Box::new),
         });
         Ok(())
     }
@@ -918,6 +935,7 @@ impl AppState {
         Ok(())
     }
     pub fn drain_ui(&mut self) -> Result<()> {
+        self.drain_rest()?;
         self.database.drain_tree(&mut self.focus)?;
         for intent in self.database.take_intents() {
             use crate::panels::database::controller::Intent;
@@ -1123,8 +1141,29 @@ impl AppState {
                 theme,
                 self.focus.focused == Some(self.database.tree.id),
             ),
+            6 => {
+                if self.rest.persistence_enabled {
+                    cursor = self.rest.sidebar.render(
+                        geometry.panel,
+                        buffer,
+                        theme,
+                        &self.rest.model,
+                        self.focus.focused == Some(self.rest.sidebar.id),
+                    )
+                } else {
+                    Paragraph::new(format!(
+                        "REST unavailable: {}",
+                        self.rest
+                            .warning
+                            .as_deref()
+                            .unwrap_or("Invalid saved state")
+                    ))
+                    .wrap(Wrap { trim: false })
+                    .render(geometry.panel, buffer);
+                }
+            }
             _ => {
-                Paragraph::new("Files: open, rename, create, delete.\nProject: source roots and exclusions.\n\nCtrl+S save\nCtrl+F find/replace\nCtrl+Shift+F project search\nCtrl+Space completion\nF6 switch pane\nCtrl+Q quit\n\nGit: Space stage/unstage, a/A stage/unstage all, Tab message, Ctrl+Enter commit, Ctrl+Tab sections. b branches, t tag, T create/move tag, Enter expand history, m copy message.\n\nImage: Left/Right width, Enter mode, M advanced controls.\n\nHex: Shift+arrows select, Alt+C/X/V local bytes, Delete/Backspace edit memory. Binary saving unavailable.\n\nDatabases: Alt+6; n new, F2 edit, c connect/disconnect, r refresh, R restart service, s SQL console.\nConnection dialog: Alt+T test, Alt+D driver download, Ctrl+S save.\n\nUse mouse or Alt+1/2/3/4/5/6 to select Files/Project/Help/Settings/Git/Databases.").wrap(Wrap { trim: false }).render(geometry.panel, buffer);
+                Paragraph::new("Files: open, rename, create, delete.\nProject: source roots and exclusions.\n\nCtrl+S save\nCtrl+F find/replace\nCtrl+Shift+F project search\nCtrl+Space completion\nF6 switch pane\nCtrl+Q quit\n\nGit: Space stage/unstage, a/A stage/unstage all, Tab message, Ctrl+Enter commit, Ctrl+Tab sections. b branches, t tag, T create/move tag, Enter expand history, m copy message.\n\nImage: Left/Right width, Enter mode, M advanced controls.\n\nHex: Shift+arrows select, Alt+C/X/V local bytes, Delete/Backspace edit memory. Binary saving unavailable.\n\nDatabases: Alt+6; n new, F2 edit, c connect/disconnect, r refresh, R restart service, s SQL console.\nConnection dialog: Alt+T test, Alt+D driver download, Ctrl+S save.\n\nREST: Alt+7; / filter, n request, f folder, m actions, i import, e export, r run/stop. Tab selects environments; n new, c copy, F2 rename, Space activate.\n\nUse mouse or Alt+1/2/3/4/5/6/7 to select Files/Project/Help/Settings/Git/Databases/REST.").wrap(Wrap { trim: false }).render(geometry.panel, buffer);
             }
         }
         self.splitter.render(geometry.body, buffer, theme);
@@ -1227,9 +1266,23 @@ impl AppState {
             menu.render(area, buffer, theme);
             cursor = None;
         }
+        if self.rest.sidebar.has_modal() {
+            cursor = self.rest.sidebar.render_modal(area, buffer, theme);
+        }
         Ok(cursor)
     }
     pub fn open_database_console(&mut self, source: String, sql: String) -> Result<()> {
+        if self
+            .database
+            .tree
+            .sources
+            .iter()
+            .any(|definition| definition.id == source)
+        {
+            self.rest.pending_open = None;
+            self.rest.ready_open = None;
+            self.pending_open = None;
+        }
         if !sql.is_empty()
             && let Some(view) = &mut self.editor
             && self.sql_sources.get(&view.document_id()) == Some(&source)
@@ -1328,6 +1381,8 @@ impl AppState {
         if !self.sql_sources.contains_key(&id) {
             return Ok(());
         }
+        self.rest.pending_open = None;
+        self.rest.ready_open = None;
         self.cache_main_view()?;
         self.clear_diff()?;
         self.detach_image();

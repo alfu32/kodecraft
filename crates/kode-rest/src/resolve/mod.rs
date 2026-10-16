@@ -11,6 +11,9 @@ pub use request::RequestResolver;
 use serde_json::Value;
 pub use types::*;
 pub use variables::{Resolution, Variable, VariableResolver};
+/// Aggregate expanded values and path output per request plan. A small document
+/// referencing one large variable repeatedly must not allocate without a bound.
+pub const MAX_RESOLVED_BYTES: usize = 64 * 1024 * 1024;
 pub(crate) fn invalid(message: &str) -> DomainError {
     DomainError::Parse {
         format: "REST request",

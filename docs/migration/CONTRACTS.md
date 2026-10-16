@@ -1269,3 +1269,60 @@ headers and refuses downgrade. Certificate bypass is per-request; cryptographic
 signature verification remains active. Default WS opening sends no body, matching
 source. `InitialMessage::Text|Binary` is an explicit bounded extension. R07 must
 make handshake/body normalization and source receive-only behavior visible.
+
+## REST management and sidebar execution
+
+R06's sidebar emits intents; AppState owns the lossless model, document registry
+and view attachment. Modals/imports capture collection identity, and field paste
+proofs include dialog/field/focus/selection state. Worker results are rejected
+when those identities change. `NodePath::after_insert/after_remove` support view
+rebasing; runtime request keys are separate from optional/duplicate imported IDs.
+Tree mutations rebase keys, while execution captures keep their original key.
+Appending an import does not shift any existing key. Root replacement cancels
+the old selection. Import notices are read from retained collection metadata.
+
+Environment buffers use shared virtual editor hosts, with document-owned semantic
+parse jobs. Raw buffers are authoritative when capturing runs, copies or sessions.
+Worker session capture merges typed metadata, staged unopened copies and document
+ropes, retaining raw comments/unfinished lines in
+`x-kode-rs-environment-buffers`. This extension is project state only, excluded
+from collection export along with runtime cookies/responses. Invalid REST state
+stays untouched and does not accept edits that could not be saved.
+
+`import::export_target_identity(path, cancel)` is a worker-only, regular-file,
+16 MiB SHA256 identity capture for an explicitly chosen first export filename.
+Missing targets return None. Known exports retain their previous identity;
+NativeDocumentIo still checks external changes before atomic replacement.
+
+The sidebar Run callback requires the small shared `runner::execute` boundary
+before R08's complete runner presentation/qualification: immutable collection,
+environment, ordered items with runtime IDs, workspace root/generation; sequential
+R02 preparation and R05 execution; per-item outcomes and one bounded completed
+response channel. Dropping execution cancels its blocking body reader. Cancel
+stops subsequent requests, and no failure is replayed. The application drains at
+most 64 events/four completed responses per pump, caches at most 32 responses /
+192 MiB counted captures and never serializes these runtime owners. R07 must add
+request/response presentation to these same identities and dispose view jobs;
+R08 must finish runner presentation and full HTTP/SSE/WS workflow qualification.
+
+## REST display formatting and header adapters (R07 in progress)
+
+`format::language_for_content_type` maps MIME subtypes/suffixes to editor grammar
+names. `pretty_print(content, content_type, enabled, cancel)` is worker-only display
+preparation returning borrowed unchanged content when disabled, invalid, cancelled,
+already formatted or over budget. It never changes authoritative raw bytes.
+Input/output limits are 10/20 MiB, formatting depth 96 and syntax traversal 100,000
+nodes; XML parsing also applies a node limit. No XML DTD/entity resolver or network
+access is enabled. Mixed-content/preformatted regions and scalar/literal spelling
+remain intact. HTML/JS candidates are reparsed and retain their syntax structure.
+
+`headers::complete(text, cursor_byte)` returns a full field-name prefix and source
+catalog candidates, excluding active names on other lines; values have no such
+suggestions. Duplicate diagnostics retain source earlier-occurrence semantics,
+including disabled rows. The TUI provider adapts these to the shared completion
+popup's current word fragment without duplicating a hyphenated prefix. Request
+view attachment and complete R07 execution/response routing are still required.
+
+`resolve::MAX_RESOLVED_BYTES` caps accumulated resolved values and repeated path
+parameter output at 64 MiB per request plan, in addition to existing per-value
+limits and outgoing body limits. A planning-limit failure precedes network I/O.

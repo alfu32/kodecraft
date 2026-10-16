@@ -1,6 +1,7 @@
 pub mod dispatch;
 pub mod effects;
 pub mod events;
+mod rest;
 pub mod runner;
 pub mod runtime;
 mod sql;

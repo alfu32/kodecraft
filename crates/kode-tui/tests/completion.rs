@@ -167,6 +167,31 @@ fn pointer(x: u16, y: u16, action: PointerAction) -> InputEvent {
         modifiers: Modifiers::default(),
     })
 }
+#[test]
+fn real_rest_header_catalog_completes_hyphenated_names_through_the_shared_popup() {
+    let provider = kode_tui::panels::rest::editor::headers::HeaderNames;
+    for prefix in ["Content-T", "Content-", "content-t"] {
+        let text = format!("{prefix}: application/json");
+        let mut harness = Harness::new(&text, prefix.len());
+        harness.open(Some(&provider), None);
+        let index = harness
+            .popup
+            .entries
+            .iter()
+            .position(|entry| entry.label == "Content-Type")
+            .unwrap();
+        for _ in 0..index {
+            harness.send(key(Key::Down)).unwrap();
+        }
+        harness.send(key(Key::Enter)).unwrap();
+        let expected = if prefix.starts_with('c') {
+            "content-Type: application/json"
+        } else {
+            "Content-Type: application/json"
+        };
+        assert_eq!(harness.doc.snapshot().text().as_ref(), expected);
+    }
+}
 fn item(label: &str, text: &str, range: TextRange) -> CompletionItem {
     CompletionItem {
         label: label.into(),

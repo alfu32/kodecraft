@@ -101,6 +101,21 @@ fn tree_shortcuts_and_row_buttons_target_the_visible_node_and_emit_stable_open_a
         1
     );
 }
+
+#[test]
+fn restored_nested_selection_is_visible_without_losing_its_model_path() {
+    let mut model = Workspace::default();
+    let folder = model.add_folder(&NodePath::default(), "Parent").unwrap();
+    let nested = model.add_folder(&folder, "Nested").unwrap();
+    let request = model.add_request(&nested, "Selected").unwrap();
+    model.select(&request);
+    let restored = Workspace::from_state(model.project_state()).unwrap();
+    let mut sidebar = Sidebar::new(&restored).unwrap();
+    draw(&mut sidebar, &restored, 36, 24);
+    assert_eq!(sidebar.cursor, request);
+    assert!(sidebar.visible.iter().any(|node| node.path == request));
+    assert_eq!(restored.selected_path(), request);
+}
 #[test]
 fn filtering_includes_ancestors_urls_and_method_and_owns_typing_clipboard_and_escape() {
     let (mut model, mut sidebar, mut focus) = setup();

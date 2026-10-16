@@ -57,8 +57,8 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | R03 | [Postman and OpenAPI import/export](tasks/08-rest.md) | R01 | [done](../parity/R03.md) |
 | R04 | [HTTP execution, cookies and cancellation](tasks/08-rest.md) | R02, F03 | [done](../parity/R04.md) |
 | R05 | [SSE and WebSocket execution](tasks/08-rest.md) | R04 | [done](../parity/R05.md) |
-| R06 | [REST tree, environments and management dialogs](tasks/08-rest.md) | R01, R03, F05, E12, W03 | in-progress |
-| R07 | [Request/response editors and complete REST UX](tasks/08-rest.md) | R02, R04, R05, R06, E09, E12, L02 | todo |
+| R06 | [REST tree, environments and management dialogs](tasks/08-rest.md) | R01, R03, R05, F05, E12, W03 | [done](../parity/R06.md) |
+| R07 | [Request/response editors and complete REST UX](tasks/08-rest.md) | R02, R04, R05, R06, E09, E12, L02 | [in-progress](../parity/R07.md) |
 | R08 | [Collection runner, persistence and REST qualification](tasks/08-rest.md) | R07, W03, W05 | todo |
 | D01 | [Database models, settings, credentials and URL catalogs](tasks/09-database.md) | F02, F03 | [done](../parity/D01.md) |
 | D02 | [Protocol, Java bootstrap and Rust process supervisor](tasks/09-database.md) | D01, F03 | [done](../parity/D02.md) |

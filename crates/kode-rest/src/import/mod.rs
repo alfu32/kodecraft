@@ -5,7 +5,7 @@ mod openapi;
 mod parse;
 mod yaml;
 use crate::model::{NodePath, Workspace, workspace::validate_collection};
-pub use files::{export_file, read_file};
+pub use files::{export_file, export_target_identity, read_file};
 use kode_core::{DomainError, Result};
 pub use parse::{Format, MAX_DOCUMENT_BYTES, parse};
 use serde_json::{Value, json};

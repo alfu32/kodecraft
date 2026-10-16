@@ -39,6 +39,15 @@ End-to-end JDBC qualification remains D09.
 After a helper crash, check the database outcome, then use Alt+6, `R` to restart
 the service and `c` to reconnect. Previous SQL is retained and never replayed.
 
+Open **REST** with Alt+7. `/` filters the collection; `n` adds a request, `f` a
+folder, `m` opens actions, `i` imports Postman, `e` exports and `r` runs/stops the
+selected request or folder. The actions menu also imports OpenAPI into a folder.
+Tab selects environments: `n` creates, `c` copies, F2 renames and Space activates.
+Environment values use the shared editor and survive restart, including comments
+and unfinished lines. Drag the environment divider to resize it. Request opening
+currently shows a read-only JSON snapshot; editable request forms, response tabs
+and full runner qualification remain R07/R08.
+
 Ctrl+Space requests completion and Ctrl-click follows definitions/usages.
 The Project panel provides `r` rescan, `b` rebuild index and `c` clear index.
 Indexing runs on bounded workers, uses unsaved buffers and persists its cache in

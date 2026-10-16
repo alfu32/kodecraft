@@ -20,6 +20,11 @@ base64.workspace = true
 url.workspace = true
 http.workspace = true
 mime.workspace = true
+sha2.workspace = true
+roxmltree.workspace = true
+tree-sitter.workspace = true
+tree-sitter-html.workspace = true
+tree-sitter-javascript.workspace = true
 serde-saphyr.workspace = true
 reqwest = { workspace = true, features = ["cookies", "http2"] }
 cookie_store.workspace = true

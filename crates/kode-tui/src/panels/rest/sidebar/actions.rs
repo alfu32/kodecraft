@@ -101,6 +101,7 @@ impl Sidebar {
                 } else {
                     options.push(("Export collection".into(), Export));
                 }
+                options.push(("Import notices".into(), Notices));
                 self.install_modal(
                     Dialog::Choice(ChoiceDialog::new(
                         "REST actions".into(),
@@ -290,9 +291,7 @@ impl Sidebar {
                     )?;
                 }
             }
-            Notices => self
-                .intents
-                .push(Intent::InspectNotices(self.notices.clone())),
+            Notices => self.intents.push(Intent::InspectNotices),
             NewEnvironment => self.input(
                 "New environment",
                 "New environment".into(),
@@ -563,9 +562,10 @@ impl Sidebar {
                 self.message = "Created environment".into();
             }
             Purpose::CopyEnvironment(id) => {
-                if let Some(id) = model.duplicate_environment(&id, Some(&value)) {
-                    self.environment = Some(id.clone());
-                    self.intents.push(Intent::Environment(id));
+                if let Some(target) = model.duplicate_environment(&id, Some(&value)) {
+                    self.environment = Some(target.clone());
+                    self.intents
+                        .push(Intent::CopiedEnvironment { source: id, target });
                     self.message = "Copied environment".into();
                 }
             }
