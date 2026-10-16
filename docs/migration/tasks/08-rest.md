@@ -213,10 +213,15 @@ REST authentication form and protocol fixtures. User-authorized extension M002.
 
 ## R10 — OAuth acquisition and browser authorization
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** R09. **Owns:** OAuth client/session owners, REST authorization controls,
-loopback callback and local identity-provider fixtures. User-authorized M002.
+loopback callback and local identity-provider fixtures. User-authorized M002/B008.
+
+**Read:** [R10 integration contract](../R10-INTEGRATION.md) and
+[implementation evidence](../../parity/R10.md). The service, form/runtime/runner,
+HTTPS callback and actual browser login flows are implemented and qualified,
+including request ownership, refresh, listener cleanup and non-persistence.
 
 1. Add OAuth 2.0 authorization-code with PKCE, client credentials, refresh and
    device authorization flows, plus OAuth 1.0 request/access-token acquisition.
@@ -225,6 +230,10 @@ loopback callback and local identity-provider fixtures. User-authorized M002.
    authorization URL so login can be completed in a GUI browser, including when
    Kode runs remotely. Accept the matching callback or explicit pasted redirect;
    show pending/cancelled/error/success state without blocking the editor.
+   B008 requires Kode's own ephemeral loopback callback instead of a Postman
+   callback. Support the requested HTTPS localhost callback as well as native
+   HTTP loopback, explain certificate trust where relevant, and retain explicit
+   pasted redirects for remote sessions. Release the listener when the flow ends.
 3. Validate state and PKCE, retain tokens in the captured request owner, mask
    secrets, respect expiry and make refresh explicit. Never silently persist
    newly acquired credentials in collection exports or diagnostic logs.

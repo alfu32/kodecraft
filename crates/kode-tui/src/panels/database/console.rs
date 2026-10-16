@@ -34,6 +34,7 @@ pub struct SqlConsoles {
     pub toolbar: [ratatui::layout::Rect; 6],
     pub contexts: [ratatui::layout::Rect; 2],
     pub connections: HashMap<String, kode_database::connections::Snapshot>,
+    pub diagnostics: HashMap<String, String>,
     pub controls: HashMap<String, (kode_core::JobTag, CancellationToken)>,
     pub saved: HashMap<String, (std::path::PathBuf, kode_core::services::DiskIdentity)>,
     pub hover: Option<(DocumentId, kode_core::Revision, kode_core::Selection)>,
@@ -52,6 +53,7 @@ impl Default for SqlConsoles {
             contexts: [ratatui::layout::Rect::default(); 2],
             connections: HashMap::new(),
             controls: HashMap::new(),
+            diagnostics: HashMap::new(),
             saved: HashMap::new(),
             hover: None,
         }

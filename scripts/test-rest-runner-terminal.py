@@ -71,9 +71,9 @@ def main():
                 collection = {"info": {"name": "Workflow"}, "variable": [{"key": "base", "value": f"http://127.0.0.1:{server.server_port}/{width}", "x-variable": True}], "item": [], "x-future": {"keep": True}}
                 (project / ".kode-rs.json").write_text(json.dumps({"version": 1, "restApi": {"collection": collection}}))
                 env = {"KODE_LSP_CATALOG": str(catalog), "KODE_LSP_HOME": str(case / "no-lsp"), "KODE_RS_DATABASE_HOME": str(case / "database"), "KODE_RS_JDBC_HOME": str(case / "plugins"), "KODE_JAVA": str(case / "absent-java")}
-                rename = b"\x1b7\x1b[12~"
+                rename = b"\x1b5\x1b[12~"
                 actions = [
-                    (b"Ready", .15, b"\x1b7f"),
+                    (b"Ready", .15, b"\x1b5f"),
                     (b"FOLDER | New folder", .2, rename),
                     (b"Rename REST item", .2, b"\x01" + editors.paste("Selected") + b"\r"),
                     (b"Selected", .2, b"n"),
@@ -81,18 +81,18 @@ def main():
                     (b"Rename REST item", .2, current(b"New request", b"\x01" + editors.paste("First") + b"\r")),
                     (b"REQUEST | First", .2, url_field),
                     (b"REQUEST | First", .2, b"\x01" + editors.paste("{{base}}/first") + b"\x1b[13;5u"),
-                    (b"response-first", .2, current(b"response-first", b"\x1b7n")),
+                    (b"response-first", .2, current(b"response-first", b"\x1b5n")),
                     (b"REQUEST | New request", .2, current(b"REQUEST | New request", rename)),
                     (b"Rename REST item", .2, current(b"New request", b"\x01" + editors.paste("Second") + b"\r")),
                     (b"REQUEST | Second", .2, url_field),
                     (b"REQUEST | Second", .2, b"\x01" + editors.paste("{{base}}/second") + b"\x1b[13;5u"),
-                    (b"response-second", .2, current(b"response-second", b"\x1b7\x1b[H\x1b[Br")),
+                    (b"response-second", .2, current(b"response-second", b"\x1b5\x1b[H\x1b[Br")),
                     (b"Collection run: finish", .2, editors.click("First | HTTP")),
                     (b"response-first", .2, current(b"response-first", b"\x1b[18~")),
                     (b"Collection run: finish", .2, current(b"Collection run: finish", b"\x1b[F\r")),
                     (b"response-second", .2, current(b"response-second", editors.click("Pretty"))),
                     (b"response-second", .3, resize_response),
-                    (b"response-second", .3, b"\x1b7e"),
+                    (b"response-second", .3, b"\x1b5e"),
                     (b"Export Postman", .2, b"\x01" + editors.paste("out.json") + b"\r"),
                     (b"Exported collection", .2, b"\x11"),
                 ]

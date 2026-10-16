@@ -26,6 +26,7 @@ mod support;
 
 fn auth(kind: &str, values: &[(&str, &str)]) -> ExecutionAuth {
     ExecutionAuth {
+        runtime_token: false,
         kind: kind.into(),
         fields: values
             .iter()
@@ -166,6 +167,7 @@ fn published_akamai_vectors_cover_query_headers_methods_and_body_limits() {
     .map(|(k, v)| (k.into(), v))
     .collect();
     let a = ExecutionAuth {
+        runtime_token: false,
         kind: "edgegrid".into(),
         fields,
     };
@@ -307,7 +309,7 @@ fn all_screenshot_choices_preserve_inheritance_fields_and_unknown_data() {
                     .as_array()
                     .unwrap()
                     .len(),
-                scheme.fields.len()
+                scheme.fields.len() + kode_rest::oauth::configuration_fields(scheme.kind).len()
             );
         }
         assert_eq!(model.collection()["x-unknown"]["keep"], 42);

@@ -210,7 +210,7 @@ def qualify_sql(pw, args, binary, base, environment, cases):
             page.on('dialog', lambda dialog: dialog.accept())
             page.goto(url)
             visible(page, 'Select a file to begin editing.')
-            page.keyboard.press('Alt+6')
+            page.keyboard.press('Alt+4')
             visible(page, 'Browser SQL')
             page.keyboard.press('c')
             visible(page, 'BROWSER_SQL')

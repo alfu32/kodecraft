@@ -15,17 +15,22 @@ use std::{path::PathBuf, sync::Arc};
 pub struct ModelCapture {
     pub project: ProjectState,
     pub environment_text: Option<TextSnapshot>,
+    pub environment_draft: Option<Arc<str>>,
     pub root: PathBuf,
 }
 impl ModelCapture {
-    fn model(self) -> Result<(Workspace, PathBuf)> {
+    pub(crate) fn model(self) -> Result<(Workspace, PathBuf)> {
         let mut model = Workspace::from_state(self.project)?;
-        if let Some(snapshot) = self.environment_text
+        let text = self
+            .environment_text
+            .map(|snapshot| snapshot.text())
+            .or(self.environment_draft);
+        if let Some(text) = text
             && let Some(id) = model
                 .active_environment()
                 .map(|environment| environment.id.clone())
         {
-            model.update_environment_text(&id, &snapshot.text());
+            model.update_environment_text(&id, &text);
         }
         Ok((model, self.root))
     }

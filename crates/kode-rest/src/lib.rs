@@ -5,6 +5,7 @@ pub mod headers;
 pub mod http;
 pub mod import;
 pub mod model;
+pub mod oauth;
 pub mod resolve;
 pub mod runner;
 pub mod stream;

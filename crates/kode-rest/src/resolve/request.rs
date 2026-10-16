@@ -12,6 +12,7 @@ pub struct RequestResolver<'a> {
     path: NodePath,
     root: PathBuf,
     variables: VariableResolver,
+    runtime_tokens: Option<crate::oauth::TokenSet>,
 }
 struct UrlPlan {
     raw: String,
@@ -82,7 +83,14 @@ impl<'a> RequestResolver<'a> {
             path,
             root: workspace_root.into(),
             variables,
+            runtime_tokens: None,
         })
+    }
+    /// The application supplies tokens only after checking captured workspace/
+    /// request identity. This is an ephemeral execution override, never a model edit.
+    pub fn with_runtime_tokens(mut self, tokens: crate::oauth::TokenSet) -> Self {
+        self.runtime_tokens = Some(tokens);
+        self
     }
     pub fn effective_variables(&self) -> impl Iterator<Item = &Variable> {
         self.variables.effective_variables()
@@ -231,7 +239,17 @@ impl<'a> RequestResolver<'a> {
                 .fields
                 .iter()
                 .map(|(key, default)| {
-                    let value = auth_value(auth, key, &mut context)?;
+                    let runtime_field = self.runtime_tokens.is_some()
+                        && match scheme.kind {
+                            "oauth2" => matches!(*key, "accessToken" | "headerPrefix"),
+                            "oauth1" => matches!(*key, "token" | "tokenSecret"),
+                            _ => false,
+                        };
+                    let value = if runtime_field {
+                        String::new()
+                    } else {
+                        auth_value(auth, key, &mut context)?
+                    };
                     Ok((
                         (*key).into(),
                         if value.is_empty() && !default.contains("{{") {
@@ -242,10 +260,16 @@ impl<'a> RequestResolver<'a> {
                     ))
                 })
                 .collect::<Result<_>>()?;
-            let resolved = crate::auth::ExecutionAuth {
+            let mut resolved = crate::auth::ExecutionAuth {
+                runtime_token: false,
                 kind: scheme.kind.into(),
                 fields,
             };
+            if matches!(scheme.kind, "oauth1" | "oauth2")
+                && let Some(tokens) = &self.runtime_tokens
+            {
+                tokens.apply(&mut resolved)?;
+            }
             resolved.validate()?;
             headers.shift_remove("authorization");
             execution_auth = Some(resolved);

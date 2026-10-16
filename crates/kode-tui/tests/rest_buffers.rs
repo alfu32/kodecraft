@@ -29,6 +29,7 @@ fn model() -> Workspace {
 }
 fn input(model: &Workspace, kind: BufferKind, root: &Path) -> Input {
     Input {
+        runtime_tokens: None,
         collection: model.export_collection(),
         path: NodePath(vec![0]),
         kind,
@@ -36,6 +37,7 @@ fn input(model: &Workspace, kind: BufferKind, root: &Path) -> Input {
         root: root.into(),
         environment: None,
         environment_text: None,
+        environment_draft: None,
         overrides: Vec::new(),
         draft: None,
         drafts: Default::default(),
@@ -291,4 +293,73 @@ fn draft_and_graphql_variables_are_verbatim_and_missing_files_cancellation_and_f
     let mut work = input(&model, BufferKind::RawBody, Path::new("."));
     work.path = NodePath::default();
     assert!(buffers::prepare(work, &CancellationToken::new()).is_err());
+}
+
+#[test]
+fn unopened_environment_drafts_are_captured_for_raw_preview() {
+    let mut model = model();
+    model
+        .set_node_field(
+            &NodePath(vec![0]),
+            "request",
+            Some(json!({"url":"https://{{host}}/"})),
+        )
+        .unwrap();
+    let id = model.create_environment("Draft environment");
+    model.set_environment_values(
+        &id,
+        vec![EnvironmentValue {
+            key: "host".into(),
+            value: json!("old.example.test"),
+            ..Default::default()
+        }],
+    );
+    let mut work = input(&model, BufferKind::RawRequest, Path::new("."));
+    work.environment = model.active_environment().cloned();
+    work.environment_draft = Some(Arc::from("host=draft.example.test"));
+    let prepared = buffers::prepare(work, &CancellationToken::new()).unwrap();
+    assert!(
+        prepared
+            .document
+            .snapshot()
+            .text()
+            .contains("Host: draft.example.test")
+    );
+}
+
+#[test]
+fn oauth_acquisition_uses_the_same_unopened_environment_draft_as_send_and_preview() {
+    use kode_tui::panels::rest::{editor::jobs::ModelCapture, oauth::Prepare};
+    let mut model = model();
+    let path = NodePath(vec![0]);
+    model.set_node_field(&path,"request",Some(json!({"url":"https://example.test/","auth":{"type":"oauth2","oauth2":[
+        {"key":"clientId","value":"{{client}}"},{"key":"authUrl","value":"https://identity.example.test/authorize"},{"key":"accessTokenUrl","value":"https://identity.example.test/token"}
+    ]}}))).unwrap();
+    let id = model.create_environment("Selected");
+    model.set_environment_values(
+        &id,
+        vec![EnvironmentValue {
+            key: "client".into(),
+            value: json!("old-client"),
+            ..Default::default()
+        }],
+    );
+    let prepared = Prepare {
+        tag: kode_core::JobTag {
+            workspace: WorkspaceGeneration(1),
+            request: kode_core::RequestId::fresh().unwrap(),
+            document: None,
+        },
+        key: "owner".into(),
+        path,
+        capture: ModelCapture {
+            project: model.project_state(),
+            environment_text: None,
+            environment_draft: Some(Arc::from("client=draft-client")),
+            root: "/synthetic".into(),
+        },
+    }
+    .prepare()
+    .unwrap();
+    assert_eq!(prepared.client_id, "draft-client");
 }

@@ -45,7 +45,7 @@ impl AppState {
         self.rest.response.ready = None;
         self.rest.pending_derived = None;
     }
-    fn rest_model_capture(&self) -> jobs::ModelCapture {
+    pub(super) fn rest_model_capture(&self) -> jobs::ModelCapture {
         let environment_text = self
             .rest
             .model
@@ -60,6 +60,12 @@ impl AppState {
         jobs::ModelCapture {
             project: self.rest.model.project_state(),
             environment_text,
+            environment_draft: self
+                .rest
+                .model
+                .active_environment()
+                .and_then(|environment| self.rest.drafts.get(&environment.id))
+                .cloned(),
             root: self.project.root.clone(),
         }
     }
@@ -139,6 +145,7 @@ impl AppState {
         }
         let capture = self.rest_model_capture();
         let input = Box::new(buffers::Input {
+            runtime_tokens: self.rest.oauth.tokens.get(&key).cloned(),
             collection: self.rest.model.export_collection(),
             path: path.clone(),
             kind,
@@ -146,6 +153,7 @@ impl AppState {
             root: self.project.root.clone(),
             environment: self.rest.model.active_environment().cloned(),
             environment_text: capture.environment_text,
+            environment_draft: capture.environment_draft,
             overrides: self.request_buffer_captures(),
             draft: self
                 .rest
@@ -501,6 +509,7 @@ impl AppState {
         self.drain_rest()
     }
     pub(super) fn drain_rest_form(&mut self) -> Result<()> {
+        self.sync_rest_oauth();
         if let Some(form) = &mut self.rest.form {
             form.running = self.rest.run.pending.is_some() || self.rest.run.running.is_some();
         }
@@ -512,6 +521,8 @@ impl AppState {
             .unwrap_or_default();
         for intent in intents {
             match intent {
+                Intent::OAuth(op) => self.rest_oauth_action(op)?,
+                Intent::OAuthRedirect { flow, text } => self.rest_oauth_redirect(flow, text),
                 Intent::Send => {
                     if let Some(form) = &self.rest.form {
                         self.send_rest_request(form.path.clone())?;

@@ -1,0 +1,100 @@
+{
+  "cases": [
+    {
+      "case": "authorization_code-refresh-send-nonpersistence",
+      "browser": true,
+      "size": [
+        100,
+        80
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "authorization_code-restart-has-no-runtime-token",
+      "size": [
+        100,
+        80
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "client_credentials-refresh-send-nonpersistence",
+      "browser": false,
+      "size": [
+        100,
+        80
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "client_credentials-restart-has-no-runtime-token",
+      "size": [
+        100,
+        80
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "authorization_code-refresh-send-nonpersistence",
+      "browser": true,
+      "size": [
+        60,
+        80
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "authorization_code-restart-has-no-runtime-token",
+      "size": [
+        60,
+        80
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "client_credentials-refresh-send-nonpersistence",
+      "browser": false,
+      "size": [
+        60,
+        80
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "client_credentials-restart-has-no-runtime-token",
+      "size": [
+        60,
+        80
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 8,
+  "pkce_verified": true,
+  "postman_replaced": true,
+  "listeners_released": true
+}

@@ -99,6 +99,10 @@ pub struct PasteProof {
     anchor: Option<usize>,
 }
 pub enum Intent {
+    Details {
+        title: String,
+        text: String,
+    },
     Work(Box<Work>),
     Console {
         source: String,
@@ -121,6 +125,8 @@ pub struct DatabasePanel {
     urls: Arc<UrlCatalog>,
     intents: Vec<Intent>,
     pending: HashMap<JobTag, CancellationToken>,
+    labels: HashMap<JobTag, String>,
+    last_detail: Option<(String, String)>,
     form_id: u64,
     modal_id: FocusId,
     previous: Option<Option<FocusId>>,
@@ -146,6 +152,8 @@ impl DatabasePanel {
             urls,
             intents: vec![],
             pending: HashMap::new(),
+            labels: HashMap::new(),
+            last_detail: None,
             form_id: 0,
             modal_id: FocusId(RequestId::fresh()?.0),
             previous: None,
@@ -171,6 +179,21 @@ impl DatabasePanel {
     fn work(&mut self, operation: Operation) -> Result<JobTag> {
         let tag = self.tag()?;
         let cancel = CancellationToken::new();
+        let label = match &operation {
+            Operation::Initialize => "Load datasource configuration".into(),
+            Operation::Restart => "Restart JDBC helper".into(),
+            Operation::Save(draft) => format!("Save datasource: {}", draft.definition.name),
+            Operation::Test(draft) => format!("Test connection: {}", draft.definition.name),
+            Operation::Connect(source) => format!("Connect: {}", source.name),
+            Operation::Close(source) => format!("Disconnect: {source}"),
+            Operation::Delete(source) => format!("Delete datasource: {source}"),
+            Operation::Resolve { spec, .. } => {
+                format!("Install JDBC driver: {}", spec.display_name)
+            }
+            Operation::Metadata(load) => format!("Metadata: {}", load.key.source()),
+            Operation::Recents(driver) => format!("JDBC URL suggestions: {driver}"),
+        };
+        self.labels.insert(tag, label);
         self.pending.insert(tag, cancel.clone());
         self.intents.push(Intent::Work(Box::new(Work {
             tag,
@@ -268,7 +291,53 @@ impl DatabasePanel {
             FieldAction::Changed => {}
         }
     }
+    fn details(&mut self) {
+        let detail = if let Some(install) = &self.install {
+            Some((
+                format!(
+                    "Install JDBC driver: {} / request {}",
+                    install.driver_name, install.tag.request.0
+                ),
+                install.message.clone(),
+            ))
+        } else if let Some(form) = &self.form {
+            self.last_detail
+                .as_ref()
+                .filter(|(_, text)| text == &form.status)
+                .cloned()
+                .or_else(|| {
+                    Some((
+                        format!("Datasource: {}", form.fields[0].value),
+                        form.status.clone(),
+                    ))
+                })
+        } else {
+            self.tree
+                .diagnostic()
+                .map(|(title, text)| {
+                    self.last_detail
+                        .as_ref()
+                        .filter(|(_, last)| last == &text)
+                        .cloned()
+                        .unwrap_or((title, text))
+                })
+                .or_else(|| self.last_detail.clone())
+                .or_else(|| {
+                    (!self.tree.notice.is_empty())
+                        .then(|| ("Database service".into(), self.tree.notice.clone()))
+                })
+        };
+        if let Some((title, text)) = detail {
+            self.intents.push(Intent::Details { title, text });
+        }
+    }
     pub fn dispatch(&mut self, event: &InputEvent, focus: &mut FocusState) -> Result<()> {
+        if matches!(event,InputEvent::Key(input) if input.key==Key::Function(4) && !input.modifiers.ctrl && !input.modifiers.alt && !input.modifiers.meta)
+        {
+            self.details();
+            return Ok(());
+        }
+
         if let Some(install) = &mut self.install {
             install.dispatch(event);
             let tag = install.tag;
@@ -279,6 +348,7 @@ impl DatabasePanel {
                         token.cancel();
                     }
                 }
+                Some(driver_install::Action::Details) => self.details(),
                 Some(driver_install::Action::Dismiss) => self.install = None,
                 None => {}
             }
@@ -298,6 +368,7 @@ impl DatabasePanel {
             let actions = form.take_actions();
             for action in actions {
                 match action {
+                    connection_dialog::Action::Details => self.details(),
                     connection_dialog::Action::Dismiss => {
                         if let Some(tag) = self.form.as_ref().and_then(|form| form.busy)
                             && let Some(cancel) = self.pending.get(&tag)
@@ -357,6 +428,7 @@ impl DatabasePanel {
     pub fn drain_tree(&mut self, focus: &mut FocusState) -> Result<()> {
         for action in self.tree.take_actions() {
             match action {
+                tree::Action::Details => self.details(),
                 tree::Action::New => self.edit(None, focus)?,
                 tree::Action::Edit(source) => {
                     if let Some(definition) =
@@ -392,6 +464,8 @@ impl DatabasePanel {
                     self.focus_modal(focus);
                 }
                 tree::Action::Load(load) => {
+                    self.labels
+                        .insert(load.tag, format!("Metadata: {}", load.key.source()));
                     self.pending.insert(load.tag, load.cancel.clone());
                     self.intents.push(Intent::Work(Box::new(Work {
                         tag: load.tag,
@@ -412,8 +486,24 @@ impl DatabasePanel {
         focus: &mut FocusState,
     ) {
         self.pending.remove(&tag);
+        let label = self
+            .labels
+            .remove(&tag)
+            .unwrap_or_else(|| "Database operation".into());
         if tag.workspace != self.tree.generation {
             return;
+        }
+        if let Err(error) = &result {
+            self.last_detail = Some((
+                format!("{label} / request {}", tag.request.0),
+                error.clone(),
+            ));
+        }
+        if let Ok(Report::Installed(Err(error))) = &result {
+            self.last_detail = Some((
+                format!("{label} / request {}", tag.request.0),
+                error.to_string(),
+            ));
         }
         if let Context::Metadata(load) = context {
             self.tree.complete(
@@ -495,6 +585,7 @@ impl DatabasePanel {
                             "Driver operation could not be completed",
                         )),
                     );
+                    install.message = error.clone();
                     if let Some(form) = &mut self.form {
                         form.status = error.clone();
                     }

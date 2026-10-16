@@ -184,3 +184,41 @@ fn cancel_acknowledgement_and_unknown_outcome_remain_separate_from_final_complet
     assert_eq!(default_filename("sql@My SQL:2"), "My_SQL_2.sql");
     assert_eq!(default_filename("query.SQL"), "query.SQL");
 }
+
+#[test]
+fn long_multiline_sql_errors_wrap_without_losing_tail_state_vendor_or_causal_messages() {
+    let mut snapshot = fixture();
+    snapshot.preview = Arc::new(Preview::default());
+    let failure = snapshot
+        .completion
+        .as_mut()
+        .unwrap()
+        .error
+        .as_mut()
+        .unwrap();
+    failure.message = format!(
+        "FIRST\n{}\nFINAL SQL EXPLANATION",
+        "long diagnostic details ".repeat(400)
+    );
+    failure.chained[0].message = "CAUSE TAIL".into();
+    for width in [60, 100] {
+        let mut panel = ResultsPanel::new().unwrap();
+        panel.publish(snapshot.clone());
+        let first = render(&mut panel, width, 12);
+        assert!(first.contains("FIRST"));
+        let mut focus = FocusState {
+            focused: Some(panel.id),
+            ..Default::default()
+        };
+        panel.dispatch(&key(Key::End, false), &mut focus);
+        let last = render(&mut panel, width, 12);
+        assert!(last.contains("FINAL SQL EXPLANATION"));
+        assert!(last.contains("SQLSTATE 42000 / 7"));
+        assert!(last.contains("CAUSE TAIL"));
+        assert!(
+            panel
+                .details()
+                .contains(&"long diagnostic details ".repeat(400))
+        );
+    }
+}

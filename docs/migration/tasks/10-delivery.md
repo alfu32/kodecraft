@@ -47,7 +47,7 @@ TtydAdapterTest, native resource layout and source README remote-mode instructio
 
 **Status:** todo
 
-**Depends:** Z01, Z02, D02. **Owns:** `scripts/`, `.github/workflows/`, packaging
+**Depends:** Z01, Z02, D02, U03. **Owns:** `scripts/`, `.github/workflows/`, packaging
 metadata, notices, install/run documentation.
 **Read:** source build.gradle.kts distribution tasks, snapcraft.yaml, scripts,
 LICENSE.md, native library licenses and source launcher behavior.
@@ -71,7 +71,7 @@ LICENSE.md, native library licenses and source launcher behavior.
 
 **Status:** todo
 
-**Depends:** E13, L12, W05, V02, V03, G03, D09, R08, R10, Z03.
+**Depends:** E13, L12, W05, V02, V03, G03, D09, R08, R10, Z03, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12.
 **Owns:** `docs/parity/release.md`, full integration test orchestration.
 **Read:** all ledgers, EDITOR-UX.md, COMPATIBILITY.md and original feature screenshots.
 

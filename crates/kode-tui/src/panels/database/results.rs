@@ -27,6 +27,10 @@ pub struct ResultsPanel {
     pub area: Rect,
     snapshot: Snapshot,
     messages: Vec<String>,
+    wrapped: Vec<String>,
+    wrap_width: Option<u16>,
+    details_hit: Rect,
+    details_requested: bool,
     widths: Vec<Vec<usize>>,
     samples: Vec<usize>,
     tabs: Vec<(Rect, usize)>,
@@ -90,7 +94,7 @@ fn value(cell: &Cell, width: usize) -> String {
 fn errors(out: &mut Vec<String>, label: &str, error: &SqlError) {
     out.push(format!(
         "{label}: {} [SQLSTATE {} / {}]",
-        clipped(&error.message, 2048),
+        error.message,
         error.sql_state.as_deref().unwrap_or("-"),
         error.vendor_code
     ));
@@ -98,7 +102,37 @@ fn errors(out: &mut Vec<String>, label: &str, error: &SqlError) {
         errors(out, "Caused by", next);
     }
 }
+pub fn sql_error_details(error: &SqlError) -> String {
+    let mut out = vec![];
+    errors(&mut out, "Error", error);
+    out.join("\n")
+}
 impl ResultsPanel {
+    pub fn details(&self) -> String {
+        format!(
+            "Execution: {}\n\n{}",
+            self.snapshot
+                .execution_id
+                .as_deref()
+                .unwrap_or("not started"),
+            self.messages.join("\n")
+        )
+    }
+    pub fn take_details_request(&mut self) -> bool {
+        std::mem::take(&mut self.details_requested)
+    }
+    fn wrap_messages(&mut self) {
+        if self.wrap_width != Some(self.area.width) {
+            self.wrapped = self
+                .messages
+                .iter()
+                .flat_map(|message| message.lines())
+                .flat_map(|line| crate::widgets::text_panel::wrap_line(line, self.area.width))
+                .collect();
+            self.wrap_width = Some(self.area.width);
+        }
+    }
+
     pub fn new() -> Result<Self> {
         Ok(Self {
             id: FocusId(RequestId::fresh()?.0),
@@ -108,6 +142,10 @@ impl ResultsPanel {
             area: Rect::default(),
             snapshot: Snapshot::default(),
             messages: vec![],
+            wrapped: vec![],
+            wrap_width: None,
+            details_hit: Rect::default(),
+            details_requested: false,
             widths: vec![],
             samples: vec![],
             tabs: vec![],
@@ -115,6 +153,7 @@ impl ResultsPanel {
     }
     pub fn publish(&mut self, snapshot: Snapshot) {
         let messages_selected = self.tab == self.snapshot.preview.result_sets.len() && self.tab > 0;
+        self.wrap_width = None;
         self.messages.clear();
         for count in &snapshot.preview.update_counts {
             self.messages.push(format!("Update count: {count}"));
@@ -201,7 +240,7 @@ impl ResultsPanel {
             .preview
             .result_sets
             .get(self.tab)
-            .map_or(self.messages.len(), |set| set.received_rows)
+            .map_or(self.wrapped.len(), |set| set.received_rows)
     }
     fn clamp(&mut self) {
         let viewport = if self.snapshot.preview.result_sets.get(self.tab).is_some() {
@@ -220,6 +259,10 @@ impl ResultsPanel {
         );
     }
     pub fn dispatch(&mut self, event: &InputEvent, focus: &mut FocusState) -> bool {
+        if crate::widgets::controls::button(event, self.details_hit, false) {
+            self.details_requested = true;
+            return true;
+        }
         match event {
             InputEvent::Key(input)
                 if !input.modifiers.ctrl
@@ -295,8 +338,10 @@ impl ResultsPanel {
     }
     pub fn render(&mut self, area: Rect, buffer: &mut Buffer, theme: &Theme, focused: bool) {
         self.area = area;
+        self.wrap_messages();
         self.clamp();
         self.tabs.clear();
+        self.details_hit = Rect::default();
         if area.is_empty() {
             return;
         }
@@ -338,12 +383,15 @@ impl ResultsPanel {
         if area.height < 2 {
             return;
         }
+        let details_width = area.width.min(12);
+        self.details_hit = Rect::new(area.right() - details_width, area.y + 1, details_width, 1);
+        let tabs_right = self.details_hit.x;
         let mut x = area.x;
         let start = self
             .tab
             .saturating_sub((area.width as usize / 14).max(1) - 1);
         for tab in start..=self.snapshot.preview.result_sets.len() {
-            if x >= area.right() {
+            if x >= tabs_right {
                 break;
             }
             let label = if tab == self.snapshot.preview.result_sets.len() {
@@ -351,7 +399,7 @@ impl ResultsPanel {
             } else {
                 format!(" Result {} ", tab + 1)
             };
-            let rect = Rect::new(x, area.y + 1, (label.len() as u16).min(area.right() - x), 1);
+            let rect = Rect::new(x, area.y + 1, (label.len() as u16).min(tabs_right - x), 1);
             draw_text(
                 rect,
                 buffer,
@@ -365,6 +413,12 @@ impl ResultsPanel {
             self.tabs.push((rect, tab));
             x = rect.right();
         }
+        draw_text(
+            self.details_hit,
+            buffer,
+            "[F4 Details]",
+            theme.style("lsp-button"),
+        );
         if area.height < 3 {
             return;
         }
@@ -438,7 +492,7 @@ impl ResultsPanel {
             }
         } else {
             for (offset, message) in self
-                .messages
+                .wrapped
                 .iter()
                 .skip(self.row)
                 .take(area.height.saturating_sub(2) as usize)
@@ -447,7 +501,7 @@ impl ResultsPanel {
                 draw_text(
                     Rect::new(area.x, area.y + 2 + offset as u16, area.width, 1),
                     buffer,
-                    &clipped(message, area.width as usize),
+                    message,
                     style,
                 );
             }

@@ -228,16 +228,11 @@ fn remove_unused(
 pub(super) fn connection_error(error: kode_database::connections::Error) -> DomainError {
     if let Some(sql) = error.sql {
         DomainError::Sql {
-            sqlstate: sql.sql_state.filter(|state| {
+            sqlstate: sql.sql_state.clone().filter(|state| {
                 state.len() <= 16 && state.chars().all(|ch| ch.is_ascii_alphanumeric())
             }),
             vendor_code: sql.vendor_code,
-            message: sql
-                .message
-                .chars()
-                .take(2048)
-                .map(|ch| if ch.is_control() { ' ' } else { ch })
-                .collect(),
+            message: crate::panels::database::results::sql_error_details(&sql),
         }
     } else {
         DomainError::Unsupported(error.to_string())
@@ -393,7 +388,7 @@ impl super::AppRuntime {
                     },
                     Operation::Close(source)=>{database.connections.close(&source,&cancel).await.map_err(|error|DomainError::Unsupported(error.to_string()))?;Report::Closed},
                     Operation::Test(draft)=>{let(result,warning)=database.test(draft,&cancel).await?;Report::Test{result,warning}},
-                    Operation::Metadata(load)=>{if load.refresh{database.metadata.refresh_all(load.key.source());}Report::Metadata(database.metadata.introspect(load.key.source(),load.request,load.refresh,&cancel).await.map_err(|error|DomainError::Unsupported(error.to_string()))?)},
+                    Operation::Metadata(load)=>{if load.refresh{database.metadata.refresh_all(load.key.source());}Report::Metadata(database.metadata.introspect(load.key.source(),load.request,load.refresh,&cancel).await.map_err(|error|connection_error(error.into()))?)},
                     Operation::Resolve{spec,progress}=>Report::Installed(database.installer.resolve(&spec,progress,&cancel).await),
                     Operation::Recents(driver)=>Report::Recents(database.recents(&driver).await?),
                 }))

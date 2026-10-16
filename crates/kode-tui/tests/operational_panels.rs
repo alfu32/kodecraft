@@ -138,6 +138,28 @@ fn help_comes_from_scoped_chords_and_preserves_letter_case_and_modifier_conflict
         Key::Character('T')
     );
     assert!(shortcuts::command_key(Scope::Rest, plain('R')).is_none());
+    let alt_f = KeyInput {
+        key: Key::Character('f'),
+        modifiers: Modifiers {
+            alt: true,
+            ..Default::default()
+        },
+        repeat: false,
+    };
+    let ctrl_f = KeyInput {
+        modifiers: Modifiers {
+            ctrl: true,
+            ..Default::default()
+        },
+        ..alt_f
+    };
+    assert!(shortcuts::command_key(Scope::Global, alt_f).is_some());
+    assert!(shortcuts::command_key(Scope::Editor, alt_f).is_none());
+    assert!(shortcuts::command_key(Scope::Global, ctrl_f).is_none());
+    assert_eq!(
+        kode_tui::input::bindings::editor_command(ctrl_f),
+        Some(kode_core::commands::EditorCommand::OpenSearch)
+    );
     let help = shortcuts::help_lines().join("\n");
     for binding in shortcuts::BINDINGS {
         assert!(help.contains(binding.description));

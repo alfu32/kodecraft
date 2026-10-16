@@ -1,5 +1,4 @@
-//! Visual order follows the original TUI; numbered shortcuts retain their
-//! established semantic targets independently of that order.
+//! Visual order follows the original TUI. Alt+1..8 follows this same order (B007).
 pub const FILES: usize = 0;
 pub const PROJECT: usize = 1;
 pub const GIT: usize = 2;
@@ -11,4 +10,4 @@ pub const HELP: usize = 7;
 pub const TITLES: [&str; 8] = [
     "Files", "Project", "Git", "Database", "REST", "About", "Settings", "Help",
 ];
-pub const SHORTCUTS: [usize; 8] = [FILES, PROJECT, HELP, SETTINGS, GIT, DATABASE, REST, ABOUT];
+pub const SHORTCUTS: [usize; 8] = [FILES, PROJECT, GIT, DATABASE, REST, ABOUT, SETTINGS, HELP];

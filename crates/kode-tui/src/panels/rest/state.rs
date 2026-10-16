@@ -36,6 +36,7 @@ pub struct Entry {
     pub descriptor: HostDescriptor,
 }
 pub struct RestState {
+    pub oauth: super::oauth::State,
     pub runner: super::runner::Runner,
     pub response: super::editor::response::Panel,
     pub form: Option<Form>,
@@ -111,6 +112,7 @@ impl RestState {
             ..Default::default()
         };
         Ok(Self {
+            oauth: Default::default(),
             runner: super::runner::Runner::new()?,
             response,
             form: None,
@@ -293,6 +295,7 @@ pub enum OpenData {
     Notices(Arc<Value>),
 }
 pub enum Work {
+    OAuth(Box<super::oauth::Prepare>),
     Editor(Box<jobs::Job>),
     Run(Box<super::run::Prepare>),
     Open {
@@ -326,6 +329,9 @@ pub enum Work {
 }
 #[derive(Clone)]
 pub enum Context {
+    OAuth {
+        key: String,
+    },
     Editor(jobs::Context),
     Run {
         structure: u64,
@@ -350,6 +356,7 @@ pub enum Context {
     },
 }
 pub enum Reply {
+    OAuth(Box<kode_rest::oauth::Config>),
     Editor(Box<jobs::Reply>),
     Run(Box<super::run::Prepared>),
     Opened(Document),
@@ -360,6 +367,9 @@ pub enum Reply {
 impl Work {
     pub fn context(&self) -> Context {
         match self {
+            Self::OAuth(work) => Context::OAuth {
+                key: work.key.clone(),
+            },
             Self::Editor(job) => Context::Editor(job.context()),
             Self::Run(work) => Context::Run {
                 structure: work.structure,
@@ -400,6 +410,7 @@ impl Work {
     }
     pub fn tag(&self) -> JobTag {
         match self {
+            Self::OAuth(work) => work.tag,
             Self::Editor(job) => job.tag(),
             Self::Run(work) => work.tag,
             Self::Open { tag, .. }
@@ -414,6 +425,12 @@ impl Work {
             return Err(DomainError::Cancelled);
         }
         let result = match self {
+            Self::OAuth(work) => {
+                let context = Context::OAuth {
+                    key: work.key.clone(),
+                };
+                (context, Reply::OAuth(Box::new(work.prepare()?)))
+            }
             Self::Editor(job) => {
                 let context = Context::Editor(job.context());
                 (context, Reply::Editor(Box::new(job.prepare(cancel)?)))

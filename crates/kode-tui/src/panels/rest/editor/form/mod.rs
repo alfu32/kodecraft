@@ -2,6 +2,7 @@
 //! workers and execution; this reducer edits only the selected model subtree.
 mod input;
 mod render;
+use crate::panels::rest::oauth::{Action as OAuthAction, View as OAuthView};
 use crate::{
     focus::{FocusId, FocusState},
     input::terminal::InputEvent,
@@ -12,7 +13,7 @@ use crate::{
     theme::Theme,
     widgets::field::{FieldAction, TextField},
 };
-use kode_core::{DomainError, RequestId, Result};
+use kode_core::{DomainError, JobTag, RequestId, Result};
 use kode_rest::{
     model::{
         NodePath, Workspace,
@@ -51,6 +52,7 @@ pub enum BufferKind {
 }
 #[derive(Clone, PartialEq, Eq)]
 pub enum Action {
+    OAuth(OAuthAction),
     Focus(Field),
     Tab(Tab),
     Send,
@@ -70,6 +72,11 @@ pub enum Action {
     Remove(Rows, usize),
 }
 pub enum Intent {
+    OAuth(OAuthAction),
+    OAuthRedirect {
+        flow: JobTag,
+        text: String,
+    },
     Send,
     ClearCookies,
     FormatBody,
@@ -169,6 +176,7 @@ pub struct Derived {
 }
 enum Row {
     Info(String),
+    Wrapped(String),
     Field(&'static str, Field),
     Buttons(Vec<(String, Action)>),
     Entry {
@@ -190,10 +198,14 @@ struct RowCache {
     reveal: bool,
     rows: Arc<Vec<Row>>,
 }
+enum ModalPurpose {
+    Row(Rows, usize),
+    Redirect(JobTag),
+    Display,
+}
 struct Modal {
     dialog: EntryDialog,
-    kind: Rows,
-    index: usize,
+    purpose: ModalPurpose,
     expected: Arc<Value>,
     previous: Option<FocusId>,
 }
@@ -214,6 +226,7 @@ pub struct Form {
     derived: Derived,
     pub message: String,
     pub closed: bool,
+    pub oauth: OAuthView,
     pub running: bool,
     pub reveal: bool,
     pub selected_buffer: Option<BufferKind>,
@@ -234,6 +247,12 @@ pub struct Form {
     virtual_height: usize,
 }
 impl Form {
+    pub fn set_oauth(&mut self, view: OAuthView) {
+        if self.oauth != view {
+            self.oauth = view;
+            self.row_cache = None;
+        }
+    }
     pub fn new(path: NodePath, key: String, prepared: Prepared) -> Result<Self> {
         Ok(Self {
             id: FocusId(RequestId::fresh()?.0),
@@ -253,6 +272,7 @@ impl Form {
             derived: Derived::default(),
             message: String::new(),
             closed: false,
+            oauth: OAuthView::default(),
             running: false,
             reveal: false,
             selected_buffer: None,
@@ -464,6 +484,64 @@ impl Form {
                     rows.push(Row::Info(
                         "Redirects are returned for review with this authentication type".into(),
                     ));
+                }
+                if self.request
+                    && effective_kind.is_some_and(|kind| matches!(kind, "oauth1" | "oauth2"))
+                {
+                    let kind = if effective_kind == Some("oauth1") {
+                        "oauth1"
+                    } else {
+                        "oauth2"
+                    };
+                    rows.push(Row::Buttons(vec![(
+                        if own.is_none() {
+                            "Create local OAuth settings"
+                        } else {
+                            "OAuth settings"
+                        }
+                        .into(),
+                        Action::Auth(Some(kind)),
+                    )]));
+                    let mut controls = vec![];
+                    if self.oauth.pending {
+                        controls.push(("Cancel OAuth".into(), Action::OAuth(OAuthAction::Cancel)));
+                    } else {
+                        controls
+                            .push(("Acquire token".into(), Action::OAuth(OAuthAction::Acquire)));
+                    }
+                    if self.oauth.can_refresh && !self.oauth.pending {
+                        controls
+                            .push(("Refresh token".into(), Action::OAuth(OAuthAction::Refresh)));
+                    }
+                    if self.oauth.has_token {
+                        controls.push(("Clear token".into(), Action::OAuth(OAuthAction::Clear)));
+                    }
+                    rows.push(Row::Buttons(controls));
+                    rows.push(Row::Wrapped(self.oauth.message.clone()));
+                    if let Some(url) = &self.oauth.url {
+                        rows.push(Row::Wrapped(url.clone()));
+                        rows.push(Row::Buttons(vec![
+                            ("Copy login URL".into(), Action::OAuth(OAuthAction::CopyUrl)),
+                            ("View login URL".into(), Action::OAuth(OAuthAction::ViewUrl)),
+                        ]));
+                    }
+                    if let Some(code) = &self.oauth.code {
+                        rows.push(Row::Info(format!("Device code: {code}")));
+                    }
+                    if let Some(callback) = &self.oauth.callback {
+                        rows.push(Row::Wrapped(format!("Callback: {callback}")));
+                        if callback.starts_with("https://localhost:")
+                            || callback.starts_with("https://127.0.0.1:")
+                        {
+                            rows.push(Row::Wrapped("Local HTTPS uses a temporary self-signed certificate; your browser may ask you to accept it. The provider must allow this redirect URI. For a remote browser, paste its complete redirect URL.".into()));
+                        }
+                    }
+                    if self.oauth.flow.is_some() && self.oauth.callback.is_some() {
+                        rows.push(Row::Buttons(vec![(
+                            "Paste redirect URL".into(),
+                            Action::OAuth(OAuthAction::PasteRedirect),
+                        )]));
+                    }
                 }
                 self.entry_rows(model, Rows::Auth, &mut rows)?;
                 rows.push(Row::Buttons(vec![(

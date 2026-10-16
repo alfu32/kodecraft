@@ -23,7 +23,7 @@
       "status": "passed"
     },
     {
-      "case": "uat-alt-f-ctrl-alt-f-and-retained-search-aliases",
+      "case": "uat-ctrl-f-file-alt-f-project-and-project-aliases",
       "size": [
         100,
         30
@@ -34,7 +34,7 @@
       "status": "passed"
     },
     {
-      "case": "uat-alt-f-ctrl-alt-f-and-retained-search-aliases",
+      "case": "uat-ctrl-f-file-alt-f-project-and-project-aliases",
       "size": [
         60,
         18
@@ -59,17 +59,17 @@
   "idle_samples": [
     {
       "width": 100,
-      "loop_per_second": 58,
+      "loop_per_second": 47,
       "draw_per_second": 2,
-      "rss_mib": 73,
-      "cpu_percent": 0.5
+      "rss_mib": 74,
+      "cpu_percent": 1.3
     },
     {
       "width": 60,
-      "loop_per_second": 58,
+      "loop_per_second": 22,
       "draw_per_second": 2,
-      "rss_mib": 71,
-      "cpu_percent": 0.4
+      "rss_mib": 73,
+      "cpu_percent": 0.5
     }
   ],
   "passed": 5

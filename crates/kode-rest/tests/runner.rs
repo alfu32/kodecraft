@@ -10,6 +10,7 @@ use std::{path::PathBuf, sync::Arc, time::Duration};
 use tokio::sync::mpsc;
 fn definition(count: usize) -> Definition {
     Definition {
+        runtime_tokens: Default::default(),
         collection: Arc::new(
             json!({"info":{},"item":(0..count).map(|index|json!({"id":"duplicate","name":format!("Item {index}"),"request":{"url":"{{missing}}"}})).collect::<Vec<_>>()}),
         ),

@@ -1,6 +1,8 @@
 //! Query values are separate from persisted source DTOs. Binary and SQL NULL
 //! cannot accidentally collapse into ordinary display text on the wire.
 use serde::{Deserialize, Serialize};
+/// Helper emits at most 65,536 Unicode scalars plus an explicit truncation marker.
+pub const SQL_ERROR_MESSAGE_BYTES: usize = 4 * 65_536 + 128;
 
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "camelCase")]

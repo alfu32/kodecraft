@@ -45,7 +45,7 @@ def main():
                     if x>=0:return f'\x1b[<0;{x+3};{y+1}M\x1b[<0;{x+3};{y+1}m'.encode()
                 return None
             actions = [
-                (b"Ready", 0.15, b"\x1b5"),
+                (b"Ready", 0.15, b"\x1b3"),
                 (b"Note.txt", 0.15, b" "),
                 (b"Staged", 0.15, b"\t\x1b[200~" + message.encode() + b"\x1b[201~"),
                 (message.encode(), 0.15, mouse),
@@ -64,7 +64,7 @@ def main():
         root = base / "no-repository"
         root.mkdir()
         result = terminal.run_case(root, base / "init-config", (60, 18), [
-            (b"\x1b[?1049h", 0.2, b"\x1b5"),
+            (b"\x1b[?1049h", 0.2, b"\x1b3"),
             (b"Not a Git", 0.15, b"i"),
             (b"Initialized", 0.2, b"\x11"),
         ], expected=[b"Not a Git", b"Initialized"], env_overrides=environment)

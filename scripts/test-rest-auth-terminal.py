@@ -175,7 +175,8 @@ def main():
                     result = editors.terminal.run_case(project, base / "config", (width, 40), actions, env_overrides=env)
                     saved = json.loads((project / ".kode-rs.json").read_text())["restApi"]["collection"]
                     assert saved["item"][0]["request"]["auth"]["type"] == kind
-                    assert {entry["key"]: entry["value"] for entry in saved["item"][0]["request"]["auth"][kind]} == values
+                    saved_values = {entry["key"]: entry["value"] for entry in saved["item"][0]["request"]["auth"][kind]}
+                    assert all(saved_values[key] == value for key, value in values.items())
                     assert saved["x-unknown"] == 42
                     assert not failures, failures
                     cases.append({"case": "select-edit-sign-send-" + kind, **result})

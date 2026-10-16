@@ -50,7 +50,7 @@ def main():
                 environment = {"KODE_LSP_CATALOG": str(catalog), "KODE_LSP_HOME": str(case / "no-lsp"), "KODE_RS_DATABASE_HOME": str(case / "database"), "KODE_RS_JDBC_HOME": str(case / "plugins"), "KODE_JAVA": str(case / "absent-java")}
                 draft = f"# PTY comment {width}\nhost=loopback\nunfinished"
                 actions = [
-                    (b"Ready", 0.15, b"\x1b7"),
+                    (b"Ready", 0.15, b"\x1b5"),
                     (b"REST API", 0.15, b"i"),
                     (b"Import Postman", 0.15, b"\x01" + paste("input.json") + b"\r"),
                     (b"Imported collection", 0.15, b"r"),
@@ -59,7 +59,7 @@ def main():
                     (b"Exported collection", 0.15, b"\tn"),
                     (b"New environment", 0.15, b"\x01" + paste("PTY env") + b"\r"),
                     (b"Created environment", 0.35, paste(draft)),
-                    (b"host=loopback", 0.15, b"\x1b7c"),
+                    (b"host=loopback", 0.15, b"\x1b5c"),
                     (b"Copy environment", 0.15, b"\x01" + paste("PTY copy") + b"\r"),
                     (b"Copied environment", 0.35, b"\x11"),
                 ]

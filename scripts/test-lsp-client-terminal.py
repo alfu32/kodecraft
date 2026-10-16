@@ -28,7 +28,7 @@ def main():
                 "configuration": {"fixture": {"option": 42}}, "versions": []
             }]}))
             actions = [
-                (b"\x1b[?1049h", 0.2, b"\x1b4"),
+                (b"\x1b[?1049h", 0.2, b"\x1b7"),
                 (b"stopped | Installed", 0.1, b"s"),
                 (b"Started fixture", 0.1, b"r"),
             ]

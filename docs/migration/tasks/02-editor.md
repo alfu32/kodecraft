@@ -237,7 +237,7 @@ RestEditorView and RestKeyValueDialog integration sites.
 
 **Status:** todo
 
-**Depends:** E09, E10, E11, E12, W04, W05, P03, D08, R07, G03.
+**Depends:** E09, E10, E11, E12, W04, W05, P03, D08, R07, G03, U01, U04, U06, U07.
 **Owns:** `kode-tui/tests/editor_interactions/`, `docs/parity/editor-results.md`.
 **Read:** all UX rows and original editor/input/search/highlight/embedded-editor tests.
 

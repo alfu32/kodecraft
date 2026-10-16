@@ -1,3 +1,4 @@
+mod diagnostics;
 pub mod dispatch;
 pub mod effects;
 pub mod events;
@@ -5,6 +6,7 @@ pub mod metrics;
 pub mod panel;
 mod rest;
 mod rest_editor;
+mod rest_oauth;
 mod rest_response;
 mod rest_runner;
 pub mod runner;

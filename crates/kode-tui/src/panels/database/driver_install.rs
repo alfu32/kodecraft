@@ -22,6 +22,7 @@ use tokio::sync::watch;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Action {
+    Details,
     Cancel,
     Dismiss,
 }
@@ -35,6 +36,7 @@ pub struct DriverInstallDialog {
     progress: watch::Receiver<Progress>,
     cancel_requested: bool,
     button: Rect,
+    details: Rect,
     action: Option<Action>,
 }
 impl DriverInstallDialog {
@@ -49,6 +51,7 @@ impl DriverInstallDialog {
             progress,
             cancel_requested: false,
             button: Rect::default(),
+            details: Rect::default(),
             action: None,
         }
     }
@@ -105,6 +108,7 @@ impl DriverInstallDialog {
     pub fn render(&mut self, area: Rect, buffer: &mut Buffer, theme: &Theme) {
         let modal = centered(area.intersection(buffer.area), 82, 12);
         self.button = Rect::default();
+        self.details = Rect::default();
         if modal.is_empty() {
             return;
         }
@@ -141,7 +145,11 @@ impl DriverInstallDialog {
             draw_text(
                 Rect::new(content.x, content.y, content.width, 1),
                 buffer,
-                &display_text(if self.done { &self.message } else { phase }),
+                &display_text(&if self.done {
+                    crate::widgets::diagnostic::summary(&self.message)
+                } else {
+                    phase.into()
+                }),
                 theme.style("project-search-dialog"),
             );
         }
@@ -207,10 +215,23 @@ impl DriverInstallDialog {
             u16::from(modal.height > 0),
         );
         draw_text(self.button, buffer, label, theme.style("lsp-button"));
+        if self.done {
+            self.details = Rect::new(x, self.button.y, width.saturating_sub(length).min(12), 1);
+            draw_text(
+                self.details,
+                buffer,
+                "[F4 Details]",
+                theme.style("lsp-button"),
+            );
+        }
     }
 }
 impl EventTarget for DriverInstallDialog {
     fn dispatch(&mut self, event: &InputEvent) -> bool {
+        if button(event, self.details, false) {
+            self.action = Some(Action::Details);
+            return true;
+        }
         if let InputEvent::Key(input) = event
             && input.key == Key::Escape
         {

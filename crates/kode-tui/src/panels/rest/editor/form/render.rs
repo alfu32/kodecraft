@@ -113,6 +113,9 @@ impl Form {
                         }
                     }
                     Row::Embed(_, kind) => self.controls.push((virtual_y, Action::Buffer(*kind))),
+                    Row::Wrapped(text) => {
+                        virtual_y += wrapped(text, area.width).len().saturating_sub(1)
+                    }
                     Row::Info(_) => {}
                 }
                 virtual_y += 1;
@@ -350,6 +353,19 @@ impl Form {
                     .map(|row| content.y + row as u16)
             };
             match row {
+                Row::Wrapped(text) => {
+                    for line in wrapped(text, content.width) {
+                        if let Some(y) = visible(offset) {
+                            draw_text(
+                                Rect::new(content.x, y, content.width, 1),
+                                buffer,
+                                &line,
+                                theme.style("content"),
+                            );
+                        }
+                        offset += 1;
+                    }
+                }
                 Row::Info(text) => {
                     if let Some(y) = visible(offset) {
                         draw_text(
@@ -453,4 +469,26 @@ impl Form {
         }
         Ok(cursor)
     }
+}
+
+fn wrapped(text: &str, width: u16) -> Vec<String> {
+    use unicode_width::UnicodeWidthChar;
+    let text = display_text(text);
+    let mut lines = vec![];
+    let mut line = String::new();
+    let mut used = 0;
+    for c in text.chars() {
+        let size = c.width().unwrap_or(0);
+        if c == '\n' || used + size > usize::from(width.max(1)) {
+            lines.push(std::mem::take(&mut line));
+            used = 0;
+            if c == '\n' {
+                continue;
+            }
+        }
+        line.push(c);
+        used += size;
+    }
+    lines.push(line);
+    lines
 }

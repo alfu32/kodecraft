@@ -50,7 +50,13 @@ impl ResolvedRequest {
             super::request::validate_header(header)?;
             text.push_str(&header.name);
             text.push_str(": ");
-            text.push_str(&header.value);
+            if header.name.eq_ignore_ascii_case("Authorization")
+                && self.auth.as_ref().is_some_and(|auth| auth.runtime_token)
+            {
+                text.push_str("[runtime OAuth credential]");
+            } else {
+                text.push_str(&header.value);
+            }
             text.push('\n');
         }
         if !matches!(self.body, BodyPlan::Empty) {

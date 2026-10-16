@@ -88,6 +88,7 @@ impl AppRuntime {
         self.state.sql.controls.remove(&source);
         match result {
             Ok(session) => {
+                self.state.sql.diagnostics.remove(&source);
                 self.state
                     .sql
                     .manager
@@ -96,7 +97,17 @@ impl AppRuntime {
                 self.state.notice =
                     "Transaction operation completed for all consoles using this datasource".into();
             }
-            Err(error) => self.state.notice = error.to_string(),
+            Err(error) => {
+                let text = format!(
+                    "Transaction operation / request {}\n{}",
+                    tag.request.0, error
+                );
+                self.state.sql.diagnostics.insert(source, text);
+                self.state.notice = format!(
+                    "{} [F4 Details]",
+                    crate::widgets::diagnostic::summary(&error.to_string())
+                );
+            }
         }
         Ok(())
     }
@@ -345,7 +356,7 @@ impl AppRuntime {
         });
         self.state.sql.running.remove(&context.console);
         if report.result.unknown_outcome {
-            self.state.notice="SQL outcome unknown. Check the database before retrying. Alt+6, R restarts the JDBC service; c reconnects.".into();
+            self.state.notice="SQL outcome unknown. Check the database before retrying. Alt+4, R restarts the JDBC service; c reconnects.".into();
         }
         if self.state.sql.manager.finish(
             &context.console,

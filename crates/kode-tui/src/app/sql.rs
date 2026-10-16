@@ -17,6 +17,22 @@ pub(super) fn descriptor(root: &std::path::Path, id: String, title: String) -> H
     descriptor
 }
 impl AppState {
+    fn show_sql_diagnostic(&mut self, id: &str) -> Result<()> {
+        let console = self.sql.manager.get(id).expect("active SQL console");
+        let mut text = format!(
+            "Console: {}\nDatasource: {}\n",
+            id, console.state.data_source_id
+        );
+        if let Some(error) = self.sql.diagnostics.get(&console.state.data_source_id) {
+            text.push_str(error);
+            text.push_str("\n\n");
+        }
+        if let Some(panel) = self.sql.results.get(id) {
+            text.push_str(&panel.details());
+        }
+        self.show_diagnostic("SQL diagnostics".into(), text)
+    }
+
     pub(super) fn cancel_sql(&mut self, id: &str) -> Result<()> {
         let tag = self.tag()?;
         let Some(running) = self.sql.running.get_mut(id) else {
@@ -327,10 +343,28 @@ impl AppState {
                 view.host.transient = None;
             }
         }
-        if let Some(panel) = self.sql.results.get_mut(&id)
-            && panel.dispatch(event, &mut self.focus)
-        {
+        let open_details = matches!(event,InputEvent::Key(input) if input.key==Key::Function(4) && !input.modifiers.ctrl && !input.modifiers.alt && !input.modifiers.meta);
+        let sql_focused =
+            self.editor.as_ref().is_some_and(|view| {
+                self.focus.focused == Some(view.input.id) && !view.search.visible
+            }) || self
+                .sql
+                .results
+                .get(&id)
+                .is_some_and(|panel| self.focus.focused == Some(panel.id));
+        if open_details && sql_focused {
+            self.show_sql_diagnostic(&id)?;
             return Ok(true);
+        }
+        if let Some(panel) = self.sql.results.get_mut(&id) {
+            let handled = panel.dispatch(event, &mut self.focus);
+            let details = panel.take_details_request();
+            if details {
+                self.show_sql_diagnostic(&id)?;
+            }
+            if handled {
+                return Ok(true);
+            }
         }
         let editor_focused = self
             .editor

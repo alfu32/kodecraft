@@ -38,7 +38,7 @@ def main():
                    'KODE_RS_DATABASE_HOME': str(base / 'database'), 'KODE_RS_JDBC_HOME': str(base / 'plugins'),
                    'KODE_JAVA': str(base / 'absent-java')}
             result = terminal.run_case(file, base / 'config', (width, height), [
-                (b'Saved', .15, when_indexed(b'\x1b4\t', 1, symbols=False)),
+                (b'Saved', .15, when_indexed(b'\x1b7\t', 1, symbols=False)),
                 (b'Clear index', .1, b'c'),
                 (b'Clear index', .1, when_indexed(b'b', 0)),
                 (b'Clear index', .1, when_indexed(b'\x1b[17~\x1b[200~// preserved \x1b[201~\x13', 1)),

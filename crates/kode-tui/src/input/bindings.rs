@@ -42,7 +42,7 @@ pub fn editor_command(input: KeyInput) -> Option<EditorCommand> {
                 'v' => Some(EditorCommand::Paste),
                 'a' if modifiers.ctrl => Some(EditorCommand::SelectAll),
                 's' if modifiers.ctrl => Some(EditorCommand::Save),
-                'f' => Some(EditorCommand::OpenSearch),
+                'f' if modifiers.ctrl => Some(EditorCommand::OpenSearch),
                 ' ' if modifiers.ctrl => Some(EditorCommand::RequestCompletion),
                 'u' if modifiers.alt && !modifiers.ctrl => Some(EditorCommand::Undo),
                 'r' if modifiers.alt && !modifiers.ctrl => Some(EditorCommand::Redo),

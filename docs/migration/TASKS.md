@@ -1,6 +1,6 @@
 # Task index
 
-67 implementation tasks. Status is recorded in each task definition and synchronized with [the dashboard](../../DASHBOARD.md).
+79 implementation tasks. Status is recorded in each task definition and synchronized with [the dashboard](../../DASHBOARD.md).
 
 Pick a task only when all its listed prerequisites have implementation evidence. The card owns its outputs; shared contracts are in [CONTRACTS.md](CONTRACTS.md). Source and test ownership are in [SOURCE-MAP.tsv](SOURCE-MAP.tsv) and [TEST-MAP.tsv](TEST-MAP.tsv).
 
@@ -25,7 +25,7 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | E10 | [Definitions, usages and hover preview](tasks/02-editor.md) | E05, E06, F03 | [done](../parity/E10.md) |
 | E11 | [Highlight overlays and edit remapping](tasks/02-editor.md) | E05, E07, L02, L09 | [done](../parity/E11.md) |
 | E12 | [Reusable editor hosts and virtual/read-only documents](tasks/02-editor.md) | E04, E07, E08, F05 | [done](../parity/E12.md) |
-| E13 | [Complete editor interaction qualification](tasks/02-editor.md) | E09, E10, E11, E12, W04, W05, P03, D08, R07, G03 | todo |
+| E13 | [Complete editor interaction qualification](tasks/02-editor.md) | E09, E10, E11, E12, W04, W05, P03, D08, R07, G03, U01, U04, U06, U07 | todo |
 | W01 | [Source roots, exclusions and project scanning](tasks/03-workspace.md) | F03 | [done](../parity/W01.md) |
 | W02 | [File tree, file actions, refresh and project panel](tasks/03-workspace.md) | W01, F05, E04 | [done](../parity/W02.md) |
 | W03 | [Legacy session import and Rust persistence](tasks/03-workspace.md) | E03, F03 | [done](../parity/W03.md) |
@@ -61,7 +61,7 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | R07 | [Request/response editors and complete REST UX](tasks/08-rest.md) | R02, R04, R05, R06, E09, E12, L02 | [done](../parity/R07.md) |
 | R08 | [Collection runner, persistence and REST qualification](tasks/08-rest.md) | R07, W03, W05 | [done](../parity/R08.md) |
 | R09 | [Extended authentication protocols](tasks/08-rest.md) | R08 | [done](../parity/R09.md) |
-| R10 | [OAuth acquisition and browser authorization](tasks/08-rest.md) | R09 | in-progress |
+| R10 | [OAuth acquisition and browser authorization](tasks/08-rest.md) | R09 | [done](../parity/R10.md) |
 | D01 | [Database models, settings, credentials and URL catalogs](tasks/09-database.md) | F02, F03 | [done](../parity/D01.md) |
 | D02 | [Protocol, Java bootstrap and Rust process supervisor](tasks/09-database.md) | D01, F03 | [done](../parity/D02.md) |
 | D03 | [Driver install, Maven resolution and classloaders](tasks/09-database.md) | D02, F05 | [done](../parity/D03.md) |
@@ -73,8 +73,20 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | D09 | [End-to-end external JDBC qualification](tasks/09-database.md) | D08, W03, W05 | [done](../parity/D09.md) |
 | Z01 | [Shell suspension and browser terminal serve mode](tasks/10-delivery.md) | W05, F04, F03 | [done](../parity/Z01.md) |
 | Z02 | [Settings, help, about and operational status](tasks/10-delivery.md) | W05, L09, P01, D07, F05 | [done](../parity/Z02.md) |
-| Z03 | [Reproducible build and distribution](tasks/10-delivery.md) | Z01, Z02, D02 | todo |
-| Z04 | [Full functional parity and release qualification](tasks/10-delivery.md) | E13, L12, W05, V02, V03, G03, D09, R08, R10, Z03 | todo |
+| Z03 | [Reproducible build and distribution](tasks/10-delivery.md) | Z01, Z02, D02, U03 | todo |
+| Z04 | [Full functional parity and release qualification](tasks/10-delivery.md) | E13, L12, W05, V02, V03, G03, D09, R08, R10, Z03, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12 | todo |
+| U01 | [Finalized file and project search shortcuts](tasks/11-uat.md) | Z02, E07, W04 | [done](../parity/U01.md) |
+| U02 | [Readable database errors and diagnostics](tasks/11-uat.md) | D09, Z02 | [done](../parity/U02.md) |
+| U03 | [Optional downloadable Java runtime artifact](tasks/11-uat.md) | D09 | todo |
+| U04 | [Multiple cursors and selections](tasks/11-uat.md) | E12, E07, E09 | todo |
+| U05 | [Hex layouts and text or binary find](tasks/11-uat.md) | V02, Z02 | todo |
+| U06 | [Word selection with double-click and Alt+double-click](tasks/11-uat.md) | U04 | todo |
+| U07 | [File-tree picker buttons for path fields](tasks/11-uat.md) | W05, D07, R07 | todo |
+| U08 | [Project-relative paths in the open-file list](tasks/11-uat.md) | W05, W03 | todo |
+| U09 | [Repair language server installations](tasks/11-uat.md) | P01, P02, Z02 | todo |
+| U10 | [Panel shortcuts follow visual tab order](tasks/11-uat.md) | Z02 | in-progress |
+| U11 | [Connection-type JDBC URL template dropdown](tasks/11-uat.md) | D07 | todo |
+| U12 | [Database package listing and DDL](tasks/11-uat.md) | D09 | todo |
 
 ## Execution checkpoints
 
@@ -84,6 +96,7 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 - Complete both integration modules: D01–D09 and R01–R08.
 - Qualify the shared editor after all real hosts are attached: E13.
 - Finish shell/browser mode, settings, packages and full parity: Z01–Z04.
+- Integrate the finalized UAT batch: U01–U12, plus M002/B008 in R09/R10. See [the request-to-task mapping](UAT.md); E13/Z03/Z04 depend on the relevant new acceptance work.
 
 Independent tasks can be assigned separately after their contracts are ready. This is a dependency plan, not an instruction to spawn agents automatically.
 

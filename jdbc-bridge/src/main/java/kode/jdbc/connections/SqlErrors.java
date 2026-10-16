@@ -16,7 +16,10 @@ public final class SqlErrors {
             String text=value==null?"Database operation failed":value;
             for(String secret:secrets)text=text.replace(secret,"<redacted>");
             text=text.replaceAll("(?i)(password|pwd|token|secret|authorization|api[_-]?key)(\\s*[=:]\\s*)[^\\s;&,]+","$1$2<redacted>");
-            StringBuilder clean=new StringBuilder();text.codePoints().limit(2048).forEach(point->clean.appendCodePoint(Character.isISOControl(point)?' ':point));return clean.toString();
+            text=text.replace("\r\n","\n").replace('\r','\n');
+            int[] points=text.codePoints().limit(65537).toArray();StringBuilder clean=new StringBuilder();
+            for(int index=0;index<Math.min(points.length,65536);index++){int point=points[index];clean.appendCodePoint(Character.isISOControl(point)&&point!='\n'?' ':point);}
+            if(points.length>65536)clean.append("\n[message truncated after 65536 characters]");return clean.toString();
         }
         public synchronized void clear(){secrets.clear();}
     }
@@ -26,9 +29,18 @@ public final class SqlErrors {
     public static ObjectNode wire(Throwable failure,Redactor redactor){
         SQLException sql=find(failure);ObjectNode result=FrameCodec.JSON.createObjectNode().put("message",redactor.text(sql==null?failure.getMessage():sql.getMessage())).put("vendorCode",sql==null?0:sql.getErrorCode());
         if(sql==null||sql.getSQLState()==null)result.putNull("sqlState");else result.put("sqlState",redactor.text(sql.getSQLState()));
-        var chained=result.putArray("chained");Set<SQLException> seen=Collections.newSetFromMap(new IdentityHashMap<>());if(sql!=null)seen.add(sql);
-        SQLException next=sql==null?null:sql.getNextException();for(int count=0;next!=null&&count<16&&seen.add(next);count++,next=next.getNextException()){
-            ObjectNode item=chained.addObject().put("message",redactor.text(next.getMessage())).put("vendorCode",next.getErrorCode());if(next.getSQLState()==null)item.putNull("sqlState");else item.put("sqlState",redactor.text(next.getSQLState()));item.putArray("chained");
+        var chained=result.putArray("chained");Set<Throwable> seen=Collections.newSetFromMap(new IdentityHashMap<>());
+        Throwable root=sql==null?failure:sql;seen.add(root);ArrayDeque<Throwable> pending=new ArrayDeque<>();
+        if(root.getCause()!=null)pending.add(root.getCause());
+        if(sql!=null&&sql.getNextException()!=null)pending.addFirst(sql.getNextException());
+        if(failure!=root)pending.addLast(failure);
+        while(!pending.isEmpty()&&chained.size()<16){
+            Throwable next=pending.removeFirst();if(!seen.add(next))continue;
+            String message=next instanceof SQLException?next.getMessage():next.getClass().getSimpleName()+": "+next.getMessage();
+            ObjectNode item=chained.addObject().put("message",redactor.text(message)).put("vendorCode",next instanceof SQLException value?value.getErrorCode():0);
+            if(next instanceof SQLException value&&value.getSQLState()!=null)item.put("sqlState",redactor.text(value.getSQLState()));else item.putNull("sqlState");item.putArray("chained");
+            if(next instanceof SQLException value&&value.getNextException()!=null)pending.addFirst(value.getNextException());
+            if(next.getCause()!=null)pending.addLast(next.getCause());
         }
         return result;
     }

@@ -1,4 +1,5 @@
 pub mod controls;
+pub mod diagnostic;
 pub mod dialog;
 pub mod field;
 pub mod folder_picker;

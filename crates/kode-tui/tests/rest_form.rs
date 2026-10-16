@@ -623,3 +623,63 @@ fn every_tab_and_keyboard_selection_stays_bounded_in_narrow_and_single_cell_view
         }
     }
 }
+
+#[test]
+fn oauth_url_copy_and_redirect_dialog_keep_flow_identity_without_editing_collection() {
+    use kode_tui::panels::rest::oauth::{Action as OAuthAction, View};
+    let (mut model, mut form, mut focus) = setup();
+    form.perform(Action::Auth(Some("oauth2")), &mut model, &mut focus)
+        .unwrap();
+    form.perform(Action::Tab(Tab::Auth), &mut model, &mut focus)
+        .unwrap();
+    let before = model.export_collection();
+    let flow = kode_core::JobTag {
+        workspace: kode_core::WorkspaceGeneration(1),
+        request: kode_core::RequestId::fresh().unwrap(),
+        document: None,
+    };
+    let url = format!(
+        "https://identity.example.test/authorize?state={}&client_id=synthetic&scope=read",
+        "A".repeat(180)
+    );
+    form.set_oauth(View {
+        flow: Some(flow),
+        pending: true,
+        url: Some(url.clone()),
+        message: "Complete login in your browser".into(),
+        ..Default::default()
+    });
+    form.take_intents();
+    form.perform(Action::OAuth(OAuthAction::CopyUrl), &mut model, &mut focus)
+        .unwrap();
+    assert!(
+        matches!(&form.take_intents()[0],Intent::Clipboard{action:kode_tui::widgets::field::FieldAction::Copy(value),proof:None} if value==&url)
+    );
+    // All layouts, including a single cell, remain bounded with a long URL.
+    for (width, height) in [(80, 40), (23, 25), (1, 1)] {
+        draw(&mut form, &model, width, height);
+    }
+    form.perform(
+        Action::OAuth(OAuthAction::PasteRedirect),
+        &mut model,
+        &mut focus,
+    )
+    .unwrap();
+    let redirect = "https://localhost:32123/callback?state=synthetic&code=synthetic";
+    form.dispatch(&InputEvent::Paste(redirect.into()), &mut model, &mut focus)
+        .unwrap();
+    // A newer flow cannot retarget a dialog captured for an older flow.
+    let next = kode_core::JobTag {
+        request: kode_core::RequestId::fresh().unwrap(),
+        ..flow
+    };
+    form.set_oauth(View {
+        flow: Some(next),
+        pending: true,
+        ..Default::default()
+    });
+    form.dispatch(&key(Key::Enter), &mut model, &mut focus)
+        .unwrap();
+    assert!(form.take_intents().into_iter().any(|intent|matches!(intent,Intent::OAuthRedirect{flow:captured,text} if captured==flow && text==redirect)));
+    assert_eq!(model.export_collection(), before);
+}

@@ -62,7 +62,7 @@ fn sql_error(value: &SqlError) -> bool {
     while let Some(value) = stack.pop() {
         count += 1;
         if count > 17
-            || value.message.len() > 8192
+            || value.message.len() > crate::bridge::wire::SQL_ERROR_MESSAGE_BYTES
             || value
                 .sql_state
                 .as_ref()
@@ -462,5 +462,44 @@ mod tests {
             nullable: true,
         };
         assert!(!format!("{column:?}").contains("synthetic-private-sql-literal"));
+    }
+    #[test]
+    fn long_redacted_error_payloads_survive_the_query_final_boundary_but_remain_bounded() {
+        let mut accumulator = Accumulator::new(
+            "synthetic-execution".into(),
+            Arc::new(Semaphore::new(1024 * 1024)),
+        );
+        accumulator
+            .accept(event(0, json!({"type":"started"})), 100)
+            .unwrap();
+        let mut result = finish(1, "failed");
+        let message = format!("FIRST\n{}\nTAIL", "diagnostic ".repeat(2000));
+        result.error = Some(SqlError {
+            message: message.clone(),
+            sql_state: Some("42000".into()),
+            vendor_code: 73,
+            chained: vec![],
+        });
+        accumulator.finish(result).unwrap();
+        assert_eq!(
+            accumulator
+                .snapshot
+                .completion
+                .as_ref()
+                .unwrap()
+                .error
+                .as_ref()
+                .unwrap()
+                .message,
+            message
+        );
+        let mut too_large = finish(1, "failed");
+        too_large.error = Some(SqlError {
+            message: "x".repeat(crate::bridge::wire::SQL_ERROR_MESSAGE_BYTES + 1),
+            sql_state: None,
+            vendor_code: 0,
+            chained: vec![],
+        });
+        assert!(accumulator.finish(too_large).is_err());
     }
 }

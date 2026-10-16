@@ -3,6 +3,7 @@ pub mod database;
 mod git;
 mod intelligence;
 pub mod lsp;
+mod oauth;
 mod rest;
 #[cfg(test)]
 mod rest_tests;
@@ -61,6 +62,7 @@ use tokio::sync::mpsc;
 enum Output {
     Metrics(kode_platform::metrics::ProcessSample),
     RestRun(kode_rest::runner::Summary),
+    OAuth(kode_rest::oauth::TokenSet),
     Rest(Box<crate::panels::rest::state::Reply>),
     SqlCancelled,
     SqlControl(kode_database::connections::SessionInfo),
@@ -106,6 +108,10 @@ enum Output {
 enum Context {
     Metrics,
     RestRun,
+    OAuth {
+        key: String,
+        config: Box<kode_rest::oauth::Config>,
+    },
     Rest(Box<crate::panels::rest::state::Context>),
     SqlCancel {
         console: String,
@@ -1350,6 +1356,7 @@ impl AppRuntime {
                 }
             }
             Context::RestRun => self.rest_run_complete(tag, result)?,
+            Context::OAuth { key, config } => self.oauth_complete(tag, key, *config, result)?,
             Context::Rest(context) => self.rest_complete(tag, *context, result)?,
             Context::SqlCancel { console, request } => {
                 if let Some(running) = self.state.sql.running.get_mut(&console).filter(|running| {

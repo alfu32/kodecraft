@@ -11,6 +11,7 @@ use kode_platform::jobs::CancellationToken;
 use std::{path::PathBuf, sync::Arc, time::Duration};
 use tokio::sync::mpsc;
 pub struct Definition {
+    pub runtime_tokens: std::collections::HashMap<String, crate::oauth::BoundTokens>,
     pub collection: Arc<serde_json::Value>,
     pub root: PathBuf,
     pub environment: Option<Environment>,
@@ -114,15 +115,20 @@ pub async fn execute_with_progress(
         let environment = definition.environment.clone();
         let root = definition.root.clone();
         let path = item.path.clone();
+        let bound = definition.runtime_tokens.get(&item.id).cloned();
         let token = cancel.clone();
         let started = std::time::Instant::now();
         let prepared = tokio::task::spawn_blocking(move || {
             if token.is_cancelled() {
                 return Err(DomainError::Cancelled);
             }
-            RequestResolver::new(&collection, path, &root, environment.as_ref())?
-                .plan()?
-                .materialize(64 * 1024 * 1024, &token)
+            let mut resolver =
+                RequestResolver::new(&collection, path, &root, environment.as_ref())?;
+            if let Some(bound) = bound {
+                let token = bound.for_resolver(&resolver)?;
+                resolver = resolver.with_runtime_tokens(token);
+            }
+            resolver.plan()?.materialize(64 * 1024 * 1024, &token)
         })
         .await
         .map_err(|_| DomainError::Unsupported("REST request preparation worker failed".into()))?;

@@ -104,13 +104,8 @@ impl TextPanel {
         if self.width != Some(area.width) {
             self.wrapped.clear();
             for (index, line) in self.lines.iter().enumerate() {
-                let text = display_text(line);
-                let chars: Vec<_> = text.chars().collect();
-                if chars.is_empty() {
-                    self.wrapped.push((index, String::new()));
-                }
-                for chunk in chars.chunks(area.width.max(1) as usize) {
-                    self.wrapped.push((index, chunk.iter().collect()));
+                for chunk in wrap_line(line, area.width) {
+                    self.wrapped.push((index, chunk));
                 }
             }
             self.width = Some(area.width);
@@ -131,4 +126,32 @@ impl TextPanel {
             );
         }
     }
+}
+
+/// Wrap using terminal cell widths, escaping a wide scalar in a one-cell view.
+pub fn wrap_line(line: &str, width: u16) -> Vec<String> {
+    use unicode_width::UnicodeWidthChar;
+    let width = usize::from(width.max(1));
+    let mut safe = String::new();
+    for ch in display_text(line).chars() {
+        if ch.width().unwrap_or(0) > width {
+            safe.push_str(&format!("\\u{{{:X}}}", ch as u32));
+        } else {
+            safe.push(ch);
+        }
+    }
+    let mut lines = vec![];
+    let mut chunk = String::new();
+    let mut used = 0;
+    for ch in safe.chars() {
+        let size = ch.width().unwrap_or(0);
+        if used + size > width && !chunk.is_empty() {
+            lines.push(std::mem::take(&mut chunk));
+            used = 0;
+        }
+        chunk.push(ch);
+        used += size;
+    }
+    lines.push(chunk);
+    lines
 }

@@ -201,6 +201,7 @@ pub struct AppState {
     pub about: crate::panels::about::About,
     pub help: crate::widgets::text_panel::TextPanel,
     pub metrics: super::metrics::Metrics,
+    pub diagnostic: Option<crate::widgets::diagnostic::Diagnostic>,
     pub git: crate::panels::git::GitPanel,
     pub database: crate::panels::database::controller::DatabasePanel,
     pub sql_sources: HashMap<DocumentId, String>,
@@ -284,6 +285,7 @@ impl AppState {
             about: crate::panels::about::About::new()?,
             help: crate::panels::help::new()?,
             metrics: Default::default(),
+            diagnostic: None,
             git,
             database: crate::panels::database::controller::DatabasePanel::new(generation)?,
             sql_sources: HashMap::new(),
@@ -968,6 +970,7 @@ impl AppState {
             use crate::panels::database::controller::Intent;
             use crate::widgets::field::FieldAction;
             match intent {
+                Intent::Details { title, text } => self.show_diagnostic(title, text)?,
                 Intent::Work(work) => self.work.push(AppWork::Database(work)),
                 Intent::Console { source, sql } => self.open_database_console(source, sql)?,
                 Intent::OpenSession(id) => {
@@ -1355,6 +1358,10 @@ impl AppState {
         }
         if self.rest.sidebar.has_modal() {
             cursor = self.rest.sidebar.render_modal(area, buffer, theme);
+        }
+        if let Some(dialog) = &mut self.diagnostic {
+            dialog.render(area, buffer, theme);
+            cursor = None;
         }
         Ok(cursor)
     }

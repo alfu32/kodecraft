@@ -65,15 +65,15 @@ def main():
             file = project / 'note.kt'
             file.write_text('original\n')
             result = terminal.run_case(file, base / 'config', (width, height), [
-                (b'original', .15, b'\x1b3'),
+                (b'original', .15, b'\x1b8'),
                 (b'Kode shortcuts', .1, b'\x1b[<0;2;1M\x1b[<0;2;1m\x1b[F'),
-                (entered, .1, when_panel('About: Alt+8', b'\x1b[H')),
-                (b'Kode shortcuts', .1, b'\x1b8'),
+                (entered, .1, when_panel('About: Alt+6', b'\x1b[H')),
+                (b'Kode shortcuts', .1, b'\x1b6'),
                 (f'Kode {version} | MIT'.encode(), .1, b'\x1b[F'),
                 (entered, .1, when_panel(last_source, b'\t\x1b[F')),
                 (entered, .1, click_language),
                 (entered, .1, when_panel('> zig', b'\t\x1b[H')),
-                (entered, .1, when_panel('https://github.com/alfu32/kodecraft', b'\x1b4\t')),
+                (entered, .1, when_panel('https://github.com/alfu32/kodecraft', b'\x1b7\t')),
                 (b'Clear index', .1, idle_metrics),
                 (b'settings', .2, b'\x11'),
             ], env_overrides=env)
@@ -85,25 +85,27 @@ def main():
             file=project / 'note.kt'
             file.write_text('original\n')
             result=terminal.run_case(file,base / 'config',(width,height),[
-                (b'original',.15,b'\x1bf'),
+                (b'original',.15,b'\x06'),
                 (b'Find:',.15,b'\x1b'),
-                (entered,.15,when_absent(b'Find:',b'\x1b\x06')),
+                (entered,.15,when_absent(b'Find:',b'\x1bf')),
                 (b'Project search',.15,b'\x1b'),
-                (entered,.15,when_absent(b'Project search',b'\x06')),
-                (b'Find:',.15,b'\x1b'),
-                (entered,.15,when_absent(b'Find:',b'\x1b[102;6u')),
+                (entered,.15,when_absent(b'Project search',b'\x1b\x06')),
+                (b'Project search',.15,b'\x1b'),
+                (entered,.15,when_absent(b'Project search',b'\x1b[102;6u')),
                 (b'Project search',.15,b'\x1b'),
                 (entered,.15,when_absent(b'Project search',b'\x11')),
             ],env_overrides=env)
             assert file.read_text()=='original\n'
-            cases.append({'case':'uat-alt-f-ctrl-alt-f-and-retained-search-aliases',**result})
+            cases.append({'case':'uat-ctrl-f-file-alt-f-project-and-project-aliases',**result})
         project = base / 'tiny'
         project.mkdir()
         result = terminal.run_case(project, base / 'config', (20, 6), [
-            (entered, .2, b'\x1b3\x1b[F\x1b[6~\x1b[H\x1b8\t\x1b[F\x1b[5~\x1b[H\x11'),
+            (entered, .2, b'\x1b8\x1b[F\x1b[6~\x1b[H\x1b6\t\x1b[F\x1b[5~\x1b[H\x11'),
         ], env_overrides=env)
         cases.append({'case': 'tiny-help-about-navigation-and-mode-restoration', **result})
     (ROOT / 'docs/parity/Z02-operational-pty.json').write_text(json.dumps({'cases': cases, 'idle_samples': samples, 'passed': len(cases)}, indent=2) + '\n')
+    search_cases = [case for case in cases if case['case'].startswith('uat-ctrl-f-file-alt-f-project')]
+    (ROOT / 'docs/parity/U01-pty.json').write_text(json.dumps({'cases': search_cases, 'passed': len(search_cases)}, indent=2) + '\n')
     print(f'Passed {len(cases)} real operational UI PTYs; idle samples: {samples}')
 
 

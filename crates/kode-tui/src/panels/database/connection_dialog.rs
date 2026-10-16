@@ -62,6 +62,7 @@ pub struct Draft {
     pub password: Option<Secret>,
 }
 pub enum Action {
+    Details,
     Test(Draft),
     Download(Draft),
     Save(Draft),
@@ -96,6 +97,7 @@ pub struct ConnectionDialog {
     buttons: [Rect; 4],
     checkboxes: [Rect; 2],
     driver_hit: Rect,
+    details_hit: Rect,
     popup_hits: Vec<(usize, Rect)>,
     scroll: usize,
 }
@@ -165,6 +167,7 @@ impl ConnectionDialog {
             buttons: [Rect::default(); 4],
             checkboxes: [Rect::default(); 2],
             driver_hit: Rect::default(),
+            details_hit: Rect::default(),
             popup_hits: vec![],
             scroll: 0,
         };
@@ -442,6 +445,7 @@ impl ConnectionDialog {
         self.buttons = [Rect::default(); 4];
         self.checkboxes = [Rect::default(); 2];
         self.driver_hit = Rect::default();
+        self.details_hit = Rect::default();
         let modal = centered(area.intersection(buffer.area), 86, 34);
         if modal.is_empty() {
             return None;
@@ -614,12 +618,26 @@ impl ConnectionDialog {
                 );
             }
         }
+        self.details_hit = Rect::default();
         if status_rows > 0 {
+            let width = if self.status.is_empty() {
+                0
+            } else {
+                content.width.min(12)
+            };
+            let y = content.bottom() - footer - 1;
+            self.details_hit = Rect::new(content.right() - width, y, width, 1);
             draw_text(
-                Rect::new(content.x, content.bottom() - footer - 1, content.width, 1),
+                Rect::new(content.x, y, content.width - width, 1),
                 buffer,
-                &display_text(&self.status),
+                &display_text(&crate::widgets::diagnostic::summary(&self.status)),
                 theme.style("content"),
+            );
+            draw_text(
+                self.details_hit,
+                buffer,
+                "[F4 Details]",
+                theme.style("lsp-button"),
             );
         }
         let labels = [" Test ", " Download ", " Save ", " Cancel "];
@@ -681,6 +699,10 @@ impl ConnectionDialog {
 }
 impl EventTarget for ConnectionDialog {
     fn dispatch(&mut self, event: &InputEvent) -> bool {
+        if crate::widgets::controls::button(event, self.details_hit, false) {
+            self.actions.push(Action::Details);
+            return true;
+        }
         if let Some(popup) = self.popup {
             if let InputEvent::Key(input) = event {
                 let count = if popup == Popup::Drivers {

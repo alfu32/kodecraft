@@ -33,11 +33,19 @@ branches, tags, history, diff views, and restoring a diff chunk. It does not imp
 that `.gitmodules` management is already implemented. The SQL/JDBC module and the
 Postman-like REST/OpenAPI module are separate features and both are in scope.
 
-The user expanded this goal on 2026-10-16 to include UAT M002: all pictured REST
-authentication protocols and OAuth token acquisition. R09/R10 own this extension
-to the frozen Kotlin baseline. The updated UAT requests a copyable authorization
-URL for completing login in a GUI browser; token/callback ownership and cancellation
-remain part of the terminal application. Z04 depends on these tasks as well.
+The user finalized the current UAT batch on 2026-10-16 and added it to this goal.
+[UAT tracking](UAT.md) maps all sixteen requests to implementation owners and
+evidence. R09/R10 own M002 authentication protocols and OAuth acquisition; U01–U12
+cover finalized search shortcuts, readable JDBC errors, a separate downloadable
+jlink runtime, multiple cursors/selections, hex layouts/find, word double-click,
+path pickers, relative open-file labels, LSP installation, sidebar shortcuts, JDBC URL presets and database packages. R10 also owns B008: an ephemeral HTTPS localhost callback replacing Postman defaults. M001/B001 retain Z02/Z01 evidence.
+These are extensions/corrections to the frozen baseline, not deferred proposals.
+
+Final search mapping is **Ctrl+F file find; Alt+F project search**, superseding
+earlier preferences. OAuth prints a copyable login URL for a GUI browser.
+The optional runtime is a separate release artifact, offered when local Java is
+unavailable; current flexible JDBC driver management stays in place. E13/Z03/Z04
+include the relevant new prerequisites and cannot finish before their UAT work.
 
 Use executable source and focused tests to determine current behavior. README and
 `SPEC.*` files provide context, but some describe proposals. For example, rename,

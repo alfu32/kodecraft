@@ -9,6 +9,24 @@ INDEX = ROOT / "docs/migration/TASKS.md"
 CARD_RE = re.compile(r"^## ([A-Z]\d{2}) — (.+)$", re.M)
 ROW_RE = re.compile(r"^\| ([A-Z]\d{2}) \| (.+?) \| (.+?) \| (.+?) \|$", re.M)
 STATES = ("todo", "in-progress", "done", "blocked")
+UAT_REQUESTS = [
+    ("M001", "Horizontal sidebar tabs in source order", ("Z02",)),
+    ("B001", "Ctrl+T shell suspension and return", ("Z01",)),
+    ("B002", "Ctrl+F file search; Alt+F project search", ("U01",)),
+    ("M002", "Authentication protocols and OAuth browser workflow", ("R09", "R10")),
+    ("B003", "Readable multiline database error details", ("U02",)),
+    ("M003", "Separate downloadable jlink runtime; retain flexible drivers", ("U03",)),
+    ("B004", "Multiple cursors and selections", ("U04",)),
+    ("M004", "8/16/32-column hex layouts and text/binary find", ("U05",)),
+    ("M005", "Double-click and Alt+double-click word selection", ("U06",)),
+    ("M006", "File-tree picker buttons for path inputs", ("U07",)),
+    ("B005", "Project-relative open-file labels with optional full paths", ("U08",)),
+    ("B006", "Repair missing/failing language server installations", ("U09",)),
+    ("B007", "Alt+1..8 follow the current visual tab order", ("U10",)),
+    ("M007", "Connection-type JDBC URL template dropdown", ("U11",)),
+    ("M008", "Applicable database package listing and DDL", ("U12",)),
+    ("B008", "Ephemeral local OAuth callback instead of Postman redirect", ("R10",)),
+]
 
 
 def cards():
@@ -76,7 +94,7 @@ def synchronize(task=None, status=None, check=False):
             INDEX.write_text(index)
     counts = {state: sum(item[2] == state for item in entries.values()) for state in STATES}
     dashboard = ["# Implementation dashboard", "",
-                 "Full Kode → Rust migration. Counts are derived from the status in every task definition.", "",
+                 "Full Kode → Rust migration, including the [finalized UAT batch](docs/migration/UAT.md). Counts are derived from the status in every task definition.", "",
                  "| To do | In progress | Done | Blocked | Total |",
                  "|------:|------------:|-----:|--------:|------:|",
                  f"| {counts['todo']:>5} | {counts['in-progress']:>11} | {counts['done']:>4} | {counts['blocked']:>7} | {len(entries):>5} |", "",
@@ -104,6 +122,25 @@ def synchronize(task=None, status=None, check=False):
                   "Change a task with `python3 scripts/tasks.py F01 in-progress`. Prerequisites must be done before starting or completing dependent work.", ""]
     target = ROOT / "DASHBOARD.md"
     rendered = "\n".join(dashboard)
+    if not target.exists() or target.read_text() != rendered:
+        changed.append(target)
+        if not check:
+            target.write_text(rendered)
+    uat = ["# Finalized UAT tracking", "",
+           "The user finalized [this batch](../UAT/UAT.md) on 2026-10-16 and included it in the current implementation goal. The source UAT document is preserved; this table tracks implementation status from the task cards.", "",
+           "B002's final mapping supersedes earlier discussion: **Ctrl+F file search; Alt+F project search**. Ctrl+Shift+F can remain an alias but cannot be the required project shortcut because the terminal host intercepts it.", "",
+           "M002 uses a selectable/copyable authorization URL for completing login in a GUI browser, as requested in the finalized UAT. M003 keeps the optional Java runtime outside the main application package and preserves current JDBC driver management.", "",
+           "| Request | Requirement | Status | Implementation |",
+           "|---------|-------------|--------|----------------|"]
+    for request_id, title, owners in UAT_REQUESTS:
+        states = [entries[owner][2] for owner in owners]
+        state = "done" if all(s == "done" for s in states) else next((s for s in ("in-progress", "blocked") if s in states), "todo")
+        links = ", ".join(f"[{owner}]({entries[owner][0].relative_to(ROOT / 'docs/migration').as_posix()})" for owner in owners)
+        uat.append(f"| {request_id} | {title} | **{state}** | {links} |")
+    uat += ["", "E13 includes the new shared-editor interactions, Z03 includes the separate runtime artifact, and Z04 requires all UAT implementation tasks and OAuth acquisition. Completed earlier work retains its acceptance evidence; a new request does not imply reopening unrelated finished tasks.", "",
+            "Regenerate and verify with `python3 scripts/tasks.py` / `python3 scripts/tasks.py --check`.", ""]
+    target = ROOT / "docs/migration/UAT.md"
+    rendered = "\n".join(uat)
     if not target.exists() or target.read_text() != rendered:
         changed.append(target)
         if not check:

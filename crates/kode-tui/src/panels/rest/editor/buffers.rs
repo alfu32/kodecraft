@@ -73,6 +73,7 @@ pub fn apply_override(
     Ok(())
 }
 pub struct Input {
+    pub runtime_tokens: Option<kode_rest::oauth::BoundTokens>,
     pub collection: Arc<Value>,
     pub path: NodePath,
     pub kind: BufferKind,
@@ -80,6 +81,7 @@ pub struct Input {
     pub root: PathBuf,
     pub environment: Option<Environment>,
     pub environment_text: Option<TextSnapshot>,
+    pub environment_draft: Option<Arc<str>>,
     pub overrides: Vec<Override>,
     pub draft: Option<Arc<str>>,
     pub drafts: super::drafts::Drafts,
@@ -130,8 +132,12 @@ pub fn prepare(input: Input, cancel: &CancellationToken) -> Result<Prepared> {
         active_environment_id: environment_id.clone(),
         ..Default::default()
     })?;
-    if let (Some(id), Some(snapshot)) = (environment_id, input.environment_text) {
-        model.update_environment_text(&id, &snapshot.text());
+    let environment_text = input
+        .environment_text
+        .map(|snapshot| snapshot.text())
+        .or(input.environment_draft);
+    if let (Some(id), Some(text)) = (environment_id, environment_text) {
+        model.update_environment_text(&id, &text);
     }
     if model.node(&input.path).is_none() {
         return Err(invalid("REST item no longer exists"));
@@ -173,14 +179,17 @@ pub fn prepare(input: Input, cancel: &CancellationToken) -> Result<Prepared> {
             &input.path,
             cancel,
         )?;
-        let request = RequestResolver::new(
+        let mut resolver = RequestResolver::new(
             model.collection(),
             input.path.clone(),
             &input.root,
             model.active_environment(),
-        )?
-        .plan()?
-        .materialize(64 * 1024 * 1024, cancel)?;
+        )?;
+        if let Some(bound) = input.runtime_tokens {
+            let token = bound.for_resolver(&resolver)?;
+            resolver = resolver.with_runtime_tokens(token);
+        }
+        let request = resolver.plan()?.materialize(64 * 1024 * 1024, cancel)?;
         let mut text = request.preview(10 * 1024 * 1024)?.text;
         let notice = if request.request.protocol == Protocol::WebSocket {
             "WebSocket opens receive-only. The configured body is not sent as an initial message."

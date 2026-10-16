@@ -39,7 +39,7 @@ def main():
             sql = f"select 'PTY{width}';"
             draft = f"-- RESTORED{width}\n"
             # CSI-u encodes Ctrl+Enter without conflating it with ordinary Enter.
-            actions = [(b"Ready",0.15,b"\x1b6"),
+            actions = [(b"Ready",0.15,b"\x1b4"),
                        (b"PTY SQL",0.15,b"c"),
                        (b"PTY_SQL",0.15,b"s"),
                        (b"Execute",0.15,b"\x01"+database.paste(sql)),

@@ -117,6 +117,8 @@ pub fn secret_field(key: &str) -> bool {
 pub struct ExecutionAuth {
     pub kind: String,
     pub fields: BTreeMap<String, String>,
+    /// Acquired credentials must not enter logical previews automatically.
+    pub runtime_token: bool,
 }
 impl std::fmt::Debug for ExecutionAuth {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

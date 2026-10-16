@@ -27,6 +27,7 @@ unicode-width.workspace = true
 unicode-general-category.workspace = true
 
 [dev-dependencies]
+url.workspace = true
 tempfile.workspace = true
 git2.workspace = true
 tokio-tungstenite.workspace = true

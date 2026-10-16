@@ -1,0 +1,33 @@
+{
+  "cases": [
+    {
+      "case": "long-multiline-connection-error-scroll-copy-edit-save",
+      "full_tail_and_chain": true,
+      "password_redacted": true,
+      "helper_reaped": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "long-multiline-connection-error-scroll-copy-edit-save",
+      "full_tail_and_chain": true,
+      "password_redacted": true,
+      "helper_reaped": true,
+      "size": [
+        60,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 2
+}

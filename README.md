@@ -3,14 +3,14 @@
 Planned Rust migration of the Kode terminal IDE. The implementation reference is
 `../kode`, commit `7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68` (audited 2026-10-14).
 
-Implementation is underway. [DASHBOARD.md](DASHBOARD.md) records all 67 task statuses,
+Implementation is underway. [DASHBOARD.md](DASHBOARD.md) records all 79 task statuses,
 ongoing work and links to acceptance evidence. Open a file or folder with
 `cargo run -p kode -- /path/to/project`; Ctrl+S saves and Ctrl+Q saves workspace
 state and quits. The shell includes file/project panels, search, text editing,
 hex inspection, portable image viewing, syntax/semantic highlighting and native
 completion/navigation, local Git operations and diff views, SQL/JDBC and REST.
-OAuth/authentication extensions, final editor qualification and release work continue
-in dependency order.
+OAuth acquisition, the [finalized UAT requests](docs/migration/UAT.md), final editor
+qualification and release work continue in dependency order.
 `cargo check --workspace`, `--help` and `--version` work on stable Rust.
 The Rust application is a TUI. JDBC runs in an **external JVM**;
 the Rust process does not embed a JVM.
@@ -38,6 +38,15 @@ paste and xterm selection copy remain available. ttyd notice logs are suppressed
 when credentials are supplied because its notices include a reversible Basic
 auth token; explicitly forwarding a higher ttyd `--debug` level enables those logs.
 
+REST OAuth acquisition is available in each request's Auth tab. Choose OAuth 1.0
+or OAuth 2.0, fill the OAuth settings and use Acquire token. Copy the displayed
+login URL into a GUI browser. Kode receives the callback at
+`https://localhost:<free-port>/callback`; the temporary self-signed certificate
+may require browser acceptance, and the provider must allow that redirect URI.
+Remote sessions can paste the complete redirect URL instead. Refresh and Clear
+are explicit actions; acquired tokens are kept only for the current workspace
+session and are omitted from saved collections and exports.
+
 The external JDBC protocol/bootstrap/supervisor is available as a backend. Build
 and test it with `bash scripts/test-jdbc-bridge.sh` using Java 21 and Maven; the
 packaged helper needs only Java at runtime. `KODE_JAVA` selects Java and
@@ -47,7 +56,7 @@ sources, versioned install manifests and isolated loaders. The backend supports
 temporary connection tests, shared datasource connections, context changes and
 commit/rollback through serialized JDBC owners. SQL execution streams typed,
 bounded previews and supports independent cancellation; helper failure retains
-received rows and never replays SQL. Open **Databases** with Alt+6: `n` creates a
+received rows and never replays SQL. Open **Databases** with Alt+4: `n` creates a
 datasource, F2 edits, `c` connects/disconnects, `r` refreshes metadata, `R` explicitly
 restarts the database service and `s` opens a SQL editor. The connection dialog
 uses Alt+T to test, Alt+D to install a driver and Ctrl+S to save. URL Down opens
@@ -59,11 +68,14 @@ Ctrl+S exports a guarded `.sql` file; unsaved console buffers and context bindin
 also survive workspace restarts. Click Catalog/Schema to bind a console. Results
 keep their own focus; Alt+Arrows/PageUp/PageDown scroll and Alt+Tab switches result
 sets/messages while the editor stays focused. Hover Execute to preview its target.
+Press F4 or click Details to read complete wrapped database/SQL diagnostics. Use
+arrows, PageUp/PageDown, Home/End or the mouse wheel to scroll; Ctrl+C or Copy
+copies the full redacted message, and Escape restores the previous view.
 End-to-end JDBC qualification is recorded in [D09](docs/parity/D09.md).
-After a helper crash, check the database outcome, then use Alt+6, `R` to restart
+After a helper crash, check the database outcome, then use Alt+4, `R` to restart
 the service and `c` to reconnect. Previous SQL is retained and never replayed.
 
-Open **REST** with Alt+7. `/` filters the collection; `n` adds a request, `f` a
+Open **REST** with Alt+5. `/` filters the collection; `n` adds a request, `f` a
 folder, `m` opens actions, `i` imports Postman, `e` exports and `r` runs/stops the
 selected request or folder. The actions menu also imports OpenAPI into a folder.
 Tab selects environments: `n` creates, `c` copies, F2 renames and Space activates.
@@ -95,7 +107,7 @@ Indexing runs on bounded workers, uses unsaved buffers and persists its cache in
 can select a custom definitions catalog. Kotlin/C have specialized extraction;
 other languages use conservative AST or explicit regex fallback capabilities.
 
-Open **Settings** with Alt+4 for language-server discovery and installation.
+Open **Settings** with Alt+7 for language-server discovery and installation.
 Tab or the LSP/Index buttons switch between language servers and native cache
 controls. In Index, `r` rescans, `b` rebuilds and `c` clears the rebuildable Rust
 cache. The panel shows scan/extract/resolve/persist progress and scrolls with
@@ -113,9 +125,10 @@ intelligence. Highlighting and definition previews retain native styling.
 
 Sidebar tabs run horizontally in source order: Files, Project, Git, Database,
 REST, About, Settings, Help. Existing numbered shortcuts retain their actions:
-Alt+1 Files, Alt+2 Project, Alt+3 Help, Alt+4 Settings, Alt+5 Git, Alt+6 Database,
-Alt+7 REST, Alt+8 About. Alt+F opens file find/replace; Ctrl+Shift+F opens project
-search. Ctrl+F and Ctrl+Alt+F remain respective aliases.
+Alt+1 Files, Alt+2 Project, Alt+3 Git, Alt+4 Database, Alt+5 REST, Alt+6 About,
+Alt+7 Settings, Alt+8 Help. Ctrl+F opens file find/replace; Alt+F opens project search.
+Ctrl+Alt+F and Ctrl+Shift+F remain project-search aliases when delivered by the
+terminal host. Neither is required for project search.
 
 Help scrolls and is generated from the same command catalog used by reducers.
 About shows the version, MIT license, source links, dependency credits and loaded
@@ -127,7 +140,7 @@ and worker notifications trigger immediate redraws. See [Z02](docs/parity/Z02.md
 `python3 scripts/credits.py --check --offline` checks the checked-in dependency
 credits against Cargo.lock; omit `--check` to regenerate after dependency changes.
 
-Open **Git** with Alt+5. Space stages/unstages the selected status row; `a` stages
+Open **Git** with Alt+3. Space stages/unstages the selected status row; `a` stages
 all rows and `A` unstages them. Tab enters the shared commit-message editor,
 Ctrl+Enter commits, and Ctrl+Tab cycles sections. Outside that editor, `b` selects
 a local branch, `t` creates a tag, and `T` explicitly creates or moves a tag on the

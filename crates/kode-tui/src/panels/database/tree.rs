@@ -53,6 +53,7 @@ pub struct Load {
 }
 #[derive(Clone)]
 pub enum Action {
+    Details,
     New,
     Edit(String),
     Delete(String),
@@ -89,6 +90,7 @@ pub struct DatabaseTree {
     pub selected: usize,
     pub scroll: usize,
     pub notice: String,
+    details_hit: Rect,
     pub lines: Vec<Line>,
     statuses: BTreeMap<String, Snapshot>,
     expanded: BTreeSet<NodeKey>,
@@ -111,6 +113,32 @@ impl Drop for DatabaseTree {
     }
 }
 impl DatabaseTree {
+    pub fn diagnostic(&self) -> Option<(String, String)> {
+        let line = self.lines.get(self.selected)?;
+        let source = line.key.source();
+        let title = format!(
+            "Database: {}",
+            self.sources
+                .iter()
+                .find(|s| s.id == source)
+                .map_or(source, |s| s.name.as_str())
+        );
+        if let Some(error) = self.errors.get(&line.key) {
+            return Some((title, error.clone()));
+        }
+        if let Some(error) = self.statuses.get(source).and_then(|s| s.error.as_ref()) {
+            let text = error.sql.as_ref().map_or_else(
+                || error.to_string(),
+                |sql| super::results::sql_error_details(sql),
+            );
+            return Some((title, text));
+        }
+        if line.message {
+            return Some((title, line.label.clone()));
+        }
+        None
+    }
+
     pub fn new(generation: WorkspaceGeneration) -> Result<Self> {
         Ok(Self {
             id: FocusId(RequestId::fresh()?.0),
@@ -120,6 +148,7 @@ impl DatabaseTree {
             selected: 0,
             scroll: 0,
             notice: String::new(),
+            details_hit: Rect::default(),
             lines: vec![],
             statuses: BTreeMap::new(),
             expanded: BTreeSet::new(),
@@ -630,6 +659,7 @@ impl DatabaseTree {
     }
     pub fn render(&mut self, area: Rect, buffer: &mut Buffer, theme: &Theme, focused: bool) {
         self.area = area.intersection(buffer.area);
+        self.details_hit = Rect::default();
         self.new_button = Rect::default();
         self.refresh_button = Rect::default();
         self.edit_hits.clear();
@@ -664,12 +694,21 @@ impl DatabaseTree {
                 );
             }
         }
+        self.details_hit = Rect::default();
         if area.height > 2 {
+            let width = area.width.min(12);
+            self.details_hit = Rect::new(area.right() - width, area.y + 2, width, 1);
             draw_text(
-                Rect::new(area.x, area.y + 2, area.width, 1),
+                Rect::new(area.x, area.y + 2, area.width - width, 1),
                 buffer,
-                &display_text(&self.notice),
+                &display_text(&crate::widgets::diagnostic::summary(&self.notice)),
                 theme.style("content"),
+            );
+            draw_text(
+                self.details_hit,
+                buffer,
+                "[F4 Details]",
+                theme.style("lsp-button"),
             );
         }
         for (index, line) in self
@@ -736,6 +775,11 @@ impl DatabaseTree {
 }
 impl EventTarget for DatabaseTree {
     fn dispatch(&mut self, event: &InputEvent) -> bool {
+        if crate::widgets::controls::button(event, self.details_hit, false) {
+            self.actions.push_back(Action::Details);
+            return true;
+        }
+
         if button(event, self.new_button, false) {
             self.actions.push_back(Action::New);
             return true;

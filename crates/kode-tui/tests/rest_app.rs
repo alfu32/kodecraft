@@ -29,9 +29,9 @@ fn ctrl(ch: char) -> InputEvent {
         repeat: false,
     })
 }
-fn alt7() -> InputEvent {
+fn alt5() -> InputEvent {
     InputEvent::Key(KeyInput {
-        key: Key::Character('7'),
+        key: Key::Character('5'),
         modifiers: Modifiers {
             alt: true,
             ..Default::default()
@@ -104,7 +104,7 @@ async fn restore_and_export_without_replaying(
             .snapshot()
             .is_empty()
     );
-    restored.state.dispatch(&alt7()).unwrap();
+    restored.state.dispatch(&alt5()).unwrap();
     restored.state.dispatch(&key(Key::Character('e'))).unwrap();
     submit(&mut restored, name);
     let output = root.join(name);
@@ -272,7 +272,7 @@ async fn collection_runner_presents_live_progress_validation_and_rebased_results
         .unwrap();
     app.state.drain_ui().unwrap();
     assert!(app.state.rest.form.is_none());
-    app.state.dispatch(&alt7()).unwrap();
+    app.state.dispatch(&alt5()).unwrap();
     app.state.dispatch(&key(Key::Function(7))).unwrap();
     until(&mut app, |app| {
         app.state
@@ -1460,7 +1460,7 @@ async fn original_environment_editor_typing_clipboard_native_search_and_metadata
  {
     let root = tempfile::tempdir().unwrap();
     let (mut app, clipboard) = make(root.path(), 1);
-    app.state.dispatch(&alt7()).unwrap();
+    app.state.dispatch(&alt5()).unwrap();
     assert_eq!(app.state.tabs.selected, kode_tui::app::panel::REST);
     render(&mut app);
     app.state.dispatch(&key(Key::Tab)).unwrap();
@@ -1644,7 +1644,7 @@ async fn file_import_inspection_and_guarded_export_are_real_worker_actions_and_p
     let (mut app, _) = make(root.path(), 1);
     let original = json!({"info":{"name":"Imported"},"item":[{"name":"Call","request":{"method":"GET","url":"https://example.invalid"},"response":[{"body":"saved example"}]}],"x-future":{"keep":true}});
     std::fs::write(root.path().join("collection.json"), original.to_string()).unwrap();
-    app.state.dispatch(&alt7()).unwrap();
+    app.state.dispatch(&alt5()).unwrap();
     render(&mut app);
     app.state.dispatch(&key(Key::Character('i'))).unwrap();
     submit(&mut app, "collection.json");
@@ -1669,7 +1669,7 @@ async fn file_import_inspection_and_guarded_export_are_real_worker_actions_and_p
         app.state.documents.document(id).unwrap().snapshot().text(),
         snapshot
     );
-    app.state.dispatch(&alt7()).unwrap();
+    app.state.dispatch(&alt5()).unwrap();
     app.state.dispatch(&key(Key::Character('e'))).unwrap();
     submit(&mut app, "exports/collection.json");
     let export = root.path().join("exports/collection.json");
@@ -1832,7 +1832,7 @@ async fn explicit_export_filename_replaces_an_existing_target_without_an_extra_p
     std::fs::write(&path, "previous contents").unwrap();
     let (mut app, _) = make(root.path(), 1);
     let expected = app.state.rest.model.export_collection();
-    app.state.dispatch(&alt7()).unwrap();
+    app.state.dispatch(&alt5()).unwrap();
     render(&mut app);
     app.state.dispatch(&key(Key::Character('e'))).unwrap();
     submit(&mut app, "selected.json");
@@ -1932,7 +1932,7 @@ async fn sidebar_run_uses_current_environment_and_depth_first_selection_with_ide
     app.state
         .dispatch(&InputEvent::Paste("path=current-buffer".into()))
         .unwrap();
-    app.state.dispatch(&alt7()).unwrap();
+    app.state.dispatch(&alt5()).unwrap();
     app.state.rest.sidebar.cursor = NodePath(vec![0]);
     render(&mut app);
     app.state.dispatch(&key(Key::Character('r'))).unwrap();
@@ -1988,7 +1988,7 @@ async fn run_again_cancels_the_current_request_and_never_sends_the_next_one() {
             {"name":"Never","request":{"url":format!("{url}/never")}}
         ]}))
         .unwrap();
-    app.state.dispatch(&alt7()).unwrap();
+    app.state.dispatch(&alt5()).unwrap();
     render(&mut app);
     app.state.dispatch(&key(Key::Character('r'))).unwrap();
     assert_eq!(next_hit(&mut app, &mut hits).await, "GET /first HTTP/1.1");
@@ -2133,7 +2133,7 @@ async fn invalid_saved_rest_data_is_retained_and_cannot_accept_edits_that_would_
     .unwrap();
     let mut app = AppRuntime::new(prepared).unwrap();
     assert!(!app.state.rest.persistence_enabled);
-    app.state.dispatch(&alt7()).unwrap();
+    app.state.dispatch(&alt5()).unwrap();
     render(&mut app);
     app.state.dispatch(&key(Key::Character('n'))).unwrap();
     app.state.dispatch(&key(Key::Tab)).unwrap();
@@ -2164,7 +2164,7 @@ async fn import_notices_remain_inspectable_after_further_imports_and_restart() {
     app.quiesce().await.unwrap();
     let (mut app, _) = make(root.path(), 2);
     assert!(app.state.rest.sidebar.notices.is_empty());
-    app.state.dispatch(&alt7()).unwrap();
+    app.state.dispatch(&alt5()).unwrap();
     render(&mut app);
     app.state.dispatch(&key(Key::Character('!'))).unwrap();
     until(&mut app, |app| {

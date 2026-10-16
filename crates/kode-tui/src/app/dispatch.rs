@@ -125,6 +125,9 @@ impl AppState {
             self.shell_requested = true;
             return self.drain_ui();
         }
+        if self.dispatch_diagnostic(event)? {
+            return self.drain_ui();
+        }
         if let Some(dialog) = &mut self.rescan {
             dialog.dispatch(event);
             if dialog.finished {
@@ -171,7 +174,7 @@ impl AppState {
                 .dispatch(event, &mut self.documents, &mut self.focus)?;
             return self.drain_ui();
         }
-        if matches!(global, Some(input) if input.modifiers.ctrl && (input.modifiers.alt || input.modifiers.shift) && matches!(input.key, Key::Character('f')))
+        if matches!(global, Some(input) if (input.modifiers.alt || (input.modifiers.ctrl && input.modifiers.shift)) && matches!(input.key, Key::Character('f')))
         {
             if self.git.checkout_pending() {
                 self.notice = "Wait for branch checkout before opening project search".into();
@@ -204,11 +207,12 @@ impl AppState {
             if input.modifiers.alt
                 && let Key::Character(number @ '1'..='8') = input.key
             {
-                if number != '5' {
+                let target = super::panel::SHORTCUTS[(number as u8 - b'1') as usize];
+                if target != super::panel::GIT {
                     self.clear_diff()?;
                     self.git.deactivate(&mut self.documents, &mut self.focus)?;
                 }
-                self.tabs.selected = super::panel::SHORTCUTS[(number as u8 - b'1') as usize];
+                self.tabs.selected = target;
                 if self.tabs.selected != crate::app::panel::REST {
                     self.rest.sidebar.dismiss(&mut self.focus);
                 }

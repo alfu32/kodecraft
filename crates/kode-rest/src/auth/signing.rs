@@ -123,6 +123,12 @@ fn oauth1(
             auth.value("tokenSecret"),
         ));
     }
+    if !auth.value("callback").is_empty() {
+        builder.callback(auth.value("callback"));
+    }
+    if !auth.value("verifier").is_empty() {
+        builder.verifier(auth.value("verifier"));
+    }
     builder.nonce(nonce).timestamp(std::num::NonZeroU64::new(
         now.duration_since(UNIX_EPOCH)
             .map_err(|_| invalid("Invalid OAuth signing time"))?

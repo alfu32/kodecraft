@@ -43,7 +43,7 @@ def main():
             path.write_bytes(new)
             entered = b"\x1b[?1049h"
             result = terminal.run_case(path, base / f"config-{width}", (width, height), [
-                (b"Ready", 0.15, b"\x1b5"),
+                (b"Ready", 0.15, b"\x1b3"),
                 (b"Note.txt", 0.15, b"\r"),
                 (b"Diff", 0.2, b"\x1b[200~forbidden\x1b[201~"),
                 (entered, 0.15, b"c"),

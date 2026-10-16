@@ -1,0 +1,93 @@
+{
+  "cases": [
+    {
+      "case": "all-eight-editor-focus-and-mouse-parity",
+      "encoding": "escape-prefix",
+      "targets": [
+        "Files",
+        "Project",
+        "Git",
+        "Database",
+        "REST",
+        "About",
+        "Settings",
+        "Help"
+      ],
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "all-eight-editor-focus-and-mouse-parity",
+      "encoding": "csi-u",
+      "targets": [
+        "Files",
+        "Project",
+        "Git",
+        "Database",
+        "REST",
+        "About",
+        "Settings",
+        "Help"
+      ],
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "all-eight-editor-focus-and-mouse-parity",
+      "encoding": "escape-prefix",
+      "targets": [
+        "Files",
+        "Project",
+        "Git",
+        "Database",
+        "REST",
+        "About",
+        "Settings",
+        "Help"
+      ],
+      "size": [
+        60,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "all-eight-editor-focus-and-mouse-parity",
+      "encoding": "csi-u",
+      "targets": [
+        "Files",
+        "Project",
+        "Git",
+        "Database",
+        "REST",
+        "About",
+        "Settings",
+        "Help"
+      ],
+      "size": [
+        60,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 4
+}

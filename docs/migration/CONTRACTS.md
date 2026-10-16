@@ -353,7 +353,7 @@ I/O failure after worktree publication reports that partial changes need inspect
 Unix lock ownership uses file identity; non-Unix fallback/actual native execution
 remain release qualification work. Native calls are not forcibly interrupted.
 
-Alt+5 opens the Git panel. Status changes only after write acknowledgement and a
+Alt+3 opens the Git panel. Status changes only after write acknowledgement and a
 fresh read. Its virtual commit document uses the shared editor, local completion,
 find/history and clipboard. Only a successful commit whose captured document and
 revision still match clears the draft; refresh and errors preserve it. Drafts are
@@ -1059,7 +1059,7 @@ JDBC metadata. Detailed limits, protocol fields and shared fixtures are in
 ## Database explorer and application composition
 
 D07 supplies application-thread `DatabasePanel`, `DatabaseTree`, connection and
-object dialogs, composing D03's driver-install modal. Alt+6 lazily loads Rust
+object dialogs, composing D03's driver-install modal. Alt+4 lazily loads Rust
 definitions on an owned job; ordinary startup neither reads user database files
 nor starts Java. Configuration/resource failures remain database feature errors
 and leave native file editing operational. Native JDBC operations use F03's async
@@ -1437,9 +1437,12 @@ the presence of an old shared library or a new target build.
 The shared command catalog is consumed by reducers and generates Help; text
 insertion retains the original input bytes. Global project-search modifiers have
 priority over editor find, and find-bar Ctrl+Enter precedes host execution.
-Alt+F opens file find, Ctrl+Shift+F project search; Ctrl+F/Ctrl+Alt+F are aliases.
-Semantic panel constants separate source visual order from preserved Alt+1..8
-bindings. Sidebar header geometry is one horizontal row; panel content below it
+Finalized UAT B002/U01 supersedes the earlier mapping: Ctrl+F opens file find,
+Alt+F project search. Ctrl+Alt+F and Ctrl+Shift+F are project aliases when delivered
+by the terminal host; neither is required for project search.
+Finalized UAT B007/U10 supersedes the original preserved numbering: Alt+1..8
+follows Files, Project, Git, Database, REST, About, Settings, Help in visual order.
+Git view cleanup uses the semantic target, independent of the digit. Sidebar header geometry is one horizontal row; panel content below it
 owns the full sidebar width. Mouse tab selection transfers focus to that panel.
 
 Help and About use wrapped cached text panels with source-line hit testing.
@@ -1483,3 +1486,63 @@ Existing cancellation/deadline owners wrap the complete exchange. HTTP and SSE
 share this path. Advanced-auth redirects return their visible 3xx plus a notice
 for explicit review. Static signers use actual GET/empty-body WebSocket handshake
 semantics; Digest/NTLM WebSocket upgrade negotiation has an explicit error.
+
+
+## OAuth acquisition and runtime ownership (R10)
+
+The native OAuth service exposes non-serializable Config/TokenSet, bounded redirect
+input and coalesced progress. oauth2 5.0.0 uses the workspace's existing reqwest
+transport through its public HTTP trait, without a second HTTP client dependency.
+An operation cancellation/deadline wraps network, callback and device polling;
+credential-bearing endpoint requests have no automatic redirect/retry. Raw token
+response bodies and provider descriptions never enter diagnostic errors.
+
+The default callback is `https://localhost:0/callback`: Kode binds a free loopback
+port, generates a per-flow in-memory self-signed certificate and serves actual
+TLS. HTTP loopback is also supported. Known imported Postman callback defaults
+resolve to this internal callback; custom remote callback URIs accept explicit
+pasted redirects. The form displays the actual callback URI and explains browser
+certificate trust and provider redirect registration. URI/path/query ownership, duplicate fields,
+CSRF state, PKCE and temporary OAuth 1.0 credential correlation precede exchange.
+Wrong callbacks leave the valid pending flow alive; matching denial terminates it.
+Listener reads/replies are bounded and owner disposal drops the socket. Public
+progress may expose the authorization/verification URL and human device code,
+while Debug redacts those URLs and never contains token or client secrets.
+
+After verifying captured workspace/request identity, the application can use
+RequestResolver::with_runtime_tokens on its immutable execution capture. Only
+OAuth-owned token fields override the resolved request, bypassing obsolete token
+placeholders while retaining validation of other variables. Expiry/type mismatch
+fails explicitly. ExecutionAuth.runtime_token marks acquired credentials so raw/
+transaction previews hide their Authorization value; actual transport headers
+still carry the credential. The source collection and ordinary persistence/export
+paths never receive those token values. The UI retains at most 32 token sets by
+stable runtime item identity within the workspace and binds each to its captured
+resolved OAuth settings. Changed settings or expiry reject Send before I/O.
+Selection changes do not transfer credentials; removal/replacement prunes them,
+and workspace disposal cancels the flow. A single cancellable flow exposes Acquire,
+Refresh, Cancel, Clear, copy/select URL and flow-bound redirect entry. Immutable
+Send/collection-run captures and raw previews use these same runtime overrides;
+refresh is explicit and failed refresh preserves the previous token.
+
+
+## Readable database diagnostics (U02 / B003)
+
+Database status lines keep a concise summary and an explicit F4 Details control.
+Connection/test, driver installation, metadata/helper errors and SQL messages open
+an immutable diagnostic snapshot with its operation/datasource/request or console/
+execution identity. F4 follows focus between the explorer and SQL editor/results.
+The details modal wraps terminal-safe text, retains newline and causal structure,
+supports arrows/pages/Home/End and mouse wheel, and offers full-text clipboard copy.
+Escape/Close restores the parent focus, including after a parent job completes.
+Showing an error never takes focus automatically. Diagnostic snapshots do not enter
+session state; clipboard copy is explicit and uses the existing worker path.
+
+The helper redacts configured credential values and sensitive assignments before
+building a bounded SQL payload. Each message retains up to 65,536 Unicode scalars,
+with an explicit marker at that limit; line breaks are preserved and other terminal
+controls are sanitized. At most sixteen chained/causal entries are emitted, with
+cycle detection. Native query validation admits the corresponding UTF-8 bound,
+retains SQLSTATE/vendor codes and rejects oversized or malformed payloads. The UI
+adds no earlier 2,048-character truncation. Generic transport/install diagnostics
+remain redacted; raw helper stderr and unknown remote data are never displayed.

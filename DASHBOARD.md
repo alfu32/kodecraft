@@ -1,14 +1,14 @@
 # Implementation dashboard
 
-Full Kode → Rust migration. Counts are derived from the status in every task definition.
+Full Kode → Rust migration, including the [finalized UAT batch](docs/migration/UAT.md). Counts are derived from the status in every task definition.
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|     3 |           1 |   63 |       0 |    67 |
+|    12 |           1 |   66 |       0 |    79 |
 
 ## Ongoing tasks
 
-- **R10** — [OAuth acquisition and browser authorization](docs/migration/tasks/08-rest.md#r10--oauth-acquisition-and-browser-authorization)
+- **U10** — [Panel shortcuts follow visual tab order](docs/migration/tasks/11-uat.md#u10--panel-shortcuts-follow-visual-tab-order)
 
 ## Task status
 
@@ -67,7 +67,7 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | R07  | [Request/response editors and complete REST UX](docs/migration/tasks/08-rest.md)                | done        | [Report](docs/parity/R07.md) |
 | R08  | [Collection runner, persistence and REST qualification](docs/migration/tasks/08-rest.md)        | done        | [Report](docs/parity/R08.md) |
 | R09  | [Extended authentication protocols](docs/migration/tasks/08-rest.md)                            | done        | [Report](docs/parity/R09.md) |
-| R10  | [OAuth acquisition and browser authorization](docs/migration/tasks/08-rest.md)                  | in-progress | —                            |
+| R10  | [OAuth acquisition and browser authorization](docs/migration/tasks/08-rest.md)                  | done        | [Report](docs/parity/R10.md) |
 | D01  | [Database models, settings, credentials and URL catalogs](docs/migration/tasks/09-database.md)  | done        | [Report](docs/parity/D01.md) |
 | D02  | [Protocol, Java bootstrap and Rust process supervisor](docs/migration/tasks/09-database.md)     | done        | [Report](docs/parity/D02.md) |
 | D03  | [Driver install, Maven resolution and classloaders](docs/migration/tasks/09-database.md)        | done        | [Report](docs/parity/D03.md) |
@@ -81,6 +81,18 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | Z02  | [Settings, help, about and operational status](docs/migration/tasks/10-delivery.md)             | done        | [Report](docs/parity/Z02.md) |
 | Z03  | [Reproducible build and distribution](docs/migration/tasks/10-delivery.md)                      | todo        | —                            |
 | Z04  | [Full functional parity and release qualification](docs/migration/tasks/10-delivery.md)         | todo        | —                            |
+| U01  | [Finalized file and project search shortcuts](docs/migration/tasks/11-uat.md)                   | done        | [Report](docs/parity/U01.md) |
+| U02  | [Readable database errors and diagnostics](docs/migration/tasks/11-uat.md)                      | done        | [Report](docs/parity/U02.md) |
+| U03  | [Optional downloadable Java runtime artifact](docs/migration/tasks/11-uat.md)                   | todo        | —                            |
+| U04  | [Multiple cursors and selections](docs/migration/tasks/11-uat.md)                               | todo        | —                            |
+| U05  | [Hex layouts and text or binary find](docs/migration/tasks/11-uat.md)                           | todo        | —                            |
+| U06  | [Word selection with double-click and Alt+double-click](docs/migration/tasks/11-uat.md)         | todo        | —                            |
+| U07  | [File-tree picker buttons for path fields](docs/migration/tasks/11-uat.md)                      | todo        | —                            |
+| U08  | [Project-relative paths in the open-file list](docs/migration/tasks/11-uat.md)                  | todo        | —                            |
+| U09  | [Repair language server installations](docs/migration/tasks/11-uat.md)                          | todo        | —                            |
+| U10  | [Panel shortcuts follow visual tab order](docs/migration/tasks/11-uat.md)                       | in-progress | —                            |
+| U11  | [Connection-type JDBC URL template dropdown](docs/migration/tasks/11-uat.md)                    | todo        | —                            |
+| U12  | [Database package listing and DDL](docs/migration/tasks/11-uat.md)                              | todo        | —                            |
 
 Regenerate with `python3 scripts/tasks.py`; verify with `python3 scripts/tasks.py --check`.
 

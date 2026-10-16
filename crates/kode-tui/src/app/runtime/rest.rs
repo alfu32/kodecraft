@@ -43,6 +43,7 @@ impl AppRuntime {
                 }
                 _ => (self.root_owner, "rest-open", false),
             },
+            Work::OAuth(_) => (self.root_owner, "rest-oauth-prepare", false),
             Work::Run(_) => (self.root_owner, "rest-prepare-run", false),
             Work::Open { .. } => (self.root_owner, "rest-open", false),
             Work::Environment { snapshot, .. } => (
@@ -81,6 +82,7 @@ impl AppRuntime {
             }
         });
         match context {
+            state::Context::OAuth { key } => self.oauth_prepared(tag, key, result)?,
             state::Context::Editor(context) => {
                 let reply = result.and_then(|reply| {
                     if let Reply::Editor(reply) = reply {
@@ -289,9 +291,11 @@ impl AppRuntime {
         Ok(())
     }
     pub(super) fn pump_rest(&mut self) {
+        self.pump_oauth();
         if self.state.closing {
             self.state.rest.run.pending = None;
             self.state.rest.run.cancel();
+            self.state.rest.oauth.cancel();
         }
         if self.state.rest.run.pump() {
             if let Some(running) = &self.state.rest.run.running {

@@ -228,6 +228,7 @@ mod tests {
             None
         );
         let auth = ExecutionAuth {
+            runtime_token: false,
             kind: "ntlm".into(),
             fields: Default::default(),
         };

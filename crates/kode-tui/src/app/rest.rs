@@ -300,6 +300,7 @@ impl AppState {
                         })
                         .collect();
                     self.rest.run.tree_changed(change);
+                    self.rest.oauth.retain(&self.rest.run.live_keys);
                     let stale: Vec<_> = self
                         .rest
                         .documents
@@ -505,6 +506,7 @@ impl AppState {
                 environment,
                 environment_text,
                 keys: self.rest.run.keys.clone(),
+                runtime_tokens: self.rest.oauth.tokens.clone(),
             })))));
         Ok(())
     }

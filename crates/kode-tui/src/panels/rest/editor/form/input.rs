@@ -37,6 +37,58 @@ impl Form {
             return Err(invalid("REST item no longer exists"));
         }
         match action {
+            Action::OAuth(op) => match op {
+                OAuthAction::CopyUrl => {
+                    if let Some(url) = &self.oauth.url {
+                        self.intents.push(Intent::Clipboard {
+                            action: FieldAction::Copy(url.clone()),
+                            proof: None,
+                        });
+                    }
+                }
+                OAuthAction::ViewUrl | OAuthAction::PasteRedirect => {
+                    let (title, value, purpose) = if op == OAuthAction::ViewUrl {
+                        let Some(url) = self.oauth.url.clone() else {
+                            return Ok(());
+                        };
+                        ("OAuth login URL", url, ModalPurpose::Display)
+                    } else {
+                        let Some(flow) = self.oauth.flow else {
+                            return Ok(());
+                        };
+                        (
+                            "Paste complete OAuth redirect URL",
+                            String::new(),
+                            ModalPurpose::Redirect(flow),
+                        )
+                    };
+                    let mut dialog = EntryDialog::new(
+                        title.into(),
+                        editing::EntryValue {
+                            key: "URL".into(),
+                            value,
+                            description: "Ctrl+A, Ctrl+C to copy; Enter to accept".into(),
+                            kind: "string".into(),
+                            enabled: true,
+                        },
+                        false,
+                        "Hint",
+                    )?;
+                    dialog.fields[0].read_only = true;
+                    dialog.fields[2].read_only = true;
+                    dialog.fields[1].read_only = op == OAuthAction::ViewUrl;
+                    dialog.focus = 1;
+                    self.epoch = self.epoch.saturating_add(1);
+                    self.modal = Some(Modal {
+                        dialog,
+                        purpose,
+                        expected: model.export_collection(),
+                        previous: focus.focused,
+                    });
+                    focus.focused = Some(self.id);
+                }
+                _ => self.intents.push(Intent::OAuth(op)),
+            },
             Action::Focus(field) => {
                 if !self.fields.contains_key(&field) {
                     return Err(invalid("This field uses an embedded editor"));
@@ -160,8 +212,7 @@ impl Form {
                 self.epoch = self.epoch.saturating_add(1);
                 self.modal = Some(Modal {
                     dialog,
-                    kind,
-                    index,
+                    purpose: ModalPurpose::Row(kind, index),
                     expected: model.export_collection(),
                     previous,
                 });
@@ -273,8 +324,19 @@ impl Form {
                         self.message =
                             "REST data changed while the dialog was open; reopen this row".into();
                     } else {
-                        editing::edit_row(model, &self.path, modal.kind, modal.index, &value)?;
-                        self.intents.push(Intent::Changed);
+                        match modal.purpose {
+                            ModalPurpose::Row(kind, index) => {
+                                editing::edit_row(model, &self.path, kind, index, &value)?;
+                                self.intents.push(Intent::Changed);
+                            }
+                            ModalPurpose::Redirect(flow) => {
+                                self.intents.push(Intent::OAuthRedirect {
+                                    flow,
+                                    text: value.value,
+                                })
+                            }
+                            ModalPurpose::Display => {}
+                        }
                     }
                 }
             }

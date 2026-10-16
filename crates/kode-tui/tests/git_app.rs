@@ -40,9 +40,9 @@ fn key(key: Key, ctrl: bool) -> InputEvent {
 fn ctrl_tab() -> InputEvent {
     key(Key::Tab, true)
 }
-fn alt5() -> InputEvent {
+fn alt3() -> InputEvent {
     InputEvent::Key(KeyInput {
-        key: Key::Character('5'),
+        key: Key::Character('3'),
         modifiers: Modifiers {
             alt: true,
             ..Default::default()
@@ -153,7 +153,7 @@ fn draft(app: &AppRuntime) -> String {
         .to_string()
 }
 fn status_focus(app: &mut AppRuntime) {
-    app.state.dispatch(&alt5()).unwrap();
+    app.state.dispatch(&alt3()).unwrap();
     for _ in 0..3 {
         if app.state.focus.focused == Some(app.state.git.id()) {
             return;

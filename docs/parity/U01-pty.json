@@ -1,0 +1,27 @@
+{
+  "cases": [
+    {
+      "case": "uat-ctrl-f-file-alt-f-project-and-project-aliases",
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "uat-ctrl-f-file-alt-f-project-and-project-aliases",
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 2
+}

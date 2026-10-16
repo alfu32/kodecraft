@@ -70,3 +70,31 @@ B005 - [todo] - File Panel
 
 the list of currently opened files should show their path from the project root instead of the full path.
 the full path can be shown optionally
+
+B006 - [todo] - language servers missing
+
+![img_5.png](img_5.png)
+![img_6.png](img_6.png)
+![img_7.png](img_7.png)
+![img_8.png](img_8.png)
+
+B007 - [todo] - switching left panel tabs
+
+switching with alt-1,2,3,4,5,6,7,8 does not happen in the expected (current, visual) order
+alt-5,6,7,8 are not mapped
+
+M007 - [todo] - Database: database jdbc field
+
+the database jdbc field should have a dropdown that suggests the frequently used jdbc url formats for each database according to the selected connection type
+![img_9.png](img_9.png)
+
+M008 - [todo] - Database: packages
+
+where applicable we should support database packages listing and ddl
+
+B008 - [todo] - REST : oauth
+
+redirection url shouldn't point towards postman
+
+my suggestion is to have an internal, efemeral webserver that will intercept the redirect, in which case the redirect
+uri should always be something like https://localhost:free-port/callback kode-rs will intercept the token in this manner

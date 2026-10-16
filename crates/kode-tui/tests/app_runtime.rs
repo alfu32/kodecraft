@@ -573,7 +573,7 @@ async fn builtin_lsp_settings_start_restart_crash_repaint_switch_and_quit_reap_a
     );
     app.state
         .dispatch(&InputEvent::Key(KeyInput {
-            key: Key::Character('4'),
+            key: Key::Character('7'),
             modifiers: Modifiers {
                 alt: true,
                 ..Default::default()
@@ -630,7 +630,7 @@ async fn builtin_lsp_settings_start_restart_crash_repaint_switch_and_quit_reap_a
     assert!(!Path::new(&format!("/proc/{before_switch}")).exists());
     app.state
         .dispatch(&InputEvent::Key(KeyInput {
-            key: Key::Character('4'),
+            key: Key::Character('7'),
             modifiers: Modifiers {
                 alt: true,
                 ..Default::default()
@@ -782,7 +782,7 @@ async fn lsp_settings_use_real_download_workers_then_acknowledged_lifecycle_call
     until(&mut app, |app| app.state.lsp_settings.busy.is_none()).await;
     app.state
         .dispatch(&InputEvent::Key(KeyInput {
-            key: Key::Character('4'),
+            key: Key::Character('7'),
             modifiers: Modifiers {
                 alt: true,
                 ..Default::default()
@@ -1247,7 +1247,7 @@ async fn settings_index_clear_rebuild_uses_real_workers_and_preserves_dirty_edit
     let text = app.state.documents.document(id).unwrap().snapshot().text();
     app.state
         .dispatch(&InputEvent::Key(KeyInput {
-            key: Key::Character('4'),
+            key: Key::Character('7'),
             modifiers: Modifiers {
                 alt: true,
                 ..Default::default()
@@ -1345,7 +1345,7 @@ async fn help_about_and_uat_search_shortcuts_keep_the_editor_owned_and_metrics_a
     assert_eq!(app.state.geometry.panel.y, app.state.geometry.tabs.bottom());
     app.state
         .dispatch(&InputEvent::Key(KeyInput {
-            key: Key::Character('3'),
+            key: Key::Character('8'),
             modifiers: Modifiers {
                 alt: true,
                 ..Default::default()
@@ -1371,7 +1371,7 @@ async fn help_about_and_uat_search_shortcuts_keep_the_editor_owned_and_metrics_a
     assert!(app.state.help.scroll > 0);
     app.state
         .dispatch(&InputEvent::Key(KeyInput {
-            key: Key::Character('8'),
+            key: Key::Character('6'),
             modifiers: Modifiers {
                 alt: true,
                 ..Default::default()
@@ -1408,7 +1408,7 @@ async fn help_about_and_uat_search_shortcuts_keep_the_editor_owned_and_metrics_a
         .dispatch(&InputEvent::Key(KeyInput {
             key: Key::Character('f'),
             modifiers: Modifiers {
-                alt: true,
+                ctrl: true,
                 ..Default::default()
             },
             repeat: false,
@@ -1421,7 +1421,6 @@ async fn help_about_and_uat_search_shortcuts_keep_the_editor_owned_and_metrics_a
         .dispatch(&InputEvent::Key(KeyInput {
             key: Key::Character('f'),
             modifiers: Modifiers {
-                ctrl: true,
                 alt: true,
                 ..Default::default()
             },
@@ -1947,4 +1946,96 @@ async fn invalid_image_falls_back_to_raw_hex_with_error_and_extension_defaults_r
     );
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn all_panel_numbers_follow_visual_order_from_editor_focus_and_match_mouse_targets() {
+    use kode_tui::app::panel;
+    for width in [100, 60] {
+        let directory = tempfile::tempdir().unwrap();
+        fs::write(directory.path().join("note.txt"), "original\n").unwrap();
+        let mut app = make(
+            directory.path(),
+            Some("note.txt"),
+            Arc::new(FakeClock::default()),
+        );
+        until(&mut app, |app| app.state.editor.is_some()).await;
+        let document = app.state.editor.as_ref().unwrap().document_id();
+        // Ascending and descending passes start from different panels and overflow positions.
+        for number in (1..=8).chain((1..=8).rev()) {
+            let area = Rect::new(0, 0, width, 28);
+            let mut buffer = Buffer::empty(area);
+            app.state.focus.focused = Some(app.state.editor.as_ref().unwrap().input.id);
+            app.state
+                .dispatch(&InputEvent::Key(KeyInput {
+                    key: Key::Character(char::from(b'0' + number)),
+                    modifiers: Modifiers {
+                        alt: true,
+                        ..Default::default()
+                    },
+                    repeat: false,
+                }))
+                .unwrap();
+            let selected = usize::from(number - 1);
+            assert_eq!(
+                app.state.tabs.selected, selected,
+                "Alt+{number} at {width} columns"
+            );
+            let owner = match selected {
+                panel::FILES => app.state.files.id,
+                panel::PROJECT => app.state.project_panel.id,
+                panel::GIT => app.state.git.focus_id(),
+                panel::DATABASE => app.state.database.tree.id,
+                panel::REST => app.state.rest.sidebar.id,
+                panel::ABOUT => app.state.about.focus_id(),
+                panel::SETTINGS => app.state.settings.focus_id(app.state.lsp_settings.id),
+                panel::HELP => app.state.help.id,
+                _ => unreachable!(),
+            };
+            assert_eq!(app.state.focus.focused, Some(owner));
+            app.state
+                .render(area, &mut buffer, &Theme::compiled())
+                .unwrap();
+            let tabs = app.state.geometry.tabs;
+            let header: String = (tabs.x..tabs.right())
+                .map(|x| buffer[(x, tabs.y)].symbol())
+                .collect();
+            let x = header
+                .find(panel::TITLES[selected])
+                .expect("selected overflow tab stays visible") as u16
+                + tabs.x;
+            app.state.dispatch(&key(Key::Function(6), false)).unwrap();
+            assert_eq!(
+                app.state.focus.focused,
+                Some(app.state.editor.as_ref().unwrap().input.id)
+            );
+            app.state
+                .dispatch(&InputEvent::Pointer(PointerInput {
+                    x,
+                    y: tabs.y,
+                    action: PointerAction::Down(crossterm::event::MouseButton::Left),
+                    modifiers: Modifiers::default(),
+                }))
+                .unwrap();
+            assert_eq!(app.state.tabs.selected, selected);
+            assert_eq!(app.state.focus.focused, Some(owner));
+            assert_eq!(
+                app.state
+                    .documents
+                    .document(document)
+                    .unwrap()
+                    .snapshot()
+                    .text()
+                    .as_ref(),
+                "original\n"
+            );
+            app.pump().unwrap();
+        }
+        app.flush_before_leave().await.unwrap();
+        app.quiesce().await.unwrap();
+        assert_eq!(
+            fs::read_to_string(directory.path().join("note.txt")).unwrap(),
+            "original\n"
+        );
+    }
 }

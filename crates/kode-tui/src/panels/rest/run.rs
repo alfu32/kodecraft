@@ -48,6 +48,7 @@ pub struct Running {
     pub received_bytes: u64,
 }
 pub struct Prepare {
+    pub runtime_tokens: HashMap<String, kode_rest::oauth::BoundTokens>,
     pub tag: JobTag,
     pub structure: u64,
     pub overrides: Vec<super::editor::buffers::Override>,
@@ -125,6 +126,7 @@ impl Prepare {
         Ok(Prepared {
             keys: Arc::new(keys),
             definition: Definition {
+                runtime_tokens: self.runtime_tokens,
                 collection,
                 root: self.root,
                 environment,

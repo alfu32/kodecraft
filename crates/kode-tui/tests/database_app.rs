@@ -34,9 +34,9 @@ fn key(key: Key, ctrl: bool) -> InputEvent {
         repeat: false,
     })
 }
-fn alt6() -> InputEvent {
+fn alt4() -> InputEvent {
     InputEvent::Key(KeyInput {
-        key: Key::Character('6'),
+        key: Key::Character('4'),
         modifiers: Modifiers {
             alt: true,
             ..Default::default()
@@ -138,7 +138,7 @@ async fn actual_java_h2_panel_download_test_connect_metadata_typing_sessions_dis
             helper_candidates: vec![helper],
         },
     );
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     until(&mut app, |app| app.state.database.tree.sources.len() == 1).await;
     app.state.splash = false;
     app.state.dispatch(&key(Key::Function(2), false)).unwrap();
@@ -287,7 +287,7 @@ async fn actual_java_h2_panel_download_test_connect_metadata_typing_sessions_dis
         .unwrap();
     let second = app.state.editor.as_ref().unwrap().document_id();
     assert_ne!(second, document);
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     app.state.database.tree.selected = app
         .state
         .database
@@ -307,11 +307,11 @@ async fn actual_java_h2_panel_download_test_connect_metadata_typing_sessions_dis
     app.state.database.tree.selected=app.state.database.tree.lines.iter().position(|line|matches!(&line.key,kode_tui::panels::database::tree::NodeKey::Session{id,..}if id==&first_console)).unwrap();
     app.state.dispatch(&key(Key::Enter, false)).unwrap();
     assert_eq!(app.state.editor.as_ref().unwrap().document_id(), document);
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     app.state.database.tree.selected=app.state.database.tree.lines.iter().position(|line|matches!(&line.key,kode_tui::panels::database::tree::NodeKey::Session{id,..}if id==&second_console)).unwrap();
     app.state.dispatch(&key(Key::Delete, false)).unwrap();
     assert_eq!(app.state.database.tree.sessions.len(), 1);
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     app.state.database.tree.selected = 0;
     app.state
         .dispatch(&key(Key::Character('c'), false))
@@ -410,7 +410,7 @@ async fn actual_java_h2_sql_console_targets_results_transactions_context_cancel_
         ..Default::default()
     });
     DataSourceRepository::new(db.clone()).upsert(ds).unwrap();
-    let (mut app, _) = make_installation(
+    let (mut app, clipboard) = make_installation(
         &workspace,
         &db,
         Installation {
@@ -418,7 +418,7 @@ async fn actual_java_h2_sql_console_targets_results_transactions_context_cancel_
             helper_candidates: vec![helper],
         },
     );
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     until(&mut app, |app| app.state.database.tree.sources.len() == 1).await;
     app.state
         .dispatch(&key(Key::Character('c'), false))
@@ -681,6 +681,41 @@ async fn actual_java_h2_sql_console_targets_results_transactions_context_cancel_
     let failed = sql_run(&mut app, "select * from MISSING_UI_TABLE", false).await;
     assert_eq!(failed.completion.unwrap().outcome, Outcome::Failed);
     assert_eq!(app.state.focus.focused, focus);
+    app.state.dispatch(&key(Key::Function(4), false)).unwrap();
+    assert!(
+        app.state
+            .diagnostic
+            .as_ref()
+            .unwrap()
+            .text
+            .contains("MISSING_UI_TABLE")
+    );
+    assert!(
+        app.state
+            .diagnostic
+            .as_ref()
+            .unwrap()
+            .text
+            .contains("SQLSTATE")
+    );
+    app.state.dispatch(&key(Key::Character('c'), true)).unwrap();
+    assert!(clipboard.local_text().contains("MISSING_UI_TABLE"));
+    app.state.dispatch(&key(Key::Escape, false)).unwrap();
+    assert_eq!(app.state.focus.focused, focus);
+    // F4 follows the focused database explorer even with a SQL console open.
+    app.state.focus.focused = Some(app.state.database.tree.id);
+    app.state.dispatch(&key(Key::Function(4), false)).unwrap();
+    assert!(
+        !app.state
+            .diagnostic
+            .as_ref()
+            .unwrap()
+            .title
+            .starts_with("SQL")
+    );
+    app.state.dispatch(&key(Key::Escape, false)).unwrap();
+    assert_eq!(app.state.focus.focused, Some(app.state.database.tree.id));
+    app.state.focus.focused = focus;
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
 }
@@ -699,7 +734,7 @@ async fn sql_cancel_retry_is_bounded_and_captures_the_original_execution_identit
         .upsert(definition())
         .unwrap();
     let (mut app, _) = make(&workspace, &db, None);
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     until(&mut app, |app| app.state.database.tree.sources.len() == 1).await;
     app.state
         .open_database_console("fixture".into(), String::new())
@@ -796,7 +831,7 @@ async fn sql_save_restore_hover_and_find_precedence_use_the_real_editor_and_sess
         .upsert(definition())
         .unwrap();
     let (mut app, _) = make(&workspace, &db, None);
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     until(&mut app, |app| app.state.database.tree.sources.len() == 1).await;
     app.state
         .open_database_console("fixture".into(), String::new())
@@ -949,7 +984,7 @@ async fn sql_save_restore_hover_and_find_precedence_use_the_real_editor_and_sess
             .is_err()
     );
     // Loading definitions and opening another console keeps the source counter.
-    restored.state.dispatch(&alt6()).unwrap();
+    restored.state.dispatch(&alt4()).unwrap();
     until(&mut restored, |app| {
         app.state.database.tree.sources.len() == 1
     })
@@ -985,7 +1020,7 @@ async fn database_configuration_failure_stays_in_its_panel_and_native_file_edit_
         "Synthetic database configuration error".into(),
     ));
     until(&mut app, |app| app.state.editor.is_some()).await;
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     until(&mut app, |app| {
         app.state
             .database
@@ -1037,7 +1072,7 @@ async fn startup_is_inert_then_modal_clipboard_save_and_immediate_quit_use_actua
     })
     .await;
     assert!(!db.exists());
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     until(&mut app, |app| {
         app.state.database.initialized && app.state.database.tree.notice.contains("loaded")
     })
@@ -1090,7 +1125,7 @@ async fn missing_java_error_preserves_form_and_console_launch_uses_the_shared_ed
         .upsert(definition())
         .unwrap();
     let (mut app, _) = make(&workspace, &db, None);
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     until(&mut app, |app| app.state.database.tree.sources.len() == 1).await;
     app.state.splash = false;
     app.state.dispatch(&key(Key::Function(2), false)).unwrap();
@@ -1162,7 +1197,7 @@ async fn workspace_switch_rebinds_database_ownership_and_keeps_global_definition
         .upsert(definition())
         .unwrap();
     let (mut app, _) = make(&first, &db, None);
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     until(&mut app, |app| app.state.database.tree.sources.len() == 1).await;
     let old = app.database_services().unwrap();
     app.switch_workspace(next.clone()).await.unwrap();
@@ -1171,9 +1206,92 @@ async fn workspace_switch_rebinds_database_ownership_and_keeps_global_definition
     assert!(app.state.database.tree.sources.is_empty());
     let current = app.database_services().unwrap();
     assert!(!Arc::ptr_eq(&old, &current));
-    app.state.dispatch(&alt6()).unwrap();
+    app.state.dispatch(&alt4()).unwrap();
     until(&mut app, |app| app.state.database.tree.sources.len() == 1).await;
     assert_eq!(app.state.database.tree.sources[0].name, "Fixture");
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn database_error_details_preserve_request_identity_full_copy_form_values_and_focus() {
+    use kode_tui::panels::database::controller::Context;
+    let root = tempfile::tempdir().unwrap();
+    let workspace = root.path().join("workspace");
+    std::fs::create_dir(&workspace).unwrap();
+    let (mut app, clipboard) = make(&workspace, &root.path().join("db"), None);
+    let original_focus = app.state.focus.focused;
+    app.state
+        .database
+        .edit(Some(definition()), &mut app.state.focus)
+        .unwrap();
+    let before = app.state.focus.focused;
+    let tag = app.state.tag().unwrap();
+    app.state.database.form.as_mut().unwrap().busy = Some(tag);
+    let text = format!(
+        "Connection failed\n{}\nCAUSE TAIL / SQLSTATE 28000 / vendor 73",
+        "long diagnostic 界 ".repeat(400)
+    );
+    app.state.database.complete(
+        tag,
+        Context::Test,
+        Err(text.clone()),
+        true,
+        &mut app.state.focus,
+    );
+    app.state.dispatch(&key(Key::Function(4), false)).unwrap();
+    assert!(
+        app.state
+            .diagnostic
+            .as_ref()
+            .unwrap()
+            .title
+            .contains(&tag.request.0.to_string())
+    );
+    assert!(app.state.diagnostic.as_ref().unwrap().text.ends_with(&text));
+    for width in [60, 100] {
+        let area = Rect::new(0, 0, width, 24);
+        let mut buffer = Buffer::empty(area);
+        app.state
+            .render(area, &mut buffer, &Theme::compiled())
+            .unwrap();
+        app.state.dispatch(&key(Key::End, false)).unwrap();
+        app.state
+            .render(area, &mut buffer, &Theme::compiled())
+            .unwrap();
+        let screen: String = buffer.content.iter().map(|cell| cell.symbol()).collect();
+        assert!(screen.contains("CAUSE TAIL"));
+    }
+    app.state.dispatch(&key(Key::Character('c'), true)).unwrap();
+    assert!(clipboard.local_text().ends_with(&text));
+    app.state.dispatch(&key(Key::Escape, false)).unwrap();
+    assert_eq!(app.state.focus.focused, before);
+    assert_eq!(
+        app.state.database.form.as_ref().unwrap().fields[0].value,
+        "Fixture"
+    );
+    assert_eq!(
+        app.state.database.form.as_ref().unwrap().fields[1].value,
+        "jdbc:h2:mem:app_fixture"
+    );
+    // A parent Save can finish and dismiss its form while details remain visible.
+    let save_tag = app.state.tag().unwrap();
+    app.state.database.form.as_mut().unwrap().busy = Some(save_tag);
+    app.state.dispatch(&key(Key::Function(4), false)).unwrap();
+    app.state.database.complete(
+        save_tag,
+        Context::Save,
+        Ok(kode_tui::panels::database::controller::Report::Sources {
+            sources: vec![definition()],
+            warning: None,
+        }),
+        true,
+        &mut app.state.focus,
+    );
+    assert!(app.state.database.form.is_none());
+    app.state.dispatch(&key(Key::Escape, false)).unwrap();
+    assert!(app.state.diagnostic.is_none());
+    assert_eq!(app.state.focus.focused, original_focus);
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
 }

@@ -76,7 +76,7 @@ def main():
             name = f"Edited fixture {width} {'offline' if unavailable else 'H2'}"
             if unavailable:
                 actions = [
-                    (b"Ready", 0.15, b"\x1b6"),
+                    (b"Ready", 0.15, b"\x1b4"),
                     (b"PTY database", 0.15, b"\x1b[12~\t\t\t\x1bt"),
                     (b"Java is unavailable", 0.15, b"\x1b[Z\x1b[Z\x01" + paste(name)),
                     (name.encode(), 0.15, save),
@@ -85,7 +85,7 @@ def main():
                 expected = [b"Java is unavailable", b"Datasource saved"]
             else:
                 actions = [
-                    (b"Ready", 0.15, b"\x1b6"),
+                    (b"Ready", 0.15, b"\x1b4"),
                     (b"PTY database", 0.15, b"c"),
                     (b"PTY_FIXTURE", 0.15, b"\x1b[12~\t\x01" + paste(name)),
                     (name.encode(), 0.15, save),

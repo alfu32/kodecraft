@@ -299,6 +299,19 @@ pub fn auth(model: &mut Workspace, path: &NodePath, kind: Option<&str>) -> Resul
                 .map(|(key, value)| json!({"key":key,"value":value,"type":"string"}))
                 .collect();
         }
+        if !crate::oauth::configuration_fields(kind).is_empty() {
+            let rows = definition[kind]
+                .as_array_mut()
+                .ok_or_else(|| invalid("OAuth authentication fields must be a Postman array"))?;
+            for (key, default) in crate::oauth::configuration_fields(kind) {
+                if !rows
+                    .iter()
+                    .any(|r| r.get("key").and_then(Value::as_str) == Some(key))
+                {
+                    rows.push(json!({"key":key,"value":default,"type":"string"}));
+                }
+            }
+        }
         value["auth"] = definition;
     } else {
         value

@@ -27,7 +27,7 @@ def main():
             catalog.write_text(json.dumps({"servers": [{"id": "fixture-server", "name": "Fixture Server", "languages": ["rust"], "preferredCommand": [str(executable), "--stdio", "two words"], "versions": [{"version": "manual", "downloads": []}]}]}))
             install = base / f"install-{size[0]}"
             result = terminal.run_case(project, base / f"config-{size[0]}", size, [
-                (b"\x1b[?1049h", 0.2, b"\x1b4"),
+                (b"\x1b[?1049h", 0.2, b"\x1b7"),
                 (b"stopped | Installed", 0.1, b"\r"),
                 (b"invalid LSP catalog", 0.1, b"\x11"),
             ], expected=[b"LSP Servers", b"Fixture Server", b"stopped | Installed", b"invalid LSP catalog"], env_overrides={"KODE_LSP_CATALOG": str(catalog), "KODE_LSP_HOME": str(install)})

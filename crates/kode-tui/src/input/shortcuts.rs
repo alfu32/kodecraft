@@ -82,12 +82,12 @@ macro_rules! nav {
 }
 pub static BINDINGS: &[Binding] = &[
     chord!(
-        Editor,
+        Global,
         ALT,
         15,
         true,
         [Key::Character('f')],
-        "Open file/editor find and replace"
+        "Open project search"
     ),
     chord!(
         Global,
@@ -95,7 +95,7 @@ pub static BINDINGS: &[Binding] = &[
         CTRL | ALT | SHIFT,
         true,
         [Key::Character('f')],
-        "Open project search (alias for Ctrl+Shift+F)"
+        "Open project search (alias for Alt+F)"
     ),
     chord!(
         SqlResults,
@@ -145,7 +145,7 @@ pub static BINDINGS: &[Binding] = &[
         CTRL | SHIFT | META,
         true,
         [Key::Character('f')],
-        "Open project search"
+        "Open project search (alias for Alt+F; terminal hosts may intercept this chord)"
     ),
     chord!(
         Global,
@@ -162,7 +162,7 @@ pub static BINDINGS: &[Binding] = &[
             Key::Character('7'),
             Key::Character('8')
         ],
-        "Files / Project / Help / Settings / Git / Databases / REST / About"
+        "Files / Project / Git / Database / REST / About / Settings / Help"
     ),
     chord!(
         Global,
@@ -548,6 +548,22 @@ pub static BINDINGS: &[Binding] = &[
         [Key::Tab],
         "Cycle result sets and messages"
     ),
+    chord!(
+        Database,
+        0,
+        0,
+        false,
+        [Key::Function(4)],
+        "Open wrapped database diagnostic details; Ctrl+C copies; Esc closes"
+    ),
+    chord!(
+        Sql,
+        0,
+        0,
+        false,
+        [Key::Function(4)],
+        "Open SQL diagnostic details; Ctrl+C copies; Esc closes"
+    ),
     nav!(Rest),
     chord!(
         Rest,
@@ -924,7 +940,7 @@ pub fn help_lines() -> Vec<String> {
         "Read-only previews allow selection, copy, search and navigation; mutation and ordinary Save stay guarded. Raw REST preview retains its owner's Send action.".into(),
         "Terminal limits: classic encodings may merge Ctrl+Enter with Enter. Use SQL Execute/REST Send buttons. Browser tabs reserve Ctrl+T/Ctrl+W; Chrome --app mode is the existing workaround.".into(),
         "Connection dialog: Alt+T tests, Alt+D installs a driver, Ctrl+S saves. URL Down opens Standard/Recents.".into(),
-        "About: Alt+8, Tab switches credits/languages, and each list scrolls independently. Click a language to select it.".into(),
+        "About: Alt+6, Tab switches credits/languages, and each list scrolls independently. Click a language to select it.".into(),
     ]);
     lines
 }
