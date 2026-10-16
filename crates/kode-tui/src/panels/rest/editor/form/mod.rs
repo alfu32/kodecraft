@@ -59,6 +59,7 @@ pub enum Action {
     Body(&'static str),
     Setting(&'static str),
     Cookies,
+    FormatBody,
     Notices,
     Acknowledge,
     Buffer(BufferKind),
@@ -70,6 +71,7 @@ pub enum Action {
 pub enum Intent {
     Send,
     ClearCookies,
+    FormatBody,
     Notices,
     Buffer(BufferKind),
     Changed,
@@ -210,6 +212,7 @@ pub struct Form {
     derived: Derived,
     pub message: String,
     pub closed: bool,
+    pub running: bool,
     pub reveal: bool,
     pub selected_buffer: Option<BufferKind>,
     request: bool,
@@ -223,6 +226,10 @@ pub struct Form {
     modal: Option<Modal>,
     intents: Vec<Intent>,
     row_cache: Option<RowCache>,
+    layout_rows: Weak<Vec<Row>>,
+    layout_width: u16,
+    row_offsets: Vec<usize>,
+    virtual_height: usize,
 }
 impl Form {
     pub fn new(path: NodePath, key: String, prepared: Prepared) -> Result<Self> {
@@ -244,6 +251,7 @@ impl Form {
             derived: Derived::default(),
             message: String::new(),
             closed: false,
+            running: false,
             reveal: false,
             selected_buffer: None,
             request: prepared.request,
@@ -257,6 +265,10 @@ impl Form {
             modal: None,
             intents: Vec::new(),
             row_cache: None,
+            layout_rows: Weak::new(),
+            layout_width: 0,
+            row_offsets: Vec::new(),
+            virtual_height: 0,
         })
     }
     pub fn tabs(&self) -> &'static [Tab] {
@@ -484,7 +496,13 @@ impl Form {
                         .collect(),
                 ));
                 match mode {
-                    "raw" => rows.push(Row::Embed("Raw request body", BufferKind::RawBody)),
+                    "raw" => {
+                        rows.push(Row::Buttons(vec![(
+                            "Format body".into(),
+                            Action::FormatBody,
+                        )]));
+                        rows.push(Row::Embed("Raw request body", BufferKind::RawBody));
+                    }
                     "graphql" => {
                         rows.push(Row::Buttons(vec![
                             ("Query".into(), Action::Buffer(BufferKind::GraphqlQuery)),
@@ -493,6 +511,12 @@ impl Form {
                                 Action::Buffer(BufferKind::GraphqlVariables),
                             ),
                         ]));
+                        if self.selected_buffer == Some(BufferKind::GraphqlVariables) {
+                            rows.push(Row::Buttons(vec![(
+                                "Format variables".into(),
+                                Action::FormatBody,
+                            )]));
+                        }
                         rows.push(Row::Embed(
                             "GraphQL query / variables",
                             if self.selected_buffer == Some(BufferKind::GraphqlVariables) {

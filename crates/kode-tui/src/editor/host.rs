@@ -1039,10 +1039,13 @@ impl<H: EditorHost> EditorView<H> {
             ExecutionAction::SqlSelectionOrStatement | ExecutionAction::SqlScript => {
                 self.host.descriptor().role == HostRole::Sql
             }
-            ExecutionAction::SendRequest => matches!(
-                self.host.descriptor().role,
-                HostRole::RestBody | HostRole::RestHeaders
-            ),
+            ExecutionAction::SendRequest => {
+                matches!(
+                    self.host.descriptor().role,
+                    HostRole::RestBody | HostRole::RestHeaders
+                ) || (self.host.descriptor().role == HostRole::RawRequest
+                    && self.host.descriptor().owner == "rest-request")
+            }
         };
         if !supported {
             return Err(DomainError::Unsupported(

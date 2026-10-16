@@ -1789,6 +1789,7 @@ version = "0.1.0"
 dependencies = [
  "base64 0.23.1",
  "crossterm",
+ "futures-util",
  "git2",
  "kode-core",
  "kode-database",
@@ -1803,6 +1804,7 @@ dependencies = [
  "serde_json",
  "tempfile",
  "tokio",
+ "tokio-tungstenite",
  "unicode-general-category",
  "unicode-width",
 ]

@@ -439,6 +439,9 @@ impl AppState {
         Ok(())
     }
     pub(super) fn show_diff(&mut self, plan: Arc<kode_git::diff::DiffPlan>) -> Result<()> {
+        self.deactivate_rest_form();
+        self.rest.pending_open = None;
+        self.rest.ready_open = None;
         let root = self
             .git
             .read

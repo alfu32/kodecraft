@@ -24,7 +24,7 @@ synthetic fixtures. No developer datasource or database was accessed.
 | Busy workspace switch, stale result disposal, process reaping | `jdbc_qualification::workspace_switch_during_sql_reaps_helper_preserves_buffer_and_drops_old_results_without_replaying` | passed |
 | Missing Java / old Java / launcher diagnostic redaction | Existing native and no-Java UI tests + `jdbc_qualification::wrong_java_version_is_actionable_redacted_and_native_edit_save_index_remain_available` | passed |
 | Credentials absent from public config/session and diagnostics | Native credential/export tests, service mutation/shared-reference tests and launcher redaction regression | passed; deliberate user SQL buffer persistence remains enabled |
-| REST operation remains independent during JDBC failures | Requires the real REST implementation and its application host | pending R04/R07/R08 |
+| REST operation remains independent during JDBC failures | Actual `jdbc_qualification` unsupported-Java and helper-crash cases open the real request/body/response hosts and send the current buffer to loopback before continuing native save/index work; no JDBC restart | passed |
 | Non-H2 vendor engines | Complete [59-driver inventory](jdbc-drivers.json) preserves each driver and records runtime qualification separately | 58 explicitly untested; no PostgreSQL/MySQL server fixture configured |
 | Distribution/platform behavior | Z03/Z04 | pending |
 
@@ -35,7 +35,8 @@ The earlier D08 final run passed 62 Java / 75 Rust tests. The D09 rerun passed a
 `cargo clean -p kode-tui` removed 36 GiB of generated artifacts. The subsequent
 complete database UI/service/qualification command passed all 30 cases, including
 the three D09 cases and binary-hex correction. Database/TUI all-target clippy
-passes with `-D warnings`. The remaining REST isolation gate keeps D09 open.
+passes with `-D warnings`. The final REST-isolation rerun passes all three
+qualification cases with zero ignored cases; D09's feature matrix is complete.
 
 Recovery is explicit: after a crash, check the database outcome, press Alt+6 then
 `R` to restart the retained failed helper epoch, then `c` to connect. SQL text is

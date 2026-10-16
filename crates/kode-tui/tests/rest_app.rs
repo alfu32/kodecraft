@@ -1,4 +1,4 @@
-use kode_core::{DocumentOrigin, WorkspaceGeneration};
+use kode_core::{DocumentOrigin, WorkspaceGeneration, services::Clipboard};
 use kode_platform::{
     clipboard::ClipboardService,
     jobs::{CancellationToken, MonotonicClock},
@@ -110,6 +110,705 @@ async fn select_request_tab(app: &mut AppRuntime, tab: kode_tui::panels::rest::e
     })
     .await;
 }
+async fn select_response_tab(
+    app: &mut AppRuntime,
+    tab: kode_tui::panels::rest::editor::response::Tab,
+) {
+    render(app);
+    let rect = app
+        .state
+        .rest
+        .response
+        .tabs
+        .iter()
+        .find(|(item, _)| *item == tab)
+        .unwrap()
+        .1;
+    app.state.dispatch(&click(rect.x, rect.y)).unwrap();
+    until(app, |app| {
+        app.state
+            .rest
+            .response
+            .installed
+            .as_ref()
+            .is_some_and(|proof| proof.tab == tab)
+            && app.state.rest.response.pending.is_none()
+    })
+    .await;
+}
+fn click_label(app: &mut AppRuntime, label: &str) {
+    let area = Rect::new(0, 0, 100, 34);
+    let mut buffer = Buffer::empty(area);
+    app.state
+        .render(area, &mut buffer, &Theme::compiled())
+        .unwrap();
+    for y in 0..area.height {
+        let text: String = (0..area.width).map(|x| buffer[(x, y)].symbol()).collect();
+        if let Some(x) = text.find(label) {
+            app.state.dispatch(&click(x as u16, y)).unwrap();
+            return;
+        }
+    }
+    panic!("button not visible: {label}");
+}
+#[tokio::test]
+async fn live_raw_preview_keeps_url_typing_focus_and_late_buffer_attachment_waits_for_returned_focus()
+ {
+    use kode_rest::model::editing::Field;
+    use kode_tui::panels::rest::editor::form::{Action, Tab};
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state.rest.model.replace_collection(json!({"info":{},"item":[{"name":"Preview","request":{"url":"https://example.test/original","body":{"mode":"raw","raw":"body"}}}]})).unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    select_request_tab(&mut app, Tab::Raw).await;
+    app.state
+        .rest
+        .form
+        .as_mut()
+        .unwrap()
+        .perform(
+            Action::Focus(Field::Url),
+            &mut app.state.rest.model,
+            &mut app.state.focus,
+        )
+        .unwrap();
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("https://example.test/changed".into()))
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.editor.as_ref().is_some_and(|view| {
+            app.state
+                .documents
+                .document(view.document_id())
+                .unwrap()
+                .snapshot()
+                .text()
+                .contains("GET /changed ")
+        })
+    })
+    .await;
+    let form = app.state.rest.form.as_ref().unwrap();
+    assert_eq!(app.state.focus.focused, Some(form.id));
+    assert_eq!(
+        form.fields[&Field::Url].value,
+        "https://example.test/changed"
+    );
+    app.state
+        .dispatch(&InputEvent::Paste("-again".into()))
+        .unwrap();
+    assert_eq!(
+        app.state.rest.form.as_ref().unwrap().fields[&Field::Url].value,
+        "https://example.test/changed-again"
+    );
+    // A body-open completion must wait while the user deliberately focuses the sidebar.
+    render(&mut app);
+    let rect = app
+        .state
+        .rest
+        .form
+        .as_ref()
+        .unwrap()
+        .geometry
+        .tabs
+        .iter()
+        .find(|(tab, _)| *tab == Tab::Body)
+        .unwrap()
+        .1;
+    app.state.dispatch(&click(rect.x, rect.y)).unwrap();
+    let return_focus = app.state.focus.focused;
+    app.state.focus_panel();
+    let panel = app.state.focus.focused;
+    until(&mut app, |app| app.state.rest.ready_open.is_some()).await;
+    assert_eq!(app.state.focus.focused, panel);
+    assert_ne!(
+        app.state.editor.as_ref().unwrap().host.descriptor.role,
+        kode_tui::editor::host::HostRole::RestBody
+    );
+    app.state.focus.focused = return_focus;
+    until(&mut app, |app| {
+        app.state.editor.as_ref().is_some_and(|view| {
+            view.host.descriptor.role == kode_tui::editor::host::HostRole::RestBody
+        })
+    })
+    .await;
+    // Query-row dialogs update the visible URL after worker field refresh.
+    select_request_tab(&mut app, Tab::Params).await;
+    click_label(&mut app, "+ Query");
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("fresh".into()))
+        .unwrap();
+    app.state.dispatch(&key(Key::Tab)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("value".into()))
+        .unwrap();
+    app.state.dispatch(&key(Key::Enter)).unwrap();
+    until(&mut app, |app| {
+        app.state.rest.form.as_ref().unwrap().fields[&Field::Url]
+            .value
+            .contains("fresh=value")
+    })
+    .await;
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+#[tokio::test]
+async fn websocket_raw_preview_ctrl_enter_is_receive_only_and_incremental_binary_close_feedback_keeps_bytes()
+ {
+    use futures_util::{SinkExt, StreamExt};
+    use kode_tui::panels::rest::editor::form::Tab;
+    use tokio_tungstenite::tungstenite::{
+        Message,
+        protocol::{CloseFrame, frame::coding::CloseCode},
+    };
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let url = format!("ws://{}", listener.local_addr().unwrap());
+    let (release, gate) = tokio::sync::oneshot::channel();
+    let worker = tokio::spawn(async move {
+        let (socket, _) = listener.accept().await.unwrap();
+        let mut socket = tokio_tungstenite::accept_async(socket).await.unwrap();
+        assert!(
+            tokio::time::timeout(Duration::from_millis(60), socket.next())
+                .await
+                .is_err(),
+            "default WS must not send the configured body"
+        );
+        socket.send(Message::Text("first".into())).await.unwrap();
+        gate.await.unwrap();
+        socket
+            .send(Message::Binary(vec![255].into()))
+            .await
+            .unwrap();
+        socket
+            .send(Message::Close(Some(CloseFrame {
+                code: CloseCode::Normal,
+                reason: "synthetic close".into(),
+            })))
+            .await
+            .unwrap();
+        let _ = tokio::time::timeout(Duration::from_secs(1), socket.next()).await;
+    });
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state.rest.model.replace_collection(json!({"info":{},"item":[{"name":"Socket","request":{"url":url,"body":{"mode":"raw","raw":"must-not-send"}}}]})).unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    select_request_tab(&mut app, Tab::Raw).await;
+    let id = app.state.editor.as_ref().unwrap().document_id();
+    assert!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .contains("receive-only")
+    );
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Enter,
+            modifiers: Modifiers {
+                ctrl: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.rest.response.editor.as_ref().is_some_and(|view| {
+            app.state
+                .documents
+                .document(view.document_id())
+                .unwrap()
+                .snapshot()
+                .text()
+                .as_ref()
+                == "first"
+        })
+    })
+    .await;
+    assert!(app.state.rest.run.responses.is_empty());
+    assert_eq!(
+        app.state.focus.focused,
+        Some(app.state.editor.as_ref().unwrap().input.id)
+    );
+    release.send(()).unwrap();
+    until(&mut app, |app| {
+        app.state.rest.run.running.is_none()
+            && app.state.rest.response.status.contains("close 1000")
+    })
+    .await;
+    let response = &app.state.rest.run.responses[0];
+    assert_eq!(response.body.as_ref(), b"first\xff");
+    assert_eq!(response.status_code, Some(101));
+    assert!(response.error.is_none());
+    assert!(app.state.rest.response.status.contains("invalid UTF-8"));
+    assert!(app.state.rest.response.status.contains("synthetic close"));
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    worker.await.unwrap();
+}
+#[tokio::test]
+async fn request_formatting_is_explicit_undoable_revision_guarded_and_root_send_never_batches() {
+    use kode_tui::panels::rest::editor::form::Tab;
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    let raw = "{\"answer\":1}";
+    app.state.rest.model.replace_collection(json!({"info":{},"item":[{"name":"JSON","request":{"url":"https://example.test","body":{"mode":"raw","raw":raw,"options":{"raw":{"language":"json"}}}}}]})).unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    select_request_tab(&mut app, Tab::Body).await;
+    let id = app.state.editor.as_ref().unwrap().document_id();
+    assert_eq!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        raw
+    );
+    click_label(&mut app, "Format body");
+    until(&mut app, |app| {
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .contains('\n')
+    })
+    .await;
+    let editor = app.state.rest.form.as_ref().unwrap().geometry.editor;
+    app.state
+        .dispatch(&click(editor.x + 5, editor.y + 1))
+        .unwrap();
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('u'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    assert_eq!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        raw
+    );
+    click_label(&mut app, "Format body");
+    // Type before the worker is accepted; its older formatting result is stale.
+    app.state.focus.focused = Some(app.state.editor.as_ref().unwrap().input.id);
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("unfinished {".into()))
+        .unwrap();
+    for _ in 0..20 {
+        app.pump().unwrap();
+        tokio::task::yield_now().await;
+    }
+    assert_eq!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "unfinished {"
+    );
+    app.state.open_rest_node(NodePath::default()).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .form
+            .as_ref()
+            .is_some_and(|form| form.path.is_root())
+    })
+    .await;
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Enter,
+            modifiers: Modifiers {
+                ctrl: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    assert!(app.state.rest.run.pending.is_none());
+    assert!(app.state.rest.run.running.is_none());
+    assert!(
+        app.state
+            .rest
+            .form
+            .as_ref()
+            .unwrap()
+            .message
+            .contains("Select a request")
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn focused_headers_keep_arrow_keys_with_transaction_visible_and_response_tabs_share_readonly_editor()
+ {
+    use kode_tui::panels::rest::editor::{form::Tab as RequestTab, response::Tab};
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let url = format!("http://{}", listener.local_addr().unwrap());
+    let worker = tokio::spawn(async move {
+        let (mut socket, _) = listener.accept().await.unwrap();
+        let mut bytes = Vec::new();
+        while !bytes.ends_with(b"\r\n\r\n") {
+            let mut byte = [0];
+            socket.read_exact(&mut byte).await.unwrap();
+            bytes.push(byte[0]);
+        }
+        socket.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nSet-Cookie: session=synthetic; Path=/\r\nContent-Length: 12\r\nConnection: close\r\n\r\n{\"answer\":1}").await.unwrap();
+    });
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, clipboard) = make(root.path(), 1);
+    app.state.rest.model.replace_collection(json!({"info":{},"item":[{"name":"Call","request":{"url":url,"header":[{"key":"X-One","value":"1"},{"key":"X-Two","value":"2"}]}}]})).unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    select_request_tab(&mut app, RequestTab::Headers).await;
+    let header_id = app.state.editor.as_ref().unwrap().document_id();
+    let header_focus = app.state.editor.as_ref().unwrap().input.id;
+    app.state.run_rest_selection(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| {
+        app.state.rest.response.installed.is_some() && app.state.rest.run.running.is_none()
+    })
+    .await;
+    assert_eq!(app.state.focus.focused, Some(header_focus));
+    let response = app.state.rest.run.responses[0].clone();
+    assert_eq!(response.body.as_ref(), b"{\"answer\":1}");
+    let response_id = app
+        .state
+        .rest
+        .response
+        .editor
+        .as_ref()
+        .unwrap()
+        .document_id();
+    assert!(
+        app.state
+            .documents
+            .document(response_id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .contains('\n')
+    );
+    select_response_tab(&mut app, Tab::Transaction).await;
+    assert_eq!(app.state.focus.focused, Some(header_focus));
+    let response_caret = app
+        .state
+        .rest
+        .response
+        .editor
+        .as_ref()
+        .unwrap()
+        .input
+        .state
+        .caret
+        .clone();
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::End,
+            modifiers: Modifiers {
+                ctrl: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    let before = app
+        .state
+        .editor
+        .as_ref()
+        .unwrap()
+        .input
+        .state
+        .caret
+        .cursor();
+    app.state.dispatch(&key(Key::Up)).unwrap();
+    assert!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .input
+            .state
+            .caret
+            .cursor()
+            < before
+    );
+    assert_eq!(
+        app.state
+            .rest
+            .response
+            .editor
+            .as_ref()
+            .unwrap()
+            .input
+            .state
+            .caret,
+        response_caret
+    );
+    assert_eq!(app.state.editor.as_ref().unwrap().document_id(), header_id);
+    let response_id = app
+        .state
+        .rest
+        .response
+        .editor
+        .as_ref()
+        .unwrap()
+        .document_id();
+    let text = app
+        .state
+        .documents
+        .document(response_id)
+        .unwrap()
+        .snapshot()
+        .text();
+    assert!(
+        text.contains("Configured request")
+            && text.contains("Normalized initial request")
+            && text.contains("Response")
+    );
+    let area = app
+        .state
+        .rest
+        .response
+        .editor
+        .as_ref()
+        .unwrap()
+        .geometry(&app.state.documents, app.state.rest.response.body)
+        .unwrap()
+        .text;
+    app.state.dispatch(&click(area.x, area.y)).unwrap();
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state.dispatch(&ctrl('c')).unwrap();
+    until(&mut app, |_| {
+        clipboard
+            .read()
+            .is_ok_and(|copied| copied.contains("Logical request/response"))
+    })
+    .await;
+    assert!(
+        app.state
+            .dispatch(&InputEvent::Paste("cannot mutate response".into()))
+            .is_err()
+    );
+    assert_eq!(
+        app.state
+            .documents
+            .document(response_id)
+            .unwrap()
+            .snapshot()
+            .text(),
+        text
+    );
+    select_response_tab(&mut app, Tab::Body).await;
+    render(&mut app);
+    let pretty = app.state.rest.response.pretty_button;
+    app.state.dispatch(&click(pretty.x, pretty.y)).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .response
+            .installed
+            .as_ref()
+            .is_some_and(|proof| !proof.pretty)
+    })
+    .await;
+    let id = app
+        .state
+        .rest
+        .response
+        .editor
+        .as_ref()
+        .unwrap()
+        .document_id();
+    assert_eq!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "{\"answer\":1}"
+    );
+    assert_eq!(response.body.as_ref(), b"{\"answer\":1}");
+    select_response_tab(&mut app, Tab::Raw).await;
+    let id = app
+        .state
+        .rest
+        .response
+        .editor
+        .as_ref()
+        .unwrap()
+        .document_id();
+    assert!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .contains("content-type: application/json")
+    );
+    select_response_tab(&mut app, Tab::Cookies).await;
+    let id = app
+        .state
+        .rest
+        .response
+        .editor
+        .as_ref()
+        .unwrap()
+        .document_id();
+    assert!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .contains("session=synthetic")
+    );
+    let clear = app.state.rest.response.clear_button;
+    app.state.dispatch(&click(clear.x, clear.y)).unwrap();
+    assert!(app.state.rest.run.client.cookies().snapshot().is_empty());
+    let viewer = app.state.geometry.viewer;
+    let split_y = viewer.y + app.state.rest.response.splitter.size;
+    app.state.dispatch(&click(viewer.x, split_y)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Pointer(
+            kode_tui::input::terminal::PointerInput {
+                x: viewer.x,
+                y: split_y - 2,
+                action: kode_tui::input::terminal::PointerAction::Drag(
+                    crossterm::event::MouseButton::Left,
+                ),
+                modifiers: Modifiers::default(),
+            },
+        ))
+        .unwrap();
+    render(&mut app);
+    assert_eq!(
+        app.state.rest.response.splitter.size,
+        split_y - 2 - viewer.y
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    worker.await.unwrap();
+}
+
+#[tokio::test]
+async fn incremental_response_is_visible_before_completion_and_stays_with_original_owner_on_switch()
+{
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let url = format!("sse://{}", listener.local_addr().unwrap());
+    let (release, gate) = tokio::sync::oneshot::channel();
+    let worker = tokio::spawn(async move {
+        let (mut socket, _) = listener.accept().await.unwrap();
+        let mut bytes = Vec::new();
+        while !bytes.ends_with(b"\r\n\r\n") {
+            let mut byte = [0];
+            socket.read_exact(&mut byte).await.unwrap();
+            bytes.push(byte[0]);
+        }
+        socket.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: 20\r\nConnection: close\r\n\r\ndata:abc\n\n").await.unwrap();
+        gate.await.unwrap();
+        socket.write_all(b"data:def\n\n").await.unwrap();
+    });
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state.rest.model.replace_collection(json!({"info":{},"item":[{"name":"First","request":{"url":url}},{"name":"Other","request":{"url":"https://example.invalid"}}]})).unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    let owner = app.state.rest.form.as_ref().unwrap().key.clone();
+    app.state.run_rest_selection(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| {
+        app.state.rest.response.editor.as_ref().is_some_and(|view| {
+            app.state
+                .documents
+                .document(view.document_id())
+                .unwrap()
+                .snapshot()
+                .text()
+                .contains("abc")
+        })
+    })
+    .await;
+    assert!(app.state.rest.run.responses.is_empty());
+    assert!(app.state.rest.run.live.is_some());
+    app.state.open_rest_node(NodePath(vec![1])).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .form
+            .as_ref()
+            .is_some_and(|form| form.path == NodePath(vec![1]))
+    })
+    .await;
+    render(&mut app);
+    assert!(app.state.rest.response.body.is_empty());
+    let focus = app.state.focus.focused;
+    release.send(()).unwrap();
+    until(&mut app, |app| app.state.rest.run.running.is_none()).await;
+    assert_eq!(app.state.rest.run.responses[0].key.item_id, owner);
+    assert_eq!(
+        app.state.rest.run.responses[0].body.as_ref(),
+        b"data:abc\n\ndata:def\n\n"
+    );
+    assert_eq!(app.state.focus.focused, focus);
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .response
+            .installed
+            .as_ref()
+            .is_some_and(|proof| proof.key == owner)
+    })
+    .await;
+    let id = app
+        .state
+        .rest
+        .response
+        .editor
+        .as_ref()
+        .unwrap()
+        .document_id();
+    assert_eq!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "data:abc\n\ndata:def\n\n"
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    worker.abort();
+}
 
 #[tokio::test]
 async fn native_request_buffers_keep_identity_history_search_and_caret_across_request_switches() {
@@ -206,6 +905,34 @@ async fn native_request_buffers_keep_identity_history_search_and_caret_across_re
     app.state
         .dispatch(&InputEvent::Paste("raw bytes\n".into()))
         .unwrap();
+    select_request_tab(&mut app, Tab::Headers).await;
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("Content-Type: application/json".into()))
+        .unwrap();
+    select_request_tab(&mut app, Tab::Body).await;
+    assert_eq!(app.state.editor.as_ref().unwrap().document_id(), body);
+    assert_eq!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .host
+            .descriptor
+            .language
+            .as_deref(),
+        Some("json")
+    );
+    assert_eq!(
+        app.state
+            .documents
+            .document(body)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "raw bytes\n"
+    );
     // Search owns Ctrl+Enter; it must never trigger REST execution.
     app.state.dispatch(&ctrl('f')).unwrap();
     app.state

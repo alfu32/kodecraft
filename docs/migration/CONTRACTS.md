@@ -1321,7 +1321,7 @@ catalog candidates, excluding active names on other lines; values have no such
 suggestions. Duplicate diagnostics retain source earlier-occurrence semantics,
 including disabled rows. The TUI provider adapts these to the shared completion
 popup's current word fragment without duplicating a hyphenated prefix. Request
-view attachment and complete R07 execution/response routing are still required.
+views install these providers and exact-revision worker duplicate diagnostics.
 
 `resolve::MAX_RESOLVED_BYTES` caps accumulated resolved values and repeated path
 parameter output at 64 MiB per request plan, in addition to existing per-value
@@ -1343,5 +1343,35 @@ and clipboard proofs capture item/epoch/field/caret/selection state. Tree rebasi
 retains item ownership; removal/replacement closes it. Worker buffer preparation
 builds real shared documents with the appropriate editable/read-only host roles.
 Captured request/environment ropes are authoritative for preview, and invalid
-buffers outside the requested preview cannot block it. Application wiring and
-complete request/response qualification are still required (R07 in progress).
+buffers outside the requested preview cannot block it.
+
+AppState caches forms and editable document IDs by runtime item key, rebasing views
+and unopened drafts with structural mutations. Runtime keys stay separate from
+persisted collection IDs. Session active-origin owner `rest-node` stores the model
+path, while live document origins use runtime keys. Explicit CLI files win over
+saved REST/SQL virtual views; recent-file fallback does not replace those views.
+The owned `x-kode-rs-request-buffers` extension maps encoded path → buffer-kind →
+raw text. Valid drafts merge on the worker during persistence; invalid text stays
+verbatim beside the last valid collection value. Unknown kinds are preserved.
+Generated raw previews/responses and runtime cookies never enter this extension
+or generic openEditors persistence.
+
+Send captures dirty ropes before semantic publication. Worker preparation merges
+only the selected subtree and inherited headers; malformed relevant headers fail
+before I/O. Frozen request semantics survive later field edits; structural changes
+reject obsolete preparation. Key reconciliation preserves identities assigned by
+new views during preparation. Plain Tab remains native editor input; Ctrl+Tab
+switches request tabs. Search Ctrl+Enter precedes host execution. REST-owned raw
+request previews may invoke Send without acquiring write permission.
+
+The response pane has its own readonly shared-editor owner, request key, display
+proof and modal attachment gate. Display preparation is worker-only and serialized
+per active form. Live SSE/WS snapshots retain at most 10 MiB and 4096 chunk Arcs,
+with authoritative final Responses retaining their existing bounds. Intermediate
+snapshots can publish during continued delivery, and newer revisions follow.
+Ordinary HTTP publishes on completion as before. Body, headers, cookies, raw and
+logical Transaction displays preserve captured bytes; optional Pretty affects
+only display. Explicit request formatting uses a document-revision-guarded,
+undoable replacement. Divider/Pretty preferences use existing project UI fields.
+Cancelled/replaced worker contexts release their captured proofs even when no
+scheduler completion is delivered. These owners remain scoped to the workspace.

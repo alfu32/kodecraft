@@ -31,6 +31,17 @@ impl ModelCapture {
     }
 }
 pub enum Job {
+    Format {
+        tag: JobTag,
+        key: String,
+        snapshot: TextSnapshot,
+        content_type: Option<String>,
+    },
+    Response {
+        tag: JobTag,
+        proof: super::response::Proof,
+        input: Box<super::response::Input>,
+    },
     Form {
         tag: JobTag,
         key: String,
@@ -60,6 +71,11 @@ pub enum Job {
 }
 #[derive(Clone)]
 pub enum Context {
+    Format {
+        key: String,
+        document: DocumentId,
+    },
+    Response(super::response::Proof),
     Form {
         key: String,
         path: NodePath,
@@ -81,14 +97,19 @@ pub enum Context {
     },
 }
 pub enum Change {
-    Headers(Value),
+    Headers {
+        value: Value,
+        warnings: Vec<kode_core::LineIndex>,
+    },
     Text(Arc<str>),
 }
 pub enum Reply {
+    Format(Option<String>),
+    Response(Box<super::response::Prepared>),
     Form(Box<(form::Prepared, form::Derived)>),
     Buffer(Box<buffers::Prepared>),
     Change(Change),
-    Derived(form::Derived),
+    Derived(Box<(form::Prepared, form::Derived)>),
 }
 fn derived(model: &Workspace, path: &NodePath, root: &std::path::Path) -> form::Derived {
     let result = (|| {
@@ -113,7 +134,9 @@ fn derived(model: &Workspace, path: &NodePath, root: &std::path::Path) -> form::
 impl Job {
     pub fn tag(&self) -> JobTag {
         match self {
-            Self::Form { tag, .. }
+            Self::Format { tag, .. }
+            | Self::Response { tag, .. }
+            | Self::Form { tag, .. }
             | Self::Buffer { tag, .. }
             | Self::Change { tag, .. }
             | Self::Derived { tag, .. } => *tag,
@@ -121,6 +144,11 @@ impl Job {
     }
     pub fn context(&self) -> Context {
         match self {
+            Self::Format { key, snapshot, .. } => Context::Format {
+                key: key.clone(),
+                document: snapshot.id,
+            },
+            Self::Response { proof, .. } => Context::Response(proof.clone()),
             Self::Form {
                 key, path, capture, ..
             } => Context::Form {
@@ -156,6 +184,19 @@ impl Job {
             return Err(DomainError::Cancelled);
         }
         let reply = match self {
+            Self::Format {
+                snapshot,
+                content_type,
+                ..
+            } => {
+                let text = snapshot.text();
+                let formatted =
+                    kode_rest::format::pretty_print(&text, content_type.as_deref(), true, cancel);
+                Reply::Format((formatted.as_ref() != text.as_ref()).then(|| formatted.into_owned()))
+            }
+            Self::Response { input, .. } => {
+                Reply::Response(Box::new(super::response::prepare(*input, cancel)?))
+            }
             Self::Form { path, capture, .. } => {
                 let (model, root) = capture.model()?;
                 Reply::Form(Box::new((
@@ -188,14 +229,23 @@ impl Job {
                     }
                     .cloned()
                     .unwrap_or_else(|| Value::Array(Vec::new()));
-                    Reply::Change(Change::Headers(headers))
+                    Reply::Change(Change::Headers {
+                        value: headers,
+                        warnings: kode_rest::headers::duplicate_lines(&text)
+                            .into_iter()
+                            .map(kode_core::LineIndex)
+                            .collect(),
+                    })
                 } else {
                     Reply::Change(Change::Text(text))
                 }
             }
             Self::Derived { path, capture, .. } => {
                 let (model, root) = capture.model()?;
-                Reply::Derived(derived(&model, &path, &root))
+                Reply::Derived(Box::new((
+                    form::Prepared::from_model(&model, &path)?,
+                    derived(&model, &path, &root),
+                )))
             }
         };
         if cancel.is_cancelled() {

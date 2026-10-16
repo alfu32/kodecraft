@@ -60,6 +60,7 @@ impl Form {
                 }
             }
             Action::Send => self.intents.push(Intent::Send),
+            Action::FormatBody => self.intents.push(Intent::FormatBody),
             Action::Cookies => self.intents.push(Intent::ClearCookies),
             Action::Notices => self.intents.push(Intent::Notices),
             Action::Buffer(kind) => {

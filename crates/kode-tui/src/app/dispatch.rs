@@ -50,6 +50,20 @@ impl AppState {
             if let Some(form) = &mut self.rest.form {
                 form.dispatch(event, &mut self.rest.model, &mut self.focus)?;
             }
+            if let Some(view) = &mut self.rest.response.editor {
+                view.dispatch(
+                    event,
+                    &mut self.documents,
+                    &mut self.focus,
+                    self.rest.response.body,
+                )?;
+            }
+            if !active {
+                self.rest.response.splitter = crate::layout::Splitter::new(
+                    crate::layout::Axis::Vertical,
+                    self.rest.response.splitter.size,
+                );
+            }
             self.window_focused = *active;
             self.rest
                 .sidebar
@@ -193,6 +207,17 @@ impl AppState {
                 if self
                     .viewer_id()
                     .is_some_and(|id| self.focus.focused == Some(id))
+                    || (self.rest.form.is_some()
+                        && (self
+                            .editor
+                            .as_ref()
+                            .is_some_and(|view| self.focus.focused == Some(view.input.id))
+                            || self
+                                .rest
+                                .response
+                                .editor
+                                .as_ref()
+                                .is_some_and(|view| self.focus.focused == Some(view.input.id))))
                 {
                     self.focus_panel();
                 } else {
@@ -399,6 +424,12 @@ impl AppState {
             }
             if let Some(view) = &mut self.editor {
                 view.tick(&self.documents, &self.focus, editor_area)?;
+            }
+            if self.rest.form.is_some()
+                && self.rest.response.installed.is_some()
+                && let Some(view) = &mut self.rest.response.editor
+            {
+                view.tick(&self.documents, &self.focus, self.rest.response.body)?;
             }
             if let Some(dialog) = &mut self.search {
                 dialog.tick(&self.documents, &self.focus)?;

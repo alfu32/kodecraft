@@ -59,9 +59,11 @@ def run_case(target, config, size, actions, expected=(), env_overrides=None):
                 trigger, delay, payload = actions[next_action]
                 visible = re.sub(rb"\[[0-?]*[ -/]*[@-~]", b"", output)
                 if (trigger in output or trigger in visible or trigger in screen.text()) and time.monotonic() - last_action >= delay:
-                    os.write(master, payload)
-                    next_action += 1
-                    last_action = time.monotonic()
+                    selected = payload(screen) if callable(payload) else payload
+                    if selected is not None:
+                        os.write(master, selected)
+                        next_action += 1
+                        last_action = time.monotonic()
             if child.poll() is not None:
                 break
         assert child.poll() is not None, f"application timed out after action {next_action}:\n{screen.text().decode('utf-8')}"

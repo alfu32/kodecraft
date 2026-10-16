@@ -58,7 +58,6 @@ impl Form {
             ..Default::default()
         };
         self.hits.clear();
-        self.controls.clear();
         if area.is_empty() {
             return Ok(None);
         }
@@ -69,49 +68,60 @@ impl Form {
             return Ok(None);
         }
         let rows = self.cached_rows(model)?;
-        if self.request {
-            self.controls.extend(
-                [
-                    Action::Focus(Field::Method),
-                    Action::Focus(Field::Url),
-                    Action::Send,
-                ]
-                .into_iter()
-                .map(|action| (usize::MAX, action)),
-            );
-        }
-        let mut virtual_y = 0usize;
-        for row in rows.iter() {
-            match row {
-                Row::Field(_, field) => self.controls.push((virtual_y, Action::Focus(*field))),
-                Row::Buttons(buttons) => {
-                    let mut x = 0usize;
-                    for (label, action) in buttons {
-                        let width = label.len().min(area.width as usize).max(1);
-                        if x > 0 && x + width > area.width as usize {
-                            virtual_y += 1;
-                            x = 0;
-                        }
-                        self.controls.push((virtual_y, action.clone()));
-                        x += width + 1;
-                    }
-                }
-                Row::Entry { kind, index, .. } => {
-                    if *kind != Rows::Auth {
-                        self.controls
-                            .push((virtual_y, Action::Toggle(*kind, *index)));
-                    }
-                    self.controls.push((virtual_y, Action::Edit(*kind, *index)));
-                    if *kind != Rows::Auth {
-                        self.controls
-                            .push((virtual_y, Action::Remove(*kind, *index)));
-                    }
-                }
-                Row::Embed(_, kind) => self.controls.push((virtual_y, Action::Buffer(*kind))),
-                Row::Info(_) => {}
+        if self.layout_width != area.width
+            || !Weak::ptr_eq(&self.layout_rows, &Arc::downgrade(&rows))
+        {
+            self.controls.clear();
+            if self.request {
+                self.controls.extend(
+                    [
+                        Action::Focus(Field::Method),
+                        Action::Focus(Field::Url),
+                        Action::Send,
+                    ]
+                    .into_iter()
+                    .map(|action| (usize::MAX, action)),
+                );
             }
-            virtual_y += 1;
+            let mut virtual_y = 0usize;
+            self.row_offsets.clear();
+            for row in rows.iter() {
+                self.row_offsets.push(virtual_y);
+                match row {
+                    Row::Field(_, field) => self.controls.push((virtual_y, Action::Focus(*field))),
+                    Row::Buttons(buttons) => {
+                        let mut x = 0usize;
+                        for (label, action) in buttons {
+                            let width = label.len().min(area.width as usize).max(1);
+                            if x > 0 && x + width > area.width as usize {
+                                virtual_y += 1;
+                                x = 0;
+                            }
+                            self.controls.push((virtual_y, action.clone()));
+                            x += width + 1;
+                        }
+                    }
+                    Row::Entry { kind, index, .. } => {
+                        if *kind != Rows::Auth {
+                            self.controls
+                                .push((virtual_y, Action::Toggle(*kind, *index)));
+                        }
+                        self.controls.push((virtual_y, Action::Edit(*kind, *index)));
+                        if *kind != Rows::Auth {
+                            self.controls
+                                .push((virtual_y, Action::Remove(*kind, *index)));
+                        }
+                    }
+                    Row::Embed(_, kind) => self.controls.push((virtual_y, Action::Buffer(*kind))),
+                    Row::Info(_) => {}
+                }
+                virtual_y += 1;
+            }
+            self.virtual_height = virtual_y;
+            self.layout_width = area.width;
+            self.layout_rows = Arc::downgrade(&rows);
         }
+        let virtual_y = self.virtual_height;
         self.selection = self.selection.min(self.controls.len().saturating_sub(1));
         if area.height < 5 || area.width < 8 {
             if let Some((_, action)) = self.controls.get(self.selection).cloned() {
@@ -124,7 +134,13 @@ impl Form {
                     }
                     action => {
                         let label = match action {
-                            Action::Send => "Send",
+                            Action::Send => {
+                                if self.running {
+                                    "Stop"
+                                } else {
+                                    "Send"
+                                }
+                            }
                             Action::Tab(_) => "Tab",
                             Action::Edit(_, _) => "Edit",
                             Action::Toggle(_, _) => "Toggle",
@@ -184,7 +200,7 @@ impl Form {
                     .or(cursor);
                 self.button(
                     Rect::new(area.right() - send, y, send, 1),
-                    "Send",
+                    if self.running { "Stop" } else { "Send" },
                     Action::Send,
                     buffer,
                     theme,
@@ -208,7 +224,7 @@ impl Form {
                 if y < area.bottom() {
                     self.button(
                         Rect::new(area.x, y, area.width, 1),
-                        "Send",
+                        if self.running { "Stop" } else { "Send" },
                         Action::Send,
                         buffer,
                         theme,
@@ -263,12 +279,45 @@ impl Form {
             y += 1;
         }
         let content = Rect::new(area.x, y, area.width, area.bottom().saturating_sub(y));
+        let embed = rows.iter().find_map(|row| {
+            if let Row::Embed(label, kind) = row {
+                Some((*label, *kind))
+            } else {
+                None
+            }
+        });
+        let content = if let Some((label, kind)) = embed {
+            let prelude = virtual_y
+                .saturating_sub(1)
+                .min((content.height.saturating_sub(2) / 2) as usize)
+                as u16;
+            let label_y = content.y + prelude;
+            if label_y < content.bottom() {
+                draw_text(
+                    Rect::new(content.x, label_y, content.width, 1),
+                    buffer,
+                    label,
+                    theme.style("content"),
+                );
+                let editor = Rect::new(
+                    content.x,
+                    label_y + 1,
+                    content.width,
+                    content.bottom().saturating_sub(label_y + 1),
+                );
+                self.geometry.editor = editor;
+                self.add_hit(editor, Action::Buffer(kind));
+            }
+            Rect::new(content.x, content.y, content.width, prelude)
+        } else {
+            content
+        };
         self.geometry.content = content;
         if self.follow {
             if let Some((row, _)) = self
                 .controls
                 .get(self.selection)
-                .filter(|(row, _)| *row != usize::MAX)
+                .filter(|(row, action)| *row != usize::MAX && !matches!(action, Action::Buffer(_)))
             {
                 if *row < self.scroll {
                     self.scroll = *row;
@@ -280,12 +329,21 @@ impl Form {
             }
             self.follow = false;
         }
-        self.scroll = self
-            .scroll
-            .min(virtual_y.saturating_sub(content.height as usize));
-        let mut offset = 0usize;
+        self.scroll = self.scroll.min(
+            virtual_y
+                .saturating_sub(usize::from(embed.is_some()))
+                .saturating_sub(content.height as usize),
+        );
         let scroll = self.scroll;
-        for row in rows.iter() {
+        let first = self
+            .row_offsets
+            .partition_point(|offset| *offset <= scroll)
+            .saturating_sub(1);
+        for (index, row) in rows.iter().enumerate().skip(first) {
+            let mut offset = self.row_offsets[index];
+            if offset >= scroll + content.height as usize {
+                break;
+            }
             let visible = |row: usize| {
                 row.checked_sub(scroll)
                     .filter(|row| *row < content.height as usize)
@@ -390,23 +448,8 @@ impl Form {
                         }
                     }
                 }
-                Row::Embed(label, kind) => {
-                    if let Some(y) = visible(offset) {
-                        draw_text(
-                            Rect::new(content.x, y, content.width, 1),
-                            buffer,
-                            label,
-                            theme.style("content"),
-                        );
-                        let top = (y + 1).min(content.bottom());
-                        let editor =
-                            Rect::new(content.x, top, content.width, content.bottom() - top);
-                        self.geometry.editor = editor;
-                        self.add_hit(editor, Action::Buffer(*kind));
-                    }
-                }
+                Row::Embed(_, _) => {}
             }
-            offset += 1;
         }
         Ok(cursor)
     }

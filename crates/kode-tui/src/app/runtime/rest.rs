@@ -7,13 +7,39 @@ impl AppRuntime {
         let context = work.context();
         let (owner, operation, critical) = match &work {
             Work::Editor(job) => match job.as_ref() {
+                crate::panels::rest::editor::jobs::Job::Format { snapshot, .. } => (
+                    self.state.documents.save_owner(snapshot.id)?,
+                    "rest-format",
+                    false,
+                ),
                 crate::panels::rest::editor::jobs::Job::Change { snapshot, .. } => (
                     self.state.documents.save_owner(snapshot.id)?,
                     "rest-buffer-change",
                     false,
                 ),
-                crate::panels::rest::editor::jobs::Job::Derived { .. } => {
-                    (self.root_owner, "rest-derived", false)
+                crate::panels::rest::editor::jobs::Job::Response { proof, .. } => {
+                    let Some(form) = self
+                        .state
+                        .rest
+                        .form
+                        .as_ref()
+                        .filter(|form| form.key == proof.key)
+                    else {
+                        return Ok(());
+                    };
+                    (OwnerId(form.id.0), "rest-response", false)
+                }
+                crate::panels::rest::editor::jobs::Job::Derived { key, .. } => {
+                    let Some(form) = self
+                        .state
+                        .rest
+                        .form
+                        .as_ref()
+                        .filter(|form| form.key == *key)
+                    else {
+                        return Ok(());
+                    };
+                    (OwnerId(form.id.0), "rest-derived", false)
                 }
                 _ => (self.root_owner, "rest-open", false),
             },
@@ -82,7 +108,13 @@ impl AppRuntime {
                 }
                 match result {
                     Ok(Reply::Run(prepared)) => self.start_rest_run(tag, *prepared)?,
-                    Err(error) => self.state.rest.sidebar.message = error.to_string(),
+                    Err(error) => {
+                        self.state.rest.sidebar.message = error.to_string();
+                        self.state.notice = error.to_string();
+                        if let Some(form) = &mut self.state.rest.form {
+                            form.message = error.to_string();
+                        }
+                    }
                     _ => {}
                 }
             }
@@ -291,6 +323,18 @@ impl AppRuntime {
                     },
                     summary.outcomes.len()
                 );
+                if let Some(form) = &mut self.state.rest.form
+                    && let Some(outcome) = summary
+                        .outcomes
+                        .iter()
+                        .find(|outcome| outcome.item.id == form.key)
+                    && let Some(error) = outcome
+                        .validation_error
+                        .clone()
+                        .or_else(|| outcome.error.map(|error| error.message().into()))
+                {
+                    form.message = error;
+                }
                 self.state.rest.run.summary = Some(summary);
             }
             Err(error) => self.state.rest.sidebar.message = error.to_string(),

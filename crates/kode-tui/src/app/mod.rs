@@ -3,6 +3,7 @@ pub mod effects;
 pub mod events;
 mod rest;
 mod rest_editor;
+mod rest_response;
 pub mod runner;
 pub mod runtime;
 mod sql;

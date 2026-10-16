@@ -151,6 +151,95 @@ async fn query(app: &mut AppRuntime, sql: &str) -> Snapshot {
         .unwrap()
         .clone()
 }
+async fn rest_after_database_failure(app: &mut AppRuntime) {
+    use kode_rest::model::NodePath;
+    use kode_tui::panels::rest::editor::form::Tab;
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let url = format!(
+        "http://{}/after-jdbc-failure",
+        listener.local_addr().unwrap()
+    );
+    let server = tokio::spawn(async move {
+        let (mut socket, _) = listener.accept().await.unwrap();
+        let mut request = Vec::new();
+        while !request.ends_with(b"\r\n\r\n") {
+            let mut byte = [0];
+            socket.read_exact(&mut byte).await.unwrap();
+            request.push(byte[0]);
+            assert!(request.len() < 64 * 1024);
+        }
+        let headers = String::from_utf8(request).unwrap();
+        assert!(headers.starts_with("POST /after-jdbc-failure "));
+        let length: usize = headers
+            .lines()
+            .find_map(|line| {
+                line.to_ascii_lowercase()
+                    .strip_prefix("content-length:")
+                    .map(|value| value.trim().to_string())
+            })
+            .unwrap()
+            .parse()
+            .unwrap();
+        let mut body = vec![0; length];
+        socket.read_exact(&mut body).await.unwrap();
+        assert_eq!(body, b"current REST buffer after JDBC failure");
+        let body = b"REST survives JDBC failure";
+        socket.write_all(format!("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",body.len()).as_bytes()).await.unwrap();
+        socket.write_all(body).await.unwrap();
+    });
+    app.state.rest.model.replace_collection(json!({"info":{},"item":[{"name":"Independent REST","request":{"method":"POST","url":url,"body":{"mode":"raw","raw":"old"}}}]})).unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(app, |app| app.state.rest.form.is_some()).await;
+    let tab = app
+        .state
+        .rest
+        .form
+        .as_ref()
+        .unwrap()
+        .geometry
+        .tabs
+        .iter()
+        .find(|(tab, _)| *tab == Tab::Body)
+        .unwrap()
+        .1;
+    app.state
+        .dispatch(&InputEvent::Pointer(PointerInput {
+            x: tab.x,
+            y: tab.y,
+            action: PointerAction::Down(crossterm::event::MouseButton::Left),
+            modifiers: Modifiers::default(),
+        }))
+        .unwrap();
+    until(app, |app| {
+        app.state.editor.as_ref().is_some_and(|view| {
+            view.host.descriptor.role == kode_tui::editor::host::HostRole::RestBody
+        })
+    })
+    .await;
+    app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste(
+            "current REST buffer after JDBC failure".into(),
+        ))
+        .unwrap();
+    app.state.dispatch(&key(Key::Enter, true)).unwrap();
+    until(app, |app| {
+        !app.state.rest.run.responses.is_empty()
+            && app.state.rest.response.installed.is_some()
+            && app.state.rest.run.running.is_none()
+    })
+    .await;
+    assert_eq!(
+        app.state.rest.run.responses[0].body.as_ref(),
+        b"REST survives JDBC failure"
+    );
+    assert_eq!(
+        app.state.focus.focused,
+        Some(app.state.editor.as_ref().unwrap().input.id)
+    );
+    server.await.unwrap();
+}
 fn wrapper(root: &Path) -> PathBuf {
     let path = root.join("java-wrapper");
     let log = root.join("helpers.jsonl");
@@ -216,6 +305,7 @@ async fn wrong_java_version_is_actionable_redacted_and_native_edit_save_index_re
             .notice
             .contains("synthetic-launcher-private-value")
     );
+    rest_after_database_failure(&mut app).await;
     native_file(&mut app, &note, "class NativeAfterWrongJava {}\n").await;
     until(&mut app, |app| {
         app.intelligence()
@@ -428,6 +518,7 @@ async fn actual_helper_crash_during_sql_preserves_outcome_and_native_editor_git_
             .as_ref(),
         sql
     );
+    rest_after_database_failure(&mut app).await;
     native_file(&mut app, &note, "class NativeAfterJdbcCrash {}\n").await;
     until(&mut app, |app| {
         app.intelligence()

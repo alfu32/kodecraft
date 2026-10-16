@@ -51,6 +51,7 @@ pub struct RestState {
     pub documents: HashMap<DocumentId, Entry>,
     pub pending_open: Option<JobTag>,
     pub ready_open: Option<DocumentId>,
+    pub open_focus: Option<(Option<crate::focus::FocusId>, bool)>,
     pub observed_revision: u64,
     pub persistence_enabled: bool,
     pub warning: Option<String>,
@@ -104,8 +105,12 @@ impl RestState {
             }
         };
         let observed_revision = model.revision();
+        let response = super::editor::response::Panel {
+            pretty: model.ui().pretty_print_responses,
+            ..Default::default()
+        };
         Ok(Self {
-            response: Default::default(),
+            response,
             form: None,
             forms: HashMap::new(),
             markers: HashMap::new(),
@@ -120,6 +125,7 @@ impl RestState {
             documents: HashMap::new(),
             pending_open: None,
             ready_open: None,
+            open_focus: None,
             observed_revision,
             persistence_enabled,
             warning,
@@ -152,17 +158,17 @@ impl RestState {
                 .documents
                 .iter()
                 .filter_map(|(id, entry)| {
-                    if let DocumentKind::Buffer { key, kind } = &entry.kind {
-                        if kind.editable() {
-                            return Some((
-                                *id,
-                                (
-                                    self.path_for_key(key)?,
-                                    *kind,
-                                    self.dirty_buffers.contains(id),
-                                ),
-                            ));
-                        }
+                    if let DocumentKind::Buffer { key, kind } = &entry.kind
+                        && kind.editable()
+                    {
+                        return Some((
+                            *id,
+                            (
+                                self.path_for_key(key)?,
+                                *kind,
+                                self.dirty_buffers.contains(id),
+                            ),
+                        ));
                     }
                     None
                 })

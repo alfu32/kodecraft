@@ -141,6 +141,26 @@ pub fn prepare(input: Input, cancel: &CancellationToken) -> Result<Prepared> {
     {
         return Err(invalid("Selected node is not a request"));
     }
+    if input.kind == BufferKind::RawBody {
+        // Syntax follows the latest valid effective Content-Type. An unfinished
+        // header draft must not prevent opening/editing a request body.
+        for ((path, name), text) in &input.drafts {
+            if name == BufferKind::Headers.name()
+                && input.path.starts_with(path)
+                && !input
+                    .overrides
+                    .iter()
+                    .any(|capture| capture.path == *path && capture.kind == BufferKind::Headers)
+            {
+                let _ = editing::headers(&mut model, path, text);
+            }
+        }
+        for capture in &input.overrides {
+            if capture.kind == BufferKind::Headers && input.path.starts_with(&capture.path) {
+                let _ = apply_override(&mut model, capture, cancel);
+            }
+        }
+    }
     let body = model
         .node(&input.path)
         .and_then(|node| node.pointer("/request/body"));

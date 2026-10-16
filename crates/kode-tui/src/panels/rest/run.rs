@@ -161,8 +161,14 @@ impl RunState {
         }
     }
     pub fn retain_response(&mut self, response: Arc<Response>) {
-        if self.live.as_ref().is_some_and(|live|live.key==response.key) {self.live=None;}
-        self.display_revision=self.display_revision.saturating_add(1);
+        if self
+            .live
+            .as_ref()
+            .is_some_and(|live| live.key == response.key)
+        {
+            self.live = None;
+        }
+        self.display_revision = self.display_revision.saturating_add(1);
         // Count captures conservatively, including multipart metadata and both
         // logical requests. Bound history by bytes as well as entry count.
         let weight = |response: &Response| {
@@ -239,17 +245,47 @@ impl RunState {
                 continue;
             }
             running.current = Some(event.key.item_id.clone());
-            self.display_revision=self.display_revision.saturating_add(1);
+            self.display_revision = self.display_revision.saturating_add(1);
             match event.kind {
-                EventKind::Opened {status,headers,normalized_request,normalizations,..}=>{
-                    self.live=Some(super::editor::response::Live {key:event.key,request:normalized_request,normalizations,headers,status,chunks:Arc::default(),retained:0,received:0,truncated:false,started:std::time::Instant::now()});
-                },
-                EventKind::Data {bytes,truncated,..}=>if let Some(live)=self.live.as_mut().filter(|live|live.key==event.key) {live.append(bytes,truncated);},
-                EventKind::Progress { received_bytes,truncated,.. }=>{
+                EventKind::Opened {
+                    status,
+                    headers,
+                    normalized_request,
+                    normalizations,
+                    ..
+                } => {
+                    self.live = Some(super::editor::response::Live {
+                        key: event.key,
+                        request: normalized_request,
+                        normalizations,
+                        headers,
+                        status,
+                        chunks: Arc::default(),
+                        retained: 0,
+                        received: 0,
+                        truncated: false,
+                        started: std::time::Instant::now(),
+                    });
+                }
+                EventKind::Data {
+                    bytes, truncated, ..
+                } => {
+                    if let Some(live) = self.live.as_mut().filter(|live| live.key == event.key) {
+                        live.append(bytes, truncated);
+                    }
+                }
+                EventKind::Progress {
+                    received_bytes,
+                    truncated,
+                    ..
+                } => {
                     running.received_bytes = received_bytes;
-                    if let Some(live)=self.live.as_mut().filter(|live|live.key==event.key) {live.received=received_bytes;live.truncated|=truncated;}
-                },
-                _=>{},
+                    if let Some(live) = self.live.as_mut().filter(|live| live.key == event.key) {
+                        live.received = received_bytes;
+                        live.truncated |= truncated;
+                    }
+                }
+                _ => {}
             }
             changed = true;
         }

@@ -34,6 +34,7 @@ impl AppState {
         override_text: Option<kode_core::document::snapshot::TextSnapshot>,
     ) -> Result<()> {
         self.deactivate_rest_form();
+        self.rest.open_focus = Some((self.focus.focused, true));
         if let Some(document) = self.rest.environment_document(id) {
             self.rest.pending_open = None;
             self.rest.ready_open = None;
@@ -79,6 +80,7 @@ impl AppState {
     }
     pub(super) fn inspect_rest_notices(&mut self) -> Result<()> {
         self.deactivate_rest_form();
+        self.rest.open_focus = Some((self.focus.focused, true));
         let descriptor = HostDescriptor::new(
             HostRole::RawRequest,
             "rest".into(),
@@ -103,6 +105,12 @@ impl AppState {
         let Some(entry) = self.rest.documents.get(&id) else {
             return Ok(());
         };
+        let previous_focus = self.focus.focused;
+        let transfer = self
+            .rest
+            .open_focus
+            .take()
+            .is_none_or(|(_, transfer)| transfer);
         let descriptor = entry.descriptor.clone();
         let kind = entry.kind.clone();
         let marker = self.rest.markers.get(&id).cloned();
@@ -193,8 +201,14 @@ impl AppState {
             self.rest.buffer_warnings.remove(&old);
             self.views.remove(&old);
         }
+        if !transfer {
+            self.focus.focused = previous_focus;
+        }
         if let Some(kind) = restore_buffer {
             self.open_rest_buffer(kind)?;
+            if !transfer && let Some((_, transfer)) = &mut self.rest.open_focus {
+                *transfer = false;
+            }
         }
         self.changed()
     }
@@ -270,6 +284,50 @@ impl AppState {
                         })
                         .collect();
                     self.rest.run.tree_changed(change);
+                    let stale: Vec<_> = self
+                        .rest
+                        .documents
+                        .iter()
+                        .filter_map(|(id, entry)| {
+                            let dead = match &entry.kind {
+                                DocumentKind::Buffer { key, .. } => {
+                                    self.rest.path_for_key(key).is_none()
+                                }
+                                DocumentKind::Node(_) => self
+                                    .rest
+                                    .markers
+                                    .get(id)
+                                    .is_some_and(|key| self.rest.path_for_key(key).is_none()),
+                                _ => false,
+                            };
+                            dead.then_some(*id)
+                        })
+                        .collect();
+                    for id in stale {
+                        if self
+                            .editor
+                            .as_ref()
+                            .is_some_and(|view| view.document_id() == id)
+                            && let Some(mut old) = self.editor.take()
+                        {
+                            old.detach(&mut self.focus);
+                        }
+                        self.documents.remove(id)?;
+                        self.rest.documents.remove(&id);
+                        self.views.remove(&id);
+                        self.rest.markers.remove(&id);
+                        self.rest.pending_changes.remove(&id);
+                        self.rest.dirty_buffers.remove(&id);
+                        self.rest.buffer_warnings.remove(&id);
+                    }
+                    self.rest
+                        .buffers
+                        .retain(|_, id| self.rest.documents.contains_key(id));
+                    if self.rest.form.as_ref().is_some_and(|form| form.closed) {
+                        self.deactivate_rest_form();
+                        self.focus.focused = Some(self.rest.sidebar.id);
+                        self.notice = "REST item removed".into();
+                    }
                 }
                 Intent::InspectNotices => self.inspect_rest_notices()?,
                 Intent::Import {
@@ -339,6 +397,10 @@ impl AppState {
             && self.picker.is_none()
             && self.rescan.is_none()
             && !self.git.has_modal()
+            && self
+                .rest
+                .open_focus
+                .is_none_or(|(expected, _)| expected == self.focus.focused)
             && let Some(id) = self.rest.ready_open.take()
         {
             self.attach_rest_document(id)?;
@@ -346,6 +408,14 @@ impl AppState {
         if self.rest.observed_revision != self.rest.model.revision() {
             self.rest.observed_revision = self.rest.model.revision();
             self.changed()?;
+            if self.rest.pending_open.is_none()
+                && self.rest.form.as_ref().is_some_and(|form| {
+                    form.selected_buffer
+                        == Some(crate::panels::rest::editor::form::BufferKind::RawRequest)
+                })
+            {
+                self.refresh_rest_preview()?;
+            }
         }
         Ok(())
     }

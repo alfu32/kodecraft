@@ -44,9 +44,13 @@ folder, `m` opens actions, `i` imports Postman, `e` exports and `r` runs/stops t
 selected request or folder. The actions menu also imports OpenAPI into a folder.
 Tab selects environments: `n` creates, `c` copies, F2 renames and Space activates.
 Environment values use the shared editor and survive restart, including comments
-and unfinished lines. Drag the environment divider to resize it. Request opening
-currently shows a read-only JSON snapshot; editable request forms, response tabs
-and full runner qualification remain R07/R08.
+and unfinished lines. Drag the environment divider to resize it. Open a request
+for method/URL controls and params/auth/headers/body/variables/settings/raw tabs.
+Ctrl+Enter sends or stops; Ctrl+Tab switches request tabs from an editor. Header
+names complete with Ctrl+Space. Request edits, comments and unfinished headers
+survive restart. Responses have Body/Headers/Cookies/Raw/Transaction tabs, a
+draggable divider and optional display formatting. Format body explicitly changes
+the editable body and supports undo. Full runner qualification remains R08.
 
 Ctrl+Space requests completion and Ctrl-click follows definitions/usages.
 The Project panel provides `r` rescan, `b` rebuild index and `c` clear index.

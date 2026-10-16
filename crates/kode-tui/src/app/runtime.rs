@@ -4,6 +4,8 @@ mod git;
 mod intelligence;
 pub mod lsp;
 mod rest;
+#[cfg(test)]
+mod rest_tests;
 mod sql;
 use super::{
     state::{AppState, AppWork, ConfigAction, OpenDestination, PickerKind},
@@ -157,6 +159,7 @@ enum EditorSlot {
     Main,
     Search,
     GitCommit,
+    RestResponse,
 }
 struct Pending {
     tag: JobTag,
@@ -343,6 +346,9 @@ impl AppRuntime {
                 .keys()
                 .filter_map(|id| self.state.documents.save_owner(*id).ok()),
         );
+        if let Some(form) = &self.state.rest.form {
+            active.push(OwnerId(form.id.0));
+        }
         if let Some(view) = &self.state.git.commit_editor {
             active.push(view.owner());
         }
@@ -353,6 +359,12 @@ impl AppRuntime {
             }
         }
         if let Some(view) = &self.state.editor {
+            active.push(view.owner());
+        }
+        if self.state.rest.form.is_some()
+            && self.state.rest.response.installed.is_some()
+            && let Some(view) = &self.state.rest.response.editor
+        {
             active.push(view.owner());
         }
         if let Some(view) = &self.state.image {
@@ -370,7 +382,10 @@ impl AppRuntime {
         let stale: Vec<_> = self
             .latest
             .iter()
-            .filter(|((owner, _), _)| !active.contains(owner))
+            .filter(|((owner, operation), tag)| {
+                !active.contains(owner)
+                    || (*operation == "rest-open" && self.state.rest.pending_open != Some(**tag))
+            })
             .map(|(key, tag)| (*key, *tag))
             .collect();
         for (key, tag) in stale {
@@ -902,6 +917,13 @@ impl AppRuntime {
             .editor
             .as_ref()
             .filter(|view| view.owner() == owner)
+            .or_else(|| {
+                self.state.rest.response.editor.as_ref().filter(|view| {
+                    view.owner() == owner
+                        && self.state.rest.response.installed.is_some()
+                        && self.state.rest.form.is_some()
+                })
+            })
             .or_else(|| {
                 self.state
                     .search
@@ -1734,6 +1756,22 @@ impl AppRuntime {
         &mut self,
         owner: OwnerId,
     ) -> Option<(EditorSlot, EditorView<QueuedEditorHost>, Rect)> {
+        if self.state.rest.form.is_some()
+            && self.state.rest.response.installed.is_some()
+            && self
+                .state
+                .rest
+                .response
+                .editor
+                .as_ref()
+                .is_some_and(|view| view.owner() == owner)
+        {
+            return Some((
+                EditorSlot::RestResponse,
+                self.state.rest.response.editor.take()?,
+                self.state.rest.response.body,
+            ));
+        }
         if let Some(diff) = &mut self.state.diff
             && diff
                 .editor
@@ -1790,7 +1828,9 @@ impl AppRuntime {
                 .into_iter()
                 .map(|work| AppWork::Editor { owner, work }),
         );
-        if matches!(search, EditorSlot::Diff) {
+        if matches!(search, EditorSlot::RestResponse) {
+            self.state.rest.response.editor = Some(view);
+        } else if matches!(search, EditorSlot::Diff) {
             if let Some(diff) = &mut self.state.diff {
                 diff.editor = Some(view);
             }

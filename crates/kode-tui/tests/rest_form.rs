@@ -61,6 +61,254 @@ fn click(x: u16, y: u16) -> InputEvent {
         modifiers: Modifiers::default(),
     })
 }
+fn label_position(form: &mut Form, model: &Workspace, label: &str) -> (u16, u16) {
+    let buffer = draw(form, model, 80, 40);
+    for y in buffer.area.y..buffer.area.bottom() {
+        let row: String = (buffer.area.x..buffer.area.right())
+            .map(|x| buffer[(x, y)].symbol())
+            .collect();
+        if let Some(x) = row.find(label) {
+            return (buffer.area.x + x as u16, y);
+        }
+    }
+    panic!("missing control: {label}");
+}
+fn press_label(form: &mut Form, model: &mut Workspace, focus: &mut FocusState, label: &str) {
+    let (x, y) = label_position(form, model, label);
+    form.dispatch(&click(x, y), model, focus).unwrap();
+}
+#[test]
+fn remaining_fields_and_button_families_are_mouse_reachable_and_apply_their_owned_semantics() {
+    let (mut model, mut form, mut focus) = setup();
+    form.perform(Action::Tab(Tab::Auth), &mut model, &mut focus)
+        .unwrap();
+    for (label, kind) in [
+        ("Bearer", "bearer"),
+        ("Basic", "basic"),
+        ("API key", "apikey"),
+        ("No auth", "noauth"),
+    ] {
+        press_label(&mut form, &mut model, &mut focus, label);
+        assert_eq!(
+            model
+                .node(&form.path)
+                .unwrap()
+                .pointer("/request/auth/type")
+                .unwrap(),
+            kind
+        );
+    }
+    press_label(&mut form, &mut model, &mut focus, "Reveal secrets");
+    assert!(form.reveal);
+    press_label(&mut form, &mut model, &mut focus, "Hide secrets");
+    assert!(!form.reveal);
+    press_label(&mut form, &mut model, &mut focus, "Inherit");
+    assert!(
+        model
+            .node(&form.path)
+            .unwrap()
+            .pointer("/request/auth")
+            .is_none()
+    );
+    form.perform(Action::Tab(Tab::Settings), &mut model, &mut focus)
+        .unwrap();
+    for (label, field) in [
+        ("Follow redirects", "disableRedirects"),
+        ("TLS certificate", "disableSslVerification"),
+    ] {
+        press_label(&mut form, &mut model, &mut focus, label);
+        assert_eq!(
+            model.node(&form.path).unwrap()["protocolProfileBehavior"][field],
+            true
+        );
+    }
+    let (x, y) = label_position(&mut form, &model, "Timeout ms");
+    form.dispatch(&click(x + 12, y), &mut model, &mut focus)
+        .unwrap();
+    form.dispatch(&ctrl('a'), &mut model, &mut focus).unwrap();
+    form.dispatch(&InputEvent::Paste("1234".into()), &mut model, &mut focus)
+        .unwrap();
+    assert_eq!(
+        model
+            .node(&form.path)
+            .unwrap()
+            .pointer("/protocolProfileBehavior/requestTimeout")
+            .unwrap(),
+        "1234"
+    );
+    press_label(&mut form, &mut model, &mut focus, "Clear cookies");
+    assert!(
+        form.take_intents()
+            .iter()
+            .any(|intent| matches!(intent, Intent::ClearCookies))
+    );
+    form.perform(Action::Tab(Tab::Body), &mut model, &mut focus)
+        .unwrap();
+    for mode in ["none", "raw", "urlencoded", "formdata", "file", "graphql"] {
+        let (x, y) = label_position(&mut form, &model, "none raw urlencoded");
+        let offset = "none raw urlencoded formdata file graphql"
+            .find(mode)
+            .unwrap() as u16;
+        form.dispatch(&click(x + offset, y), &mut model, &mut focus)
+            .unwrap();
+        assert_eq!(
+            model
+                .node(&form.path)
+                .unwrap()
+                .pointer("/request/body/mode")
+                .unwrap(),
+            mode
+        );
+        if mode == "file" {
+            let (x, y) = label_position(&mut form, &model, "File");
+            form.dispatch(&click(x + 6, y), &mut model, &mut focus)
+                .unwrap();
+            form.dispatch(&ctrl('a'), &mut model, &mut focus).unwrap();
+            form.dispatch(
+                &InputEvent::Paste("body.bin".into()),
+                &mut model,
+                &mut focus,
+            )
+            .unwrap();
+            assert_eq!(
+                model
+                    .node(&form.path)
+                    .unwrap()
+                    .pointer("/request/body/file/src")
+                    .unwrap(),
+                "body.bin"
+            );
+        }
+    }
+    press_label(&mut form, &mut model, &mut focus, "Variables");
+    assert_eq!(form.selected_buffer, Some(BufferKind::GraphqlVariables));
+    press_label(&mut form, &mut model, &mut focus, "Query");
+    assert_eq!(form.selected_buffer, Some(BufferKind::GraphqlQuery));
+    form.perform(Action::Tab(Tab::Params), &mut model, &mut focus)
+        .unwrap();
+    for label in ["+ Query", "+ Path variable"] {
+        press_label(&mut form, &mut model, &mut focus, label);
+        assert!(form.has_modal());
+        form.dispatch(&key(Key::Escape), &mut model, &mut focus)
+            .unwrap();
+    }
+    form.perform(Action::Tab(Tab::Variables), &mut model, &mut focus)
+        .unwrap();
+    press_label(&mut form, &mut model, &mut focus, "[x]");
+    assert_eq!(
+        model.node(&form.path).unwrap()["variable"][0]["disabled"],
+        true
+    );
+    press_label(&mut form, &mut model, &mut focus, "secret =");
+    assert!(form.has_modal());
+    form.dispatch(&key(Key::Escape), &mut model, &mut focus)
+        .unwrap();
+    press_label(&mut form, &mut model, &mut focus, "Remove");
+    assert!(
+        model.node(&form.path).unwrap()["variable"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
+    press_label(&mut form, &mut model, &mut focus, "+ Variable");
+    assert!(form.has_modal());
+    form.dispatch(&key(Key::Escape), &mut model, &mut focus)
+        .unwrap();
+    model
+        .set_node_field(&form.path, "x-kode-import-incomplete", Some(true.into()))
+        .unwrap();
+    press_label(&mut form, &mut model, &mut focus, "Import notices");
+    assert!(
+        form.take_intents()
+            .iter()
+            .any(|intent| matches!(intent, Intent::Notices))
+    );
+    press_label(
+        &mut form,
+        &mut model,
+        &mut focus,
+        "Reviewed: allow execution",
+    );
+    assert_eq!(
+        model.node(&form.path).unwrap()["x-kode-import-incomplete"],
+        false
+    );
+    let path = NodePath::default();
+    let mut form = Form::new(
+        path.clone(),
+        "root".into(),
+        Prepared::from_model(&model, &path).unwrap(),
+    )
+    .unwrap();
+    focus.focused = Some(form.id);
+    for (label, field, value) in [
+        ("Name", Field::Name, "New collection"),
+        ("Description", Field::Description, "Retained description"),
+    ] {
+        let (x, y) = label_position(&mut form, &model, label);
+        form.dispatch(
+            &click(x + label.len() as u16 + 2, y),
+            &mut model,
+            &mut focus,
+        )
+        .unwrap();
+        form.dispatch(&ctrl('a'), &mut model, &mut focus).unwrap();
+        form.dispatch(&InputEvent::Paste(value.into()), &mut model, &mut focus)
+            .unwrap();
+        assert_eq!(form.fields[&field].value, value);
+    }
+    assert_eq!(model.collection()["info"]["name"], "New collection");
+    assert_eq!(
+        model.collection()["info"]["description"],
+        "Retained description"
+    );
+}
+#[test]
+fn inherited_rows_scroll_independently_and_never_push_local_headers_out_of_the_view() {
+    let (mut model, mut form, mut focus) = setup();
+    let headers: Vec<_> = (0..2000)
+        .map(|index| json!({"key":format!("X-Inherited-{index}"),"value":"value"}))
+        .collect();
+    let mut collection = model.collection().clone();
+    collection["x-kode-headers"] = json!(headers);
+    model.replace_collection(collection).unwrap();
+    let resolver = kode_rest::resolve::RequestResolver::new(
+        model.collection(),
+        form.path.clone(),
+        std::path::Path::new("."),
+        None,
+    )
+    .unwrap();
+    form.set_derived(kode_tui::panels::rest::editor::form::Derived {
+        headers: resolver.effective_headers().unwrap(),
+        ..Default::default()
+    });
+    form.perform(Action::Tab(Tab::Headers), &mut model, &mut focus)
+        .unwrap();
+    let first = draw(&mut form, &model, 80, 24);
+    let editor = form.geometry.editor;
+    assert!(editor.height >= 8);
+    assert!(text(&first).contains("Local headers"));
+    let area = form.geometry.content;
+    form.dispatch(
+        &InputEvent::Pointer(PointerInput {
+            x: area.x,
+            y: area.y,
+            action: PointerAction::Scroll {
+                horizontal: 0,
+                vertical: 3,
+            },
+            modifiers: Modifiers::default(),
+        }),
+        &mut model,
+        &mut focus,
+    )
+    .unwrap();
+    let next = draw(&mut form, &model, 80, 24);
+    assert_eq!(form.geometry.editor, editor);
+    assert!(!text(&next).contains("Inherited headers (read-only)"));
+    assert!(text(&next).contains("Local headers"));
+}
 #[test]
 fn method_url_fields_and_send_are_real_mouse_targets_and_field_typing_updates_only_the_request() {
     let (mut model, mut form, mut focus) = setup();

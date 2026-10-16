@@ -33,6 +33,14 @@ impl AppState {
                 self.rest.forms.insert(form.key.clone(), form);
             }
         }
+        self.rest.response.cache_view();
+        if let Some(view) = &mut self.rest.response.editor {
+            view.detach(&mut self.focus);
+        }
+        self.rest.response.installed = None;
+        self.rest.response.pending = None;
+        self.rest.response.requested = None;
+        self.rest.response.ready = None;
         self.rest.pending_derived = None;
     }
     fn rest_model_capture(&self) -> jobs::ModelCapture {
@@ -71,6 +79,7 @@ impl AppState {
         let tag = self.tag()?;
         self.rest.pending_open = Some(tag);
         self.rest.ready_open = None;
+        self.rest.open_focus = Some((self.focus.focused, true));
         self.pending_open = None;
         let capture = Box::new(self.rest_model_capture());
         self.work.push(AppWork::Rest(Box::new(Work::Editor(Box::new(
@@ -117,7 +126,9 @@ impl AppState {
         self.pending_open = None;
         self.rest.pending_open = None;
         self.rest.ready_open = None;
+        self.rest.open_focus = Some((self.focus.focused, true));
         if kind.editable()
+            && kind != BufferKind::RawBody
             && let Some(id) = self.rest.buffers.get(&(key.clone(), kind))
         {
             self.rest.ready_open = Some(*id);
@@ -149,6 +160,13 @@ impl AppState {
                 input,
             },
         )))));
+        Ok(())
+    }
+    pub(super) fn refresh_rest_preview(&mut self) -> Result<()> {
+        self.open_rest_buffer(BufferKind::RawRequest)?;
+        if let Some((_, transfer)) = &mut self.rest.open_focus {
+            *transfer = false;
+        }
         Ok(())
     }
     pub(super) fn rest_buffer_changed(&mut self, snapshot: TextSnapshot) -> Result<bool> {
@@ -193,6 +211,75 @@ impl AppState {
             return Ok(());
         }
         match context {
+            jobs::Context::Format { key, document } => {
+                if self
+                    .rest
+                    .form
+                    .as_ref()
+                    .is_none_or(|form| form.key != key || form.closed)
+                {
+                    return Ok(());
+                }
+                if !tag.document.is_some_and(|(id, revision)| {
+                    id == document
+                        && self
+                            .documents
+                            .document(id)
+                            .is_ok_and(|document| document.revision() == revision)
+                }) {
+                    return Ok(());
+                }
+                match result {
+                    Ok(jobs::Reply::Format(Some(text))) => {
+                        let area = self.rest_editor_area();
+                        if let Some(view) = self
+                            .editor
+                            .as_mut()
+                            .filter(|view| view.document_id() == document)
+                        {
+                            let end = self.documents.document(document)?.snapshot().len_bytes();
+                            view.programmatic_replace(
+                                kode_core::TextRange {
+                                    start: kode_core::ByteOffset(0),
+                                    end: kode_core::ByteOffset(end),
+                                },
+                                &text,
+                                &mut self.documents,
+                                area,
+                            )?;
+                        }
+                    }
+                    Ok(jobs::Reply::Format(None)) => {
+                        if let Some(form) = &mut self.rest.form {
+                            form.message =
+                                "Body unchanged: already formatted, invalid or unsupported content"
+                                    .into();
+                        }
+                    }
+                    Err(error) => self.notice = error.to_string(),
+                    _ => {}
+                }
+            }
+            jobs::Context::Response(proof) => {
+                if self.rest.response.pending != Some(tag)
+                    || self.rest.response.requested.as_ref() != Some(&proof)
+                    || self
+                        .rest
+                        .form
+                        .as_ref()
+                        .is_none_or(|form| form.closed || form.key != proof.key)
+                {
+                    return Ok(());
+                }
+                self.rest.response.pending = None;
+                match result {
+                    Ok(jobs::Reply::Response(prepared)) => {
+                        self.rest.response.ready = Some((proof, *prepared))
+                    }
+                    Err(error) => self.notice = error.to_string(),
+                    _ => {}
+                }
+            }
             jobs::Context::Form {
                 key,
                 path,
@@ -274,12 +361,18 @@ impl AppState {
                 }
                 match result {
                     Ok(jobs::Reply::Buffer(prepared)) => {
-                        let id = self.documents.insert(
-                            prepared.document,
-                            &prepared.descriptor,
-                            self.generation,
-                            None,
-                        )?;
+                        let id = if kind.editable()
+                            && let Some(id) = self.rest.buffers.get(&(key.clone(), kind))
+                        {
+                            *id
+                        } else {
+                            self.documents.insert(
+                                prepared.document,
+                                &prepared.descriptor,
+                                self.generation,
+                                None,
+                            )?
+                        };
                         if self.rest.path_for_key(&key).is_some_and(|path| {
                             self.rest
                                 .request_drafts
@@ -331,8 +424,16 @@ impl AppState {
                     return Ok(());
                 };
                 let applied = match result {
-                    Ok(jobs::Reply::Change(jobs::Change::Headers(headers))) => {
-                        editing::replace_headers(&mut self.rest.model, &path, headers)
+                    Ok(jobs::Reply::Change(jobs::Change::Headers { value, warnings })) => {
+                        self.rest.buffer_warnings.insert(document, warnings.clone());
+                        if let Some(view) = self
+                            .editor
+                            .as_mut()
+                            .filter(|view| view.document_id() == document)
+                        {
+                            view.host.warnings = warnings;
+                        }
+                        editing::replace_headers(&mut self.rest.model, &path, value)
                     }
                     Ok(jobs::Reply::Change(jobs::Change::Text(text))) => {
                         if let Some(field) = kind.field() {
@@ -366,6 +467,8 @@ impl AppState {
                 if let Some(form) = self.rest.form.as_mut().filter(|form| form.key == key)
                     && let Ok(jobs::Reply::Derived(derived)) = result
                 {
+                    let (prepared, derived) = *derived;
+                    form.refresh_fields(prepared);
                     form.set_derived(derived);
                     self.rest.derived_revision = revision;
                 }
@@ -374,6 +477,9 @@ impl AppState {
         self.drain_rest()
     }
     pub(super) fn drain_rest_form(&mut self) -> Result<()> {
+        if let Some(form) = &mut self.rest.form {
+            form.running = self.rest.run.pending.is_some() || self.rest.run.running.is_some();
+        }
         let intents = self
             .rest
             .form
@@ -389,8 +495,12 @@ impl AppState {
                 }
                 Intent::Buffer(kind) => self.open_rest_buffer(kind)?,
                 Intent::Changed => self.changed()?,
+                Intent::FormatBody => self.format_rest_body()?,
                 Intent::ClearCookies => {
                     self.rest.run.client.clear_cookies();
+                    self.rest.response.requested = None;
+                    self.rest.response.pending = None;
+                    self.rest.response.ready = None;
                     if let Some(form) = &mut self.rest.form {
                         form.message = "Cookies cleared".into();
                     }
@@ -429,6 +539,40 @@ impl AppState {
                 },
             )))));
         }
+        self.drain_rest_response()?;
+        Ok(())
+    }
+    fn format_rest_body(&mut self) -> Result<()> {
+        let Some(view) = &self.editor else {
+            return Ok(());
+        };
+        let Some(Entry {
+            kind: DocumentKind::Buffer { key, kind },
+            ..
+        }) = self.rest.documents.get(&view.document_id())
+        else {
+            return Ok(());
+        };
+        if !matches!(kind, BufferKind::RawBody | BufferKind::GraphqlVariables) {
+            return Ok(());
+        }
+        let key = key.clone();
+        let snapshot = self.documents.document(view.document_id())?.snapshot();
+        let content_type = if *kind == BufferKind::GraphqlVariables {
+            Some("application/json".into())
+        } else {
+            view.host.descriptor.mime.clone()
+        };
+        let mut tag = self.tag()?;
+        tag.document = Some((snapshot.id, snapshot.revision));
+        self.work.push(AppWork::Rest(Box::new(Work::Editor(Box::new(
+            jobs::Job::Format {
+                tag,
+                key,
+                snapshot,
+                content_type,
+            },
+        )))));
         Ok(())
     }
     fn send_rest_request(&mut self, path: NodePath) -> Result<()> {
@@ -467,6 +611,9 @@ impl AppState {
         self.rest.form.as_ref().is_some_and(|form| self.editor.as_ref().and_then(|view|self.rest.documents.get(&view.document_id())).is_some_and(|entry|matches!(&entry.kind,DocumentKind::Buffer {key,kind} if *key==form.key && Some(*kind)==form.selected_buffer)))
     }
     pub(super) fn dispatch_rest_editor(&mut self, event: &InputEvent) -> Result<bool> {
+        if self.dispatch_rest_response(event)? {
+            return Ok(true);
+        }
         let Some(form) = &self.rest.form else {
             return Ok(false);
         };
@@ -545,12 +692,13 @@ impl AppState {
         buffer: &mut Buffer,
         theme: &Theme,
     ) -> Result<Option<Position>> {
+        let request_area = self.rest_response_request_area(area);
         let visible = self.rest_buffer_visible();
         let Some(form) = &mut self.rest.form else {
             return Ok(None);
         };
         let mut cursor = form.render(
-            area,
+            request_area,
             buffer,
             theme,
             &self.rest.model,
@@ -568,6 +716,9 @@ impl AppState {
             )? {
                 cursor = Some(position);
             }
+        }
+        if let Some(position) = self.render_rest_response(area, buffer, theme)? {
+            cursor = Some(position);
         }
         Ok(cursor)
     }
