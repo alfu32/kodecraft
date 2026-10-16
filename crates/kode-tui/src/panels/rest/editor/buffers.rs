@@ -135,7 +135,9 @@ pub fn prepare(input: Input, cancel: &CancellationToken) -> Result<Prepared> {
     if model.node(&input.path).is_none() {
         return Err(invalid("REST item no longer exists"));
     }
-    if input.kind!=BufferKind::Headers && !editing::is_request(model.node(&input.path).expect("checked path"),&input.path) {
+    if input.kind != BufferKind::Headers
+        && !editing::is_request(model.node(&input.path).expect("checked path"), &input.path)
+    {
         return Err(invalid("Selected node is not a request"));
     }
     let body = model
@@ -143,7 +145,11 @@ pub fn prepare(input: Input, cancel: &CancellationToken) -> Result<Prepared> {
         .and_then(|node| node.pointer("/request/body"));
     let mut content_type = None;
     let (text, language) = if input.kind == BufferKind::RawRequest {
-        for capture in input.overrides.iter().filter(|capture|capture.path==input.path) {
+        for capture in input
+            .overrides
+            .iter()
+            .filter(|capture| capture.path == input.path)
+        {
             apply_override(&mut model, capture, cancel)?;
         }
         let request = RequestResolver::new(
@@ -218,9 +224,18 @@ pub fn prepare(input: Input, cancel: &CancellationToken) -> Result<Prepared> {
                     }
                 }
                 if content_type.is_none() {
-                    content_type=body.and_then(|body|body.pointer("/options/raw/language")).and_then(Value::as_str).and_then(|language|match language {
-                        "json"=>Some("application/json"),"xml"=>Some("application/xml"),"html"=>Some("text/html"),"javascript"|"js"=>Some("application/javascript"),"yaml"|"yml"=>Some("application/yaml"),_=>None,
-                    }).map(str::to_string);
+                    content_type = body
+                        .and_then(|body| body.pointer("/options/raw/language"))
+                        .and_then(Value::as_str)
+                        .and_then(|language| match language {
+                            "json" => Some("application/json"),
+                            "xml" => Some("application/xml"),
+                            "html" => Some("text/html"),
+                            "javascript" | "js" => Some("application/javascript"),
+                            "yaml" | "yml" => Some("application/yaml"),
+                            _ => None,
+                        })
+                        .map(str::to_string);
                 }
                 language_for_content_type(content_type.as_deref())
                     .map(str::to_string)

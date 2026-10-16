@@ -1326,3 +1326,22 @@ view attachment and complete R07 execution/response routing are still required.
 `resolve::MAX_RESOLVED_BYTES` caps accumulated resolved values and repeated path
 parameter output at 64 MiB per request plan, in addition to existing per-value
 limits and outgoing body limits. A planning-limit failure precedes network I/O.
+
+R07's `model::editing` operations mutate only the addressed fields/rows, preserving
+unrelated metadata and opaque entries. Raw URL query edits replace the stale typed
+query representation; host/path edits retain it. Structured query edits decode
+once and rebuild only enabled rows, with explicit null values representing key-only
+flags (matching [Postman SDK parsing/serialization](https://www.postmanlabs.com/postman-collection/collection_query-param.js.html)).
+Descriptions keep structured extension fields. Body-mode data and auth definitions
+remain available while inactive. File rows update the actual `src` field/array.
+Invalid header text leaves the model untouched; explicit import review is the only
+form action that clears the incomplete-import marker.
+
+The form reducer emits clipboard/Send/cookie/notices/shared-buffer intents; it does
+not submit requests or perform I/O. Dialog publication captures collection identity,
+and clipboard proofs capture item/epoch/field/caret/selection state. Tree rebasing
+retains item ownership; removal/replacement closes it. Worker buffer preparation
+builds real shared documents with the appropriate editable/read-only host roles.
+Captured request/environment ropes are authoritative for preview, and invalid
+buffers outside the requested preview cannot block it. Application wiring and
+complete request/response qualification are still required (R07 in progress).

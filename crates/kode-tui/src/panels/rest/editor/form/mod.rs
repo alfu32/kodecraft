@@ -211,6 +211,7 @@ pub struct Form {
     pub message: String,
     pub closed: bool,
     pub reveal: bool,
+    pub selected_buffer: Option<BufferKind>,
     request: bool,
     focused: Option<Field>,
     selection: usize,
@@ -244,6 +245,7 @@ impl Form {
             message: String::new(),
             closed: false,
             reveal: false,
+            selected_buffer: None,
             request: prepared.request,
             focused: None,
             selection: 0,
@@ -493,7 +495,11 @@ impl Form {
                         ]));
                         rows.push(Row::Embed(
                             "GraphQL query / variables",
-                            BufferKind::GraphqlQuery,
+                            if self.selected_buffer == Some(BufferKind::GraphqlVariables) {
+                                BufferKind::GraphqlVariables
+                            } else {
+                                BufferKind::GraphqlQuery
+                            },
                         ));
                     }
                     "file" => rows.push(Row::Field("File", Field::File)),
@@ -526,19 +532,15 @@ impl Form {
                     ),
                 ]));
                 self.entry_rows(model, Rows::Variable, &mut rows)?;
-                let locals = editing::rows(node, &self.path, Rows::Variable)?;
+                rows.push(Row::Info("Effective values (read-only)".into()));
                 for variable in &self.derived.variables {
-                    if !locals.iter().any(|entry| {
-                        entry.get("key").and_then(Value::as_str) == Some(variable.key.as_str())
-                    }) {
-                        rows.push(Row::Info(format!(
-                            "{} = {} ({}, {})",
-                            variable.key,
-                            self.mask(&variable.key, &variable.value, variable.secret),
-                            variable.kind,
-                            variable.source
-                        )));
-                    }
+                    rows.push(Row::Info(format!(
+                        "{} = {} ({}, {})",
+                        variable.key,
+                        self.mask(&variable.key, &variable.value, variable.secret),
+                        variable.kind,
+                        variable.source
+                    )));
                 }
             }
             Tab::Settings => {

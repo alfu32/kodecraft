@@ -12,7 +12,13 @@ impl Form {
                 .as_str()?
             {
                 "raw" => Some(BufferKind::RawBody),
-                "graphql" => Some(BufferKind::GraphqlQuery),
+                "graphql" => Some(
+                    if self.selected_buffer == Some(BufferKind::GraphqlVariables) {
+                        BufferKind::GraphqlVariables
+                    } else {
+                        BufferKind::GraphqlQuery
+                    },
+                ),
                 _ => None,
             },
             _ => None,
@@ -48,7 +54,8 @@ impl Form {
                 self.selection = 0;
                 self.follow = true;
                 self.epoch = self.epoch.saturating_add(1);
-                if let Some(kind) = self.buffer_for_tab(model) {
+                self.selected_buffer = self.buffer_for_tab(model);
+                if let Some(kind) = self.selected_buffer {
                     self.intents.push(Intent::Buffer(kind));
                 }
             }
@@ -56,6 +63,16 @@ impl Form {
             Action::Cookies => self.intents.push(Intent::ClearCookies),
             Action::Notices => self.intents.push(Intent::Notices),
             Action::Buffer(kind) => {
+                let tab = match kind {
+                    BufferKind::Headers => Tab::Headers,
+                    BufferKind::RawRequest => Tab::Raw,
+                    _ => Tab::Body,
+                };
+                if !self.tabs().contains(&tab) {
+                    return Err(invalid("Selected node has no request editor"));
+                }
+                self.tab = tab;
+                self.selected_buffer = Some(kind);
                 self.focused = None;
                 self.intents.push(Intent::Buffer(kind));
             }
@@ -67,7 +84,8 @@ impl Form {
             Action::Body(mode) => {
                 editing::body_mode(model, &self.path, mode)?;
                 self.intents.push(Intent::Changed);
-                if let Some(kind) = self.buffer_for_tab(model) {
+                self.selected_buffer = self.buffer_for_tab(model);
+                if let Some(kind) = self.selected_buffer {
                     self.intents.push(Intent::Buffer(kind));
                 }
             }
