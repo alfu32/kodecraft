@@ -110,9 +110,11 @@ the above commands and suites are future implementation acceptance work.
 | Windows terminal | Crossterm event kinds, path/URL conversions, shell, Java discovery, clipboard and child lifecycle |
 | macOS terminal | Clipboard, modifiers, process lifecycle, resources and architecture-specific packages |
 
-Do not call a platform supported based only on a target build. Original native ttyd
-resources actually present in the source are Linux x86_64 and aarch64; additional
-recognized platform strings are not evidence that working assets were bundled.
+Do not call a platform supported based only on a target build. The frozen source
+contains ttyd shared libraries for Linux, macOS and Windows on x86_64 and aarch64
+(verified with `git ls-tree` against the frozen baseline during Z01). Their presence
+is evidence of bundled assets, not runtime qualification of the Rust executable
+replacement on those platforms.
 Make unsupported packaging combinations explicit while retaining the implementation
 tasks needed for the intended release targets.
 

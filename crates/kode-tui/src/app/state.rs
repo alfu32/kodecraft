@@ -197,6 +197,7 @@ pub struct AppState {
     pub files: FilesPanel,
     pub project_panel: ProjectPanel,
     pub lsp_settings: crate::panels::settings::lsp::LspSettings,
+    pub settings: crate::panels::settings::Settings,
     pub git: crate::panels::git::GitPanel,
     pub database: crate::panels::database::controller::DatabasePanel,
     pub sql_sources: HashMap<DocumentId, String>,
@@ -223,6 +224,7 @@ pub struct AppState {
     pub closing: bool,
     pub window_focused: bool,
     pub quit_requested: bool,
+    pub shell_requested: bool,
     pub switch_requested: Option<PathBuf>,
     pub clipboard: Arc<ClipboardService>,
     pub clock: Arc<dyn Clock>,
@@ -275,6 +277,7 @@ impl AppState {
             files,
             project_panel: ProjectPanel::new()?,
             lsp_settings: crate::panels::settings::lsp::LspSettings::new()?,
+            settings: crate::panels::settings::Settings::new()?,
             git,
             database: crate::panels::database::controller::DatabasePanel::new(generation)?,
             sql_sources: HashMap::new(),
@@ -311,6 +314,7 @@ impl AppState {
             closing: false,
             window_focused: true,
             quit_requested: false,
+            shell_requested: false,
             switch_requested: None,
             clipboard,
             clock,
@@ -1012,6 +1016,13 @@ impl AppState {
                 .into_iter()
                 .map(AppWork::Project),
         );
+        self.work.extend(
+            self.settings
+                .native
+                .take_work()
+                .into_iter()
+                .map(AppWork::Project),
+        );
         if let Some(dialog) = &mut self.search {
             self.work
                 .extend(dialog.take_work().into_iter().map(AppWork::ProjectSearch));
@@ -1150,12 +1161,25 @@ impl AppState {
             1 => self
                 .project_panel
                 .render(geometry.panel, buffer, theme, &self.project),
-            3 => self.lsp_settings.render(
-                geometry.panel,
-                buffer,
-                theme,
-                self.focus.focused == Some(self.lsp_settings.id),
-            ),
+            3 => {
+                let body = self.settings.render_header(geometry.panel, buffer, theme);
+                if self.settings.index_selected {
+                    self.settings.native.render(
+                        body,
+                        buffer,
+                        theme,
+                        &self.intelligence_status,
+                        &self.project.root.join(".kode-rs/index.sqlite"),
+                    );
+                } else {
+                    self.lsp_settings.render(
+                        body,
+                        buffer,
+                        theme,
+                        self.focus.focused == Some(self.lsp_settings.id),
+                    );
+                }
+            }
             4 => {
                 cursor =
                     self.git

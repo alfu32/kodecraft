@@ -272,7 +272,7 @@ impl AppRuntime {
             return Ok(());
         }
         self.contexts.insert(tag, Context::RestRun);
-        self.state.rest.run.keys = prepared.keys;
+        self.state.rest.run.set_keys(prepared.keys);
         self.state.rest.run.summary = None;
         self.state.rest.run.running = Some(Running {
             tag,
@@ -321,7 +321,9 @@ impl AppRuntime {
                 self.state.rest.runner.message.clear();
                 let count = self.state.rest.run.outcomes.len();
                 for outcome in summary.outcomes.iter().skip(count) {
-                    if let Some(error) = &outcome.validation_error {
+                    if let Some(error) = &outcome.validation_error
+                        && self.state.rest.run.live_keys.contains(&outcome.item.id)
+                    {
                         self.state
                             .rest
                             .run

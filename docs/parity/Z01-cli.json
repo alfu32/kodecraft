@@ -1,0 +1,24 @@
+{
+  "cases": [
+    {
+      "case": "literal-argv-and-exit-status",
+      "forwarded_args": 0,
+      "status": "passed"
+    },
+    {
+      "case": "literal-argv-and-exit-status",
+      "forwarded_args": 4,
+      "status": "passed"
+    },
+    {
+      "case": "literal-argv-and-exit-status",
+      "forwarded_args": 2,
+      "status": "passed"
+    },
+    {
+      "case": "missing-launcher-invalid-credential",
+      "status": "passed"
+    }
+  ],
+  "passed": 4
+}

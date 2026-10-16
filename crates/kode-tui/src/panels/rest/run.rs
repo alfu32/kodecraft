@@ -10,18 +10,21 @@ use kode_rest::{
     stream::{self, EventKind, EventReceiver},
 };
 use std::{
-    collections::{HashMap, VecDeque},
+    collections::{HashMap, HashSet, VecDeque},
     path::PathBuf,
     sync::Arc,
 };
 use tokio::sync::mpsc;
 
+pub const RESPONSE_HISTORY_COUNT: usize = 32;
+pub const RESPONSE_HISTORY_BYTES: usize = 192 * 1024 * 1024;
 pub type Keys = Arc<HashMap<NodePath, String>>;
 #[derive(Default)]
 pub struct RunState {
     pub active_item: Option<Item>,
     pub scope: Option<NodePath>,
     pub failures: HashMap<String, String>,
+    pub live_keys: HashSet<String>,
     pub outcomes: Vec<kode_rest::runner::Outcome>,
     pub live: Option<super::editor::response::Live>,
     pub display_revision: u64,
@@ -132,11 +135,17 @@ impl Prepare {
     }
 }
 impl RunState {
+    pub fn set_keys(&mut self, keys: Keys) {
+        self.live_keys = keys.values().cloned().collect();
+        self.keys = keys;
+    }
     pub fn tree_changed(&mut self, change: TreeChange) {
         self.structure = self.structure.saturating_add(1);
         self.scope = self.scope.as_ref().and_then(|path| change.rebase(path));
         if matches!(change, TreeChange::Replaced) {
             self.keys = Arc::default();
+            self.live_keys.clear();
+            self.failures.clear();
             self.pending = None;
             self.cancel();
             return;
@@ -160,6 +169,8 @@ impl RunState {
                 })
                 .collect(),
         );
+        self.live_keys = self.keys.values().cloned().collect();
+        self.failures.retain(|key, _| self.live_keys.contains(key));
     }
     pub fn cancel(&self) {
         if let Some(running) = &self.running {
@@ -224,12 +235,13 @@ impl RunState {
         self.responses
             .retain(|old| old.key.item_id != response.key.item_id);
         let bytes = weight(&response);
-        const LIMIT: usize = 192 * 1024 * 1024;
-        if bytes > LIMIT {
+        if bytes > RESPONSE_HISTORY_BYTES {
             return;
         }
         let mut retained = self.responses.iter().map(|r| weight(r)).sum::<usize>();
-        while self.responses.len() >= 32 || retained.saturating_add(bytes) > LIMIT {
+        while self.responses.len() >= RESPONSE_HISTORY_COUNT
+            || retained.saturating_add(bytes) > RESPONSE_HISTORY_BYTES
+        {
             let Some(old) = self.responses.pop_front() else {
                 break;
             };
@@ -255,7 +267,9 @@ impl RunState {
                 }
                 kode_rest::runner::Progress::Completed(outcome) => {
                     running.completed += 1;
-                    if let Some(error) = &outcome.validation_error {
+                    if let Some(error) = &outcome.validation_error
+                        && self.live_keys.contains(&outcome.item.id)
+                    {
                         self.failures.insert(outcome.item.id.clone(), error.clone());
                     } else {
                         self.failures.remove(&outcome.item.id);

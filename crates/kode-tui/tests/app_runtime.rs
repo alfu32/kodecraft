@@ -1215,6 +1215,106 @@ async fn native_runtime_clear_rebuild_and_external_source_changes_do_not_loop_on
 }
 
 #[tokio::test]
+async fn settings_index_clear_rebuild_uses_real_workers_and_preserves_dirty_editor_and_user_databases()
+ {
+    use kode_intelligence::{facade::IntelligenceResources, service::IndexPhase};
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    fs::create_dir(root.join("src")).unwrap();
+    fs::create_dir_all(root.join(".kode/db")).unwrap();
+    let legacy = root.join(".kode/db/kode.mv.db");
+    fs::write(&legacy, b"synthetic legacy H2 sentinel").unwrap();
+    let jdbc = root.join("user-database.mv.db");
+    fs::write(&jdbc, b"synthetic user JDBC sentinel").unwrap();
+    fs::write(root.join("src/Model.kt"), "class Saved\n").unwrap();
+    let clock = Arc::new(FakeClock::default());
+    let mut app = make(root, Some("src/Model.kt"), clock.clone());
+    app.start_intelligence(Arc::new(IntelligenceResources::compiled().unwrap()))
+        .await
+        .unwrap();
+    until(&mut app, |app| {
+        clock.0.fetch_add(10, Ordering::SeqCst);
+        app.state.editor.is_some()
+            && app.intelligence().unwrap().status().unwrap().phase == IndexPhase::Ready
+    })
+    .await;
+    paint(&mut app);
+    app.state
+        .dispatch(&InputEvent::Paste("class Unsaved {}\n".into()))
+        .unwrap();
+    app.pump().unwrap();
+    let id = app.state.editor.as_ref().unwrap().document_id();
+    let text = app.state.documents.document(id).unwrap().snapshot().text();
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('4'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    paint(&mut app);
+    app.state.dispatch(&key(Key::Tab, false)).unwrap();
+    assert!(app.state.settings.index_selected);
+    assert_eq!(
+        app.state.focus.focused,
+        Some(app.state.settings.native.id())
+    );
+    app.state
+        .dispatch(&key(Key::Character('c'), false))
+        .unwrap();
+    until(&mut app, |app| {
+        let status = app.intelligence().unwrap().status().unwrap();
+        status.phase == IndexPhase::Ready && status.files == 0
+    })
+    .await;
+    assert_eq!(
+        app.state.documents.document(id).unwrap().snapshot().text(),
+        text
+    );
+    assert_eq!(
+        fs::read_to_string(root.join("src/Model.kt")).unwrap(),
+        "class Saved\n"
+    );
+    assert_eq!(fs::read(&legacy).unwrap(), b"synthetic legacy H2 sentinel");
+    assert_eq!(fs::read(&jdbc).unwrap(), b"synthetic user JDBC sentinel");
+    app.state
+        .dispatch(&key(Key::Character('b'), false))
+        .unwrap();
+    until(&mut app, |app| {
+        let status = app.intelligence().unwrap().status().unwrap();
+        status.phase == IndexPhase::Ready && status.files > 0
+    })
+    .await;
+    assert!(
+        app.intelligence()
+            .unwrap()
+            .snapshot()
+            .unwrap()
+            .workspace_symbols()
+            .any(|symbol| symbol.name == "Unsaved")
+    );
+    assert!(app.state.intelligence_status.contains("processed"));
+    app.state.dispatch(&key(Key::Function(6), false)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("// responsive\n".into()))
+        .unwrap();
+    assert!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .contains("// responsive")
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
 async fn native_rescan_abort_waits_for_file_and_index_acknowledgement_without_publishing_cancelled_work()
  {
     use kode_intelligence::{facade::IntelligenceResources, service::IndexPhase};

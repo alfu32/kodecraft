@@ -1,0 +1,51 @@
+{
+  "cases": [
+    {
+      "case": "create-edit-variable-resolve-send-folder-run-select-export-preferences",
+      "unknown_fields_retained": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restart-selected-request-preferences-and-fresh-cookie-owner",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "create-edit-variable-resolve-send-folder-run-select-export-preferences",
+      "unknown_fields_retained": true,
+      "size": [
+        60,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restart-selected-request-preferences-and-fresh-cookie-owner",
+      "size": [
+        60,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 4
+}

@@ -16,7 +16,7 @@ thiserror = "2.0"
 clap = { version = "4.5", features = ["derive"] }
 ratatui = { version = "=0.30.2", default-features = false, features = ["crossterm", "layout-cache"] }
 crossterm = "=0.29.0"
-tokio = { version = "1.53", features = ["rt-multi-thread", "macros", "sync", "time", "process", "io-util", "fs", "test-util"] }
+tokio = { version = "1.53", features = ["rt-multi-thread", "macros", "sync", "time", "process", "io-util", "fs", "signal", "test-util"] }
 tokio-util = { version = "0.7", features = ["rt", "codec"] }
 futures-util = { version = "0.3", default-features = false, features = ["std", "async-await"] }
 tempfile = "3.27"

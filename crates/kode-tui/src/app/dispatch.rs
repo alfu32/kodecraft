@@ -8,6 +8,20 @@ use kode_core::Result;
 use ratatui::layout::{Position, Rect};
 
 impl AppState {
+    pub(super) fn request_quit(&mut self) -> Result<()> {
+        self.quit_requested = true;
+        self.closing = true;
+        self.shell_requested = false;
+        self.pending_open = None;
+        self.rest.pending_open = None;
+        self.rest.ready_open = None;
+        if let Some(form) = &mut self.rest.form {
+            form.invalidate(&mut self.focus);
+        }
+        self.dismiss_sql_dialog()?;
+        self.rest.sidebar.dismiss(&mut self.focus);
+        self.drain_ui()
+    }
     pub fn dispatch(&mut self, event: &InputEvent) -> Result<()> {
         let before = self
             .editor
@@ -98,16 +112,11 @@ impl AppState {
         }
         if matches!(event, InputEvent::Key(input) if input.modifiers.ctrl && !input.modifiers.alt && !input.modifiers.meta && matches!(input.key, Key::Character('q' | 'Q')))
         {
-            self.quit_requested = true;
-            self.closing = true;
-            self.pending_open = None;
-            self.rest.pending_open = None;
-            self.rest.ready_open = None;
-            if let Some(form) = &mut self.rest.form {
-                form.invalidate(&mut self.focus);
-            }
-            self.dismiss_sql_dialog()?;
-            self.rest.sidebar.dismiss(&mut self.focus);
+            return self.request_quit();
+        }
+        if matches!(event,InputEvent::Key(input) if input.modifiers.ctrl && !input.modifiers.alt && !input.modifiers.meta && matches!(input.key,Key::Character('t'|'T')))
+        {
+            self.shell_requested = true;
             return self.drain_ui();
         }
         if let Some(dialog) = &mut self.rescan {
@@ -235,7 +244,7 @@ impl AppState {
             }
             if self.splash
                 && input.key == Key::Enter
-                && self.focus.focused != Some(self.lsp_settings.id)
+                && self.focus.focused != Some(self.settings.focus_id(self.lsp_settings.id))
                 && !self.git.contains_focus(&self.focus)
             {
                 self.splash = false;
@@ -304,7 +313,7 @@ impl AppState {
                 Some(if self.tabs.selected == 4 {
                     self.git.focus_id()
                 } else if self.tabs.selected == 3 {
-                    self.lsp_settings.id
+                    self.settings.focus_id(self.lsp_settings.id)
                 } else if self.tabs.selected == 0 {
                     self.files.id
                 } else if self.tabs.selected == 5 {
@@ -353,7 +362,7 @@ impl AppState {
                 } else {
                     self.focus.focused
                         == Some(if self.tabs.selected == 3 {
-                            self.lsp_settings.id
+                            self.settings.focus_id(self.lsp_settings.id)
                         } else if self.tabs.selected == 0 {
                             self.files.id
                         } else if self.tabs.selected == 5 {
@@ -373,7 +382,16 @@ impl AppState {
                 self.project_panel
                     .dispatch(event, &self.project, &mut self.focus);
             } else if self.tabs.selected == 3 {
-                self.lsp_settings.dispatch(event, &mut self.focus);
+                if !self
+                    .settings
+                    .dispatch_navigation(event, &mut self.focus, self.lsp_settings.id)
+                {
+                    if self.settings.index_selected {
+                        self.settings.native.dispatch(event, &mut self.focus);
+                    } else {
+                        self.lsp_settings.dispatch(event, &mut self.focus);
+                    }
+                }
             } else if self.tabs.selected == 4 {
                 self.git
                     .dispatch(event, &mut self.documents, &mut self.focus)?;
@@ -405,7 +423,7 @@ impl AppState {
         self.focus.focused = Some(match self.tabs.selected {
             0 => self.files.id,
             1 => self.project_panel.id,
-            3 => self.lsp_settings.id,
+            3 => self.settings.focus_id(self.lsp_settings.id),
             4 => self.git.focus_id(),
             5 => self.database.tree.id,
             6 => self.rest.sidebar.id,

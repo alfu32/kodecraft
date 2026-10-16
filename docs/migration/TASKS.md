@@ -59,7 +59,7 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | R05 | [SSE and WebSocket execution](tasks/08-rest.md) | R04 | [done](../parity/R05.md) |
 | R06 | [REST tree, environments and management dialogs](tasks/08-rest.md) | R01, R03, R05, F05, E12, W03 | [done](../parity/R06.md) |
 | R07 | [Request/response editors and complete REST UX](tasks/08-rest.md) | R02, R04, R05, R06, E09, E12, L02 | [done](../parity/R07.md) |
-| R08 | [Collection runner, persistence and REST qualification](tasks/08-rest.md) | R07, W03, W05 | [in-progress](../parity/R08.md) |
+| R08 | [Collection runner, persistence and REST qualification](tasks/08-rest.md) | R07, W03, W05 | [done](../parity/R08.md) |
 | D01 | [Database models, settings, credentials and URL catalogs](tasks/09-database.md) | F02, F03 | [done](../parity/D01.md) |
 | D02 | [Protocol, Java bootstrap and Rust process supervisor](tasks/09-database.md) | D01, F03 | [done](../parity/D02.md) |
 | D03 | [Driver install, Maven resolution and classloaders](tasks/09-database.md) | D02, F05 | [done](../parity/D03.md) |
@@ -69,8 +69,8 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | D07 | [Database explorer, connection and driver dialogs](tasks/09-database.md) | D01, D03, D04, D06, F05, W03 | [done](../parity/D07.md) |
 | D08 | [SQL editor, statement targeting and result panel](tasks/09-database.md) | D05, D07, E12, E09, L02 | [done](../parity/D08.md) |
 | D09 | [End-to-end external JDBC qualification](tasks/09-database.md) | D08, W03, W05 | [done](../parity/D09.md) |
-| Z01 | [Shell suspension and browser terminal serve mode](tasks/10-delivery.md) | W05, F04, F03 | todo |
-| Z02 | [Settings, help, about and operational status](tasks/10-delivery.md) | W05, L09, P01, D07, F05 | todo |
+| Z01 | [Shell suspension and browser terminal serve mode](tasks/10-delivery.md) | W05, F04, F03 | [done](../parity/Z01.md) |
+| Z02 | [Settings, help, about and operational status](tasks/10-delivery.md) | W05, L09, P01, D07, F05 | [in-progress](../parity/Z02.md) |
 | Z03 | [Reproducible build and distribution](tasks/10-delivery.md) | Z01, Z02, D02 | todo |
 | Z04 | [Full functional parity and release qualification](tasks/10-delivery.md) | E13, L12, W05, V02, V03, G03, D09, R08, Z03 | todo |
 

@@ -1,0 +1,31 @@
+{
+  "transport": "ssh-forwarded-loopback",
+  "cases": [
+    {
+      "case": "real-browser-auth-mouse-clipboard-edit-save-resize-disconnect",
+      "status": "passed",
+      "child_reaped": true,
+      "dirty_session_persisted": true,
+      "core_without_java": true,
+      "chrome": "155.0.8059.39"
+    },
+    {
+      "case": "browser-reconnect-restores-dirty-editor",
+      "status": "passed"
+    },
+    {
+      "case": "browser-sse-responsive-file-edit-and-disconnect-cancellation",
+      "status": "passed",
+      "child_reaped": true,
+      "stream_closed": true
+    },
+    {
+      "case": "browser-actual-h2-sql-and-dirty-disconnect",
+      "status": "passed",
+      "child_reaped": true,
+      "java_reaped": true,
+      "dirty_sql_preserved": true
+    }
+  ],
+  "passed": 4
+}

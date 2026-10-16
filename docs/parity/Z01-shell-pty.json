@@ -1,0 +1,49 @@
+{
+  "cases": [
+    {
+      "case": "shell-cooked-cwd-resume-save",
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "shell-cooked-cwd-resume-save",
+      "size": [
+        60,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "shell-missing-recovery",
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "shell-nonzero-recovery",
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 4
+}

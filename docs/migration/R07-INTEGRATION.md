@@ -25,7 +25,7 @@ undo, restored invalid headers, explicit startup-file precedence, response owner
 switches, all response tabs and the original header-arrow/Transaction case.
 `test-rest-editor-terminal.py` qualifies actual CLI terminals and persistence.
 
-R08 still owns runner presentation/history and complete workflow qualification.
+R08 records completed runner presentation/history and workflow qualification.
 D09 records actual Java/H2/REST isolation. E13 must measure the full application,
 including collection copy-on-write during edits and any further hot paths;
 component-level cache tests do not claim a universal frame-time bound.

@@ -1379,3 +1379,54 @@ only display. Explicit request formatting uses a document-revision-guarded,
 undoable replacement. Divider/Pretty preferences use existing project UI fields.
 Cancelled/replaced worker contexts release their captured proofs even when no
 scheduler completion is delivered. These owners remain scoped to the workspace.
+
+
+## REST runner presentation and progress
+
+`runner::execute_with_progress` retains the existing sequential executor and adds
+an optional metadata channel (`progress_channel`, capacity 64). Started precedes
+item preparation; Completed carries the captured item and its HTTP/validation
+outcome. Backpressure is independently cancellable and cancellation returns the
+accumulated partial summary without starting another item. A closed progress owner
+or oversized queue fails before preparation. The original `execute` remains a
+compatibility entry point without metadata progress.
+
+The application drains at most 64 metadata events in addition to its existing
+bounded stream/response batches. A last-run pane has keyboard/mouse selection,
+scrolling, Stop/Run again/Close, progress and validation feedback. F7 opens/focuses
+it. Folder/collection Run preserves sidebar focus; another Run cancels its current
+scope. Result navigation uses the captured runtime key and current rebased path;
+removed items cannot retarget replacement requests. All last-run outcome metadata
+remains selectable; opening a response evicted by the existing 32-entry/192 MiB
+preview cache shows an explicit retention message and performs no replay. Deleted
+keys release validation-failure entries. Scope rebasing also governs
+explicit reruns. Validation failures hide stale prior responses until a subsequent
+successful preparation. These outcomes, progress and runtime keys are not persisted.
+
+## Shell suspension and browser terminal gateway
+
+Ctrl+T is an application action before modal/editor routing. The terminal's sole
+owner stops polling, leaves raw/alternate/mouse/paste/focus modes, and launches the
+selected shell with inherited terminal and workspace cwd. Shell launch/exit errors
+resume the UI and surface a notice. Resume failures take the existing terminal
+failure persistence/cleanup path. Suspension invalidates interactive paste proofs
+and cancels pending clipboard reads; remembered copy publication remains owned.
+Feature workers and in-memory documents retain their owners across suspension.
+
+`kode serve` parses original port/host/public/credential/folder/forwarding behavior
+into literal OS arguments, preserving `--`, executable/resource/workspace paths
+with spaces and credential boundaries. It resolves `KODE_TTYD`, an adjacent ttyd
+executable, then PATH. An explicit unusable override fails without silently using
+another executable. ttyd receives writable mode, xterm-256color and workspace cwd;
+its child is the current Rust executable. Unix replaces the CLI with ttyd, so the
+gateway directly owns signals and PTYs. Missing launchers have actionable errors.
+Credential values are excluded from CLI Debug/error output; ttyd notice logging
+is suppressed by default for credentialed gateways.
+
+SIGHUP and SIGTERM enter the same application close/persist/quiesce path as Ctrl+Q,
+including while the window is unfocused. This handles ttyd/SSH disconnection and
+reaps external JDBC/LSP owners. Browser clipboard/selection is provided by ttyd's
+existing xterm frontend. Classic key encoding collisions use existing mouse
+actions; Chrome app-window usage is documented. Native OS/platform runtime and
+packaged-library coverage is tracked separately by Z03/Z04, never inferred from
+the presence of an old shared library or a new target build.

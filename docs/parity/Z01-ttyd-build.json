@@ -1,0 +1,16 @@
+{
+  "component": "ttyd",
+  "version_output": "ttyd version 1.8.3-unknown",
+  "source_url": "https://codeload.github.com/alfu32/ttyd/tar.gz/a8ae135643c0ed7164f59f14f537b0b11f7a9788",
+  "source_revision": "a8ae135643c0ed7164f59f14f537b0b11f7a9788",
+  "source_sha256": "5b3092f1de2c9e472cf85ea32ae8bab3d91f04945134429478224dea13968524",
+  "executable_sha256": "0746f005115b1c828400dfea7080bbccb42d1bc30c1da40a63f9c4b0d44a6348",
+  "host": {
+    "os": "Linux",
+    "architecture": "x86_64"
+  },
+  "kind": "standalone-executable",
+  "jni": false,
+  "shared_launcher": false,
+  "runtime_dependencies": "Native libwebsockets event library, json-c, zlib, OpenSSL and C runtime as linked; qualify release bundle separately."
+}

@@ -6,6 +6,8 @@ pub mod lsp;
 mod rest;
 #[cfg(test)]
 mod rest_tests;
+#[cfg(test)]
+mod shell_tests;
 mod sql;
 use super::{
     state::{AppState, AppWork, ConfigAction, OpenDestination, PickerKind},
@@ -267,6 +269,20 @@ impl AppRuntime {
         self.state.detector = detector.clone();
         self.detector = detector;
         Ok(())
+    }
+    pub(super) fn suspend_interactions(&mut self) -> Result<()> {
+        // Native clipboard reads cannot apply to a field after a shell roundtrip.
+        // Remembered copies retain their separate publication work.
+        if let Some(tag) = self
+            .latest
+            .remove(&(self.clipboard_owner, "clipboard-read"))
+        {
+            self.jobs.cancel_request(tag);
+            self.contexts.remove(&tag);
+            self.pending.retain(|work| work.tag != tag);
+        }
+        self.state
+            .dispatch(&crate::input::terminal::InputEvent::Focus(false))
     }
     fn queue(&mut self, pending: Pending) -> Result<()> {
         if let Some(key) = pending.key {

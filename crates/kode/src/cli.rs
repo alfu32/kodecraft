@@ -24,9 +24,24 @@ pub struct Cli {
     #[command(subcommand)]
     pub command: Option<Command>,
 }
-#[derive(Debug, Subcommand)]
+#[derive(Subcommand)]
 pub enum Command {
     Version,
+    /// Serve the terminal IDE through an installed or bundled ttyd executable.
+    #[command(disable_help_flag = true)]
+    Serve {
+        /// Serve options, folder, and optional -- ttyd arguments. Use serve --help.
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true, num_args = 0..)]
+        args: Vec<std::ffi::OsString>,
+    },
+}
+impl std::fmt::Debug for Command {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Version => f.write_str("Version"),
+            Self::Serve { .. } => f.debug_struct("Serve").finish_non_exhaustive(),
+        }
+    }
 }
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StartupTarget {
@@ -106,6 +121,16 @@ mod tests {
         }
         assert!(Cli::try_parse_from(["kode", "one", "two"]).is_err());
         assert!(Cli::try_parse_from(["kode", "--unknown"]).is_err());
+        for args in [
+            vec!["kode", "serve"],
+            vec!["kode", "serve", "--help"],
+            vec!["kode", "serve", "--", "--public"],
+            vec!["kode", "serve", "--credential", "fixture:private"],
+        ] {
+            let cli = Cli::try_parse_from(args).unwrap();
+            assert!(matches!(cli.command, Some(Command::Serve { .. })));
+            assert!(!format!("{cli:?}").contains("private"));
+        }
     }
     #[test]
     fn startup_folder_file_spaces_relative_missing_and_special_paths() {

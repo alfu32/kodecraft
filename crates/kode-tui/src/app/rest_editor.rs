@@ -75,6 +75,7 @@ impl AppState {
             None => {
                 let key = format!("rest:{}", RequestId::fresh()?.0);
                 Arc::make_mut(&mut self.rest.run.keys).insert(path.clone(), key.clone());
+                self.rest.run.live_keys.insert(key.clone());
                 key
             }
         };
@@ -311,6 +312,24 @@ impl AppState {
                         form.set_derived(derived);
                         if let Some(error) = self.rest.run.failures.get(&key) {
                             form.message = format!("Previous send: {error}");
+                        } else if self
+                            .rest
+                            .run
+                            .outcomes
+                            .iter()
+                            .any(|outcome| outcome.item.id == key)
+                            && !self
+                                .rest
+                                .run
+                                .responses
+                                .iter()
+                                .any(|response| response.key.item_id == key)
+                        {
+                            form.message = format!(
+                                "Response preview no longer retained ({} results/{} MiB history)",
+                                crate::panels::rest::run::RESPONSE_HISTORY_COUNT,
+                                crate::panels::rest::run::RESPONSE_HISTORY_BYTES / (1024 * 1024)
+                            );
                         }
                         let descriptor = HostDescriptor::new(
                             HostRole::RawRequest,

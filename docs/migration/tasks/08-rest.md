@@ -164,7 +164,7 @@ results by captured runtime identity even when imported IDs are absent/duplicate
 
 ## R08 — Collection runner, persistence and REST qualification
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** R07, W03, W05. **Owns:** `kode-rest/src/runner.rs`,
 `kode-tui/src/panels/rest/runner.rs`, REST integration fixtures/report.

@@ -8,11 +8,34 @@ ongoing work and links to acceptance evidence. Open a file or folder with
 `cargo run -p kode -- /path/to/project`; Ctrl+S saves and Ctrl+Q saves workspace
 state and quits. The shell includes file/project panels, search, text editing,
 hex inspection, portable image viewing, syntax/semantic highlighting and native
-completion/navigation, local Git operations and diff views. SQL/JDBC, REST and
-remaining release tasks continue in dependency order.
+completion/navigation, local Git operations and diff views, SQL/JDBC and REST.
+Settings, final editor qualification and release work continue in dependency order.
 `cargo check --workspace`, `--help` and `--version` work on stable Rust.
-The Rust application will remain a TUI. JDBC will run in an **external JVM**;
-the Rust process will not embed a JVM.
+The Rust application is a TUI. JDBC runs in an **external JVM**;
+the Rust process does not embed a JVM.
+
+Ctrl+T opens your shell in the workspace directory. Type `exit` to return to the
+editor; terminal modes, caret and unsaved buffers are retained. Browser terminal
+mode is `kode serve [--port 11045] [folder] [-- <ttyd arguments>]`. It binds
+`127.0.0.1` by default; use `--public` or `--host` for another bind address and
+`--credential user:password` for Basic authentication. Install `ttyd` on PATH,
+place its executable beside `kode`, or set `KODE_TTYD` to its executable path.
+`python3 scripts/build-ttyd.py` builds a pinned standalone ttyd executable and
+records provenance; native development libraries listed by its `--help` are
+required. Native runtime libraries and release bundles are qualified separately.
+`--resources DIRECTORY` within `serve` selects the child IDE's resource override.
+Remaining arguments after `--` pass literally to ttyd; an unknown option also
+starts forwarding, matching the original CLI.
+
+For remote access, keep the loopback bind and use
+`ssh -L 11045:127.0.0.1:11045 remote-host`, then open
+`http://127.0.0.1:11045`. Browser tabs reserve shortcuts such as Ctrl+T/Ctrl+W;
+`google-chrome --app=http://127.0.0.1:11045` is the existing app-window workaround.
+Classic terminal keyboard encodings can also merge Ctrl+Enter with Enter; use
+the SQL Execute and REST Send buttons in those terminals. Browser clipboard
+paste and xterm selection copy remain available. ttyd notice logs are suppressed
+when credentials are supplied because its notices include a reversible Basic
+auth token; explicitly forwarding a higher ttyd `--debug` level enables those logs.
 
 The external JDBC protocol/bootstrap/supervisor is available as a backend. Build
 and test it with `bash scripts/test-jdbc-bridge.sh` using Java 21 and Maven; the
@@ -35,7 +58,7 @@ Ctrl+S exports a guarded `.sql` file; unsaved console buffers and context bindin
 also survive workspace restarts. Click Catalog/Schema to bind a console. Results
 keep their own focus; Alt+Arrows/PageUp/PageDown scroll and Alt+Tab switches result
 sets/messages while the editor stays focused. Hover Execute to preview its target.
-End-to-end JDBC qualification remains D09.
+End-to-end JDBC qualification is recorded in [D09](docs/parity/D09.md).
 After a helper crash, check the database outcome, then use Alt+6, `R` to restart
 the service and `c` to reconnect. Previous SQL is retained and never replayed.
 
@@ -50,7 +73,12 @@ Ctrl+Enter sends or stops; Ctrl+Tab switches request tabs from an editor. Header
 names complete with Ctrl+Space. Request edits, comments and unfinished headers
 survive restart. Responses have Body/Headers/Cookies/Raw/Transaction tabs, a
 draggable divider and optional display formatting. Format body explicitly changes
-the editable body and supports undo. Full runner qualification remains R08.
+the editable body and supports undo. Folder/collection runs show selectable
+per-request progress and outcomes. F7 opens run history; click or Enter an outcome
+to inspect it, and use Stop/Run again to control the selected run. Panel sizes and
+Pretty preferences survive restart; runtime responses and cookies do not.
+Postman scripts are preserved without execution. OAuth acquisition and additional
+authentication types require extensions.
 
 Ctrl+Space requests completion and Ctrl-click follows definitions/usages.
 The Project panel provides `r` rescan, `b` rebuild index and `c` clear index.
@@ -60,6 +88,11 @@ can select a custom definitions catalog. Kotlin/C have specialized extraction;
 other languages use conservative AST or explicit regex fallback capabilities.
 
 Open **Settings** with Alt+4 for language-server discovery and installation.
+Tab or the LSP/Index buttons switch between language servers and native cache
+controls. In Index, `r` rescans, `b` rebuilds and `c` clears the rebuildable Rust
+cache. The panel shows scan/extract/resolve/persist progress and scrolls with
+Up/Down/Page/Home/End or the mouse wheel. These controls leave user JDBC databases
+and dirty editor buffers intact.
 Use `f` to refresh, Enter to install/update, `y` to remove, and Escape to cancel.
 `KODE_LSP_CATALOG` selects a custom catalog and `KODE_LSP_HOME` selects the install
 root. Existing local executables and manifest command arrays are supported.

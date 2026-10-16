@@ -87,16 +87,16 @@ def main():
                     (b"REQUEST | Second", .2, url_field),
                     (b"REQUEST | Second", .2, b"\x01" + editors.paste("{{base}}/second") + b"\x1b[13;5u"),
                     (b"response-second", .2, current(b"response-second", b"\x1b7\x1b[H\x1b[Br")),
-                    (b"Collection run: finished", .2, editors.click("First | HTTP")),
+                    (b"Collection run: finish", .2, editors.click("First | HTTP")),
                     (b"response-first", .2, current(b"response-first", b"\x1b[18~")),
-                    (b"Collection run: finished", .2, current(b"Collection run: finished", b"\x1b[F\r")),
+                    (b"Collection run: finish", .2, current(b"Collection run: finish", b"\x1b[F\r")),
                     (b"response-second", .2, current(b"response-second", editors.click("Pretty"))),
                     (b"response-second", .3, resize_response),
                     (b"response-second", .3, b"\x1b7e"),
                     (b"Export Postman", .2, b"\x01" + editors.paste("out.json") + b"\r"),
                     (b"Exported collection", .2, b"\x11"),
                 ]
-                result = editors.terminal.run_case(project, case / "config", (width, 34), actions, expected=[b"Collection run: finished", b"response-first", b"response-second", b"Exported collection"], env_overrides=env)
+                result = editors.terminal.run_case(project, case / "config", (width, 34), actions, expected=[b"Collection run: finish", b"response-first", b"response-second", b"Exported collection"], env_overrides=env)
                 saved = json.loads((project / ".kode-rs.json").read_text())
                 state = saved["restApi"]
                 exported = json.loads((project / "out.json").read_text())

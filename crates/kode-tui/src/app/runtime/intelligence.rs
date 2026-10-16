@@ -217,8 +217,15 @@ impl AppRuntime {
             .first()
             .map_or(String::new(), |note| format!(" | {note}"));
         self.state.intelligence_status = format!(
-            "index {:?} r{}: {} files / {} symbols{detail}",
-            status.phase, status.revision, status.files, status.symbols
+            "index {:?} r{}: {} files / {} symbols | {} / {} processed{detail}",
+            status.phase,
+            status.revision,
+            status.files,
+            status.symbols,
+            status.completed,
+            status
+                .total
+                .map_or_else(|| "?".into(), |total| total.to_string())
         );
         let job = if self.state.closing {
             None

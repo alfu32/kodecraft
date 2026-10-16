@@ -2,7 +2,7 @@
 
 ## Z01 — Shell suspension and browser terminal serve mode
 
-**Status:** todo
+**Status:** done
 
 **Depends:** W05, F04, F03. **Owns:** `kode/src/serve.rs`,
 `kode-platform/src/shell.rs`, serve packaging metadata.
@@ -25,7 +25,7 @@ TtydAdapterTest, native resource layout and source README remote-mode instructio
 
 ## Z02 — Settings, help, about and operational status
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** W05, L09, P01, D07, F05. **Owns:**
 `kode-tui/src/panels/{settings,help,about}/`, `app/metrics.rs`.

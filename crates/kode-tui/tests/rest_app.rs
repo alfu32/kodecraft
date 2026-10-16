@@ -82,6 +82,43 @@ fn submit(app: &mut AppRuntime, text: &str) {
     app.state.dispatch(&InputEvent::Paste(text.into())).unwrap();
     app.state.dispatch(&key(Key::Enter)).unwrap();
 }
+async fn restore_and_export_without_replaying(
+    root: &Path,
+    collection: Arc<serde_json::Value>,
+    name: &str,
+) {
+    let (mut restored, _) = make(root, 2);
+    until(&mut restored, |app| app.state.rest.form.is_some()).await;
+    assert_eq!(restored.state.rest.model.collection(), collection.as_ref());
+    assert!(restored.state.rest.run.responses.is_empty());
+    assert!(restored.state.rest.run.running.is_none());
+    assert!(restored.state.rest.run.pending.is_none());
+    assert!(restored.state.rest.run.summary.is_none());
+    assert!(
+        restored
+            .state
+            .rest
+            .run
+            .client
+            .cookies()
+            .snapshot()
+            .is_empty()
+    );
+    restored.state.dispatch(&alt7()).unwrap();
+    restored.state.dispatch(&key(Key::Character('e'))).unwrap();
+    submit(&mut restored, name);
+    let output = root.join(name);
+    until(&mut restored, |app| {
+        app.state.rest.exports.contains_key(&output)
+    })
+    .await;
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&std::fs::read(output).unwrap()).unwrap(),
+        *collection
+    );
+    restored.flush_before_leave().await.unwrap();
+    restored.quiesce().await.unwrap();
+}
 fn click(x: u16, y: u16) -> InputEvent {
     InputEvent::Pointer(kode_tui::input::terminal::PointerInput {
         x,
@@ -257,6 +294,170 @@ async fn collection_runner_presents_live_progress_validation_and_rebased_results
     assert!(hits.try_recv().is_err());
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
+    worker.abort();
+}
+#[tokio::test]
+async fn runner_stop_and_run_again_buttons_cancel_then_explicitly_restart_the_frozen_scope() {
+    let (url, mut hits, release, worker) = server().await;
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state.rest.model.replace_collection(json!({"info":{},"item":[{"name":"First","request":{"url":format!("{url}/first")}},{"name":"Second","request":{"url":format!("{url}/second")}}]})).unwrap();
+    app.state.run_rest_selection(NodePath::default()).unwrap();
+    assert_eq!(next_hit(&mut app, &mut hits).await, "GET /first HTTP/1.1");
+    until(&mut app, |app| !app.state.rest.runner.button.is_empty()).await;
+    let button = app.state.rest.runner.button;
+    app.state.dispatch(&click(button.x, button.y)).unwrap();
+    until(&mut app, |app| app.state.rest.run.summary.is_some()).await;
+    assert!(app.state.rest.run.summary.as_ref().unwrap().cancelled);
+    assert_eq!(app.state.rest.run.outcomes.len(), 1);
+    assert!(hits.try_recv().is_err());
+    release.send(()).unwrap();
+    render(&mut app);
+    let button = app.state.rest.runner.button;
+    app.state.dispatch(&click(button.x, button.y)).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .run
+            .summary
+            .as_ref()
+            .is_some_and(|summary| !summary.cancelled && summary.outcomes.len() == 2)
+    })
+    .await;
+    assert_eq!(hits.try_recv().unwrap(), "GET /first HTTP/1.1");
+    assert_eq!(hits.try_recv().unwrap(), "GET /second HTTP/1.1");
+    assert!(hits.try_recv().is_err());
+    assert_eq!(app.state.rest.run.responses.len(), 2);
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    worker.abort();
+}
+#[tokio::test]
+async fn bounded_response_history_keeps_all_outcome_metadata_and_explains_eviction_without_replaying()
+ {
+    let (url, mut hits, release, worker) = server().await;
+    release.send(()).unwrap();
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state.rest.model.replace_collection(json!({"info":{},"item":(0..40).map(|index|json!({"name":format!("Item {index}"),"request":{"url":format!("{url}/{index}")}})).collect::<Vec<_>>()})).unwrap();
+    app.state.run_rest_selection(NodePath::default()).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .run
+            .summary
+            .as_ref()
+            .is_some_and(|summary| summary.outcomes.len() == 40)
+    })
+    .await;
+    assert_eq!(app.state.rest.run.outcomes.len(), 40);
+    assert_eq!(
+        app.state.rest.run.responses.len(),
+        kode_tui::panels::rest::run::RESPONSE_HISTORY_COUNT
+    );
+    for index in 0..40 {
+        assert_eq!(hits.try_recv().unwrap(), format!("GET /{index} HTTP/1.1"));
+    }
+    app.state.dispatch(&key(Key::Function(7))).unwrap();
+    render(&mut app);
+    app.state.dispatch(&key(Key::Home)).unwrap();
+    app.state.dispatch(&key(Key::Enter)).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .form
+            .as_ref()
+            .is_some_and(|form| form.path == NodePath(vec![0]))
+    })
+    .await;
+    assert!(
+        app.state
+            .rest
+            .form
+            .as_ref()
+            .unwrap()
+            .message
+            .contains("no longer retained")
+    );
+    assert!(hits.try_recv().is_err());
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    worker.abort();
+}
+#[tokio::test]
+async fn busy_rest_workspace_switch_cancels_disposes_results_and_retains_only_owned_request_drafts()
+{
+    use kode_tui::panels::rest::editor::form::Tab;
+    let (url, mut hits, _release, worker) = server().await;
+    let root = tempfile::tempdir().unwrap();
+    let next = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state.rest.model.replace_collection(json!({"info":{},"item":[{"name":"Busy","request":{"url":url,"body":{"mode":"raw","raw":"old"}}}]})).unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    select_request_tab(&mut app, Tab::Body).await;
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("owned workspace draft".into()))
+        .unwrap();
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Enter,
+            modifiers: Modifiers {
+                ctrl: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    next_hit(&mut app, &mut hits).await;
+    let previous = app.state.generation;
+    tokio::time::timeout(
+        Duration::from_secs(5),
+        app.switch_workspace(next.path().into()),
+    )
+    .await
+    .unwrap()
+    .unwrap();
+    assert_ne!(app.state.generation, previous);
+    assert!(app.state.rest.run.running.is_none());
+    assert!(app.state.rest.run.responses.is_empty());
+    assert!(app.state.rest.run.outcomes.is_empty());
+    assert!(app.state.rest.form.is_none());
+    for _ in 0..10 {
+        app.pump().unwrap();
+        tokio::task::yield_now().await;
+    }
+    assert!(hits.try_recv().is_err());
+    let saved: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(root.path().join(".kode-rs.json")).unwrap()).unwrap();
+    assert_eq!(
+        saved["restApi"]["x-kode-rs-request-buffers"]["0"]["body"],
+        "owned workspace draft"
+    );
+    assert!(saved["restApi"].get("responses").is_none());
+    assert!(saved["restApi"].get("cookies").is_none());
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    let (mut restored, _) = make(root.path(), 3);
+    until(&mut restored, |app| app.state.rest.form.is_some()).await;
+    select_request_tab(&mut restored, Tab::Body).await;
+    let id = restored.state.editor.as_ref().unwrap().document_id();
+    assert_eq!(
+        restored
+            .state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "owned workspace draft"
+    );
+    assert!(restored.state.rest.run.responses.is_empty());
+    assert!(restored.state.rest.run.pending.is_none());
+    restored.flush_before_leave().await.unwrap();
+    restored.quiesce().await.unwrap();
     worker.abort();
 }
 fn click_label(app: &mut AppRuntime, label: &str) {
@@ -469,9 +670,11 @@ async fn websocket_raw_preview_ctrl_enter_is_receive_only_and_incremental_binary
     assert!(response.error.is_none());
     assert!(app.state.rest.response.status.contains("invalid UTF-8"));
     assert!(app.state.rest.response.status.contains("synthetic close"));
+    let collection = app.state.rest.model.export_collection();
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
     worker.await.unwrap();
+    restore_and_export_without_replaying(root.path(), collection, "websocket-export.json").await;
 }
 #[tokio::test]
 async fn request_formatting_is_explicit_undoable_revision_guarded_and_root_send_never_batches() {
@@ -928,9 +1131,11 @@ async fn incremental_response_is_visible_before_completion_and_stays_with_origin
             .as_ref(),
         "data:abc\n\ndata:def\n\n"
     );
+    let collection = app.state.rest.model.export_collection();
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
     worker.abort();
+    restore_and_export_without_replaying(root.path(), collection, "sse-export.json").await;
 }
 
 #[tokio::test]

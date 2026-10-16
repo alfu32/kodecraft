@@ -110,11 +110,42 @@ async fn event_loop(
     theme: &Theme,
 ) -> Result<()> {
     let mut repaint = runtime.notifications.subscribe();
+    let mut shutdown = kode_platform::shutdown::Shutdown::new().map_err(terminal_error)?;
     loop {
         if let Some(event) = terminal.poll(Duration::ZERO).map_err(terminal_error)?
             && let Err(error) = runtime.state.dispatch(&event)
         {
             runtime.state.notice = error.to_string();
+        }
+        if std::mem::take(&mut runtime.state.shell_requested) {
+            use std::io::Write;
+            runtime.suspend_interactions()?;
+            terminal.suspend().map_err(terminal_error)?;
+            let result = (|| {
+                writeln!(
+                    std::io::stdout(),
+                    "\n[ kode ] Workspace shell. Type 'exit' to return to Kode.\n"
+                )?;
+                std::io::stdout().flush()?;
+                kode_platform::shell::launch(
+                    &kode_platform::shell::selected_shell(),
+                    &runtime.state.project.root,
+                )
+            })();
+            // Resuming the terminal is required even when launching/waiting for
+            // the shell failed. A failed resume is a terminal failure, so normal
+            // recovery/persistence and child cleanup run before returning.
+            terminal.resume().map_err(terminal_error)?;
+            runtime
+                .state
+                .dispatch(&crate::input::terminal::InputEvent::Focus(true))?;
+            match result {
+                Ok(status) if status.success() => {}
+                Ok(status) => runtime.state.notice = format!("Shell returned {status}"),
+                Err(error) => {
+                    runtime.state.notice = format!("Cannot launch workspace shell: {error}")
+                }
+            }
         }
         if runtime.state.switch_requested.is_some() {
             runtime.state.closing = true;
@@ -164,6 +195,9 @@ async fn event_loop(
         // Worker results wake painting directly. The timer services input,
         // hover/drag and debounce deadlines even when no terminal event arrives.
         tokio::select! {
+            _ = shutdown.recv(), if !runtime.state.closing => {
+                runtime.state.request_quit()?;
+            },
             _ = repaint.changed() => {},
             _ = tokio::time::sleep(Duration::from_millis(16)) => {},
         }
