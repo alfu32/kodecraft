@@ -111,13 +111,19 @@ async fn event_loop(
 ) -> Result<()> {
     let mut repaint = runtime.notifications.subscribe();
     let mut shutdown = kode_platform::shutdown::Shutdown::new().map_err(terminal_error)?;
+    let mut frames = super::metrics::FrameCounter::default();
+    let mut needs_paint = true;
+    runtime.request_metrics()?;
     loop {
-        if let Some(event) = terminal.poll(Duration::ZERO).map_err(terminal_error)?
-            && let Err(error) = runtime.state.dispatch(&event)
-        {
-            runtime.state.notice = error.to_string();
+        frames.loop_tick();
+        if let Some(event) = terminal.poll(Duration::ZERO).map_err(terminal_error)? {
+            needs_paint = true;
+            if let Err(error) = runtime.state.dispatch(&event) {
+                runtime.state.notice = error.to_string();
+            }
         }
         if std::mem::take(&mut runtime.state.shell_requested) {
+            needs_paint = true;
             use std::io::Write;
             runtime.suspend_interactions()?;
             terminal.suspend().map_err(terminal_error)?;
@@ -153,22 +159,35 @@ async fn event_loop(
         }
         if let Err(error) = runtime.pump() {
             runtime.state.notice = error.to_string();
+            needs_paint = true;
         }
-        let mut paint_error = None;
-        terminal
-            .draw(|frame| {
-                let area = frame.area();
-                match runtime.state.render(area, frame.buffer_mut(), theme) {
-                    Ok(Some(cursor)) if runtime.state.window_focused => {
-                        frame.set_cursor_position(cursor)
+        if repaint.has_changed().unwrap_or(false) {
+            let _ = repaint.borrow_and_update();
+            needs_paint = true;
+        }
+        if frames.update(&mut runtime.state.metrics) {
+            runtime.request_metrics()?;
+            needs_paint = true;
+        }
+        if needs_paint || (runtime.state.window_focused && runtime.state.focus.captured.is_some()) {
+            needs_paint = false;
+            let mut paint_error = None;
+            terminal
+                .draw(|frame| {
+                    let area = frame.area();
+                    match runtime.state.render(area, frame.buffer_mut(), theme) {
+                        Ok(Some(cursor)) if runtime.state.window_focused => {
+                            frame.set_cursor_position(cursor)
+                        }
+                        Err(error) => paint_error = Some(error),
+                        _ => {}
                     }
-                    Err(error) => paint_error = Some(error),
-                    _ => {}
-                }
-            })
-            .map_err(terminal_error)?;
-        if let Some(error) = paint_error {
-            runtime.state.notice = error.to_string();
+                })
+                .map_err(terminal_error)?;
+            frames.drawn();
+            if let Some(error) = paint_error {
+                runtime.state.notice = error.to_string();
+            }
         }
         if runtime.ready_to_leave() {
             if runtime.state.quit_requested {
@@ -176,6 +195,7 @@ async fn event_loop(
                 return Ok(());
             }
             if let Some(root) = runtime.state.switch_requested.take() {
+                needs_paint = true;
                 if let Err(error) = runtime.switch_workspace(root).await {
                     runtime.state.notice = error.to_string();
                 }
@@ -197,8 +217,9 @@ async fn event_loop(
         tokio::select! {
             _ = shutdown.recv(), if !runtime.state.closing => {
                 runtime.state.request_quit()?;
+                needs_paint=true;
             },
-            _ = repaint.changed() => {},
+            _ = repaint.changed() => {needs_paint=true;},
             _ = tokio::time::sleep(Duration::from_millis(16)) => {},
         }
     }

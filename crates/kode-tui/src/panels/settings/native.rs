@@ -56,6 +56,12 @@ impl NativeSettings {
                     && !input.modifiers.alt
                     && !input.modifiers.meta =>
             {
+                let Some(input) = crate::input::shortcuts::command_key(
+                    crate::input::shortcuts::Scope::Index,
+                    *input,
+                ) else {
+                    return self.text.dispatch(event, focus);
+                };
                 match input.key {
                     Key::Character('r' | 'R') => Some(ProjectWork::Rescan),
                     Key::Character('b' | 'B') => Some(ProjectWork::RebuildIndex),

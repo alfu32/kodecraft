@@ -70,6 +70,7 @@ pub struct ResolvedRequest {
     pub method: String,
     pub url: String,
     pub headers: Vec<Header>,
+    pub auth: Option<crate::auth::ExecutionAuth>,
     pub body: BodyPlan,
     pub timeout_ms: u64,
     pub follow_redirects: bool,

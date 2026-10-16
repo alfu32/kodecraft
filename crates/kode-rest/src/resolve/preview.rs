@@ -66,6 +66,17 @@ impl ResolvedRequest {
                 body.len()
             ));
         }
+        if let Some(auth) = &self.auth
+            && !self
+                .headers
+                .iter()
+                .any(|h| h.name.eq_ignore_ascii_case("Authorization"))
+        {
+            text.push_str(&format!(
+                "\n[Authentication: {}; Authorization is generated during execution]",
+                auth.kind
+            ));
+        }
         Ok(RequestPreview {
             text,
             body_truncated,

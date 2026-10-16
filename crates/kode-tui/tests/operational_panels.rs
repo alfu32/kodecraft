@@ -108,3 +108,124 @@ fn settings_navigation_transfers_focus_between_lsp_and_native_without_retargetin
     assert!(!settings.index_selected);
     assert_eq!(focus.focused, Some(lsp));
 }
+
+#[test]
+fn help_comes_from_scoped_chords_and_preserves_letter_case_and_modifier_conflicts() {
+    use kode_tui::input::shortcuts::{self, Scope};
+    let ctrl_enter = KeyInput {
+        key: Key::Enter,
+        modifiers: Modifiers {
+            ctrl: true,
+            ..Default::default()
+        },
+        repeat: false,
+    };
+    for scope in [Scope::Search, Scope::Sql, Scope::Request, Scope::Git] {
+        assert!(shortcuts::command_key(scope, ctrl_enter).is_some());
+    }
+    assert!(shortcuts::command_key(Scope::Image, ctrl_enter).is_none());
+    let plain = |ch| KeyInput {
+        key: Key::Character(ch),
+        modifiers: Default::default(),
+        repeat: false,
+    };
+    assert_eq!(
+        shortcuts::command_key(Scope::Git, plain('A')).unwrap().key,
+        Key::Character('A')
+    );
+    assert_eq!(
+        shortcuts::command_key(Scope::Git, plain('T')).unwrap().key,
+        Key::Character('T')
+    );
+    assert!(shortcuts::command_key(Scope::Rest, plain('R')).is_none());
+    let help = shortcuts::help_lines().join("\n");
+    for binding in shortcuts::BINDINGS {
+        assert!(help.contains(binding.description));
+    }
+    for scope in [
+        "Shared editor:",
+        "Find/replace bar:",
+        "Git diff:",
+        "SQL results:",
+        "REST environments:",
+        "Image viewer:",
+        "Hex viewer:",
+    ] {
+        assert!(help.contains(scope), "{scope}");
+    }
+    assert!(help.contains("classic encodings"));
+    assert!(
+        !help.contains("Ctrl+Z"),
+        "do not advertise an unimplemented undo alias"
+    );
+}
+
+#[test]
+fn about_uses_loaded_languages_and_keeps_independent_lists_usable_when_tiny() {
+    use kode_intelligence::{facade::IntelligenceResources, frontend::legacy::DefinitionRegistry};
+    use kode_tui::panels::about::About;
+    let mut resources = IntelligenceResources::compiled().unwrap();
+    resources.definitions = std::sync::Arc::new(
+        DefinitionRegistry::from_json(
+            r#"{"languages":[{"language":"fixture-language","patterns":[]}]}"#,
+        )
+        .unwrap(),
+    );
+    let mut about = About::new().unwrap();
+    about.load_languages(&resources);
+    let theme = Theme::compiled();
+    let area = Rect::new(0, 0, 32, 24);
+    let mut buffer = Buffer::empty(area);
+    let mut focus = FocusState {
+        focused: Some(about.focus_id()),
+        ..Default::default()
+    };
+    about.render(area, &mut buffer, &theme);
+    assert!(
+        buffer
+            .content
+            .iter()
+            .map(|cell| cell.symbol())
+            .collect::<String>()
+            .contains(&format!("Kode {} | MIT", env!("CARGO_PKG_VERSION")))
+    );
+    about.dispatch(&key(Key::End), &mut focus);
+    let credits_scroll = about.credits.scroll;
+    assert!(credits_scroll > 0);
+    about.dispatch(&key(Key::Tab), &mut focus);
+    about.dispatch(&key(Key::Home), &mut focus);
+    about.render(area, &mut buffer, &theme);
+    // The grammar catalog is unioned with the real external definition catalog.
+    let mut found = false;
+    for _ in 0..100 {
+        about.render(area, &mut buffer, &theme);
+        for y in area.y..area.bottom() {
+            let row = (area.x..area.right())
+                .map(|x| buffer[(x, y)].symbol())
+                .collect::<String>();
+            if row.contains("fixture-language") {
+                about.dispatch(&click(4, y), &mut focus);
+                found = true;
+                break;
+            }
+        }
+        if found {
+            break;
+        }
+        about.dispatch(&key(Key::PageDown), &mut focus);
+    }
+    assert_eq!(about.selected_language.as_deref(), Some("fixture-language"));
+    assert_eq!(about.credits.scroll, credits_scroll);
+    for area in [
+        Rect::new(0, 0, 16, 5),
+        Rect::new(0, 0, 1, 1),
+        Rect::new(0, 0, 0, 0),
+    ] {
+        let mut buffer = Buffer::empty(area);
+        about.render(area, &mut buffer, &theme);
+        about.dispatch(&key(Key::Tab), &mut focus);
+        about.render(area, &mut buffer, &theme);
+        about.dispatch(&key(Key::End), &mut focus);
+        about.render(area, &mut buffer, &theme);
+    }
+}

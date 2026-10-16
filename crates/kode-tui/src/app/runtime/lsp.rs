@@ -230,6 +230,7 @@ impl AppRuntime {
             && runtime.revision != service.revision()
         {
             runtime.revision = service.revision();
+            self.notifications.repaint();
             runtime.documents_dirty = true;
             for status in &mut self.state.lsp_settings.statuses {
                 status.running = service.running(&status.entry.id);

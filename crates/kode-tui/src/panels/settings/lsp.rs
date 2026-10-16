@@ -221,6 +221,12 @@ impl LspSettings {
                     && !input.modifiers.meta =>
             {
                 let count = self.statuses.len();
+                let Some(input) = crate::input::shortcuts::command_key(
+                    crate::input::shortcuts::Scope::Lsp,
+                    *input,
+                ) else {
+                    return false;
+                };
                 let key = match input.key {
                     Key::Character(ch) => Key::Character(ch.to_ascii_lowercase()),
                     key => key,
@@ -234,6 +240,26 @@ impl LspSettings {
                     }
                     Key::Down if count > 0 => {
                         self.selected = (self.selected + 1) % count;
+                        self.reveal();
+                    }
+                    Key::PageUp if count > 0 => {
+                        self.selected = self.selected.saturating_sub(
+                            (self.area.height.saturating_sub(5) as usize / CARD_HEIGHT).max(1),
+                        );
+                        self.reveal();
+                    }
+                    Key::PageDown if count > 0 => {
+                        self.selected = (self.selected
+                            + (self.area.height.saturating_sub(5) as usize / CARD_HEIGHT).max(1))
+                        .min(count - 1);
+                        self.reveal();
+                    }
+                    Key::Home if count > 0 => {
+                        self.selected = 0;
+                        self.reveal();
+                    }
+                    Key::End if count > 0 => {
+                        self.selected = count - 1;
                         self.reveal();
                     }
                     key => {

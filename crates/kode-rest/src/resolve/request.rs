@@ -217,7 +217,44 @@ impl<'a> RequestResolver<'a> {
                 },
             );
         }
-        let auth_query = apply_auth(self.effective_auth()?.as_ref(), &mut context, &mut headers)?;
+        let auth = self.effective_auth()?;
+        let mut execution_auth = None;
+        if let Some(auth) = auth.as_ref()
+            && !matches!(
+                auth.kind.to_ascii_lowercase().as_str(),
+                "noauth" | "bearer" | "basic" | "apikey"
+            )
+        {
+            let scheme = crate::auth::scheme(&auth.kind)
+                .ok_or_else(|| invalid("Authentication type is not supported for execution"))?;
+            let fields = scheme
+                .fields
+                .iter()
+                .map(|(key, default)| {
+                    let value = auth_value(auth, key, &mut context)?;
+                    Ok((
+                        (*key).into(),
+                        if value.is_empty() && !default.contains("{{") {
+                            (*default).into()
+                        } else {
+                            value
+                        },
+                    ))
+                })
+                .collect::<Result<_>>()?;
+            let resolved = crate::auth::ExecutionAuth {
+                kind: scheme.kind.into(),
+                fields,
+            };
+            resolved.validate()?;
+            headers.shift_remove("authorization");
+            execution_auth = Some(resolved);
+        }
+        let auth_query = if execution_auth.is_none() {
+            apply_auth(auth.as_ref(), &mut context, &mut headers)?
+        } else {
+            None
+        };
         let body = super::body::plan(&request, &self.root, &mut context, &mut headers)?;
         context.check()?;
         if raw_url.chars().any(|ch| ch.is_ascii_control() || ch == ' ') {
@@ -229,6 +266,11 @@ impl<'a> RequestResolver<'a> {
         if !matches!(url.scheme(), "http" | "https" | "ws" | "wss") || url.host_str().is_none() {
             return Err(invalid(
                 "Request URL must use http, https, ws or wss with a host",
+            ));
+        }
+        if execution_auth.is_some() && (!url.username().is_empty() || url.password().is_some()) {
+            return Err(invalid(
+                "Use authentication fields instead of URL userinfo with signed or challenge authentication",
             ));
         }
         if let Some(query) = query {
@@ -276,6 +318,7 @@ impl<'a> RequestResolver<'a> {
             method,
             url: url.into(),
             headers: headers.into_values().collect(),
+            auth: execution_auth,
             body,
             timeout_ms,
             follow_redirects: !boolean(

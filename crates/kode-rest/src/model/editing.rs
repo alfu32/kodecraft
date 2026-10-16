@@ -288,23 +288,13 @@ pub fn auth(model: &mut Workspace, path: &NodePath, kind: Option<&str>) -> Resul
         json!({"auth":node.get("auth")})
     };
     if let Some(kind) = kind {
-        if !["noauth", "bearer", "basic", "apikey"].contains(&kind) {
-            return Err(invalid("Unsupported authentication choice"));
-        }
+        let scheme = crate::auth::scheme(kind)
+            .ok_or_else(|| invalid("Unsupported authentication choice"))?;
         let mut definition = object(value.get("auth"));
         definition["type"] = kind.into();
         if kind != "noauth" && definition.get(kind).is_none() {
-            let fields: &[(&str, &str)] = match kind {
-                "bearer" => &[("token", "{{bearerToken}}")],
-                "basic" => &[("username", "{{username}}"), ("password", "{{password}}")],
-                "apikey" => &[
-                    ("key", "X-API-Key"),
-                    ("value", "{{apiKey}}"),
-                    ("in", "header"),
-                ],
-                _ => &[],
-            };
-            definition[kind] = fields
+            definition[kind] = scheme
+                .fields
                 .iter()
                 .map(|(key, value)| json!({"key":key,"value":value,"type":"string"}))
                 .collect();

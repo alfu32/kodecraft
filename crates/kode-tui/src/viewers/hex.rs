@@ -133,6 +133,12 @@ impl HexView {
                 _ => return false,
             },
             InputEvent::Key(input) if focus.focused == Some(self.id) && !input.modifiers.meta => {
+                let Some(input) = crate::input::shortcuts::command_key(
+                    crate::input::shortcuts::Scope::Hex,
+                    *input,
+                ) else {
+                    return false;
+                };
                 let expand = input.modifiers.shift;
                 let command = match input.key {
                     Key::Character(ch) => Key::Character(ch.to_ascii_lowercase()),

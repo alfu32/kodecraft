@@ -336,7 +336,7 @@ impl DatabasePanel {
                 }
             }
         } else {
-            if matches!(event,InputEvent::Key(input)if input.key==Key::Character('R')&&!input.modifiers.ctrl&&!input.modifiers.alt&&!input.modifiers.meta)
+            if matches!(event,InputEvent::Key(input)if input.key==Key::Character('R')&&!input.modifiers.ctrl&&!input.modifiers.alt&&!input.modifiers.meta && crate::input::shortcuts::command_key(crate::input::shortcuts::Scope::Database,*input).is_some())
             {
                 self.work(Operation::Restart)?;
                 self.tree.notice = "Restarting database service…".into();

@@ -226,6 +226,12 @@ impl ResultsPanel {
                     && !input.modifiers.meta
                     && (input.modifiers.alt || focus.focused == Some(self.id)) =>
             {
+                let Some(input) = crate::input::shortcuts::command_key(
+                    crate::input::shortcuts::Scope::SqlResults,
+                    *input,
+                ) else {
+                    return false;
+                };
                 match input.key {
                     Key::Up => self.row = self.row.saturating_sub(1),
                     Key::Down => self.row = self.row.saturating_add(1),

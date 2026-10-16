@@ -112,6 +112,12 @@ impl Runner {
             && !input.modifiers.alt
             && !input.modifiers.meta
         {
+            let Some(input) = crate::input::shortcuts::command_key(
+                crate::input::shortcuts::Scope::Runner,
+                *input,
+            ) else {
+                return false;
+            };
             let count = run.outcomes.len();
             let page = self.list.height.max(1) as usize;
             match input.key {

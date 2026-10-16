@@ -3,13 +3,14 @@
 Planned Rust migration of the Kode terminal IDE. The implementation reference is
 `../kode`, commit `7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68` (audited 2026-10-14).
 
-Implementation is underway. [DASHBOARD.md](DASHBOARD.md) records all 65 task statuses,
+Implementation is underway. [DASHBOARD.md](DASHBOARD.md) records all 67 task statuses,
 ongoing work and links to acceptance evidence. Open a file or folder with
 `cargo run -p kode -- /path/to/project`; Ctrl+S saves and Ctrl+Q saves workspace
 state and quits. The shell includes file/project panels, search, text editing,
 hex inspection, portable image viewing, syntax/semantic highlighting and native
 completion/navigation, local Git operations and diff views, SQL/JDBC and REST.
-Settings, final editor qualification and release work continue in dependency order.
+OAuth/authentication extensions, final editor qualification and release work continue
+in dependency order.
 `cargo check --workspace`, `--help` and `--version` work on stable Rust.
 The Rust application is a TUI. JDBC runs in an **external JVM**;
 the Rust process does not embed a JVM.
@@ -77,8 +78,15 @@ the editable body and supports undo. Folder/collection runs show selectable
 per-request progress and outcomes. F7 opens run history; click or Enter an outcome
 to inspect it, and use Stop/Run again to control the selected run. Panel sizes and
 Pretty preferences survive restart; runtime responses and cookies do not.
-Postman scripts are preserved without execution. OAuth acquisition and additional
-authentication types require extensions.
+Postman scripts are preserved without execution. The Auth tab now offers No Auth,
+API Key, Bearer, Basic, Digest, OAuth 1.0, OAuth 2.0, Hawk, AWS Signature, NTLM and
+Akamai EdgeGrid. Click a credential row to edit it; Reveal secrets controls masking.
+OAuth 2.0 currently accepts a supplied token; acquisition and browser login are
+tracked by R10. OAuth 1.0 uses HMAC-SHA1, AWS uses SigV4, Hawk supports SHA256/384/512,
+and NTLM uses NTLMv2. Advanced-auth 3xx responses remain visible for explicit review;
+credentials/signatures do not automatically follow redirects. Digest/NTLM work
+with HTTP/SSE; their WebSocket upgrade negotiation has an explicit error. Protocol
+qualification is recorded in [R09](docs/parity/R09.md).
 
 Ctrl+Space requests completion and Ctrl-click follows definitions/usages.
 The Project panel provides `r` rescan, `b` rebuild index and `c` clear index.
@@ -102,6 +110,22 @@ Opening a file attempts to start its first matching local server in the backgrou
 it never installs a package. Current non-empty LSP definitions, references and
 completion take precedence; missing, crashed, empty or failing servers use native
 intelligence. Highlighting and definition previews retain native styling.
+
+Sidebar tabs run horizontally in source order: Files, Project, Git, Database,
+REST, About, Settings, Help. Existing numbered shortcuts retain their actions:
+Alt+1 Files, Alt+2 Project, Alt+3 Help, Alt+4 Settings, Alt+5 Git, Alt+6 Database,
+Alt+7 REST, Alt+8 About. Alt+F opens file find/replace; Ctrl+Shift+F opens project
+search. Ctrl+F and Ctrl+Alt+F remain respective aliases.
+
+Help scrolls and is generated from the same command catalog used by reducers.
+About shows the version, MIT license, source links, dependency credits and loaded
+languages; Tab switches between its independently scrollable lists. The wide
+status line and native index settings show actual loop/draw FPS, process resident
+memory and CPU normalized across available logical CPUs. Samples run in background
+jobs without Java. Idle terminal fixtures measured two draws per second; input
+and worker notifications trigger immediate redraws. See [Z02](docs/parity/Z02.md).
+`python3 scripts/credits.py --check --offline` checks the checked-in dependency
+credits against Cargo.lock; omit `--check` to regenerate after dependency changes.
 
 Open **Git** with Alt+5. Space stages/unstages the selected status row; `a` stages
 all rows and `A` unstages them. Tab enters the shared commit-message editor,

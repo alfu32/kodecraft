@@ -837,6 +837,11 @@ impl EventTarget for DatabaseTree {
         if input.modifiers.ctrl || input.modifiers.alt || input.modifiers.meta {
             return false;
         }
+        let Some(input) =
+            crate::input::shortcuts::command_key(crate::input::shortcuts::Scope::Database, *input)
+        else {
+            return false;
+        };
         match input.key {
             Key::Up => self.selected = self.selected.saturating_sub(1),
             Key::Down => {

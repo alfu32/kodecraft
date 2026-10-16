@@ -1,0 +1,76 @@
+{
+  "cases": [
+    {
+      "case": "mouse-help-about-lists-idle-metrics-and-edit-save",
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "mouse-help-about-lists-idle-metrics-and-edit-save",
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "uat-alt-f-ctrl-alt-f-and-retained-search-aliases",
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "uat-alt-f-ctrl-alt-f-and-retained-search-aliases",
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "tiny-help-about-navigation-and-mode-restoration",
+      "size": [
+        20,
+        6
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "idle_samples": [
+    {
+      "width": 100,
+      "loop_per_second": 58,
+      "draw_per_second": 2,
+      "rss_mib": 73,
+      "cpu_percent": 0.5
+    },
+    {
+      "width": 60,
+      "loop_per_second": 58,
+      "draw_per_second": 2,
+      "rss_mib": 71,
+      "cpu_percent": 0.4
+    }
+  ],
+  "passed": 5
+}

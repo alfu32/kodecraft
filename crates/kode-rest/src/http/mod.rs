@@ -29,6 +29,7 @@ pub enum Failure {
     Redirect,
     Body,
     Transport,
+    Authentication,
     ResponseHeadersTooLarge,
     StreamLimit,
     StreamProtocol,
@@ -44,6 +45,9 @@ impl Failure {
             Self::Redirect => "Redirect failed or exceeded the limit",
             Self::Body => "Response body ended with a transport error",
             Self::Transport => "HTTP transport failed",
+            Self::Authentication => {
+                "Authentication challenge failed; check the selected scheme and credentials"
+            }
             Self::ResponseHeadersTooLarge => "Response headers exceed the configured limit",
             Self::StreamLimit => "Stream event, message or frame exceeds the configured limit",
             Self::StreamProtocol => "Stream protocol or encoding error",

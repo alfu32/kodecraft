@@ -1,6 +1,8 @@
+pub mod about;
 pub mod database;
 pub mod files;
 pub mod git;
+pub mod help;
 pub mod project;
 pub mod project_search;
 pub mod rest;

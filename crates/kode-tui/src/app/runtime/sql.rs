@@ -394,6 +394,7 @@ impl AppRuntime {
                 && let Some(panel) = self.state.sql.results.get_mut(&console)
             {
                 panel.publish(snapshot);
+                self.notifications.repaint();
             }
         }
     }

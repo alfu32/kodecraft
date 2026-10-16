@@ -4,11 +4,11 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|     3 |           1 |   61 |       0 |    65 |
+|     3 |           1 |   63 |       0 |    67 |
 
 ## Ongoing tasks
 
-- **Z02** — [Settings, help, about and operational status](docs/migration/tasks/10-delivery.md#z02--settings-help-about-and-operational-status)
+- **R10** — [OAuth acquisition and browser authorization](docs/migration/tasks/08-rest.md#r10--oauth-acquisition-and-browser-authorization)
 
 ## Task status
 
@@ -66,6 +66,8 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | R06  | [REST tree, environments and management dialogs](docs/migration/tasks/08-rest.md)               | done        | [Report](docs/parity/R06.md) |
 | R07  | [Request/response editors and complete REST UX](docs/migration/tasks/08-rest.md)                | done        | [Report](docs/parity/R07.md) |
 | R08  | [Collection runner, persistence and REST qualification](docs/migration/tasks/08-rest.md)        | done        | [Report](docs/parity/R08.md) |
+| R09  | [Extended authentication protocols](docs/migration/tasks/08-rest.md)                            | done        | [Report](docs/parity/R09.md) |
+| R10  | [OAuth acquisition and browser authorization](docs/migration/tasks/08-rest.md)                  | in-progress | —                            |
 | D01  | [Database models, settings, credentials and URL catalogs](docs/migration/tasks/09-database.md)  | done        | [Report](docs/parity/D01.md) |
 | D02  | [Protocol, Java bootstrap and Rust process supervisor](docs/migration/tasks/09-database.md)     | done        | [Report](docs/parity/D02.md) |
 | D03  | [Driver install, Maven resolution and classloaders](docs/migration/tasks/09-database.md)        | done        | [Report](docs/parity/D03.md) |
@@ -76,7 +78,7 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | D08  | [SQL editor, statement targeting and result panel](docs/migration/tasks/09-database.md)         | done        | [Report](docs/parity/D08.md) |
 | D09  | [End-to-end external JDBC qualification](docs/migration/tasks/09-database.md)                   | done        | [Report](docs/parity/D09.md) |
 | Z01  | [Shell suspension and browser terminal serve mode](docs/migration/tasks/10-delivery.md)         | done        | [Report](docs/parity/Z01.md) |
-| Z02  | [Settings, help, about and operational status](docs/migration/tasks/10-delivery.md)             | in-progress | [Report](docs/parity/Z02.md) |
+| Z02  | [Settings, help, about and operational status](docs/migration/tasks/10-delivery.md)             | done        | [Report](docs/parity/Z02.md) |
 | Z03  | [Reproducible build and distribution](docs/migration/tasks/10-delivery.md)                      | todo        | —                            |
 | Z04  | [Full functional parity and release qualification](docs/migration/tasks/10-delivery.md)         | todo        | —                            |
 

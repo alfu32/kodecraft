@@ -21,6 +21,14 @@ url.workspace = true
 http.workspace = true
 mime.workspace = true
 sha2.workspace = true
+hmac.workspace = true
+digest_auth.workspace = true
+ntlmclient.workspace = true
+hawk.workspace = true
+oauth1-request.workspace = true
+aws-sigv4.workspace = true
+aws-credential-types.workspace = true
+time.workspace = true
 roxmltree.workspace = true
 percent-encoding.workspace = true
 tree-sitter.workspace = true
@@ -38,5 +46,6 @@ tokio-tungstenite.workspace = true
 futures-util = { workspace = true, features = ["sink"] }
 
 [dev-dependencies]
+md-5 = "=0.10.6"
 tempfile.workspace = true
 tokio = { workspace = true, features = ["net"] }

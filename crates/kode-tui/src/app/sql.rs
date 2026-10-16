@@ -339,6 +339,12 @@ impl AppState {
         let mut action = None;
         match event {
             InputEvent::Key(input) if editor_focused && !input.modifiers.meta => {
+                let Some(input) = crate::input::shortcuts::command_key(
+                    crate::input::shortcuts::Scope::Sql,
+                    *input,
+                ) else {
+                    return Ok(false);
+                };
                 if input.modifiers.ctrl && input.modifiers.alt {
                     action = match input.key {
                         Key::Character('a' | 'A') => Some(3),

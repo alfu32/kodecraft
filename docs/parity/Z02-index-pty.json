@@ -1,0 +1,31 @@
+{
+  "cases": [
+    {
+      "case": "settings-native-clear-rebuild-and-return-to-editor",
+      "java_required": false,
+      "legacy_database_retained": true,
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "settings-native-clear-rebuild-and-return-to-editor",
+      "java_required": false,
+      "legacy_database_retained": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 2
+}

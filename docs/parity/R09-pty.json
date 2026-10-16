@@ -1,0 +1,247 @@
+{
+  "cases": [
+    {
+      "case": "select-edit-sign-send-noauth",
+      "size": [
+        100,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-apikey",
+      "size": [
+        100,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-bearer",
+      "size": [
+        100,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-basic",
+      "size": [
+        100,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-digest",
+      "size": [
+        100,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-oauth1",
+      "size": [
+        100,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-oauth2",
+      "size": [
+        100,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-hawk",
+      "size": [
+        100,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-awsv4",
+      "size": [
+        100,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-ntlm",
+      "size": [
+        100,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-edgegrid",
+      "size": [
+        100,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-noauth",
+      "size": [
+        60,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-apikey",
+      "size": [
+        60,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-bearer",
+      "size": [
+        60,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-basic",
+      "size": [
+        60,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-digest",
+      "size": [
+        60,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-oauth1",
+      "size": [
+        60,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-oauth2",
+      "size": [
+        60,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-hawk",
+      "size": [
+        60,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-awsv4",
+      "size": [
+        60,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-ntlm",
+      "size": [
+        60,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "select-edit-sign-send-edgegrid",
+      "size": [
+        60,
+        40
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 22
+}

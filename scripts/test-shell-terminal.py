@@ -58,6 +58,21 @@ print('SHELL_FINISHED', flush=True)
             ], expected=(marker,), env_overrides={"SHELL": str(executable)})
             assert file.read_text() == "recovered original\n"
             cases.append({"case": f"shell-{label}-recovery", **result})
+        bash=base / "controlled interactive bash"
+        bash.write_text("#!/bin/sh\nexec /bin/bash --noprofile --norc -i\n")
+        bash.chmod(0o755)
+        project=base / "bash workspace with spaces"
+        project.mkdir()
+        file=project / "note.txt"
+        file.write_text("original\n")
+        result=terminal.run_case(file,base / "config",(100,30),[
+            (b"original",.15,b"\x14"),
+            (b"KODE_BASH_READY> ",.15,b"printf '__KODE_PWD__%s\\n' \"$PWD\"; exit\n"),
+            (b"__KODE_PWD__"+str(project).encode(),.3,b"\x1b[200~after bash \x1b[201~\x13"),
+            (b"after bash",.2,b"\x11"),
+        ],env_overrides={"SHELL":str(bash),"PS1":"KODE_BASH_READY> ","PROMPT_COMMAND":"","BASH_ENV":str(base / "no-bash-env"),"ENV":str(base / "no-shell-env")})
+        assert file.read_text()=="after bash original\n"
+        cases.append({"case":"real-interactive-bash-job-control-resume-save",**result})
     (ROOT / "docs/parity/Z01-shell-pty.json").write_text(json.dumps({"cases": cases, "passed": len(cases)}, indent=2) + "\n")
     print(f"Passed {len(cases)} real shell suspension PTYs")
 

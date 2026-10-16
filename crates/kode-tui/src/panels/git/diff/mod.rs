@@ -312,7 +312,9 @@ impl DiffViewer {
         documents: &mut EditorDocuments,
         focus: &mut FocusState,
     ) -> Result<bool> {
-        if let InputEvent::Key(input) = event
+        if let InputEvent::Key(raw) = event
+            && let Some(input) =
+                crate::input::shortcuts::command_key(crate::input::shortcuts::Scope::GitDiff, *raw)
             && focus.focused == Some(self.id())
             && !input.modifiers.ctrl
             && !input.modifiers.alt

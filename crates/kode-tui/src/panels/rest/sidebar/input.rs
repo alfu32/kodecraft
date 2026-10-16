@@ -169,6 +169,14 @@ impl Sidebar {
         if input.modifiers.ctrl || input.modifiers.alt || input.modifiers.meta {
             return Ok(false);
         }
+        let scope = if self.environment_focus {
+            crate::input::shortcuts::Scope::Environment
+        } else {
+            crate::input::shortcuts::Scope::Rest
+        };
+        let Some(input) = crate::input::shortcuts::command_key(scope, *input) else {
+            return Ok(false);
+        };
         if input.key == Key::Tab {
             self.environment_focus = !self.environment_focus;
             return Ok(true);

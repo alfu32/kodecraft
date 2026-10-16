@@ -23,6 +23,7 @@ fn key(name: &str) -> ExecutionKey {
 fn prepared(url: String) -> PreparedRequest {
     PreparedRequest {
         request: ResolvedRequest {
+            auth: None,
             path: NodePath(vec![0]),
             method: "GET".into(),
             url,

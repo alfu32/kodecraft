@@ -2,6 +2,14 @@ use super::terminal::{Key, KeyInput};
 use kode_core::commands::{EditorCommand, Movement};
 
 pub fn editor_command(input: KeyInput) -> Option<EditorCommand> {
+    let input = if matches!(input.key, Key::Character(_))
+        && !input.modifiers.ctrl
+        && !input.modifiers.alt
+    {
+        input
+    } else {
+        super::shortcuts::command_key(super::shortcuts::Scope::Editor, input)?
+    };
     let modifiers = input.modifiers;
     let extend = modifiers.shift;
     let movement = match input.key {
@@ -34,7 +42,7 @@ pub fn editor_command(input: KeyInput) -> Option<EditorCommand> {
                 'v' => Some(EditorCommand::Paste),
                 'a' if modifiers.ctrl => Some(EditorCommand::SelectAll),
                 's' if modifiers.ctrl => Some(EditorCommand::Save),
-                'f' if modifiers.ctrl => Some(EditorCommand::OpenSearch),
+                'f' => Some(EditorCommand::OpenSearch),
                 ' ' if modifiers.ctrl => Some(EditorCommand::RequestCompletion),
                 'u' if modifiers.alt && !modifiers.ctrl => Some(EditorCommand::Undo),
                 'r' if modifiers.alt && !modifiers.ctrl => Some(EditorCommand::Redo),

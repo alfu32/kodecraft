@@ -1430,3 +1430,56 @@ existing xterm frontend. Classic key encoding collisions use existing mouse
 actions; Chrome app-window usage is documented. Native OS/platform runtime and
 packaged-library coverage is tracked separately by Z03/Z04, never inferred from
 the presence of an old shared library or a new target build.
+
+
+## Operational panels, shared shortcuts and repaint ownership
+
+The shared command catalog is consumed by reducers and generates Help; text
+insertion retains the original input bytes. Global project-search modifiers have
+priority over editor find, and find-bar Ctrl+Enter precedes host execution.
+Alt+F opens file find, Ctrl+Shift+F project search; Ctrl+F/Ctrl+Alt+F are aliases.
+Semantic panel constants separate source visual order from preserved Alt+1..8
+bindings. Sidebar header geometry is one horizontal row; panel content below it
+owns the full sidebar width. Mouse tab selection transfers focus to that panel.
+
+Help and About use wrapped cached text panels with source-line hit testing.
+About has independently focused credits/languages; hidden lists have no hit area.
+Loaded languages come from the actual definition and grammar registries. Locked
+Rust credits are generated offline by scripts/credits.py and checked in; rendering
+never invokes Cargo, scans dependencies or reads source registries from disk.
+
+Process RSS/CPU sampling is one bounded root-owned background job, independent
+of Java. CPU is accumulated CPU-time delta over elapsed monotonic time divided by
+available logical CPUs. Initial/unavailable values stay unknown. Runtime snapshots
+and real loop/draw counters are not persisted. Input, worker notifications, active
+pointer capture and the metrics interval request repaint; ordinary loop polling
+alone does not draw. Scan/index/LSP/SQL/REST publication must notify the existing
+watch owner, including updates accepted while pumping workers.
+
+## Extended REST authentication (M002)
+
+Authentication choices and editable field defaults share kode-rest's SCHEMES
+catalog. The collection retains its lossless Postman definitions and inheritance;
+the resolver produces a separate non-serializable ExecutionAuth with redacted
+Debug output. Credential fields are bounded, variable-resolved before I/O and
+masked consistently in form rows and value dialogs. Explicit pasted credentials
+remain user-authored collection data; runtime OAuth acquisition tokens belong to
+the future R10 owner and must not be merged into exports implicitly.
+
+Request signatures are generated over final transport headers and materialized
+body bytes. OAuth 1.0 parameters are escaped and sorted before the selected
+library's serializer is invoked, including duplicate query/form keys. AWS signing
+uses the official standalone SigV4 signer; S3 uses single path escaping, no path
+normalization and the actual payload checksum. Hawk includes a content-type-aware
+payload hash. EdgeGrid follows its provider's POST prefix-hash limit and ordered
+header canonicalization. Signing time/nonces are generated at execution; fixture
+entry points permit deterministic published vectors without persisted overrides.
+
+Digest and NTLMv2 perform at most one challenge retry, only after HTTP 401. A
+per-request HTTP/1.1 client retains NTLM connection ownership; challenge bodies
+are drained under a 64 KiB bound and closing connections fail explicitly. Server
+challenge lengths, message types, flags and offsets are checked before decoding.
+Existing cancellation/deadline owners wrap the complete exchange. HTTP and SSE
+share this path. Advanced-auth redirects return their visible 3xx plus a notice
+for explicit review. Static signers use actual GET/empty-body WebSocket handshake
+semantics; Digest/NTLM WebSocket upgrade negotiation has an explicit error.

@@ -39,6 +39,9 @@ impl TextPanel {
             self.width = None;
         }
     }
+    pub fn hide(&mut self) {
+        self.area = Rect::default();
+    }
     fn limit(&self) -> usize {
         self.wrapped.len().saturating_sub(self.area.height as usize)
     }

@@ -442,13 +442,29 @@ impl Form {
                         .and_then(Value::as_str)
                         .unwrap_or("inherit")
                 )));
-                rows.push(Row::Buttons(vec![
-                    ("Inherit".into(), Action::Auth(None)),
-                    ("No auth".into(), Action::Auth(Some("noauth"))),
-                    ("Bearer".into(), Action::Auth(Some("bearer"))),
-                    ("Basic".into(), Action::Auth(Some("basic"))),
-                    ("API key".into(), Action::Auth(Some("apikey"))),
-                ]));
+                let mut choices = vec![("Inherit".into(), Action::Auth(None))];
+                choices.extend(
+                    kode_rest::auth::SCHEMES
+                        .iter()
+                        .map(|scheme| (scheme.label.into(), Action::Auth(Some(scheme.kind)))),
+                );
+                for group in choices.chunks(3) {
+                    rows.push(Row::Buttons(group.to_vec()));
+                }
+                let effective_kind = own
+                    .and_then(|a| a.get("type"))
+                    .and_then(Value::as_str)
+                    .or_else(|| self.derived.auth.as_ref().map(|a| a.kind.as_str()));
+                if effective_kind.is_some_and(|kind| {
+                    matches!(
+                        kind,
+                        "digest" | "oauth1" | "oauth2" | "hawk" | "awsv4" | "ntlm" | "edgegrid"
+                    )
+                }) {
+                    rows.push(Row::Info(
+                        "Redirects are returned for review with this authentication type".into(),
+                    ));
+                }
                 self.entry_rows(model, Rows::Auth, &mut rows)?;
                 rows.push(Row::Buttons(vec![(
                     if self.reveal {
@@ -615,8 +631,7 @@ impl Form {
             let value = editing::entry_value(entry, kind);
             let secret = entry.get("secret") == Some(&Value::Bool(true))
                 || value.kind == "secret"
-                || kind == Rows::Auth
-                    && matches!(value.key.as_str(), "value" | "password" | "token");
+                || kind == Rows::Auth && kode_rest::auth::secret_field(&value.key);
             rows.push(Row::Entry {
                 kind,
                 index,

@@ -438,7 +438,10 @@ impl GitPanel {
                 }
             }
         }
-        if let InputEvent::Key(input) = event {
+        if let InputEvent::Key(raw) = event
+            && let Some(input) =
+                crate::input::shortcuts::command_key(crate::input::shortcuts::Scope::Git, *raw)
+        {
             if !self.contains_focus(focus) {
                 return Ok(false);
             }

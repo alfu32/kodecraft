@@ -1,6 +1,8 @@
 pub mod dispatch;
 pub mod effects;
 pub mod events;
+pub mod metrics;
+pub mod panel;
 mod rest;
 mod rest_editor;
 mod rest_response;

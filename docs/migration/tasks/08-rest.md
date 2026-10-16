@@ -186,5 +186,50 @@ availability and completion counts alone do not satisfy it.
 **Accept:** every source REST test scenario and all R07 controls have evidence;
    cancellation prevents later selected requests from starting, invalid variables
    do not reach transport, unknown collection fields remain intact. Postman scripting,
-   OAuth token acquisition and unsupported auth are explicitly labeled extensions
-   unless the baseline audit finds actual execution support.
+   OAuth token acquisition and additional auth were outside the frozen baseline;
+   the user added them to this implementation goal as M002 (R09/R10).
+
+## R09 — Extended authentication protocols
+
+**Status:** done
+
+**Depends:** R08. **Owns:** `kode-rest/src/auth/`, resolver/transport integration,
+REST authentication form and protocol fixtures. User-authorized extension M002.
+
+1. Support the authentication choices in `docs/UAT/img_3.png`: No Auth, API Key,
+   Bearer Token, Basic, Digest, OAuth 1.0, OAuth 2.0, Hawk, AWS Signature,
+   NTLM and Akamai EdgeGrid. Preserve inherited collection/folder/request auth,
+   variable resolution and unknown Postman fields.
+2. Provide editable, masked credential fields and explicit validation; implement
+   request signing and challenge negotiation in the actual execution path.
+   Generated signatures use the bytes and URL sent, not an unrelated preview.
+3. Keep credentials out of diagnostic output. Bound challenge attempts, preserve
+   cancellation and avoid forwarding credentials across unrelated redirects.
+
+**Accept:** deterministic published signature vectors and local challenge servers
+   verify each protocol; malformed credentials fail explicitly, inheritance and
+   import/edit/export survive, and real TUI controls select/edit/send each mode.
+   OAuth token acquisition is owned by R10; a pasted OAuth 2.0 token works here.
+
+## R10 — OAuth acquisition and browser authorization
+
+**Status:** in-progress
+
+**Depends:** R09. **Owns:** OAuth client/session owners, REST authorization controls,
+loopback callback and local identity-provider fixtures. User-authorized M002.
+
+1. Add OAuth 2.0 authorization-code with PKCE, client credentials, refresh and
+   device authorization flows, plus OAuth 1.0 request/access-token acquisition.
+   Expose endpoint/client/scope/callback settings and token acquisition actions.
+2. Following the user's updated UAT instruction, display a selectable/copyable
+   authorization URL so login can be completed in a GUI browser, including when
+   Kode runs remotely. Accept the matching callback or explicit pasted redirect;
+   show pending/cancelled/error/success state without blocking the editor.
+3. Validate state and PKCE, retain tokens in the captured request owner, mask
+   secrets, respect expiry and make refresh explicit. Never silently persist
+   newly acquired credentials in collection exports or diagnostic logs.
+
+**Accept:** local identity-provider fixtures cover redirects, callback/state
+   rejection, PKCE, token failure/expiry/refresh, device polling and cancellation;
+   actual TUI/browser tests complete login and then send an authorized request.
+   Switching/deleting requests or workspaces cannot attach a token to another owner.

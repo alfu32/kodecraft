@@ -86,6 +86,13 @@ fn remaining_fields_and_button_families_are_mouse_reachable_and_apply_their_owne
         ("Bearer", "bearer"),
         ("Basic", "basic"),
         ("API key", "apikey"),
+        ("Digest", "digest"),
+        ("OAuth 1.0", "oauth1"),
+        ("OAuth 2.0", "oauth2"),
+        ("Hawk", "hawk"),
+        ("AWS Signature", "awsv4"),
+        ("NTLM", "ntlm"),
+        ("Akamai EdgeGrid", "edgegrid"),
         ("No auth", "noauth"),
     ] {
         press_label(&mut form, &mut model, &mut focus, label);
@@ -462,6 +469,51 @@ fn row_dialogs_keep_secrets_masked_and_preserve_metadata_and_reject_stale_model_
         "new secret"
     );
     assert!(form.message.contains("changed while the dialog"));
+}
+#[test]
+fn every_extended_auth_secret_stays_masked_in_rows_and_value_dialogs() {
+    for scheme in kode_rest::auth::SCHEMES {
+        for (index, (name, _)) in scheme
+            .fields
+            .iter()
+            .enumerate()
+            .filter(|(_, (name, _))| kode_rest::auth::secret_field(name))
+        {
+            let (mut model, mut form, mut focus) = setup();
+            form.perform(Action::Auth(Some(scheme.kind)), &mut model, &mut focus)
+                .unwrap();
+            let row = kode_rest::model::editing::rows(
+                model.node(&form.path).unwrap(),
+                &form.path,
+                Rows::Auth,
+            )
+            .unwrap()[index]
+                .clone();
+            let mut value = kode_rest::model::editing::entry_value(&row, Rows::Auth);
+            value.value = "NEVER-PRINT-SECRET".into();
+            kode_rest::model::editing::edit_row(&mut model, &form.path, Rows::Auth, index, &value)
+                .unwrap();
+            form.perform(Action::Tab(Tab::Auth), &mut model, &mut focus)
+                .unwrap();
+            let buffer = draw(&mut form, &model, 80, 40);
+            assert!(
+                !text(&buffer).contains("NEVER-PRINT-SECRET"),
+                "{} {name}",
+                scheme.kind
+            );
+            form.perform(Action::Edit(Rows::Auth, index), &mut model, &mut focus)
+                .unwrap();
+            let area = Rect::new(0, 0, 90, 24);
+            let mut buffer = Buffer::empty(area);
+            form.render_modal(area, &mut buffer, &Theme::compiled());
+            assert!(
+                !text(&buffer).contains("NEVER-PRINT-SECRET"),
+                "dialog: {} {name}",
+                scheme.kind
+            );
+            assert!(text(&buffer).contains("********"));
+        }
+    }
 }
 #[test]
 fn late_field_paste_and_deleted_item_cannot_mutate_a_different_row_or_replacement_item() {

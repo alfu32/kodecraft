@@ -564,7 +564,10 @@ impl EditorInputHooks for SearchBar {
             }
             return Ok(false);
         }
-        if let InputEvent::Key(input) = event {
+        if let InputEvent::Key(raw) = event
+            && let Some(input) =
+                crate::input::shortcuts::command_key(crate::input::shortcuts::Scope::Search, *raw)
+        {
             let action = match input.key {
                 Key::Enter if input.modifiers.ctrl => Some(SearchAction::All),
                 Key::Enter => Some(SearchAction::Next),

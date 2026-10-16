@@ -126,6 +126,12 @@ impl ProjectPanel {
                     && !input.modifiers.meta =>
             {
                 let page = rows.height as usize;
+                let Some(input) = crate::input::shortcuts::command_key(
+                    crate::input::shortcuts::Scope::Project,
+                    *input,
+                ) else {
+                    return false;
+                };
                 match input.key {
                     Key::Up => self.selected = self.selected.saturating_sub(1),
                     Key::Down => {

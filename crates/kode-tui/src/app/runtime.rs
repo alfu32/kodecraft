@@ -59,6 +59,7 @@ use std::{
 use tokio::sync::mpsc;
 
 enum Output {
+    Metrics(kode_platform::metrics::ProcessSample),
     RestRun(kode_rest::runner::Summary),
     Rest(Box<crate::panels::rest::state::Reply>),
     SqlCancelled,
@@ -103,6 +104,7 @@ enum Output {
     Picker(Project),
 }
 enum Context {
+    Metrics,
     RestRun,
     Rest(Box<crate::panels::rest::state::Context>),
     SqlCancel {
@@ -172,6 +174,8 @@ struct Pending {
     work: BlockingJobFactory<Output>,
 }
 pub struct AppRuntime {
+    metrics_sampler: Arc<std::sync::Mutex<kode_platform::metrics::ProcessSampler>>,
+    metrics_busy: Option<JobTag>,
     database: Option<Arc<database::Services>>,
     database_error: Option<String>,
     git_fresh_paths: std::collections::HashSet<std::path::PathBuf>,
@@ -223,6 +227,8 @@ impl AppRuntime {
         let detector = Self::image_detector(MimeDetector::compiled())?;
         state.detector = detector.clone();
         Ok(Self {
+            metrics_sampler: Default::default(),
+            metrics_busy: None,
             database: None,
             database_error: None,
             git_fresh_paths: Default::default(),
@@ -269,6 +275,30 @@ impl AppRuntime {
         self.state.detector = detector.clone();
         self.detector = detector;
         Ok(())
+    }
+    pub fn request_metrics(&mut self) -> Result<()> {
+        if self.state.closing || self.metrics_busy.is_some() {
+            return Ok(());
+        }
+        let tag = self.state.tag()?;
+        self.metrics_busy = Some(tag);
+        let sampler = self.metrics_sampler.clone();
+        self.blocking(
+            tag,
+            self.root_owner,
+            "process-metrics",
+            false,
+            Context::Metrics,
+            Box::new(move |cancel| {
+                if cancel.is_cancelled() {
+                    return Err(DomainError::Cancelled);
+                }
+                let mut sampler = sampler.lock().map_err(|_| {
+                    DomainError::Unsupported("process metrics sampler unavailable".into())
+                })?;
+                Ok(Output::Metrics(sampler.sample()))
+            }),
+        )
     }
     pub(super) fn suspend_interactions(&mut self) -> Result<()> {
         // Native clipboard reads cannot apply to a field after a shell roundtrip.
@@ -335,6 +365,7 @@ impl AppRuntime {
         self.capture_lsp();
         while let Ok(batch) = self.batches.try_recv() {
             self.state.scan.batch(batch);
+            self.notifications.repaint();
         }
         while let Some(completion) = self.jobs.try_next() {
             self.complete(completion)?;
@@ -415,6 +446,7 @@ impl AppRuntime {
         }
         self.pump_intelligence()?;
         for work in self.state.take_work() {
+            self.notifications.repaint();
             if let Err(error) = self.accept(work) {
                 self.state.notice = error.to_string();
             }
@@ -1308,6 +1340,15 @@ impl AppRuntime {
             return Ok(());
         }
         match context {
+            Context::Metrics => {
+                if self.metrics_busy == Some(tag) {
+                    self.metrics_busy = None;
+                    self.state.metrics.process = match result {
+                        Ok(Output::Metrics(sample)) => sample,
+                        _ => Default::default(),
+                    };
+                }
+            }
             Context::RestRun => self.rest_run_complete(tag, result)?,
             Context::Rest(context) => self.rest_complete(tag, *context, result)?,
             Context::SqlCancel { console, request } => {
@@ -1438,7 +1479,7 @@ impl AppRuntime {
                             }),
                         );
                         if accepted
-                            && self.state.tabs.selected == 4
+                            && self.state.tabs.selected == crate::app::panel::GIT
                             && !self.state.closing
                             && let Some(plan) = self.state.git.latest_diff.clone()
                         {
@@ -2171,6 +2212,7 @@ impl AppRuntime {
         self.overlay_worker = None;
         self.pending.clear();
         self.contexts.clear();
+        self.metrics_busy = None;
         self.latest.clear();
         if let Some(watcher) = self.state.watcher.take() {
             tokio::task::spawn_blocking(move || drop(watcher))

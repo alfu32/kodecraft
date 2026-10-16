@@ -24,6 +24,7 @@ fn key() -> ExecutionKey {
 fn request(url: String, protocol: Protocol) -> PreparedRequest {
     PreparedRequest {
         request: kode_rest::resolve::ResolvedRequest {
+            auth: None,
             path: NodePath(vec![0]),
             method: "GET".into(),
             url,

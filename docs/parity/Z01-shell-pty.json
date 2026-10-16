@@ -43,7 +43,18 @@
       "termios_restored": true,
       "modes_restored": true,
       "status": "passed"
+    },
+    {
+      "case": "real-interactive-bash-job-control-resume-save",
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
     }
   ],
-  "passed": 4
+  "passed": 5
 }

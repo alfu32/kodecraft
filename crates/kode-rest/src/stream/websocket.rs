@@ -5,7 +5,7 @@ use crate::{
 };
 use futures_util::{SinkExt, StreamExt};
 use rustls_platform_verifier::BuilderVerifierExt;
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 use tokio_rustls::rustls::{
     self, ClientConfig,
     client::danger::{HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier},
@@ -92,6 +92,22 @@ pub(super) fn prepare(
         && let Some(cookie) = cookies.header(&cookie_url)
     {
         request.headers_mut().insert(::http::header::COOKIE, cookie);
+    }
+    if let Some(auth) = &prepared.request.auth {
+        if auth.challenge() {
+            return Err(invalid(
+                "Digest/NTLM require an HTTP or SSE authentication exchange; a WebSocket upgrade cannot use that exchange",
+            ));
+        }
+        crate::auth::sign(
+            auth,
+            "GET",
+            &cookie_url,
+            request.headers_mut(),
+            &[],
+            SystemTime::now(),
+            &uuid::Uuid::new_v4().to_string(),
+        )?;
     }
     if request.headers().len() > 256
         || request

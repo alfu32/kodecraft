@@ -33,6 +33,12 @@ branches, tags, history, diff views, and restoring a diff chunk. It does not imp
 that `.gitmodules` management is already implemented. The SQL/JDBC module and the
 Postman-like REST/OpenAPI module are separate features and both are in scope.
 
+The user expanded this goal on 2026-10-16 to include UAT M002: all pictured REST
+authentication protocols and OAuth token acquisition. R09/R10 own this extension
+to the frozen Kotlin baseline. The updated UAT requests a copyable authorization
+URL for completing login in a GUI browser; token/callback ownership and cancellation
+remain part of the terminal application. Z04 depends on these tasks as well.
+
 Use executable source and focused tests to determine current behavior. README and
 `SPEC.*` files provide context, but some describe proposals. For example, rename,
 SCIP/compiler/ML enrichment, and parts of LSP diagnostics are interfaces or future

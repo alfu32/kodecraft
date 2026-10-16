@@ -39,13 +39,11 @@ def main():
             before = git(root, "rev-parse", "HEAD")
             path.write_bytes(b"changed\r\n")
             message = f"PTY commit {width}"
-            # Git's panel fills the sidebar body, reserving one toolbar/footer
-            # and two separators. Target the rendered commit row in SGR coordinates.
-            usable = height - 5
-            status_h = usable // 3
-            message_h = (usable - status_h) // 2
-            commit_row = 2 + status_h + message_h
-            mouse = f"\x1b[<0;11;{commit_row}M\x1b[<0;11;{commit_row}m".encode()
+            def mouse(screen):
+                for y,row in enumerate(screen.cells):
+                    x=''.join(row).find('[ Commit ]')
+                    if x>=0:return f'\x1b[<0;{x+3};{y+1}M\x1b[<0;{x+3};{y+1}m'.encode()
+                return None
             actions = [
                 (b"Ready", 0.15, b"\x1b5"),
                 (b"Note.txt", 0.15, b" "),

@@ -60,8 +60,8 @@ def synchronize(task=None, status=None, check=False):
             changed.append(path)
             if not check:
                 path.write_text(new)
-    index = re.sub(r"65 implementation tasks\..*?\n", 
-                   "65 implementation tasks. Status is recorded in each task definition and synchronized with [the dashboard](../../DASHBOARD.md).\n", index, count=1)
+    index = re.sub(r"\d+ implementation tasks\..*?\n",
+                   f"{len(entries)} implementation tasks. Status is recorded in each task definition and synchronized with [the dashboard](../../DASHBOARD.md).\n", index, count=1)
     index = index.replace("replace `planned` with", "update `todo` to")
     def row_update(match):
         task_id = match[1]

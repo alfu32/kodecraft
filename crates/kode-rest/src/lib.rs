@@ -1,4 +1,5 @@
 //! Lossless Postman workspace data and native request services.
+pub mod auth;
 pub mod format;
 pub mod headers;
 pub mod http;

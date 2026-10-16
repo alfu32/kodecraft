@@ -3,6 +3,7 @@ pub mod clipboard;
 pub mod files;
 pub mod jobs;
 pub mod logging;
+pub mod metrics;
 pub mod paths;
 pub mod process;
 pub mod shell;

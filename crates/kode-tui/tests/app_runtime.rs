@@ -1315,6 +1315,160 @@ async fn settings_index_clear_rebuild_uses_real_workers_and_preserves_dirty_edit
 }
 
 #[tokio::test]
+async fn help_about_and_uat_search_shortcuts_keep_the_editor_owned_and_metrics_are_background_work()
+{
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    fs::write(root.join("note.kt"), "original\n").unwrap();
+    let clock = Arc::new(FakeClock::default());
+    let mut app = make(root, Some("note.kt"), clock.clone());
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    app.start_intelligence(Arc::new(
+        kode_intelligence::facade::IntelligenceResources::compiled().unwrap(),
+    ))
+    .await
+    .unwrap();
+    paint(&mut app);
+    assert_eq!(
+        app.state
+            .tabs
+            .titles
+            .iter()
+            .map(String::as_str)
+            .collect::<Vec<_>>(),
+        vec![
+            "Files", "Project", "Git", "Database", "REST", "About", "Settings", "Help"
+        ]
+    );
+    assert_eq!(app.state.geometry.tabs.height, 1);
+    assert_eq!(app.state.geometry.panel.x, app.state.geometry.tabs.x);
+    assert_eq!(app.state.geometry.panel.y, app.state.geometry.tabs.bottom());
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('3'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    paint(&mut app);
+    app.state.dispatch(&key(Key::Function(6), false)).unwrap();
+    // Clicking a sidebar tab gives its active content the keyboard owner.
+    app.state
+        .dispatch(&InputEvent::Pointer(PointerInput {
+            x: 2,
+            y: 0,
+            action: PointerAction::Down(crossterm::event::MouseButton::Left),
+            modifiers: Default::default(),
+        }))
+        .unwrap();
+    assert_eq!(app.state.tabs.selected, kode_tui::app::panel::HELP);
+    assert_eq!(app.state.focus.focused, Some(app.state.help.id));
+    paint(&mut app);
+    app.state.dispatch(&key(Key::End, false)).unwrap();
+    assert!(app.state.help.scroll > 0);
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('8'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    paint(&mut app);
+    assert_eq!(app.state.focus.focused, Some(app.state.about.credits.id));
+    app.state.dispatch(&key(Key::Tab, false)).unwrap();
+    paint(&mut app);
+    assert_eq!(app.state.focus.focused, Some(app.state.about.languages.id));
+    app.state.dispatch(&key(Key::End, false)).unwrap();
+    assert!(app.state.about.languages.scroll > 0);
+    app.state
+        .dispatch(&key(Key::Character('x'), false))
+        .unwrap();
+    let id = app.state.editor.as_ref().unwrap().document_id();
+    assert_eq!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "original\n"
+    );
+    app.state.dispatch(&key(Key::Function(6), false)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("kept ".into()))
+        .unwrap();
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('f'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    assert!(app.state.editor.as_ref().unwrap().search.visible);
+    assert!(app.state.search.is_none());
+    app.state.dispatch(&key(Key::Escape, false)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('f'),
+            modifiers: Modifiers {
+                ctrl: true,
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    assert!(app.state.search.is_some());
+    app.state.dispatch(&key(Key::Escape, false)).unwrap();
+    assert!(app.state.search.is_none());
+    app.request_metrics().unwrap();
+    app.request_metrics().unwrap();
+    until(&mut app, |app| {
+        clock.0.fetch_add(10, Ordering::SeqCst);
+        app.state.metrics.process.resident_bytes.is_some()
+    })
+    .await;
+    assert!(app.state.metrics.process.resident_bytes.unwrap() > 0);
+    assert!(
+        app.state.metrics.process.cpu_percent.is_none(),
+        "only one first sample may be queued"
+    );
+    tokio::time::sleep(Duration::from_millis(250)).await;
+    app.request_metrics().unwrap();
+    until(&mut app, |app| {
+        app.state.metrics.process.cpu_percent.is_some()
+    })
+    .await;
+    let cpu = app.state.metrics.process.cpu_percent.unwrap();
+    assert!(cpu.is_finite() && (0.0..=100.0).contains(&cpu));
+    assert_eq!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "kept original\n"
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    let session: serde_json::Value =
+        serde_json::from_slice(&fs::read(root.join(".kode-rs.json")).unwrap()).unwrap();
+    assert!(session.get("metrics").is_none());
+}
+
+#[tokio::test]
 async fn native_rescan_abort_waits_for_file_and_index_acknowledgement_without_publishing_cancelled_work()
  {
     use kode_intelligence::{facade::IntelligenceResources, service::IndexPhase};

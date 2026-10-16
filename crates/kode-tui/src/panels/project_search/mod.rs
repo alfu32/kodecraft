@@ -556,7 +556,8 @@ impl ProjectSearchDialog {
         if self.finished {
             return Ok(false);
         }
-        if matches!(event, InputEvent::Key(input) if input.key == Key::Function(1)) {
+        if matches!(event, InputEvent::Key(input) if input.key == Key::Function(1) && crate::input::shortcuts::command_key(crate::input::shortcuts::Scope::ProjectSearch,*input).is_some())
+        {
             self.help = !self.help;
             return Ok(true);
         }
@@ -587,7 +588,12 @@ impl ProjectSearchDialog {
         if self.splitter.handle(event, self.geometry.body) {
             return Ok(true);
         }
-        if let InputEvent::Key(input) = event {
+        if let InputEvent::Key(raw) = event
+            && let Some(input) = crate::input::shortcuts::command_key(
+                crate::input::shortcuts::Scope::ProjectSearch,
+                *raw,
+            )
+        {
             if input.key == Key::Escape {
                 if self.focused == SearchFocus::Editor
                     && self.editor.as_ref().is_some_and(|view| view.search.visible)
@@ -690,7 +696,12 @@ impl ProjectSearchDialog {
                 }
             }
             SearchFocus::List => {
-                if let InputEvent::Key(input) = event {
+                if let InputEvent::Key(raw) = event
+                    && let Some(input) = crate::input::shortcuts::command_key(
+                        crate::input::shortcuts::Scope::ProjectSearch,
+                        *raw,
+                    )
+                {
                     match input.key {
                         Key::Up => self.move_selected(-1)?,
                         Key::Down => self.move_selected(1)?,

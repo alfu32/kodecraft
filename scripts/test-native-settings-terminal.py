@@ -13,7 +13,7 @@ spec.loader.exec_module(terminal)
 
 def when_indexed(payload, count, symbols=True):
     def select(screen):
-        rows = [''.join(row[9:]).split('│', 1)[0] for row in screen.cells[:-1]]
+        rows = [''.join(row).split('│', 1)[0] for row in screen.cells[:-1]]
         rows.append(''.join(screen.cells[-1]))
         text = ' '.join(' '.join(rows).split()).encode()
         return payload if b'index Ready' in text and f'{count} files'.encode() in text and (not symbols or f'{count} symbols'.encode() in text) else None

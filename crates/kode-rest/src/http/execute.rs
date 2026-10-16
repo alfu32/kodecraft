@@ -76,7 +76,7 @@ impl Executor {
         }
         let method = Method::from_bytes(plan.method.as_bytes())
             .map_err(|_| invalid("Invalid HTTP method"))?;
-        let redirects = if plan.follow_redirects {
+        let redirects = if plan.follow_redirects && plan.auth.is_none() {
             reqwest::redirect::Policy::custom(|attempt| {
                 if attempt.previous().len() > 10 {
                     attempt.error("Redirect limit reached")
@@ -109,10 +109,11 @@ impl Executor {
         if plan.protocol == Protocol::Http {
             builder = builder.timeout(timeout);
         }
-        if plan
-            .headers
-            .iter()
-            .any(|header| header.name.eq_ignore_ascii_case("Connection"))
+        if plan.auth.as_ref().is_some_and(|a| a.kind == "ntlm")
+            || plan
+                .headers
+                .iter()
+                .any(|header| header.name.eq_ignore_ascii_case("Connection"))
         {
             builder = builder.http1_only();
         }
@@ -142,9 +143,25 @@ impl Executor {
         {
             request = request.header(COOKIE, value);
         }
-        let request = request
+        let mut request = request
             .build()
             .map_err(|_| invalid("Cannot construct HTTP request"))?;
+        if let Some(auth) = &plan.auth {
+            let method = request.method().to_string();
+            let url = request.url().clone();
+            crate::auth::sign(
+                auth,
+                &method,
+                &url,
+                request.headers_mut(),
+                &prepared.body,
+                SystemTime::now(),
+                &uuid::Uuid::new_v4().to_string(),
+            )?;
+            if plan.follow_redirects {
+                normalizations.push(Normalization { header: "Location".into(), reason: "Signed and challenge-authenticated redirects are returned for explicit review; credentials never follow them automatically" });
+            }
+        }
         if request.headers().len() > MAX_HEADERS
             || request
                 .headers()
@@ -222,9 +239,9 @@ impl Executor {
         output: &mut Response,
         bytes: &mut Vec<u8>,
     ) -> Option<Failure> {
-        let mut response = match client.execute(request).await {
+        let mut response = match crate::auth::challenge::execute(client, request, output).await {
             Ok(response) => response,
-            Err(error) => return Some(classify(&error)),
+            Err(error) => return Some(error),
         };
         if let Err(error) = apply_metadata(&response, output) {
             return Some(error);

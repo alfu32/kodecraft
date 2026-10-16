@@ -115,3 +115,22 @@ crate already implements Kode's complete database module.
 
 These experiments are implementation tasks. No dependency installation, Rust
 prototype, Java helper, build, or application test was performed during planning.
+
+
+## M002 authentication adoption (2026-10-16)
+
+R09 uses [digest_auth 0.3.1](https://docs.rs/digest_auth/0.3.1/digest_auth/)
+for RFC 7616 challenges, [ntlmclient 0.2.0](https://docs.rs/ntlmclient/0.2.0/ntlmclient/)
+for explicit NTLMv2, [hawk 5.0.1](https://docs.rs/hawk/5.0.1/hawk/) for Hawk,
+[oauth1-request 0.6.1](https://docs.rs/oauth1-request/0.6.1/oauth1_request/) for
+OAuth 1.0 signing, and the official [aws-sigv4 1.6.0](https://docs.rs/aws-sigv4/1.6.0/aws_sigv4/)
+with aws-credential-types 1.3.0 for AWS. Selected versions compile on stable 1.99.
+EdgeGrid composes HMAC-SHA256 from RustCrypto according to the provider's canonical
+request format; its pinned upstream vectors and license are checked in.
+
+Adoption tests verify published signatures and actual HTTP/PTY requests. OAuth
+keys/duplicate values need explicit RFC normalization before the library's public
+serializer, whose keys are written verbatim into the signature base string.
+NTLM parser preconditions are checked before decoding untrusted challenge bytes.
+The client owns connection affinity and bounds challenges, cancellation and
+redirect handling; these behaviors are not inferred merely from crate availability.

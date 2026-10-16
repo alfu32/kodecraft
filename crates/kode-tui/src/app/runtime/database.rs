@@ -296,6 +296,33 @@ impl super::AppRuntime {
                 .collect();
             for source in sources {
                 let snapshot = database.connections.snapshot(&source);
+                if self.state.sql.connections.get(&source).is_none_or(|old| {
+                    old.revision != snapshot.revision
+                        || old.phase != snapshot.phase
+                        || old.session.as_ref().map(|session| {
+                            (
+                                &session.connection_id,
+                                &session.helper_epoch,
+                                session.state_revision,
+                                session.context_revision,
+                                session.auto_commit,
+                                session.transaction_usable,
+                                session.context_unknown,
+                            )
+                        }) != snapshot.session.as_ref().map(|session| {
+                            (
+                                &session.connection_id,
+                                &session.helper_epoch,
+                                session.state_revision,
+                                session.context_revision,
+                                session.auto_commit,
+                                session.transaction_usable,
+                                session.context_unknown,
+                            )
+                        })
+                }) {
+                    self.notifications.repaint();
+                }
                 if let Some(session) = &snapshot.session
                     && self
                         .state

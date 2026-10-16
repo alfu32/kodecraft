@@ -979,8 +979,8 @@ impl<H: EditorHost> EditorView<H> {
         if !handled
             && self.input.has_focus(focus)
             && !self.input.state.search_has_focus
-            && matches!(event,InputEvent::Key(input) if input.key == Key::Enter && input.modifiers.ctrl && !input.modifiers.alt && !input.modifiers.meta)
             && let Some(action) = self.host.descriptor().execute
+            && matches!(event,InputEvent::Key(input) if crate::input::shortcuts::command_key(if action==ExecutionAction::SendRequest {crate::input::shortcuts::Scope::Request}else{crate::input::shortcuts::Scope::Sql},*input).is_some() && input.key == Key::Enter && input.modifiers.ctrl && !input.modifiers.alt && !input.modifiers.meta)
         {
             let action = if action == ExecutionAction::SqlSelectionOrStatement
                 && matches!(event,InputEvent::Key(input) if input.modifiers.shift)

@@ -445,6 +445,12 @@ impl FilesPanel {
                 if entries.is_empty() {
                     return Ok(false);
                 }
+                let Some(input) = crate::input::shortcuts::command_key(
+                    crate::input::shortcuts::Scope::Files,
+                    *input,
+                ) else {
+                    return Ok(false);
+                };
                 let mut index = self
                     .selected
                     .as_ref()

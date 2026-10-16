@@ -25,7 +25,7 @@ TtydAdapterTest, native resource layout and source README remote-mode instructio
 
 ## Z02 — Settings, help, about and operational status
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** W05, L09, P01, D07, F05. **Owns:**
 `kode-tui/src/panels/{settings,help,about}/`, `app/metrics.rs`.
@@ -71,7 +71,7 @@ LICENSE.md, native library licenses and source launcher behavior.
 
 **Status:** todo
 
-**Depends:** E13, L12, W05, V02, V03, G03, D09, R08, Z03.
+**Depends:** E13, L12, W05, V02, V03, G03, D09, R08, R10, Z03.
 **Owns:** `docs/parity/release.md`, full integration test orchestration.
 **Read:** all ledgers, EDITOR-UX.md, COMPATIBILITY.md and original feature screenshots.
 

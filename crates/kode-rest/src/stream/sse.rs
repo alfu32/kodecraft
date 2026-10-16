@@ -71,10 +71,12 @@ pub(super) async fn run(
     sink: &Sink,
 ) -> std::result::Result<(), Failure> {
     let timeout = Duration::from_millis(output.request.request.timeout_ms.max(1));
-    let response = tokio::time::timeout(timeout, client.execute(request))
-        .await
-        .map_err(|_| Failure::Timeout)?
-        .map_err(|error| http::classify(&error))?;
+    let response = tokio::time::timeout(
+        timeout,
+        crate::auth::challenge::execute(client, request, output),
+    )
+    .await
+    .map_err(|_| Failure::Timeout)??;
     http::apply_metadata(&response, output)?;
     sink.opened(output).await?;
     let content_type = output

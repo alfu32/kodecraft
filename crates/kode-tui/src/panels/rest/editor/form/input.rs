@@ -131,8 +131,7 @@ impl Form {
                 let value = editing::entry_value(entry, kind);
                 let secret = entry.get("secret") == Some(&Value::Bool(true))
                     || value.kind == "secret"
-                    || kind == Rows::Auth
-                        && matches!(value.key.as_str(), "value" | "password" | "token");
+                    || kind == Rows::Auth && kode_rest::auth::secret_field(&value.key);
                 let mut dialog = EntryDialog::new(
                     match kind {
                         Rows::Variable => "Variable",
@@ -328,6 +327,11 @@ impl Form {
                 && input.modifiers.ctrl
                 && !input.modifiers.alt
                 && !input.modifiers.meta
+                && crate::input::shortcuts::command_key(
+                    crate::input::shortcuts::Scope::Request,
+                    *input,
+                )
+                .is_some()
             {
                 self.intents.push(Intent::Send);
                 return Ok(true);

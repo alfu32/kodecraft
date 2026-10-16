@@ -198,6 +198,9 @@ pub struct AppState {
     pub project_panel: ProjectPanel,
     pub lsp_settings: crate::panels::settings::lsp::LspSettings,
     pub settings: crate::panels::settings::Settings,
+    pub about: crate::panels::about::About,
+    pub help: crate::widgets::text_panel::TextPanel,
+    pub metrics: super::metrics::Metrics,
     pub git: crate::panels::git::GitPanel,
     pub database: crate::panels::database::controller::DatabasePanel,
     pub sql_sources: HashMap<DocumentId, String>,
@@ -278,22 +281,20 @@ impl AppState {
             project_panel: ProjectPanel::new()?,
             lsp_settings: crate::panels::settings::lsp::LspSettings::new()?,
             settings: crate::panels::settings::Settings::new()?,
+            about: crate::panels::about::About::new()?,
+            help: crate::panels::help::new()?,
+            metrics: Default::default(),
             git,
             database: crate::panels::database::controller::DatabasePanel::new(generation)?,
             sql_sources: HashMap::new(),
             sql: Default::default(),
             rest,
             tabs: Tabs::new(
-                vec![
-                    "Files".into(),
-                    "Project".into(),
-                    "Help".into(),
-                    "Settings".into(),
-                    "Git".into(),
-                    "Databases".into(),
-                    "REST".into(),
-                ],
-                Axis::Vertical,
+                super::panel::TITLES
+                    .iter()
+                    .map(|title| (*title).into())
+                    .collect(),
+                Axis::Horizontal,
             ),
             tabs_id: FocusId(RequestId::fresh()?.0),
             focus,
@@ -1085,13 +1086,17 @@ impl AppState {
         );
         let body = Rect::new(area.x, area.y, area.width, area.height.saturating_sub(1));
         let panes = split(body, Axis::Horizontal, self.splitter.size);
-        let tabs_width = panes.first.width.min(9);
-        let tabs = Rect::new(panes.first.x, panes.first.y, tabs_width, panes.first.height);
-        let panel = Rect::new(
-            tabs.right(),
+        let tabs = Rect::new(
+            panes.first.x,
             panes.first.y,
-            panes.first.width.saturating_sub(tabs_width),
-            panes.first.height,
+            panes.first.width,
+            panes.first.height.min(1),
+        );
+        let panel = Rect::new(
+            panes.first.x,
+            tabs.bottom(),
+            panes.first.width,
+            panes.first.height.saturating_sub(tabs.height),
         );
         let mut geometry = AppGeometry {
             status,
@@ -1157,18 +1162,19 @@ impl AppState {
         );
         let mut cursor = None;
         match self.tabs.selected {
-            0 => cursor = self.files.render(geometry.panel, buffer, theme),
-            1 => self
-                .project_panel
-                .render(geometry.panel, buffer, theme, &self.project),
-            3 => {
+            crate::app::panel::FILES => cursor = self.files.render(geometry.panel, buffer, theme),
+            crate::app::panel::PROJECT => {
+                self.project_panel
+                    .render(geometry.panel, buffer, theme, &self.project)
+            }
+            crate::app::panel::SETTINGS => {
                 let body = self.settings.render_header(geometry.panel, buffer, theme);
                 if self.settings.index_selected {
                     self.settings.native.render(
                         body,
                         buffer,
                         theme,
-                        &self.intelligence_status,
+                        &format!("{} | {}", self.intelligence_status, self.metrics.label()),
                         &self.project.root.join(".kode-rs/index.sqlite"),
                     );
                 } else {
@@ -1180,18 +1186,18 @@ impl AppState {
                     );
                 }
             }
-            4 => {
+            crate::app::panel::GIT => {
                 cursor =
                     self.git
                         .render(geometry.panel, buffer, theme, &self.documents, &self.focus)?
             }
-            5 => self.database.render(
+            crate::app::panel::DATABASE => self.database.render(
                 geometry.panel,
                 buffer,
                 theme,
                 self.focus.focused == Some(self.database.tree.id),
             ),
-            6 => {
+            crate::app::panel::REST => {
                 if self.rest.persistence_enabled {
                     cursor = self.rest.sidebar.render(
                         geometry.panel,
@@ -1212,9 +1218,8 @@ impl AppState {
                     .render(geometry.panel, buffer);
                 }
             }
-            _ => {
-                Paragraph::new("Files: open, rename, create, delete.\nProject: source roots and exclusions.\n\nCtrl+S save\nCtrl+F find/replace\nCtrl+Shift+F project search\nCtrl+Space completion\nF6 switch pane\nCtrl+Q quit\n\nGit: Space stage/unstage, a/A stage/unstage all, Tab message, Ctrl+Enter commit, Ctrl+Tab sections. b branches, t tag, T create/move tag, Enter expand history, m copy message.\n\nImage: Left/Right width, Enter mode, M advanced controls.\n\nHex: Shift+arrows select, Alt+C/X/V local bytes, Delete/Backspace edit memory. Binary saving unavailable.\n\nDatabases: Alt+6; n new, F2 edit, c connect/disconnect, r refresh, R restart service, s SQL console.\nConnection dialog: Alt+T test, Alt+D driver download, Ctrl+S save.\n\nREST: Alt+7; / filter, n request, f folder, m actions, i import, e export, r run/stop. Tab selects environments; n new, c copy, F2 rename, Space activate.\n\nUse mouse or Alt+1/2/3/4/5/6/7 to select Files/Project/Help/Settings/Git/Databases/REST.").wrap(Wrap { trim: false }).render(geometry.panel, buffer);
-            }
+            crate::app::panel::ABOUT => self.about.render(geometry.panel, buffer, theme),
+            _ => self.help.render(geometry.panel, buffer, theme),
         }
         self.splitter.render(geometry.body, buffer, theme);
         if let Some(diff) = &mut self.diff {
@@ -1295,7 +1300,30 @@ impl AppState {
         } else {
             format!("{status} | {}", display_text(&self.intelligence_status))
         };
-        draw_text(geometry.status, buffer, &status, theme.style("content"));
+        if geometry.status.width >= 100 {
+            let metrics = self.metrics.label();
+            let width = metrics.len().min(geometry.status.width as usize) as u16;
+            let left = Rect::new(
+                geometry.status.x,
+                geometry.status.y,
+                geometry.status.width.saturating_sub(width + 1),
+                geometry.status.height,
+            );
+            draw_text(left, buffer, &status, theme.style("content"));
+            draw_text(
+                Rect::new(
+                    geometry.status.right() - width,
+                    geometry.status.y,
+                    width,
+                    geometry.status.height,
+                ),
+                buffer,
+                &metrics,
+                theme.style("content"),
+            );
+        } else {
+            draw_text(geometry.status, buffer, &status, theme.style("content"));
+        }
         if let Some(dialog) = &mut self.search {
             cursor = dialog.render(area, buffer, theme, &self.documents, &self.focus)?;
         }

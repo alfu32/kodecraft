@@ -198,6 +198,11 @@ impl ImageView {
             {
                 return false;
             }
+            let Some(input) =
+                crate::input::shortcuts::command_key(crate::input::shortcuts::Scope::Image, *input)
+            else {
+                return false;
+            };
             match input.key {
                 Key::Left => self.settings.width = self.settings.width.saturating_sub(4).max(8),
                 Key::Right => {

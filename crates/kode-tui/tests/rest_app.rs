@@ -1461,7 +1461,7 @@ async fn original_environment_editor_typing_clipboard_native_search_and_metadata
     let root = tempfile::tempdir().unwrap();
     let (mut app, clipboard) = make(root.path(), 1);
     app.state.dispatch(&alt7()).unwrap();
-    assert_eq!(app.state.tabs.selected, 6);
+    assert_eq!(app.state.tabs.selected, kode_tui::app::panel::REST);
     render(&mut app);
     app.state.dispatch(&key(Key::Tab)).unwrap();
     app.state.dispatch(&key(Key::Character('n'))).unwrap();

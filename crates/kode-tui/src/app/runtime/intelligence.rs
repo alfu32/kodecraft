@@ -44,6 +44,7 @@ impl AppRuntime {
         if self.intelligence.is_some() {
             return Ok(());
         }
+        self.state.about.load_languages(&resources);
         let mut service = CodeIntelService::open(
             &self.state.project,
             resources.clone(),
@@ -216,7 +217,7 @@ impl AppRuntime {
             .notes
             .first()
             .map_or(String::new(), |note| format!(" | {note}"));
-        self.state.intelligence_status = format!(
+        let label = format!(
             "index {:?} r{}: {} files / {} symbols | {} / {} processed{detail}",
             status.phase,
             status.revision,
@@ -227,6 +228,10 @@ impl AppRuntime {
                 .total
                 .map_or_else(|| "?".into(), |total| total.to_string())
         );
+        if self.state.intelligence_status != label {
+            self.state.intelligence_status = label;
+            self.notifications.repaint();
+        }
         let job = if self.state.closing {
             None
         } else {

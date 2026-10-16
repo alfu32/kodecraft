@@ -110,11 +110,17 @@ impl AppState {
         if !self.window_focused || self.closing {
             return Ok(());
         }
-        if matches!(event, InputEvent::Key(input) if input.modifiers.ctrl && !input.modifiers.alt && !input.modifiers.meta && matches!(input.key, Key::Character('q' | 'Q')))
+        let global = match event {
+            InputEvent::Key(input) => {
+                crate::input::shortcuts::command_key(crate::input::shortcuts::Scope::Global, *input)
+            }
+            _ => None,
+        };
+        if matches!(global, Some(input) if input.modifiers.ctrl && matches!(input.key, Key::Character('q')))
         {
             return self.request_quit();
         }
-        if matches!(event,InputEvent::Key(input) if input.modifiers.ctrl && !input.modifiers.alt && !input.modifiers.meta && matches!(input.key,Key::Character('t'|'T')))
+        if matches!(global,Some(input) if input.modifiers.ctrl && matches!(input.key,Key::Character('t')))
         {
             self.shell_requested = true;
             return self.drain_ui();
@@ -165,7 +171,7 @@ impl AppState {
                 .dispatch(event, &mut self.documents, &mut self.focus)?;
             return self.drain_ui();
         }
-        if matches!(event, InputEvent::Key(input) if input.modifiers.ctrl && input.modifiers.shift && !input.modifiers.alt && matches!(input.key, Key::Character('f' | 'F')))
+        if matches!(global, Some(input) if input.modifiers.ctrl && (input.modifiers.alt || input.modifiers.shift) && matches!(input.key, Key::Character('f')))
         {
             if self.git.checkout_pending() {
                 self.notice = "Wait for branch checkout before opening project search".into();
@@ -194,26 +200,26 @@ impl AppState {
             )?);
             return self.drain_ui();
         }
-        if let InputEvent::Key(input) = event {
+        if let Some(input) = global {
             if input.modifiers.alt
-                && let Key::Character(number @ '1'..='7') = input.key
+                && let Key::Character(number @ '1'..='8') = input.key
             {
                 if number != '5' {
                     self.clear_diff()?;
                     self.git.deactivate(&mut self.documents, &mut self.focus)?;
                 }
-                self.tabs.selected = (number as u8 - b'1') as usize;
-                if self.tabs.selected != 6 {
+                self.tabs.selected = super::panel::SHORTCUTS[(number as u8 - b'1') as usize];
+                if self.tabs.selected != crate::app::panel::REST {
                     self.rest.sidebar.dismiss(&mut self.focus);
                 }
-                if self.tabs.selected == 5 {
+                if self.tabs.selected == crate::app::panel::DATABASE {
                     self.database.initialize()?;
                 }
                 self.focus_panel();
                 return Ok(());
             }
             if input.key == Key::Function(7)
-                && (self.rest.form.is_some() || self.tabs.selected == 6)
+                && (self.rest.form.is_some() || self.tabs.selected == crate::app::panel::REST)
             {
                 self.show_rest_runner()?;
                 return self.drain_ui();
@@ -310,16 +316,20 @@ impl AppState {
             } else if self.geometry.tabs.contains(position) {
                 Some(self.tabs_id)
             } else {
-                Some(if self.tabs.selected == 4 {
+                Some(if self.tabs.selected == crate::app::panel::GIT {
                     self.git.focus_id()
-                } else if self.tabs.selected == 3 {
+                } else if self.tabs.selected == crate::app::panel::SETTINGS {
                     self.settings.focus_id(self.lsp_settings.id)
-                } else if self.tabs.selected == 0 {
+                } else if self.tabs.selected == crate::app::panel::FILES {
                     self.files.id
-                } else if self.tabs.selected == 5 {
+                } else if self.tabs.selected == crate::app::panel::DATABASE {
                     self.database.tree.id
-                } else if self.tabs.selected == 6 {
+                } else if self.tabs.selected == crate::app::panel::REST {
                     self.rest.sidebar.id
+                } else if self.tabs.selected == crate::app::panel::ABOUT {
+                    self.about.focus_id()
+                } else if self.tabs.selected == crate::app::panel::HELP {
+                    self.help.id
                 } else {
                     self.project_panel.id
                 })
@@ -339,15 +349,19 @@ impl AppState {
             .tabs
             .handle(event, self.focus.focused == Some(self.tabs_id))
         {
-            if self.tabs.selected != 6 {
+            if self.tabs.selected != crate::app::panel::REST {
                 self.rest.sidebar.dismiss(&mut self.focus);
             }
-            if self.tabs.selected == 5 {
+            if self.tabs.selected == crate::app::panel::DATABASE {
                 self.database.initialize()?;
             }
-            if self.tabs.selected != 4 {
+            if self.tabs.selected != crate::app::panel::GIT {
                 self.clear_diff()?;
                 self.git.deactivate(&mut self.documents, &mut self.focus)?;
+            }
+            if matches!(event,InputEvent::Pointer(pointer)if pointer.action==PointerAction::Down(MouseButton::Left))
+            {
+                self.focus_panel();
             }
             return Ok(());
         }
@@ -357,18 +371,22 @@ impl AppState {
                 .panel
                 .contains(Position::new(pointer.x, pointer.y)),
             _ => {
-                if self.tabs.selected == 4 {
+                if self.tabs.selected == crate::app::panel::GIT {
                     self.git.contains_focus(&self.focus)
                 } else {
                     self.focus.focused
-                        == Some(if self.tabs.selected == 3 {
+                        == Some(if self.tabs.selected == crate::app::panel::SETTINGS {
                             self.settings.focus_id(self.lsp_settings.id)
-                        } else if self.tabs.selected == 0 {
+                        } else if self.tabs.selected == crate::app::panel::FILES {
                             self.files.id
-                        } else if self.tabs.selected == 5 {
+                        } else if self.tabs.selected == crate::app::panel::DATABASE {
                             self.database.tree.id
-                        } else if self.tabs.selected == 6 {
+                        } else if self.tabs.selected == crate::app::panel::REST {
                             self.rest.sidebar.id
+                        } else if self.tabs.selected == crate::app::panel::ABOUT {
+                            self.about.focus_id()
+                        } else if self.tabs.selected == crate::app::panel::HELP {
+                            self.help.id
                         } else {
                             self.project_panel.id
                         })
@@ -376,12 +394,14 @@ impl AppState {
             }
         };
         if in_panel {
-            if self.tabs.selected == 0 {
+            if self.tabs.selected == crate::app::panel::FILES {
                 self.files.dispatch(event, &mut self.focus)?;
-            } else if self.tabs.selected == 1 {
+            } else if self.tabs.selected == crate::app::panel::PROJECT {
                 self.project_panel
                     .dispatch(event, &self.project, &mut self.focus);
-            } else if self.tabs.selected == 3 {
+            } else if self.tabs.selected == crate::app::panel::HELP {
+                self.help.dispatch(event, &mut self.focus);
+            } else if self.tabs.selected == crate::app::panel::SETTINGS {
                 if !self
                     .settings
                     .dispatch_navigation(event, &mut self.focus, self.lsp_settings.id)
@@ -392,12 +412,12 @@ impl AppState {
                         self.lsp_settings.dispatch(event, &mut self.focus);
                     }
                 }
-            } else if self.tabs.selected == 4 {
+            } else if self.tabs.selected == crate::app::panel::GIT {
                 self.git
                     .dispatch(event, &mut self.documents, &mut self.focus)?;
-            } else if self.tabs.selected == 5 {
+            } else if self.tabs.selected == crate::app::panel::DATABASE {
                 self.database.dispatch(event, &mut self.focus)?;
-            } else if self.tabs.selected == 6 {
+            } else if self.tabs.selected == crate::app::panel::REST {
                 if self.rest.persistence_enabled {
                     self.rest
                         .sidebar
@@ -405,6 +425,8 @@ impl AppState {
                 } else if let Some(warning) = &self.rest.warning {
                     self.notice = warning.clone();
                 }
+            } else if self.tabs.selected == crate::app::panel::ABOUT {
+                self.about.dispatch(event, &mut self.focus);
             }
         } else if let Some(diff) = &mut self.diff {
             diff.dispatch(event, &mut self.documents, &mut self.focus)?;
@@ -421,12 +443,14 @@ impl AppState {
     }
     pub fn focus_panel(&mut self) {
         self.focus.focused = Some(match self.tabs.selected {
-            0 => self.files.id,
-            1 => self.project_panel.id,
-            3 => self.settings.focus_id(self.lsp_settings.id),
-            4 => self.git.focus_id(),
-            5 => self.database.tree.id,
-            6 => self.rest.sidebar.id,
+            crate::app::panel::FILES => self.files.id,
+            crate::app::panel::PROJECT => self.project_panel.id,
+            crate::app::panel::HELP => self.help.id,
+            crate::app::panel::SETTINGS => self.settings.focus_id(self.lsp_settings.id),
+            crate::app::panel::GIT => self.git.focus_id(),
+            crate::app::panel::DATABASE => self.database.tree.id,
+            crate::app::panel::REST => self.rest.sidebar.id,
+            crate::app::panel::ABOUT => self.about.focus_id(),
             _ => self.tabs_id,
         });
         if let Some(view) = &mut self.editor {
@@ -436,8 +460,11 @@ impl AppState {
     pub fn tick(&mut self) -> Result<()> {
         let editor_area = self.rest_editor_area();
         if !self.closing {
-            self.git
-                .tick(&self.documents, &self.focus, self.tabs.selected == 4)?;
+            self.git.tick(
+                &self.documents,
+                &self.focus,
+                self.tabs.selected == crate::app::panel::GIT,
+            )?;
             if let Some(diff) = &mut self.diff {
                 let area = diff.body();
                 if let Some(view) = &mut diff.editor {

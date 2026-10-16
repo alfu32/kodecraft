@@ -656,6 +656,8 @@ impl AppState {
         if let InputEvent::Key(input) = event
             && input.modifiers.ctrl
             && input.key == Key::Tab
+            && crate::input::shortcuts::command_key(crate::input::shortcuts::Scope::Request, *input)
+                .is_some()
         {
             let tabs = form.tabs();
             let index = tabs.iter().position(|tab| *tab == form.tab).unwrap_or(0);
