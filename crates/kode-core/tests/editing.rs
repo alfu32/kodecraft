@@ -24,6 +24,7 @@ fn document(text: &str) -> Document {
 fn end(doc: &Document) -> CaretState {
     let at = ByteOffset(doc.snapshot().len_bytes());
     CaretState {
+        secondary: vec![],
         selection: Selection {
             anchor: at,
             head: at,
@@ -35,6 +36,7 @@ fn end(doc: &Document) -> CaretState {
 fn reverse_multiline_paste_is_one_transaction_and_restores_exact_selection() {
     let mut doc = document("abc\ndef");
     let mut caret = CaretState {
+        secondary: vec![],
         selection: Selection {
             anchor: ByteOffset(6),
             head: ByteOffset(1),
@@ -68,6 +70,7 @@ fn deletion_joins_lf_crlf_and_unicode_and_empty_edges_make_no_history() {
         let snapshot = doc.snapshot();
         let at = snapshot.line_start(kode_core::LineIndex(1)).unwrap();
         let mut caret = CaretState {
+            secondary: vec![],
             selection: Selection {
                 anchor: at,
                 head: at,
@@ -234,6 +237,7 @@ fn history_limits_are_explicit_and_corrupt_imports_leave_the_document_intact() {
     assert_eq!(state.omitted_undo, 175);
     let mut bad = state.clone();
     bad.current = PersistedBuffer {
+        secondary: vec![],
         text: "a😀b".into(),
         selection: Selection {
             anchor: ByteOffset(2),
@@ -246,6 +250,7 @@ fn history_limits_are_explicit_and_corrupt_imports_leave_the_document_intact() {
     let mut excess = state.clone();
     excess.undo = vec![
         PersistedBuffer {
+            secondary: vec![],
             text: "old".into(),
             selection: Selection::default()
         };

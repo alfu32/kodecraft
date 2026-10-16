@@ -30,6 +30,7 @@ pub enum SearchField {
 pub enum SearchAction {
     Next,
     All,
+    SelectOccurrences,
     ReplaceOne,
     ReplaceAll,
     Close,
@@ -91,7 +92,8 @@ fn row_geometry(area: Rect, row: u16, label: u16, reserve: u16, trailing: usize)
         Rect::new(area.x + label + width, area.y + row, trailing, 1),
     )
 }
-const HINTS: &str = "Enter:Next  Ctrl+Enter:All  Ctrl+R:Replace  Ctrl+Shift+R:All";
+const HINTS: &str =
+    "Enter:Next  Alt+Enter:Cursors  Ctrl+Enter:All  Ctrl+R:Replace  Ctrl+Shift+R:All";
 
 /// Search owns worker result publication and the two fields. The editor owns
 /// document/caret/viewport; host effects perform all expensive/native work.
@@ -417,6 +419,42 @@ impl SearchBar {
                 self.results.next(&document.snapshot(), &mut state.caret)?;
             }
             SearchAction::All => {}
+            SearchAction::SelectOccurrences => {
+                if let Some(report) = &self.results.report
+                    && report.error.is_none()
+                    && !report.matches.is_empty()
+                {
+                    let primary = report
+                        .matches
+                        .iter()
+                        .position(|found| {
+                            found.range.contains(state.caret.cursor())
+                                || found.range.end == state.caret.cursor()
+                        })
+                        .unwrap_or(0);
+                    let selections: Vec<_> = report
+                        .matches
+                        .iter()
+                        .map(|found| kode_core::Selection {
+                            anchor: found.range.start,
+                            head: found.range.end,
+                        })
+                        .collect();
+                    state.caret = kode_core::editor::selection::CaretState {
+                        selection: selections[primary],
+                        secondary: selections
+                            .into_iter()
+                            .enumerate()
+                            .filter_map(|(index, selection)| {
+                                (index != primary).then_some(selection)
+                            })
+                            .collect(),
+                    }
+                    .normalized(&document.snapshot())?;
+                    state.search_has_focus = false;
+                    self.pending_paste = None;
+                }
+            }
             SearchAction::ReplaceOne | SearchAction::ReplaceAll => {
                 let before = document.revision();
                 self.results.replace(
@@ -569,6 +607,11 @@ impl EditorInputHooks for SearchBar {
                 crate::input::shortcuts::command_key(crate::input::shortcuts::Scope::Search, *raw)
         {
             let action = match input.key {
+                Key::Enter
+                    if input.modifiers.alt && !input.modifiers.ctrl && !input.modifiers.meta =>
+                {
+                    Some(SearchAction::SelectOccurrences)
+                }
                 Key::Enter if input.modifiers.ctrl => Some(SearchAction::All),
                 Key::Enter => Some(SearchAction::Next),
                 Key::Character('r' | 'R') if input.modifiers.ctrl => {

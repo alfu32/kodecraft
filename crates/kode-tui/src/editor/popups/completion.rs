@@ -29,6 +29,7 @@ pub struct CompletionJob {
     pub tag: JobTag,
     pub snapshot: TextSnapshot,
     pub selection: Selection,
+    pub secondary: Vec<Selection>,
     pub prefix: TextRange,
 }
 #[derive(Debug, Clone)]
@@ -213,6 +214,7 @@ impl CompletionPopup {
             tag,
             snapshot: snapshot.clone(),
             selection: state.caret.selection,
+            secondary: state.caret.secondary.clone(),
             prefix,
         };
         self.context = Some(job.clone());
@@ -240,6 +242,7 @@ impl CompletionPopup {
             job.snapshot.id == snapshot.id
                 && job.snapshot.revision == snapshot.revision
                 && job.selection == state.caret.selection
+                && job.secondary == state.caret.secondary
         })
     }
     pub fn complete(

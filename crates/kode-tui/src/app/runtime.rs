@@ -89,6 +89,7 @@ enum Output {
     Hex(workspace::PreparedHex),
     Image(workspace::PreparedImage),
     Cells(kode_platform::images::cells::CellImage),
+    HexSearch(crate::viewers::hex::search::SearchReport),
     Scan(ScanSummary),
     Session(Box<ProjectSessionV1>),
     Saved(DiskIdentity),
@@ -136,6 +137,7 @@ enum Context {
     IndexCommitted,
     Tree(bool),
     Cells,
+    HexSearch(FocusId),
     File,
     Open(OpenDestination),
     Scan,
@@ -153,6 +155,7 @@ enum Context {
     Picker(PickerKind),
 }
 enum ClipboardTarget {
+    HexFind(FocusId, crate::viewers::hex::PasteProof),
     RestForm(crate::panels::rest::editor::form::PasteProof),
     Rest(crate::panels::rest::sidebar::PasteProof),
     Sql(crate::panels::database::session_dialog::PasteProof),
@@ -610,6 +613,24 @@ impl AppRuntime {
                     }),
                 )
             }
+            AppWork::HexSearch { tag, view, job } => {
+                if job.cancel.is_cancelled() {
+                    return Ok(());
+                }
+                self.blocking(
+                    tag,
+                    OwnerId(view.0),
+                    "hex-search",
+                    false,
+                    Context::HexSearch(view),
+                    Box::new(move |cancel| job.run(&cancel).map(Output::HexSearch)),
+                )
+            }
+            AppWork::HexPaste { tag, view, proof } => self.clipboard_work(
+                tag,
+                ClipboardJob::Read,
+                ClipboardTarget::HexFind(view, proof),
+            ),
             AppWork::Tree { picker, job } => {
                 let tag = job.tag;
                 let owner = if picker {
@@ -1332,6 +1353,7 @@ impl AppRuntime {
                 context,
                 Context::Tree(_)
                     | Context::Cells
+                    | Context::HexSearch(_)
                     | Context::Open(_)
                     | Context::Fold
                     | Context::Overlays
@@ -1541,6 +1563,20 @@ impl AppRuntime {
                         }
                     });
                     view.complete(tag, result);
+                }
+            }
+            Context::HexSearch(id) => {
+                if let Some(view) = self.state.hexes.values_mut().find(|view| view.id == id) {
+                    view.complete_search(
+                        tag.request,
+                        result.and_then(|output| {
+                            if let Output::HexSearch(report) = output {
+                                Ok(report)
+                            } else {
+                                Err(DomainError::Unsupported("wrong hex search result".into()))
+                            }
+                        }),
+                    );
                 }
             }
             Context::Tree(picker) => {
@@ -2059,6 +2095,23 @@ impl AppRuntime {
                     .complete_clipboard(tag, result, &self.state.focus)
             }
             ClipboardTarget::None => {}
+            ClipboardTarget::HexFind(id, proof) => {
+                if let Some(view) = self.state.hexes.values_mut().find(|view| view.id == id) {
+                    view.complete_clipboard(
+                        &proof,
+                        result.and_then(|result| {
+                            if let ClipboardResult::Read(text) = result {
+                                Ok(text)
+                            } else {
+                                Err(DomainError::Unsupported(
+                                    "wrong hex clipboard result".into(),
+                                ))
+                            }
+                        }),
+                        &self.state.focus,
+                    );
+                }
+            }
             ClipboardTarget::Names => {
                 self.state.files.complete_name_clipboard(
                     tag,
@@ -2146,6 +2199,9 @@ impl AppRuntime {
                 .any(|pending| pending.delivery == Delivery::Critical)
     }
     pub async fn flush_before_leave(&mut self) -> Result<()> {
+        for view in self.state.hexes.values_mut() {
+            view.detach(&mut self.state.focus);
+        }
         self.state.closing = true;
         self.state.rest.run.pending = None;
         self.state.rest.run.cancel();

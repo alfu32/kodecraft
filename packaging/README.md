@@ -1,5 +1,8 @@
 # Linux distribution build and qualification
 
+Z03 is reopened for the requested [Linux/macOS/Windows x86_64/arm64 artifact matrix](../docs/migration/Z03-ARTIFACT-MATRIX.md), after the Uxx series. This guide documents
+the qualified Linux x86_64 foundation; it does not claim the expanded matrix is done.
+
 Z03 build/distribution qualification is complete for **x86_64 Linux GNU**, with
 **glibc 2.39 or newer** (Ubuntu 24.04 baseline). The application uses system glibc,
 libgcc, libm and zlib. The optional ttyd executable has its own bundled json-c,

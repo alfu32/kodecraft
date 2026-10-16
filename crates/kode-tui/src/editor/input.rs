@@ -21,6 +21,7 @@ pub struct PasteTicket {
     pub document: DocumentId,
     pub revision: Revision,
     pub selection: Selection,
+    pub secondary: Vec<Selection>,
 }
 
 /// The host executes clipboard/save/intelligence effects away from drawing.
@@ -127,7 +128,13 @@ pub struct EditorInput {
     cache: LayoutCache,
     window_focused: bool,
     drag: Option<PointerInput>,
+    additive_drag: Option<AdditiveDrag>,
+    drag_revision: Option<Revision>,
     pending_paste: Option<PasteTicket>,
+}
+struct AdditiveDrag {
+    base: CaretState,
+    anchor: kode_core::ByteOffset,
 }
 impl EditorInput {
     pub fn new(id: FocusId, document: DocumentId) -> Self {
@@ -138,6 +145,8 @@ impl EditorInput {
             cache: LayoutCache::default(),
             window_focused: true,
             drag: None,
+            additive_drag: None,
+            drag_revision: None,
             pending_paste: None,
         }
     }
@@ -147,6 +156,7 @@ impl EditorInput {
     pub fn render_state(&self, focus: &FocusState) -> RenderState {
         RenderState {
             selection: self.state.caret.selection,
+            secondary: self.state.caret.secondary.clone(),
             scroll_rows: self.state.scroll_rows,
             focused: self.window_focused
                 && focus.focused == Some(self.id)
@@ -214,9 +224,18 @@ impl EditorInput {
                 .clamp(geometry.text.y, geometry.text.bottom() - 1)
                 .saturating_sub(geometry.text.y) as usize;
         let column = pointer.x.saturating_sub(geometry.text.x) as usize;
-        self.state
-            .caret
-            .move_to(&layout.snapshot, layout.cell_to_position(row, column), true)?;
+        let position = layout.cell_to_position(row, column);
+        if let Some(drag) = &self.additive_drag {
+            self.state.caret = CaretState {
+                selection: Selection {
+                    anchor: drag.anchor,
+                    head: position,
+                },
+                secondary: drag.base.selections().collect(),
+            };
+        } else {
+            self.state.caret.move_to(&layout.snapshot, position, true)?;
+        }
         self.ensure_caret_visible(layout, geometry)
     }
     /// Call from the host's animation tick while captured, so a stationary
@@ -228,6 +247,12 @@ impl EditorInput {
         viewport: InputViewport<'_>,
     ) -> Result<InputOutcome> {
         if !self.is_dragging(focus) || !self.window_focused {
+            return Ok(InputOutcome::default());
+        }
+        if self.drag_revision != Some(document.revision()) {
+            self.drag = None;
+            self.additive_drag = None;
+            self.pending_paste = None;
             return Ok(InputOutcome::default());
         }
         let pointer = self.drag.expect("captured drag has pointer");
@@ -283,7 +308,10 @@ impl EditorInput {
         reveal: bool,
     ) -> Result<()> {
         if reveal {
-            hooks.reveal_caret(&document.snapshot(), self.state.caret.cursor())?;
+            let snapshot = document.snapshot();
+            for selection in self.state.caret.selections() {
+                hooks.reveal_caret(&snapshot, selection.head)?;
+            }
         }
         let folds = hooks.collapsed_folds(&document.snapshot());
         let viewport = InputViewport {
@@ -306,6 +334,19 @@ impl EditorInput {
         viewport: InputViewport<'_>,
         hooks: &mut dyn EditorInputHooks,
     ) -> Result<InputOutcome> {
+        if self.drag.is_some() && self.drag_revision != Some(document.revision()) {
+            self.drag = None;
+            self.additive_drag = None;
+            self.pending_paste = None;
+            let snapshot = document.snapshot();
+            self.state
+                .caret
+                .restore_clamped(&snapshot, self.state.caret.selection);
+            self.state.caret = self.state.caret.normalized(&snapshot)?;
+        }
+        if self.drag.is_none() && focus.captured == Some(self.id) {
+            focus.captured = None;
+        }
         let layout = self.layout(document, viewport)?;
         let geometry = viewport.geometry;
         self.clamp_scroll(&layout, geometry);
@@ -323,6 +364,8 @@ impl EditorInput {
             self.window_focused = *focused;
             if !focused {
                 self.drag = None;
+                self.additive_drag = None;
+                self.state.caret = self.state.caret.normalized(&layout.snapshot)?;
                 self.pending_paste = None;
                 if focus.captured == Some(self.id) {
                     focus.captured = None;
@@ -336,6 +379,14 @@ impl EditorInput {
         }
         if !self.window_focused {
             return Ok(InputOutcome::default());
+        }
+        if matches!(event, InputEvent::Key(_) | InputEvent::Paste(_)) && self.drag.take().is_some()
+        {
+            self.additive_drag = None;
+            self.state.caret = self.state.caret.normalized(&layout.snapshot)?;
+            if focus.captured == Some(self.id) {
+                focus.captured = None;
+            }
         }
         if let InputEvent::Pointer(pointer) = event {
             if focus.captured.is_some() && focus.captured != Some(self.id) {
@@ -351,9 +402,20 @@ impl EditorInput {
                         return Ok(outcome);
                     }
                     PointerAction::Up(MouseButton::Left) => {
+                        if self.additive_drag.is_some()
+                            && self
+                                .drag
+                                .is_some_and(|last| (last.x, last.y) != (pointer.x, pointer.y))
+                        {
+                            self.drag_to(*pointer, &layout, geometry)?;
+                        }
                         self.drag = None;
+                        self.additive_drag = None;
+                        self.state.caret = self.state.caret.normalized(&layout.snapshot)?;
                         focus.captured = None;
-                        return Ok(InputOutcome::consumed());
+                        let mut outcome = InputOutcome::consumed();
+                        outcome.effects.push(EditorEffect::CaretMoved);
+                        return Ok(outcome);
                     }
                     _ => {}
                 }
@@ -362,7 +424,7 @@ impl EditorInput {
                 geometry.hit_test(&layout, self.state.scroll_rows, pointer.x, pointer.y),
                 EditorHit::Outside
             ) {
-                let before = (document.revision(), self.state.caret.selection);
+                let before = (document.revision(), self.state.caret.clone());
                 if hooks.dispatch(
                     InputTarget::Popup,
                     event,
@@ -385,7 +447,7 @@ impl EditorInput {
             geometry,
             layout: &layout,
         };
-        let before = (document.revision(), self.state.caret.selection);
+        let before = (document.revision(), self.state.caret.clone());
         if hooks.dispatch(
             InputTarget::Popup,
             event,
@@ -481,13 +543,33 @@ impl EditorInput {
                         ),
                         _ => return Ok(InputOutcome::default()),
                     };
-                    self.state
-                        .caret
-                        .move_to(&layout.snapshot, position, false)?;
+                    if pointer.modifiers.alt && !pointer.modifiers.ctrl && !pointer.modifiers.meta {
+                        let original = self.state.caret.clone();
+                        let removed = self.state.caret.toggle(&layout.snapshot, position)?;
+                        let base = if removed {
+                            self.state.caret.clone()
+                        } else {
+                            original
+                        };
+                        self.additive_drag = Some(AdditiveDrag {
+                            base,
+                            anchor: position,
+                        });
+                    } else {
+                        self.additive_drag = None;
+                        self.state.caret.set_selection(
+                            &layout.snapshot,
+                            Selection {
+                                anchor: position,
+                                head: position,
+                            },
+                        )?;
+                    }
                     self.state.search_has_focus = false;
                     focus.focused = Some(self.id);
                     focus.captured = Some(self.id);
                     self.drag = Some(*pointer);
+                    self.drag_revision = Some(document.revision());
                     self.pending_paste = None;
                     self.ensure_caret_visible(&layout, geometry)?;
                     Ok(InputOutcome {
@@ -502,15 +584,9 @@ impl EditorInput {
                 Some(command) => self.command(command, document, viewport),
                 None => Ok(InputOutcome::default()),
             },
-            InputEvent::Paste(text) => self.command(
-                EditorCommand::Replace {
-                    range: self.state.caret.selection.range(),
-                    text: text.clone(),
-                    kind: EditKind::Paste,
-                },
-                document,
-                viewport,
-            ),
+            InputEvent::Paste(text) => {
+                self.command(EditorCommand::PasteText(text.clone()), document, viewport)
+            }
             _ => Ok(InputOutcome::default()),
         }
     }
@@ -518,10 +594,10 @@ impl EditorInput {
         &mut self,
         document: &Document,
         viewport: InputViewport<'_>,
-        before: (Revision, Selection),
+        before: (Revision, CaretState),
     ) -> Result<InputOutcome> {
         let layout = self.layout(document, viewport)?;
-        if before != (document.revision(), self.state.caret.selection) {
+        if before.0 != document.revision() || before.1 != self.state.caret {
             self.ensure_caret_visible(&layout, viewport.geometry)?;
         } else {
             self.clamp_scroll(&layout, viewport.geometry);
@@ -533,7 +609,7 @@ impl EditorInput {
                 deltas: None,
             });
         }
-        if self.state.caret.selection != before.1 {
+        if self.state.caret != before.1 {
             outcome.effects.push(EditorEffect::CaretMoved);
         }
         Ok(outcome)
@@ -546,13 +622,15 @@ impl EditorInput {
         viewport: InputViewport<'_>,
     ) -> Result<InputOutcome> {
         let layout = self.layout(document, viewport)?;
-        let before = self.state.caret.selection;
+        let before = self.state.caret.clone();
         let previous_revision = document.revision();
         let mut outcome = InputOutcome::consumed();
         let mut edit_outcome = None;
         let movement_command = matches!(
             command,
-            EditorCommand::Move { .. } | EditorCommand::MoveTo { .. }
+            EditorCommand::Move { .. }
+                | EditorCommand::MoveTo { .. }
+                | EditorCommand::AddCursor { .. }
         );
         let reveal = matches!(
             command,
@@ -560,6 +638,8 @@ impl EditorInput {
                 | EditorCommand::MoveTo { .. }
                 | EditorCommand::SelectAll
                 | EditorCommand::InsertText(_)
+                | EditorCommand::PasteText(_)
+                | EditorCommand::AddCursor { .. }
                 | EditorCommand::InsertTab
                 | EditorCommand::InsertNewline
                 | EditorCommand::DeleteBackward
@@ -570,6 +650,30 @@ impl EditorInput {
         );
         self.pending_paste = None;
         match command {
+            EditorCommand::AddCursor { down } => {
+                let (row, column) = layout.position_to_cell(self.state.caret.cursor())?;
+                let target_row = if down {
+                    (row + 1).min(layout.rows.len() - 1)
+                } else {
+                    row.saturating_sub(1)
+                };
+                if row != target_row {
+                    let position = layout.cell_to_position(target_row, column);
+                    self.state.caret.add(
+                        &layout.snapshot,
+                        Selection {
+                            anchor: position,
+                            head: position,
+                        },
+                    )?;
+                }
+            }
+            EditorCommand::ClearSecondaryCursors => {
+                if self.state.caret.secondary.is_empty() {
+                    return Ok(InputOutcome::default());
+                }
+                self.state.caret.secondary.clear();
+            }
             EditorCommand::Move { movement, extend } => {
                 let page = matches!(movement, Movement::PageUp | Movement::PageDown);
                 let target = if page {
@@ -594,23 +698,53 @@ impl EditorInput {
                 } else {
                     None
                 };
-                move_caret(
-                    &layout.snapshot,
-                    &mut self.state.caret,
-                    movement,
-                    extend,
-                    target,
-                )?;
+                let old = self.state.caret.normalized(&layout.snapshot)?;
+                let mut moved = vec![];
+                for (index, selection) in old.selections().enumerate() {
+                    let mut single = CaretState::single(selection);
+                    let page_target = if page && index != 0 {
+                        let (row, column) = layout.position_to_cell(selection.head)?;
+                        let delta = viewport.geometry.text.height as isize
+                            * if movement == Movement::PageUp { -1 } else { 1 };
+                        let row = row.saturating_add_signed(delta).min(layout.rows.len() - 1);
+                        Some(
+                            layout
+                                .cell_to_position(row, column)
+                                .min(layout.rows[row].source.end),
+                        )
+                    } else {
+                        target
+                    };
+                    move_caret(&layout.snapshot, &mut single, movement, extend, page_target)?;
+                    moved.push(single.selection);
+                }
+                self.state.caret = CaretState {
+                    selection: moved[0],
+                    secondary: moved[1..].to_vec(),
+                }
+                .normalized(&layout.snapshot)?;
             }
             EditorCommand::MoveTo { position, extend } => {
-                self.state
-                    .caret
-                    .move_to(&layout.snapshot, position, extend)?
+                self.state.caret.set_selection(
+                    &layout.snapshot,
+                    Selection {
+                        anchor: if extend {
+                            self.state.caret.selection.anchor
+                        } else {
+                            position
+                        },
+                        head: position,
+                    },
+                )?;
             }
             EditorCommand::SelectAll => self.state.caret.select_all(&layout.snapshot),
             EditorCommand::InsertText(text) => {
                 edit_outcome =
                     edit::insert(document, &mut self.state.caret, &text, EditKind::Typing)?
+            }
+            EditorCommand::PasteText(text) => {
+                edit_outcome =
+                    edit::insert(document, &mut self.state.caret, &text, EditKind::Paste)?;
             }
             EditorCommand::InsertTab => {
                 edit_outcome =
@@ -638,8 +772,23 @@ impl EditorInput {
                 if command == EditorCommand::Cut && document.is_read_only() {
                     return Err(DomainError::ReadOnly);
                 }
-                if !before.is_empty() {
-                    let text = self.state.caret.selected_text(&layout.snapshot)?;
+                let normalized = self.state.caret.normalized(&layout.snapshot)?;
+                let mut selections: Vec<_> = normalized
+                    .selections()
+                    .filter(|selection| !selection.is_empty())
+                    .collect();
+                selections.sort_by_key(|selection| selection.range().start);
+                if !selections.is_empty() {
+                    let text = selections
+                        .into_iter()
+                        .map(|selection| {
+                            layout
+                                .snapshot
+                                .slice(selection.range())
+                                .map(|slice| slice.to_string())
+                        })
+                        .collect::<Result<Vec<_>>>()?
+                        .join("\n");
                     if command == EditorCommand::Cut {
                         edit_outcome =
                             edit::insert(document, &mut self.state.caret, "", EditKind::Cut)?;
@@ -655,7 +804,8 @@ impl EditorInput {
                     request: RequestId::fresh()?,
                     document: document.id(),
                     revision: document.revision(),
-                    selection: before,
+                    selection: before.selection,
+                    secondary: before.secondary.clone(),
                 };
                 self.pending_paste = Some(ticket.clone());
                 outcome.effects.push(EditorEffect::ReadClipboard(ticket));
@@ -684,15 +834,12 @@ impl EditorInput {
             });
             outcome.effects.push(EditorEffect::DismissCompletion);
         }
-        if movement_command || self.state.caret.selection != before {
+        if movement_command || self.state.caret != before {
             outcome.effects.push(EditorEffect::CaretMoved);
         }
         // Copy/save do not unexpectedly undo wheel scrolling. Navigation and edits
         // restore the caret; page commands already shift the viewport by a page.
-        if reveal
-            || document.revision() != previous_revision
-            || self.state.caret.selection != before
-        {
+        if reveal || document.revision() != previous_revision || self.state.caret != before {
             let layout = self.layout(document, viewport)?;
             self.ensure_caret_visible(&layout, viewport.geometry)?;
         }
@@ -710,21 +857,14 @@ impl EditorInput {
             || ticket.document != document.id()
             || ticket.revision != document.revision()
             || ticket.selection != self.state.caret.selection
+            || ticket.secondary != self.state.caret.secondary
             || focus.focused != Some(self.id)
             || !self.window_focused
             || self.state.search_has_focus
         {
             return Ok(InputOutcome::default());
         }
-        self.command(
-            EditorCommand::Replace {
-                range: ticket.selection.range(),
-                text: text.into(),
-                kind: EditKind::Paste,
-            },
-            document,
-            viewport,
-        )
+        self.command(EditorCommand::PasteText(text.into()), document, viewport)
     }
 }
 fn max_scroll(layout: &VisualLayout, geometry: EditorGeometry) -> usize {

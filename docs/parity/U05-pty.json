@@ -1,0 +1,63 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "case": "all-layouts-text-hex-next-previous-wrap-invalid-and-no-match",
+      "physicalBytesUnchanged": true,
+      "utf8CrossesRow": true,
+      "binaryAtEof": true,
+      "size": [
+        200,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "all-layouts-text-hex-next-previous-wrap-invalid-and-no-match",
+      "physicalBytesUnchanged": true,
+      "utf8CrossesRow": true,
+      "binaryAtEof": true,
+      "size": [
+        100,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "all-layouts-text-hex-next-previous-wrap-invalid-and-no-match",
+      "physicalBytesUnchanged": true,
+      "utf8CrossesRow": true,
+      "binaryAtEof": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "64-mib-repetitive-search-escape-stop-switch-and-typing",
+      "fileBytes": 67108864,
+      "physicalBytesUnchanged": true,
+      "stopResponseMs": 11.17,
+      "fileSwitchResponseMs": 22.75,
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 4
+}

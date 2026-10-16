@@ -16,6 +16,7 @@ pub struct TextEdit {
 pub struct EditOutcome {
     pub deltas: Vec<EditDelta>,
     pub selection: Selection,
+    pub caret: CaretState,
     pub history_discarded: usize,
 }
 
@@ -25,10 +26,28 @@ impl Document {
     pub fn apply_transaction(
         &mut self,
         expected: Revision,
-        mut edits: Vec<TextEdit>,
+        edits: Vec<TextEdit>,
         kind: EditKind,
         before_caret: Selection,
         after_caret: Option<Selection>,
+    ) -> Result<Option<EditOutcome>> {
+        self.apply_caret_transaction(
+            expected,
+            edits,
+            kind,
+            &CaretState::single(before_caret),
+            after_caret.map(CaretState::single),
+        )
+    }
+    /// Multi-selection variant with complete, atomically validated undo state.
+    /// The single-selection API remains available to explicit-range callers.
+    pub fn apply_caret_transaction(
+        &mut self,
+        expected: Revision,
+        mut edits: Vec<TextEdit>,
+        kind: EditKind,
+        before_caret: &CaretState,
+        after_caret: Option<CaretState>,
     ) -> Result<Option<EditOutcome>> {
         if self.is_read_only() {
             return Err(DomainError::ReadOnly);
@@ -39,8 +58,7 @@ impl Document {
                 current: self.revision,
             });
         }
-        positions::validate_byte(&self.text, before_caret.anchor)?;
-        positions::validate_byte(&self.text, before_caret.head)?;
+        let before_caret = before_caret.normalized(&self.snapshot())?;
         edits.sort_by_key(|edit| edit.range.start);
         let mut previous_end = 0;
         for edit in &edits {
@@ -92,12 +110,17 @@ impl Document {
                 .map_err(|_| DomainError::Unsupported("edit coordinate overflow".into()))?;
             shift += edit.inserted.len() as i128 - edit.range.len() as i128;
         }
-        let selection = after_caret.unwrap_or(Selection {
-            anchor: ByteOffset(end),
-            head: ByteOffset(end),
+        let caret = after_caret.unwrap_or_else(|| {
+            CaretState::single(Selection {
+                anchor: ByteOffset(end),
+                head: ByteOffset(end),
+            })
         });
-        positions::validate_byte(&candidate, selection.anchor)?;
-        positions::validate_byte(&candidate, selection.head)?;
+        let mut candidate_snapshot = self.snapshot();
+        candidate_snapshot.rope = candidate.clone();
+        candidate_snapshot.flattened = Arc::default();
+        let caret = caret.normalized(&candidate_snapshot)?;
+        let selection = caret.selection;
         self.text = candidate;
         self.revision = revision;
         self.flattened = Arc::default();
@@ -111,12 +134,13 @@ impl Document {
             before,
             after,
             before_caret,
-            after_caret: selection,
+            after_caret: caret.clone(),
             changed_bytes,
         });
         Ok(Some(EditOutcome {
             deltas,
             selection,
+            caret,
             history_discarded,
         }))
     }
@@ -129,18 +153,46 @@ pub fn replace(
     text: &str,
     kind: EditKind,
 ) -> Result<Option<EditOutcome>> {
-    let result = doc.apply_transaction(
+    let end = range
+        .start
+        .0
+        .checked_add(text.len())
+        .ok_or_else(|| DomainError::Unsupported("edit coordinate overflow".into()))?;
+    let remap = |offset: ByteOffset| {
+        if offset < range.start {
+            offset
+        } else if offset < range.end {
+            ByteOffset(end)
+        } else {
+            ByteOffset(end.saturating_add(offset.0.saturating_sub(range.end.0)))
+        }
+    };
+    let after = CaretState {
+        selection: Selection {
+            anchor: ByteOffset(end),
+            head: ByteOffset(end),
+        },
+        secondary: caret
+            .secondary
+            .iter()
+            .map(|selection| Selection {
+                anchor: remap(selection.anchor),
+                head: remap(selection.head),
+            })
+            .collect(),
+    };
+    let result = doc.apply_caret_transaction(
         doc.revision(),
         vec![TextEdit {
             range,
             inserted: text.into(),
         }],
         kind,
-        caret.selection,
-        None,
+        caret,
+        Some(after),
     )?;
     if let Some(outcome) = &result {
-        caret.selection = outcome.selection;
+        *caret = outcome.caret.clone();
     }
     Ok(result)
 }
@@ -150,33 +202,45 @@ pub fn insert(
     text: &str,
     kind: EditKind,
 ) -> Result<Option<EditOutcome>> {
-    replace(doc, caret, caret.selection.range(), text, kind)
+    let targets = caret.normalized(&doc.snapshot())?;
+    apply_selections(doc, caret, &targets, kind, |_, selection| {
+        Ok(TextEdit {
+            range: selection.range(),
+            inserted: text.into(),
+        })
+    })
 }
 pub fn newline(doc: &mut Document, caret: &mut CaretState) -> Result<Option<EditOutcome>> {
-    let snapshot = doc.snapshot();
-    let position = snapshot.byte_to_position(caret.cursor())?;
-    let indent: String = snapshot
-        .line_content(position.line)?
-        .chars()
-        .take_while(|ch| *ch == ' ' || *ch == '\t')
-        .collect();
-    let line = snapshot.line(position.line)?;
-    let first_line = snapshot.line(crate::LineIndex(0))?;
-    let crlf = |line: ropey::RopeSlice<'_>| {
-        line.len_chars() >= 2
-            && line.char(line.len_chars() - 1) == '\n'
-            && line.char(line.len_chars() - 2) == '\r'
-    };
-    let terminator = if crlf(line) || crlf(first_line) {
-        "\r\n"
-    } else {
-        "\n"
-    };
-    insert(
+    let targets = caret.normalized(&doc.snapshot())?;
+    apply_selections(
         doc,
         caret,
-        &format!("{terminator}{indent}"),
+        &targets,
         EditKind::Newline,
+        |snapshot, selection| {
+            let position = snapshot.byte_to_position(selection.head)?;
+            let indent: String = snapshot
+                .line_content(position.line)?
+                .chars()
+                .take_while(|ch| *ch == ' ' || *ch == '\t')
+                .collect();
+            let line = snapshot.line(position.line)?;
+            let first_line = snapshot.line(crate::LineIndex(0))?;
+            let crlf = |line: ropey::RopeSlice<'_>| {
+                line.len_chars() >= 2
+                    && line.char(line.len_chars() - 1) == '\n'
+                    && line.char(line.len_chars() - 2) == '\r'
+            };
+            let terminator = if crlf(line) || crlf(first_line) {
+                "\r\n"
+            } else {
+                "\n"
+            };
+            Ok(TextEdit {
+                range: selection.range(),
+                inserted: format!("{terminator}{indent}"),
+            })
+        },
     )
 }
 pub fn delete(
@@ -184,21 +248,71 @@ pub fn delete(
     caret: &mut CaretState,
     backward: bool,
 ) -> Result<Option<EditOutcome>> {
-    if !caret.selection.is_empty() {
-        return insert(doc, caret, "", EditKind::Delete);
-    }
     let snapshot = doc.snapshot();
-    let mut other = caret.clone();
-    move_caret(
-        &snapshot,
-        &mut other,
-        if backward {
-            crate::commands::Movement::Left
+    let mut targets = caret.normalized(&snapshot)?;
+    for selection in std::iter::once(&mut targets.selection).chain(targets.secondary.iter_mut()) {
+        if !selection.is_empty() {
+            continue;
+        }
+        let mut other = CaretState::single(*selection);
+        move_caret(
+            &snapshot,
+            &mut other,
+            if backward {
+                crate::commands::Movement::Left
+            } else {
+                crate::commands::Movement::Right
+            },
+            true,
+            None,
+        )?;
+        *selection = other.selection;
+    }
+    let targets = targets.normalized(&snapshot)?;
+    apply_selections(doc, caret, &targets, EditKind::Delete, |_, selection| {
+        Ok(TextEdit {
+            range: selection.range(),
+            inserted: String::new(),
+        })
+    })
+}
+
+fn apply_selections(
+    doc: &mut Document,
+    caret: &mut CaretState,
+    targets: &CaretState,
+    kind: EditKind,
+    mut plan: impl FnMut(&crate::document::TextSnapshot, Selection) -> Result<TextEdit>,
+) -> Result<Option<EditOutcome>> {
+    let snapshot = doc.snapshot();
+    let mut plans = targets
+        .selections()
+        .enumerate()
+        .map(|(index, selection)| plan(&snapshot, selection).map(|edit| (edit, index == 0)))
+        .collect::<Result<Vec<_>>>()?;
+    plans.sort_by_key(|(edit, _)| edit.range.start);
+    let mut shift = 0i128;
+    let mut after = CaretState::default();
+    let mut edits = Vec::with_capacity(plans.len());
+    for (edit, primary) in plans {
+        let position =
+            usize::try_from(edit.range.start.0 as i128 + shift + edit.inserted.len() as i128)
+                .map_err(|_| DomainError::Unsupported("edit coordinate overflow".into()))?;
+        let selection = Selection {
+            anchor: ByteOffset(position),
+            head: ByteOffset(position),
+        };
+        if primary {
+            after.selection = selection;
         } else {
-            crate::commands::Movement::Right
-        },
-        true,
-        None,
-    )?;
-    replace(doc, caret, other.selection.range(), "", EditKind::Delete)
+            after.secondary.push(selection);
+        }
+        shift += edit.inserted.len() as i128 - edit.range.len() as i128;
+        edits.push(edit);
+    }
+    let result = doc.apply_caret_transaction(snapshot.revision, edits, kind, caret, Some(after))?;
+    if let Some(outcome) = &result {
+        *caret = outcome.caret.clone();
+    }
+    Ok(result)
 }

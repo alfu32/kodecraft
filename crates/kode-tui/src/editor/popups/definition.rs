@@ -10,13 +10,13 @@ use crate::{
     theme::Theme,
 };
 use crossterm::event::MouseButton;
+use kode_core::WorkspaceGeneration;
 use kode_core::{
     ByteOffset, DocumentId, DocumentOrigin, DomainError, JobTag, LineIndex, Result, TextRange,
     document::{Document, TextSnapshot, Utf16Position},
     intelligence::{HighlightSpan, IntelligenceProvider, IntelligenceRequest, NavigationTarget},
     services::DocumentIo,
 };
-use kode_core::{Selection, WorkspaceGeneration};
 use kode_platform::jobs::Clock;
 use kode_platform::jobs::{Delivery, OwnerId, WorkerScheduler};
 use ratatui::{
@@ -686,13 +686,13 @@ pub enum NavigationEffect {
 }
 struct PendingNavigation {
     job: NavigationJob,
-    selection: Selection,
+    caret: kode_core::editor::selection::CaretState,
 }
 struct HoverCandidate {
     identifier: Identifier,
     revision: kode_core::Revision,
     document: DocumentId,
-    selection: Selection,
+    caret: kode_core::editor::selection::CaretState,
     due: u64,
     fired: bool,
 }
@@ -707,7 +707,11 @@ pub struct NavigationController {
     gate: ResultGate,
     project_root: PathBuf,
     pending: Option<PendingNavigation>,
-    active_stamp: Option<(DocumentId, kode_core::Revision, Selection)>,
+    active_stamp: Option<(
+        DocumentId,
+        kode_core::Revision,
+        kode_core::editor::selection::CaretState,
+    )>,
     hover: Option<HoverCandidate>,
     effects: Vec<NavigationEffect>,
 }
@@ -798,9 +802,9 @@ impl NavigationController {
         };
         self.pending = Some(PendingNavigation {
             job: job.clone(),
-            selection: state.caret.selection,
+            caret: state.caret.clone(),
         });
-        self.active_stamp = Some((snapshot.id, snapshot.revision, state.caret.selection));
+        self.active_stamp = Some((snapshot.id, snapshot.revision, state.caret.clone()));
         self.effects
             .retain(|effect| !matches!(effect, NavigationEffect::Run(_)));
         self.effects.push(NavigationEffect::Run(job));
@@ -851,7 +855,7 @@ impl NavigationController {
             identifier,
             revision: snapshot.revision,
             document: snapshot.id,
-            selection: state.caret.selection,
+            caret: state.caret.clone(),
             due: self.clock.now_millis().saturating_add(HOVER_DELAY_MS),
             fired: false,
         });
@@ -866,8 +870,8 @@ impl NavigationController {
         let Some(hover) = &mut self.hover else {
             return;
         };
-        if (hover.document, hover.revision, hover.selection)
-            != (snapshot.id, snapshot.revision, state.caret.selection)
+        if (hover.document, hover.revision) != (snapshot.id, snapshot.revision)
+            || hover.caret != state.caret
         {
             self.dismiss();
             return;
@@ -897,11 +901,9 @@ impl NavigationController {
             || !self.gate.accepts("navigation", tag)
             || self.pending.as_ref().is_none_or(|pending| {
                 pending.job.tag != tag
-                    || (
-                        pending.job.snapshot.id,
-                        pending.job.snapshot.revision,
-                        pending.selection,
-                    ) != (snapshot.id, snapshot.revision, state.caret.selection)
+                    || (pending.job.snapshot.id, pending.job.snapshot.revision)
+                        != (snapshot.id, snapshot.revision)
+                    || pending.caret != state.caret
             })
             || state.search_has_focus
         {
@@ -954,19 +956,15 @@ impl NavigationController {
 impl EditorInputHooks for NavigationController {
     fn context_changed(&mut self, snapshot: &TextSnapshot, state: &EditorState) {
         if self.pending.as_ref().is_some_and(|pending| {
-            (
-                pending.job.snapshot.id,
-                pending.job.snapshot.revision,
-                pending.selection,
-            ) != (snapshot.id, snapshot.revision, state.caret.selection)
-        }) || self
-            .active_stamp
-            .is_some_and(|stamp| stamp != (snapshot.id, snapshot.revision, state.caret.selection))
-            || self.hover.as_ref().is_some_and(|hover| {
-                (hover.document, hover.revision, hover.selection)
-                    != (snapshot.id, snapshot.revision, state.caret.selection)
-            })
-            || state.search_has_focus
+            (pending.job.snapshot.id, pending.job.snapshot.revision)
+                != (snapshot.id, snapshot.revision)
+                || pending.caret != state.caret
+        }) || self.active_stamp.as_ref().is_some_and(|stamp| {
+            (stamp.0, stamp.1) != (snapshot.id, snapshot.revision) || stamp.2 != state.caret
+        }) || self.hover.as_ref().is_some_and(|hover| {
+            (hover.document, hover.revision) != (snapshot.id, snapshot.revision)
+                || hover.caret != state.caret
+        }) || state.search_has_focus
         {
             self.dismiss();
         }

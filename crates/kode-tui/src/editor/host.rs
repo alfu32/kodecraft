@@ -865,6 +865,13 @@ impl<H: EditorHost> EditorView<H> {
                 EditorEffect::Changed { deltas, .. } => {
                     self.changed(documents.document(self.document_id())?.snapshot(), deltas)?
                 }
+                EditorEffect::CaretMoved => {
+                    let snapshot = documents.document(self.document_id())?.snapshot();
+                    self.completion
+                        .context_changed(&snapshot, &self.input.state);
+                    self.navigation
+                        .context_changed(&snapshot, &self.input.state);
+                }
                 _ => {}
             }
         }
@@ -1193,7 +1200,7 @@ impl<H: EditorHost> EditorView<H> {
         }
         let (before, selection) = {
             let doc = documents.document(self.document_id())?;
-            (doc.revision(), self.input.state.caret.selection)
+            (doc.revision(), self.input.state.caret.clone())
         };
         let accepted = self.search.complete_scan(
             tag,
@@ -1206,11 +1213,16 @@ impl<H: EditorHost> EditorView<H> {
         if changed {
             self.changed(snapshot, None)?;
         }
+        let snapshot = documents.document(self.document_id())?.snapshot();
+        self.completion
+            .context_changed(&snapshot, &self.input.state);
+        self.navigation
+            .context_changed(&snapshot, &self.input.state);
         self.drain_controls()?;
         self.reconcile(
             documents,
             area,
-            changed || selection != self.input.state.caret.selection,
+            changed || selection != self.input.state.caret,
         )?;
         Ok(accepted)
     }

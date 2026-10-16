@@ -86,6 +86,7 @@ jobs:
           python3 scripts/test-appimage-terminal.py --appimage "target/release-assets/kode-${distribution_version}-x86_64.AppImage" --repro "target/release-repro/kode-${distribution_version}-x86_64.AppImage"
           python3 scripts/test-file-paths-terminal.py --binary target/release/kode
           python3 scripts/test-url-templates-terminal.py --binary target/release/kode
+          python3 scripts/test-hex-search-terminal.py --binary target/release/kode
       - name: Actual archive and no-Java Rust build acceptance
         run: |
           distribution_version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')
@@ -115,7 +116,11 @@ jobs:
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: linux-qualification-evidence
-          path: docs/parity/Z03-*.json
+          path: |
+            docs/parity/Z03-*.json
+            docs/parity/U05-pty.json
+            docs/parity/U08-pty.json
+            docs/parity/U11-pty.json
           if-no-files-found: error
   draft:
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) || (github.event_name == 'workflow_dispatch' && inputs.draft_tag != '')

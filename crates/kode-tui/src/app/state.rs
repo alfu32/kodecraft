@@ -133,6 +133,16 @@ pub enum AppWork {
     Diff(crate::panels::git::diff::DiffWork),
     LspSettings(crate::panels::settings::lsp::SettingsAction),
     Image(crate::viewers::image::ImageJob),
+    HexSearch {
+        tag: JobTag,
+        view: FocusId,
+        job: crate::viewers::hex::search::SearchJob,
+    },
+    HexPaste {
+        tag: JobTag,
+        view: FocusId,
+        proof: crate::viewers::hex::PasteProof,
+    },
     Configure {
         tag: JobTag,
         action: ConfigAction,
@@ -1020,6 +1030,40 @@ impl AppState {
             self.work
                 .extend(view.take_work().into_iter().map(AppWork::Image));
         }
+        let hex_work: Vec<_> = self
+            .hexes
+            .values_mut()
+            .flat_map(|view| {
+                let id = view.id;
+                view.take_work().into_iter().map(move |work| (id, work))
+            })
+            .collect();
+        for (view, work) in hex_work {
+            match work {
+                crate::viewers::hex::HexWork::Search(job) => self.work.push(AppWork::HexSearch {
+                    tag: JobTag {
+                        workspace: self.generation,
+                        request: job.request,
+                        document: None,
+                    },
+                    view,
+                    job,
+                }),
+                crate::viewers::hex::HexWork::Copy(text) => {
+                    let epoch = self.clipboard.remember(&text)?;
+                    let tag = self.tag()?;
+                    self.work.push(AppWork::Clipboard {
+                        tag,
+                        job: ClipboardJob::Publish(epoch),
+                        names: false,
+                    });
+                }
+                crate::viewers::hex::HexWork::Paste(proof) => {
+                    let tag = self.tag()?;
+                    self.work.push(AppWork::HexPaste { tag, view, proof });
+                }
+            }
+        }
         self.drain_files()?;
         self.work.extend(
             self.project_panel
@@ -1283,12 +1327,7 @@ impl AppState {
         } else if let Some(path) = &self.active_hex
             && let Some(view) = self.hexes.get_mut(path)
         {
-            view.render(
-                geometry.viewer,
-                buffer,
-                theme,
-                self.focus.focused == Some(view.id),
-            );
+            cursor = view.render(geometry.viewer, buffer, theme, &self.focus);
         } else {
             Paragraph::new(if self.splash { "Kode\n\nSelect a file to begin editing.\nSource scanning runs in the background.\nPress Enter to dismiss this screen." } else { "Select a file from the project." }).wrap(Wrap { trim: false }).render(geometry.viewer, buffer);
         }

@@ -121,6 +121,19 @@ reported in `EditOutcome`. Versioned history export keeps at most 30 states on
 each stack within a shared 64 MiB history-text budget, records omitted counts,
 and preserves current/saved text. Import reports any capacity trimming explicitly.
 
+U04's core extends `CaretState` with secondary selections; `selection` remains
+the primary for existing host execution/navigation APIs. Every selection is a
+validated UTF-8 byte range. Normalization merges overlaps, duplicate carets and
+carets on/inside a selected range while retaining the primary group's direction;
+adjacent nonempty ranges remain independent replacements. Typing, paste, newline
+and deletion plan against one original snapshot and use `apply_caret_transaction`
+to commit complete before/after caret sets in one revision and undo action.
+Newlines use each cursor's original indentation; colliding deletion results merge.
+History v1 adds optional `secondary` fields with empty defaults, keeping old JSON
+readable. Import validates every selection before committing, and stale-file
+restore remaps every selection through UTF-16 coordinates before normalization.
+Input gestures, rendering and host qualification remain in progress under U04.
+
 `EditorHost` supplies `read_only`, `save_target`, `language`, `completion_provider`,
 `intelligence_provider`, `on_change`, `on_navigate`, `warning_lines`, and
 `transient_highlight`. The host may intercept its documented shortcuts, such as
@@ -609,6 +622,20 @@ The shell keeps byte views during workspace lifetime, reconciles their renamed
 paths and persists HEX recents/active origin. Matching the actual source, binary
 edits have no save/history/session-buffer format and remain temporary; the UI
 states this explicitly. The binary loading limit is 64 MiB.
+
+U05 row widths are 8/16/32 bytes, initially 16. Layout changes preserve the byte
+cursor, selection, original top-byte anchor and modified buffer; row alignment
+must not replace that anchor during a round trip between widths. Horizontal
+scrolling retains the offset gutter and maps both visible byte columns correctly.
+Hex find has its own focus identity and text clipboard. Literal text is UTF-8;
+binary patterns contain packed or ASCII-whitespace-separated hex pairs, limited
+to 4096 bytes. Search is linear, supports overlapping next/previous matches and
+wrap, and runs on the bounded blocking scheduler with cancellation checks.
+Publication requires the current workspace, view, request, immutable byte
+snapshot, query/mode and caret/selection proof. A late result cannot consume a
+newer request, move focus, mutate bytes or survive query/navigation/byte edits,
+Stop, Escape, detach, workspace disposal or shutdown. Native find-field paste
+uses a separate request proof and cannot populate a closed or changed field.
 
 ## Image viewer workers
 

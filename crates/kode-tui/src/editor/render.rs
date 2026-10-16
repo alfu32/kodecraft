@@ -135,6 +135,7 @@ impl EditorHeader {
 #[derive(Debug, Default, Clone)]
 pub struct RenderState {
     pub selection: Selection,
+    pub secondary: Vec<Selection>,
     pub scroll_rows: usize,
     pub focused: bool,
 }
@@ -190,7 +191,33 @@ pub fn render_editor(
     if text_area.height == 0 {
         return None;
     }
-    let selection = options.state.selection.range();
+    let all =
+        std::iter::once(options.state.selection).chain(options.state.secondary.iter().copied());
+    let mut ranges: Vec<_> = all
+        .clone()
+        .map(|selection| selection.range())
+        .filter(|range| !range.is_empty())
+        .collect();
+    ranges.sort_by_key(|range| range.start);
+    let mut selected: Vec<TextRange> = vec![];
+    for range in ranges {
+        if let Some(last) = selected.last_mut()
+            && range.start <= last.end
+        {
+            last.end = last.end.max(range.end);
+        } else {
+            selected.push(range);
+        }
+    }
+    let is_selected = |range: TextRange| {
+        let index = selected.partition_point(|selected| selected.end <= range.start);
+        selected
+            .get(index)
+            .is_some_and(|selected| selected.start < range.end)
+    };
+    let mut heads: Vec<_> = all.map(|selection| selection.head).collect();
+    heads.sort_unstable();
+    heads.dedup();
     let visible: Vec<_> = layout
         .visible_rows(options.state.scroll_rows, text_area.height as usize)
         .collect();
@@ -287,19 +314,18 @@ pub fn render_editor(
                     {
                         style = style.patch(theme.style("code-tab"));
                     }
-                    if selection.start < source.end && source.start < selection.end {
+                    if is_selected(source) {
                         style = style.patch(theme.style("code-selection"));
                     }
-                    if options.state.focused && source.start == options.state.selection.head {
+                    if options.state.focused && heads.binary_search(&source.start).is_ok() {
                         style = style.patch(theme.style("code-cursor"));
                     }
-                } else if selection.start
-                    < layout.lines[row.fold_end.expect("summary has closing line").0]
+                } else if is_selected(TextRange {
+                    start: line.source.end,
+                    end: layout.lines[row.fold_end.expect("summary has closing line").0]
                         .source
-                        .start
-                    && line.source.end < selection.end
-                    && !selection.is_empty()
-                {
+                        .start,
+                }) {
                     style = style.patch(theme.style("code-selection"));
                 }
                 buffer[(text_area.x + column as u16, y)]
@@ -317,10 +343,10 @@ pub fn render_editor(
             if run.glyph == Glyph::Tab {
                 style = style.patch(theme.style("code-tab"));
             }
-            if selection.start < run.source.end && run.source.start < selection.end {
+            if is_selected(run.source) {
                 style = style.patch(theme.style("code-selection"));
             }
-            if options.state.focused && run.source.start == options.state.selection.head {
+            if options.state.focused && heads.binary_search(&run.source.start).is_ok() {
                 style = style.patch(theme.style("code-cursor"));
             }
             let remaining = text_area.width as usize - column;
@@ -336,6 +362,25 @@ pub fn render_editor(
     }
     if !options.state.focused || text_area.is_empty() {
         return None;
+    }
+    // Include empty lines, line endings and exact wrap/EOF edges for secondary
+    // carets as well. Only the primary supplies the real terminal cursor.
+    let first = visible.first()?.1.source.start;
+    let last = visible.last()?.1.source.end;
+    let low = heads.partition_point(|head| *head < first);
+    for head in heads[low..].iter().take_while(|head| **head <= last) {
+        let Ok((row, column)) = layout.position_to_cell(*head) else {
+            continue;
+        };
+        if row >= options.state.scroll_rows
+            && row < options.state.scroll_rows + text_area.height as usize
+        {
+            let position = Position::new(
+                text_area.x + column.min(text_area.width as usize - 1) as u16,
+                text_area.y + (row - options.state.scroll_rows) as u16,
+            );
+            buffer[position].set_style(theme.style("code-cursor"));
+        }
     }
     let (row, column) = layout.position_to_cell(options.state.selection.head).ok()?;
     if row < options.state.scroll_rows

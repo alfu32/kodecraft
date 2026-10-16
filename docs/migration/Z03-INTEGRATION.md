@@ -1,8 +1,11 @@
 # Z03 distribution continuation
 
-Z03 is **done** for Linux x86_64 GNU. The archive, AppImage, strict Snap, notices,
-relocated browser terminal and local acceptance are qualified. The full migration
-goal remains active; Z04 owns final release qualification after remaining UAT work.
+Z03 is **reopened / todo** for the user's [full six-target artifact matrix](Z03-ARTIFACT-MATRIX.md).
+Resume it after U01–U12. The Linux x86_64 archive/AppImage/Snap foundation below
+is qualified for the recorded artifacts. Other portable targets and MSI/MSIX/DMG,
+architecture variants and full release orchestration remain required. The matrix
+records the authorized Windows SSH host and project directory. Z04 owns the final
+assembled release audit/publication after the complete matrix passes.
 
 ## Implemented and qualified
 

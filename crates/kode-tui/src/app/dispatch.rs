@@ -9,6 +9,9 @@ use ratatui::layout::{Position, Rect};
 
 impl AppState {
     pub(super) fn request_quit(&mut self) -> Result<()> {
+        for view in self.hexes.values_mut() {
+            view.detach(&mut self.focus);
+        }
         self.quit_requested = true;
         self.closing = true;
         self.shell_requested = false;

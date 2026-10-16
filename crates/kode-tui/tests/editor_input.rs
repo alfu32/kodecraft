@@ -88,7 +88,7 @@ impl Harness {
         render_editor(
             &layout,
             &mut buffer,
-            &Theme::default(),
+            &Theme::compiled(),
             RenderOptions {
                 geometry,
                 header: &EditorHeader::for_document(&self.document, None, String::new()),
@@ -639,4 +639,323 @@ fn header_gutter_tiny_resize_and_logical_arrows_keep_coordinate_bounds() {
         )
         .unwrap();
     assert_eq!(h.view.state.caret.cursor(), ByteOffset(100));
+}
+
+fn at_byte(h: &mut Harness, byte: usize, action: PointerAction, alt: bool) -> InputEvent {
+    let geometry = h.geometry();
+    let layout = h
+        .view
+        .layout(
+            &h.document,
+            InputViewport {
+                geometry,
+                folds: &[],
+            },
+        )
+        .unwrap();
+    let (row, column) = layout.position_to_cell(ByteOffset(byte)).unwrap();
+    pointer(
+        geometry.text.x + column as u16,
+        geometry.text.y + row as u16,
+        action,
+        Modifiers {
+            alt,
+            ..Default::default()
+        },
+    )
+}
+fn click_byte(h: &mut Harness, byte: usize, alt: bool) {
+    let down = at_byte(h, byte, PointerAction::Down(MouseButton::Left), alt);
+    h.send(down).unwrap();
+    let up = at_byte(h, byte, PointerAction::Up(MouseButton::Left), alt);
+    h.send(up).unwrap();
+}
+
+#[test]
+fn alt_click_toggles_primary_secondary_and_final_cursor_then_edits_and_undoes_together() {
+    let mut h = Harness::new("abcd", 30, 8);
+    click_byte(&mut h, 1, false);
+    click_byte(&mut h, 3, true);
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(3));
+    assert_eq!(h.view.state.caret.secondary[0].head, ByteOffset(1));
+    let before = h.view.state.caret.clone();
+    h.send(plain(Key::Character('Ω'))).unwrap();
+    assert_eq!(h.document.snapshot().text().as_ref(), "aΩbcΩd");
+    assert_eq!(h.document.history_depth(), (1, 0));
+    h.send(key(
+        Key::Character('u'),
+        Modifiers {
+            alt: true,
+            ..Default::default()
+        },
+    ))
+    .unwrap();
+    assert_eq!(h.document.snapshot().text().as_ref(), "abcd");
+    assert_eq!(h.view.state.caret, before);
+    click_byte(&mut h, 3, true);
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(1));
+    assert!(h.view.state.caret.secondary.is_empty());
+    click_byte(&mut h, 1, true);
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(1));
+    click_byte(&mut h, 3, true);
+    click_byte(&mut h, 1, true);
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(3));
+    assert!(h.view.state.caret.secondary.is_empty());
+    click_byte(&mut h, 0, true);
+    click_byte(&mut h, 2, false);
+    assert!(h.view.state.caret.secondary.is_empty());
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(2));
+}
+
+#[test]
+fn alt_drag_adds_reverse_selection_normalizes_overlap_and_releases_outside_without_loss() {
+    let mut h = Harness::new("abcdefgh", 30, 8);
+    click_byte(&mut h, 1, false);
+    click_byte(&mut h, 3, true);
+    for (byte, action) in [
+        (6, PointerAction::Down(MouseButton::Left)),
+        (2, PointerAction::Drag(MouseButton::Left)),
+        (2, PointerAction::Up(MouseButton::Left)),
+    ] {
+        let event = at_byte(&mut h, byte, action, true);
+        h.send(event).unwrap();
+    }
+    assert_eq!(
+        h.view.state.caret.selection,
+        Selection {
+            anchor: ByteOffset(6),
+            head: ByteOffset(2)
+        }
+    );
+    assert_eq!(h.view.state.caret.secondary.len(), 1); // cursor 3 was inside the new range
+    assert_eq!(h.view.state.caret.secondary[0].head, ByteOffset(1));
+    assert!(h.focus.captured.is_none());
+    h.send(InputEvent::Paste("X".into())).unwrap();
+    assert_eq!(h.document.snapshot().text().as_ref(), "aXbXgh");
+    h.send(key(
+        Key::Character('u'),
+        Modifiers {
+            alt: true,
+            ..Default::default()
+        },
+    ))
+    .unwrap();
+    let event = at_byte(&mut h, 7, PointerAction::Down(MouseButton::Left), true);
+    h.send(event).unwrap();
+    let geometry = h.geometry();
+    h.send(pointer(
+        geometry.text.right() + 5,
+        geometry.text.y,
+        PointerAction::Up(MouseButton::Left),
+        Modifiers {
+            alt: true,
+            ..Default::default()
+        },
+    ))
+    .unwrap();
+    assert!(h.focus.captured.is_none());
+    assert_eq!(
+        h.view.state.caret.selection.range(),
+        kode_core::TextRange::new(ByteOffset(7), ByteOffset(8)).unwrap()
+    );
+    assert_eq!(h.view.state.caret.secondary.len(), 2);
+    let event = at_byte(&mut h, 0, PointerAction::Down(MouseButton::Left), true);
+    h.send(event).unwrap();
+    h.send(InputEvent::Focus(false)).unwrap();
+    assert!(!h.view.is_dragging(&h.focus));
+    assert!(h.focus.captured.is_none());
+    assert!(h.view.state.caret.validate(&h.document.snapshot()).is_ok());
+}
+
+#[test]
+fn visual_vertical_cursors_follow_wraps_clamp_boundaries_and_escape_keeps_primary() {
+    let mut h = Harness::new("abcdefghij0123456789\nxy\nz", 13, 8); // 10 text cells
+    click_byte(&mut h, 2, false);
+    let add = |key_value| {
+        key(
+            key_value,
+            Modifiers {
+                ctrl: true,
+                shift: true,
+                ..Default::default()
+            },
+        )
+    };
+    h.send(add(Key::Down)).unwrap();
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(12));
+    h.send(add(Key::Down)).unwrap();
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(23));
+    h.send(add(Key::Down)).unwrap();
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(25));
+    let before = h.view.state.caret.clone();
+    h.send(add(Key::Down)).unwrap();
+    assert_eq!(h.view.state.caret, before);
+    assert_eq!(h.view.state.caret.secondary.len(), 3);
+    h.send(plain(Key::Escape)).unwrap();
+    assert!(h.view.state.caret.secondary.is_empty());
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(25));
+}
+
+#[test]
+fn multi_paste_proof_copy_cut_navigation_and_cursor_paint_use_the_entire_set() {
+    let mut h = Harness::new("ab cd ef", 30, 8);
+    h.view.state.caret.selection = Selection {
+        anchor: ByteOffset(8),
+        head: ByteOffset(6),
+    };
+    h.view.state.caret.secondary = vec![Selection {
+        anchor: ByteOffset(0),
+        head: ByteOffset(2),
+    }];
+    let outcome = h
+        .send(key(
+            Key::Character('c'),
+            Modifiers {
+                ctrl: true,
+                ..Default::default()
+            },
+        ))
+        .unwrap();
+    assert!(
+        outcome
+            .effects
+            .iter()
+            .any(|effect| matches!(effect, EditorEffect::Copy(text) if text == "ab\nef"))
+    );
+    let ticket = h.paste_ticket();
+    h.view.state.caret.secondary.clear(); // primary is unchanged
+    assert!(!h.complete(&ticket, "STALE").handled);
+    h.view.state.caret.secondary = ticket.secondary.clone();
+    let ticket = h.paste_ticket();
+    h.complete(&ticket, "Ω");
+    assert_eq!(h.document.snapshot().text().as_ref(), "Ω cd Ω");
+    h.send(key(
+        Key::Character('u'),
+        Modifiers {
+            alt: true,
+            ..Default::default()
+        },
+    ))
+    .unwrap();
+    h.send(key(
+        Key::Character('x'),
+        Modifiers {
+            ctrl: true,
+            ..Default::default()
+        },
+    ))
+    .unwrap();
+    assert_eq!(h.document.snapshot().text().as_ref(), " cd ");
+    h.send(key(
+        Key::Character('u'),
+        Modifiers {
+            alt: true,
+            ..Default::default()
+        },
+    ))
+    .unwrap();
+    h.send(plain(Key::Left)).unwrap();
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(5));
+    assert_eq!(h.view.state.caret.secondary[0].head, ByteOffset(1));
+    let geometry = h.geometry();
+    let buffer = h.render();
+    for column in [1, 5] {
+        assert_eq!(
+            buffer[(geometry.text.x + column, geometry.text.y)].bg,
+            Theme::compiled().style("code-cursor").bg.unwrap()
+        );
+    }
+}
+
+#[test]
+fn visual_additions_skip_collapsed_rows_and_preserve_valid_tab_and_unicode_boundaries() {
+    let mut h = Harness::new("{\n\t😀\n}\n\t界e\u{301}\nnext", 20, 8);
+    let geometry = h.geometry();
+    let folds = [kode_tui::editor::layout::CollapsedFold {
+        start: LineIndex(0),
+        end: LineIndex(2),
+    }];
+    let input = key(
+        Key::Down,
+        Modifiers {
+            ctrl: true,
+            shift: true,
+            ..Default::default()
+        },
+    );
+    h.view
+        .dispatch(
+            &input,
+            &mut h.document,
+            &mut h.focus,
+            InputViewport {
+                geometry,
+                folds: &folds,
+            },
+            &mut (),
+        )
+        .unwrap();
+    assert_eq!(
+        h.document
+            .snapshot()
+            .byte_to_position(h.view.state.caret.cursor())
+            .unwrap()
+            .line,
+        LineIndex(3)
+    );
+    h.view.state.caret.validate(&h.document.snapshot()).unwrap();
+    for _ in 0..8 {
+        h.send(input.clone()).unwrap();
+    }
+    h.view.state.caret.validate(&h.document.snapshot()).unwrap();
+    assert!(h.view.state.caret.secondary.len() >= 2);
+    h.send(InputEvent::Paste("X".into())).unwrap();
+    assert_eq!(h.document.history_depth(), (1, 0));
+}
+
+#[test]
+fn stale_additive_drag_is_disposed_after_shared_document_change_and_invalid_move_is_atomic() {
+    let mut h = Harness::new("abcdefgh\n", 30, 8);
+    click_byte(&mut h, 1, false);
+    let down = at_byte(&mut h, 6, PointerAction::Down(MouseButton::Left), true);
+    h.send(down).unwrap();
+    h.document
+        .apply_edit(
+            h.document.revision(),
+            kode_core::TextRange::new(ByteOffset(0), ByteOffset(8)).unwrap(),
+            "é",
+            kode_core::commands::EditKind::Programmatic,
+        )
+        .unwrap();
+    let geometry = h.geometry();
+    h.send(pointer(
+        geometry.text.x + 3,
+        geometry.text.y,
+        PointerAction::Up(MouseButton::Left),
+        Modifiers {
+            alt: true,
+            ..Default::default()
+        },
+    ))
+    .unwrap();
+    assert!(h.focus.captured.is_none());
+    assert!(!h.view.is_dragging(&h.focus));
+    h.view.state.caret.validate(&h.document.snapshot()).unwrap();
+    let before = h.view.state.caret.clone();
+    assert!(
+        h.view
+            .command(
+                EditorCommand::MoveTo {
+                    position: ByteOffset(1),
+                    extend: false
+                },
+                &mut h.document,
+                InputViewport {
+                    geometry,
+                    folds: &[]
+                }
+            )
+            .is_err()
+    );
+    assert_eq!(h.view.state.caret, before);
 }

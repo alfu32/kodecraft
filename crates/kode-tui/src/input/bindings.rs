@@ -11,6 +11,19 @@ pub fn editor_command(input: KeyInput) -> Option<EditorCommand> {
         super::shortcuts::command_key(super::shortcuts::Scope::Editor, input)?
     };
     let modifiers = input.modifiers;
+    if modifiers.ctrl
+        && modifiers.shift
+        && !modifiers.alt
+        && !modifiers.meta
+        && matches!(input.key, Key::Up | Key::Down)
+    {
+        return Some(EditorCommand::AddCursor {
+            down: input.key == Key::Down,
+        });
+    }
+    if input.key == Key::Escape && modifiers == Default::default() {
+        return Some(EditorCommand::ClearSecondaryCursors);
+    }
     let extend = modifiers.shift;
     let movement = match input.key {
         Key::Left => Some(if modifiers.ctrl {

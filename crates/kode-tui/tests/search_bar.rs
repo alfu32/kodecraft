@@ -433,3 +433,101 @@ async fn real_search_worker_queue_publishes_report_and_drains_shutdown() {
     assert_eq!(h.bar.label(), "0/2");
     assert!(scheduler.shutdown().await.is_empty());
 }
+
+#[test]
+fn alt_enter_waits_for_current_matches_selects_all_and_returns_to_multi_editing() {
+    let mut h = Harness::new("é one one\none");
+    h.open();
+    h.query("one");
+    h.send(key(
+        Key::Enter,
+        Modifiers {
+            alt: true,
+            ..Default::default()
+        },
+    ))
+    .unwrap();
+    assert!(h.input.state.search_has_focus);
+    h.complete();
+    assert!(!h.input.state.search_has_focus);
+    assert_eq!(h.input.state.caret.selections().count(), 3);
+    assert!(
+        h.input.state.caret.selections().all(|selection| h
+            .doc
+            .snapshot()
+            .slice(selection.range())
+            .unwrap()
+            == "one")
+    );
+    let before = h.input.state.caret.clone();
+    h.send(InputEvent::Paste("界".into())).unwrap();
+    assert_eq!(h.doc.snapshot().text().as_ref(), "é 界 界\n界");
+    assert_eq!(h.doc.history_depth(), (1, 0));
+    h.send(key(
+        Key::Character('u'),
+        Modifiers {
+            alt: true,
+            ..Default::default()
+        },
+    ))
+    .unwrap();
+    assert_eq!(h.doc.snapshot().text().as_ref(), "é one one\none");
+    assert_eq!(h.input.state.caret, before);
+}
+
+#[test]
+fn pending_select_all_cannot_survive_query_focus_close_or_invalid_no_match() {
+    let mut h = Harness::new("one two one");
+    h.open();
+    h.query("one");
+    let (old_tag, old_snapshot, old_query) = h.request();
+    let all = key(
+        Key::Enter,
+        Modifiers {
+            alt: true,
+            ..Default::default()
+        },
+    );
+    h.send(all.clone()).unwrap();
+    h.query("two");
+    assert!(
+        !h.bar
+            .complete_scan(
+                old_tag,
+                scan(&old_snapshot, &old_query, || false),
+                &mut h.doc,
+                &mut h.input.state
+            )
+            .unwrap()
+    );
+    h.complete();
+    assert!(h.input.state.caret.secondary.is_empty());
+    h.query("one");
+    h.send(all.clone()).unwrap();
+    h.send(InputEvent::Focus(false)).unwrap();
+    h.complete();
+    assert!(h.input.state.caret.secondary.is_empty());
+    h.send(InputEvent::Focus(true)).unwrap();
+    for query in ["absent", "("] {
+        h.query(query);
+        h.complete();
+        h.send(all.clone()).unwrap();
+        assert!(h.input.state.caret.secondary.is_empty());
+        assert!(h.input.state.search_has_focus);
+    }
+    h.query("one");
+    let (tag, snapshot, query) = h.request();
+    h.send(all).unwrap();
+    h.send(plain(Key::Escape)).unwrap();
+    assert!(
+        !h.bar
+            .complete_scan(
+                tag,
+                scan(&snapshot, &query, || false),
+                &mut h.doc,
+                &mut h.input.state
+            )
+            .unwrap()
+    );
+    assert!(h.input.state.caret.secondary.is_empty());
+}

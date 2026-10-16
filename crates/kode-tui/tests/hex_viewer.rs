@@ -38,7 +38,7 @@ fn setup() -> (HexView, FocusState, Buffer) {
         Rect::new(3, 2, 90, 8),
         &mut buffer,
         &Theme::compiled(),
-        true,
+        &focus,
     );
     (view, focus, buffer)
 }
@@ -51,7 +51,7 @@ fn hex_ascii_cells_offsets_selection_and_cursor_share_byte_identity() {
         Rect::new(3, 2, 90, 8),
         &mut buffer,
         &Theme::compiled(),
-        true,
+        &focus,
     );
     assert_eq!(buffer[(13, 5)].symbol(), "2");
     assert_eq!(buffer[(14, 5)].symbol(), "0");
@@ -141,11 +141,15 @@ fn empty_partial_rows_and_tiny_surfaces_clear_only_owned_cells() {
                     HexView::new("\u{1b}[0mfile".into(), "binary".into(), bytes.clone()).unwrap();
                 let mut buffer = Buffer::empty(Rect::new(0, 0, 100, 20));
                 buffer[(0, 0)].set_symbol("X");
+                let mut focus = FocusState {
+                    focused: Some(view.id),
+                    ..Default::default()
+                };
                 view.render(
                     Rect::new(2, 3, width, height),
                     &mut buffer,
                     &Theme::compiled(),
-                    true,
+                    &focus,
                 );
                 assert_eq!(buffer[(0, 0)].symbol(), "X");
                 assert!(
@@ -154,10 +158,6 @@ fn empty_partial_rows_and_tiny_surfaces_clear_only_owned_cells() {
                         .iter()
                         .all(|cell| !cell.symbol().contains('\u{1b}'))
                 );
-                let mut focus = FocusState {
-                    focused: Some(view.id),
-                    ..Default::default()
-                };
                 view.dispatch(&key(Key::End, false, false, false), &mut focus);
                 assert!(view.buffer.cursor().0 <= bytes.len());
             }

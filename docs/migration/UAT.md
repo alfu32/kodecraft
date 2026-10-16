@@ -14,8 +14,8 @@ M002 uses a selectable/copyable authorization URL for completing login in a GUI 
 | M002 | Authentication protocols and OAuth browser workflow | **done** | [R09](tasks/08-rest.md), [R10](tasks/08-rest.md) |
 | B003 | Readable multiline database error details | **done** | [U02](tasks/11-uat.md) |
 | M003 | Separate downloadable jlink runtime; retain flexible drivers | **done** | [U03](tasks/11-uat.md) |
-| B004 | Multiple cursors and selections | **todo** | [U04](tasks/11-uat.md) |
-| M004 | 8/16/32-column hex layouts and text/binary find | **in-progress** | [U05](tasks/11-uat.md) |
+| B004 | Multiple cursors and selections | **in-progress** | [U04](tasks/11-uat.md) |
+| M004 | 8/16/32-column hex layouts and text/binary find | **done** | [U05](tasks/11-uat.md) |
 | M005 | Double-click and Alt+double-click word selection | **todo** | [U06](tasks/11-uat.md) |
 | M006 | File-tree picker buttons for path inputs | **todo** | [U07](tasks/11-uat.md) |
 | B005 | Project-relative open-file labels with optional full paths | **done** | [U08](tasks/11-uat.md) |

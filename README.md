@@ -28,6 +28,9 @@ relative native library closure, and full dependency notices. Build and acceptan
 commands are in [the distribution guide](packaging/README.md). Linux AppImage and
 strict core24 Snap builds are also qualified locally. CI and draft orchestration
 are implemented; remote execution and final publication remain unperformed.
+Z03 is [reopened for the full artifact matrix](docs/migration/Z03-ARTIFACT-MATRIX.md):
+portable Linux, Windows and macOS on x86_64 and arm64, architecture-specific
+AppImages and Snaps, Windows MSI/MSIX and macOS DMG. Work resumes after U01–U12.
 `--resources DIRECTORY` within `serve` selects the child IDE's resource override.
 Remaining arguments after `--` pass literally to ttyd; an unknown option also
 starts forwarding, matching the original CLI.
@@ -56,6 +59,15 @@ that distinguish equal filenames. Outside-project files stay absolute. Click
 `[paths:rel]` / `[paths:full]`, or press **P** while Files is focused, to toggle
 full paths. Each project remembers this display preference; file identity and
 save targets stay the same.
+
+The hex viewer offers **8 / 16 / 32** bytes per row in its header; **F8** cycles
+layouts while retaining the byte selection and scroll anchor. **Ctrl+F** opens
+find. **Tab** switches literal UTF-8 text and hex bytes (`00 FF 41` or `00FF41`);
+Enter / Shift+Enter finds the next / previous match and wraps at the ends.
+F3 / Shift+F3 repeats from the byte view. Escape closes find and cancels its
+worker; Stop cancels while keeping the field open. Large searches run off the
+UI thread. Alt+C/X/V retains the private raw-byte clipboard; the find field uses
+the text clipboard. Byte edits remain temporary and cannot be saved to disk.
 
 The external JDBC protocol/bootstrap/supervisor is available as a backend. Build
 and test it with `bash scripts/test-jdbc-bridge.sh` using Java 21 and Maven; the
@@ -114,8 +126,8 @@ Pretty preferences survive restart; runtime responses and cookies do not.
 Postman scripts are preserved without execution. The Auth tab now offers No Auth,
 API Key, Bearer, Basic, Digest, OAuth 1.0, OAuth 2.0, Hawk, AWS Signature, NTLM and
 Akamai EdgeGrid. Click a credential row to edit it; Reveal secrets controls masking.
-OAuth 2.0 currently accepts a supplied token; acquisition and browser login are
-tracked by R10. OAuth 1.0 uses HMAC-SHA1, AWS uses SigV4, Hawk supports SHA256/384/512,
+OAuth acquisition and browser callbacks are qualified in [R10](docs/parity/R10.md).
+OAuth 1.0 uses HMAC-SHA1, AWS uses SigV4, Hawk supports SHA256/384/512,
 and NTLM uses NTLMv2. Advanced-auth 3xx responses remain visible for explicit review;
 credentials/signatures do not automatically follow redirects. Digest/NTLM work
 with HTTP/SSE; their WebSocket upgrade negotiation has an explicit error. Protocol

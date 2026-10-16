@@ -158,6 +158,7 @@ fn dirty_emoji_crlf_bom_history_cursor_scroll_grammar_and_virtual_buffer_roundtr
         )
         .unwrap();
     let caret = CaretState {
+        secondary: vec![],
         selection: Selection {
             anchor: ByteOffset(5),
             head: ByteOffset(1),
@@ -209,6 +210,10 @@ fn newer_disk_mtime_keeps_dirty_recovery_and_reloads_with_clamped_utf16_selectio
         anchor: ByteOffset(5),
         head: ByteOffset(1),
     };
+    state.history.current.secondary = vec![Selection {
+        anchor: ByteOffset(12),
+        head: ByteOffset(12),
+    }];
     state.last_modified_millis = Some(1);
     let restored = restore(root, &state, tag(), &NativeDocumentIo).unwrap();
     assert!(restored.stale);
@@ -217,12 +222,23 @@ fn newer_disk_mtime_keeps_dirty_recovery_and_reloads_with_clamped_utf16_selectio
     assert_eq!(&*restored.document.snapshot().text(), "x😀\nnew disk");
     assert_eq!(restored.caret.selection.anchor, ByteOffset(5));
     assert_eq!(restored.caret.selection.head, ByteOffset(1));
+    assert_eq!(
+        restored.caret.secondary,
+        vec![Selection {
+            anchor: ByteOffset(11),
+            head: ByteOffset(11),
+        }]
+    );
     let store = SessionStore::new(root).unwrap();
     let recovered = store
         .recover_editor(restored.recovery.as_ref().unwrap())
         .unwrap();
     let loaded: EditorStateV1 = serde_json::from_slice(&fs::read(&recovered).unwrap()).unwrap();
     assert_eq!(loaded.history.current.text, "a😀b\ndirty");
+    assert_eq!(
+        loaded.history.current.secondary,
+        state.history.current.secondary
+    );
     assert_eq!(
         fs::read_to_string(root.join("source.rs")).unwrap(),
         "x😀\nnew disk"

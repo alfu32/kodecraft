@@ -1943,6 +1943,98 @@ async fn binary_routing_recents_rename_reopen_and_restore_keep_byte_edits_separa
 }
 
 #[tokio::test]
+async fn hex_find_actual_worker_clipboard_focus_cached_layout_and_workspace_disposal() {
+    use kode_core::document::bytes::ByteIndex;
+    use kode_tui::app::{state::OpenDestination, workspace::OpenRequest};
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    let mut bytes = vec![0x10; 128];
+    bytes[0] = 0;
+    bytes[62..65].copy_from_slice(&[0, 255, 65]);
+    fs::write(root.join("bytes.bin"), &bytes).unwrap();
+    fs::write(root.join("Note.txt"), "text\n").unwrap();
+    let mut app = make(root, Some("bytes.bin"), Arc::new(FakeClock::default()));
+    until(&mut app, |app| app.state.active_hex.is_some()).await;
+    paint(&mut app);
+    app.state.dispatch(&key(Key::Character('f'), true)).unwrap();
+    let id = app.state.active_hex_view().unwrap().find.id;
+    assert_eq!(app.state.focus.focused, Some(id));
+    let mut screen = Buffer::empty(Rect::new(0, 0, 100, 30));
+    assert!(
+        app.state
+            .render(screen.area, &mut screen, &Theme::compiled())
+            .unwrap()
+            .is_some()
+    );
+    app.state.dispatch(&key(Key::Tab, false)).unwrap();
+    app.state.clipboard.remember("00 FF 41").unwrap();
+    app.state.dispatch(&key(Key::Character('v'), true)).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .hexes
+            .values()
+            .any(|view| view.find.field.value == "00 FF 41")
+    })
+    .await;
+    app.state.dispatch(&key(Key::Enter, false)).unwrap();
+    assert!(app.state.active_hex_view().unwrap().searching());
+    // A completion may highlight the visible binary view, but must leave the
+    // panel focus selected after the request was queued.
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('1'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.hexes.values().all(|view| !view.searching())
+    })
+    .await;
+    assert_eq!(app.state.focus.focused, Some(app.state.files.id));
+    let view = app.state.active_hex_view().unwrap();
+    assert_eq!(view.buffer.selection(), Some(62..65));
+    assert_eq!(view.buffer.bytes(), bytes);
+    assert!(!view.modified);
+    view.set_bytes_per_row(32);
+    view.buffer.move_to(ByteIndex(1), false);
+    app.state
+        .open(
+            OpenRequest {
+                path: root.join("Note.txt"),
+                saved: None,
+                navigation: None,
+            },
+            OpenDestination::Main,
+        )
+        .unwrap();
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    app.state
+        .open(
+            OpenRequest {
+                path: root.join("bytes.bin"),
+                saved: None,
+                navigation: None,
+            },
+            OpenDestination::Main,
+        )
+        .unwrap();
+    until(&mut app, |app| app.state.active_hex.is_some()).await;
+    assert_eq!(app.state.active_hex_view().unwrap().bytes_per_row(), 32);
+    app.state.dispatch(&key(Key::Character('f'), true)).unwrap();
+    app.state.dispatch(&key(Key::Enter, false)).unwrap();
+    let next = tempfile::tempdir().unwrap();
+    app.switch_workspace(next.path().into()).await.unwrap();
+    assert!(app.state.hexes.is_empty());
+    assert_eq!(fs::read(root.join("bytes.bin")).unwrap(), bytes);
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
 async fn image_route_worker_cells_controls_focus_recents_and_restart_are_real() {
     let directory = tempfile::tempdir().unwrap();
     let root = directory.path();

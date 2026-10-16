@@ -257,7 +257,7 @@ impl SearchResults {
             })
             .collect();
         let count = selected.len();
-        let outcome = document.apply_transaction(
+        let outcome = document.apply_caret_transaction(
             document.revision(),
             selected,
             if all {
@@ -265,11 +265,11 @@ impl SearchResults {
             } else {
                 EditKind::Replace
             },
-            caret.selection,
+            caret,
             None,
         )?;
         if let Some(outcome) = outcome {
-            caret.selection = outcome.selection;
+            *caret = outcome.caret;
             self.report = None;
             // Preserve source's current index when refreshing after Replace One.
             self.active = if all { None } else { Some(index) };

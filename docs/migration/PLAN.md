@@ -41,6 +41,12 @@ jlink runtime, multiple cursors/selections, hex layouts/find, word double-click,
 path pickers, relative open-file labels, LSP installation, sidebar shortcuts, JDBC URL presets and database packages. R10 also owns B008: an ephemeral HTTPS localhost callback replacing Postman defaults. M001/B001 retain Z02/Z01 evidence.
 These are extensions/corrections to the frozen baseline, not deferred proposals.
 
+The user also requested the [full Z03 artifact matrix](Z03-ARTIFACT-MATRIX.md):
+portable Linux/macOS/Windows for both x86_64 and arm64, AppImages by CPU, Snap,
+Windows MSI/MSIX and macOS DMG. Z03 is reopened and resumes after the Uxx series.
+The matrix records the authorized Windows SSH test host/project directory and
+the actual-build/install/runtime evidence required for every platform/CPU.
+
 Final search mapping is **Ctrl+F file find; Alt+F project search**, superseding
 earlier preferences. OAuth prints a copyable login URL for a GUI browser.
 The optional runtime is a separate release artifact, offered when local Java is

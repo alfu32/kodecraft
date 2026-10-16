@@ -82,6 +82,30 @@ macro_rules! nav {
 }
 pub static BINDINGS: &[Binding] = &[
     chord!(
+        Editor,
+        CTRL | SHIFT,
+        CTRL | SHIFT,
+        false,
+        [Key::Up, Key::Down],
+        "Add a cursor on the previous / next visual row"
+    ),
+    chord!(
+        Editor,
+        0,
+        0,
+        false,
+        [Key::Escape],
+        "Keep only the primary cursor"
+    ),
+    chord!(
+        Search,
+        ALT,
+        ALT,
+        false,
+        [Key::Enter],
+        "Select every occurrence with multiple cursors and return to editing"
+    ),
+    chord!(
         Global,
         ALT,
         15,
@@ -726,6 +750,38 @@ pub static BINDINGS: &[Binding] = &[
     chord!(
         Hex,
         0,
+        0,
+        false,
+        [Key::Escape],
+        "Stop / close byte find without changing selected bytes"
+    ),
+    chord!(
+        Hex,
+        CTRL,
+        CTRL,
+        true,
+        [Key::Character('f')],
+        "Find bytes: UTF-8 text / hex (Tab switches mode); Enter next, Shift+Enter previous; Escape stops/closes"
+    ),
+    chord!(
+        Hex,
+        0,
+        SHIFT,
+        false,
+        [Key::Function(3)],
+        "Next byte match; Shift+F3 previous (wraps at EOF)"
+    ),
+    chord!(
+        Hex,
+        0,
+        0,
+        false,
+        [Key::Function(8)],
+        "Cycle 8 / 16 / 32 bytes per row; header buttons select directly"
+    ),
+    chord!(
+        Hex,
+        0,
         15,
         false,
         [Key::Left, Key::Right],
@@ -951,6 +1007,7 @@ pub fn help_lines() -> Vec<String> {
     }
     lines.extend([
         "Pointer actions: Ctrl+click follows definitions or opens usages at a definition; Alt+wheel accelerates editor scrolling.".into(),
+        "Multiple cursors: Alt+left-click adds or removes a cursor; Alt+drag adds a selection. Escape keeps the primary. Copy/cut joins selected text in source order with newlines; paste repeats the full text at each selection.".into(),
         "Conflict: Ctrl+Enter means Find all in search, SQL execution in SQL, Send in REST, and Commit in Git. The active owner decides.".into(),
         "Conflict: plain Tab inserts indentation in shared editors; use Ctrl+Tab for Git/REST sections or project-search fields. Settings/About use plain Tab.".into(),
         "Read-only previews allow selection, copy, search and navigation; mutation and ordinary Save stay guarded. Raw REST preview retains its owner's Send action.".into(),

@@ -13,8 +13,8 @@ pub const PERSIST_HISTORY_LIMIT: usize = 30;
 pub(crate) struct HistoryEntry {
     pub before: TextSnapshot,
     pub after: TextSnapshot,
-    pub before_caret: Selection,
-    pub after_caret: Selection,
+    pub before_caret: CaretState,
+    pub after_caret: CaretState,
     pub changed_bytes: usize,
 }
 #[derive(Debug, Default, Clone)]
@@ -50,6 +50,16 @@ impl History {
 pub struct PersistedBuffer {
     pub text: String,
     pub selection: Selection,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub secondary: Vec<Selection>,
+}
+impl PersistedBuffer {
+    fn caret(&self) -> CaretState {
+        CaretState {
+            selection: self.selection,
+            secondary: self.secondary.clone(),
+        }
+    }
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HistoryStateV1 {
@@ -85,8 +95,7 @@ impl Document {
         if self.history.undo.is_empty() {
             return Ok(false);
         }
-        positions::validate_byte(&self.text, caret.selection.anchor)?;
-        positions::validate_byte(&self.text, caret.selection.head)?;
+        caret.validate(&self.snapshot())?;
         let revision = self
             .revision
             .0
@@ -99,11 +108,11 @@ impl Document {
             .expect("history checked nonempty");
         entry.after = self.snapshot();
         entry.after.flattened = Arc::default();
-        entry.after_caret = caret.selection;
+        entry.after_caret = caret.clone();
         self.text = entry.before.rope.clone();
         self.revision = Revision(revision);
         self.flattened = Arc::default();
-        caret.selection = entry.before_caret;
+        *caret = entry.before_caret.clone();
         self.history.redo.push(entry);
         Ok(true)
     }
@@ -114,8 +123,7 @@ impl Document {
         if self.history.redo.is_empty() {
             return Ok(false);
         }
-        positions::validate_byte(&self.text, caret.selection.anchor)?;
-        positions::validate_byte(&self.text, caret.selection.head)?;
+        caret.validate(&self.snapshot())?;
         let revision = self
             .revision
             .0
@@ -124,11 +132,11 @@ impl Document {
         let mut entry = self.history.redo.pop().expect("history checked nonempty");
         entry.before = self.snapshot();
         entry.before.flattened = Arc::default();
-        entry.before_caret = caret.selection;
+        entry.before_caret = caret.clone();
         self.text = entry.after.rope.clone();
         self.revision = Revision(revision);
         self.flattened = Arc::default();
-        caret.selection = entry.after_caret;
+        *caret = entry.after_caret.clone();
         self.history.undo.push_back(entry);
         Ok(true)
     }
@@ -146,7 +154,8 @@ impl Document {
             budget -= entry.before.len_bytes();
             undo.push(PersistedBuffer {
                 text: entry.before.rope.to_string(),
-                selection: entry.before_caret,
+                selection: entry.before_caret.selection,
+                secondary: entry.before_caret.secondary.clone(),
             });
         }
         for entry in self.history.redo.iter().rev().take(PERSIST_HISTORY_LIMIT) {
@@ -156,7 +165,8 @@ impl Document {
             budget -= entry.after.len_bytes();
             redo.push(PersistedBuffer {
                 text: entry.after.rope.to_string(),
-                selection: entry.after_caret,
+                selection: entry.after_caret.selection,
+                secondary: entry.after_caret.secondary.clone(),
             });
         }
         undo.reverse();
@@ -170,6 +180,7 @@ impl Document {
             current: PersistedBuffer {
                 text: self.snapshot().text().to_string(),
                 selection: caret.selection,
+                secondary: caret.secondary.clone(),
             },
             saved_text: self.saved_text.to_string(),
             saved_baseline_known: self.saved_baseline_known,
@@ -205,6 +216,7 @@ impl Document {
             .checked_add(1)
             .ok_or_else(|| DomainError::Unsupported("document revision exhausted".into()))?;
         let current = imported_snapshot(self, &state.current, Revision(revision))?;
+        let current_caret = state.current.caret().normalized(&current)?;
         let mut history = History::default();
         let mut previous = current.clone();
         let mut reversed = vec![];
@@ -218,8 +230,8 @@ impl Document {
             reversed.push(HistoryEntry {
                 before: before.clone(),
                 after: previous,
-                before_caret: buffer.selection,
-                after_caret: state.current.selection,
+                before_caret: buffer.caret().normalized(&before)?,
+                after_caret: state.current.caret(),
                 changed_bytes: cost,
             });
             previous = before;
@@ -239,11 +251,12 @@ impl Document {
                 break;
             }
             history.bytes += cost;
+            let after_caret = buffer.caret().normalized(&after)?;
             history.redo.push(HistoryEntry {
                 before: current.clone(),
                 after,
-                before_caret: state.current.selection,
-                after_caret: buffer.selection,
+                before_caret: state.current.caret(),
+                after_caret,
                 changed_bytes: cost,
             });
         }
@@ -261,7 +274,7 @@ impl Document {
         self.revision = Revision(revision);
         self.flattened = Arc::default();
         self.history = history;
-        caret.selection = state.current.selection;
+        *caret = current_caret;
         Ok(report)
     }
 }
@@ -273,6 +286,10 @@ fn imported_snapshot(
     let rope = Rope::from_str(&buffer.text);
     positions::validate_byte(&rope, buffer.selection.anchor)?;
     positions::validate_byte(&rope, buffer.selection.head)?;
+    for selection in &buffer.secondary {
+        positions::validate_byte(&rope, selection.anchor)?;
+        positions::validate_byte(&rope, selection.head)?;
+    }
     let mut snapshot = document.snapshot();
     snapshot.rope = rope;
     snapshot.revision = revision;

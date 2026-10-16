@@ -425,6 +425,7 @@ fn renderer_preserves_punctuation_and_unicode_with_warning_hover_search_transien
         },
     ]);
     let state = RenderState {
+        secondary: vec![],
         selection: Selection {
             anchor: ByteOffset(8),
             head: ByteOffset(9),

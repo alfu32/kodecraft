@@ -199,6 +199,20 @@ as an addition without removing the existing binding or changing focus priority.
 | UX-109 | Background index/Git/HTTP/SQL refresh | No typing stalls, cursor jump, focus theft, or invalidated selection | F03/E13 |
 | UX-110 | Source roots/exclusions or index clear/rebuild | Progress/status distinguish scanning from resolution/publication; editor remains usable | W01/L09/Z02 |
 
+## Finalized UAT editor additions
+
+These user-requested extensions go beyond the frozen Kotlin baseline and remain
+part of E13's final shared-editor gate. Core tests alone do not qualify gestures.
+
+| ID | Trigger | Required behavior | Owner |
+|---|---|---|---|
+| UX-111 | Alt+left-click | Add a cursor or remove an existing one; retain a valid primary and at least one cursor | U04 |
+| UX-112 | Alt+mousedown/drag/release | Add a selection, preserve existing selections, capture outside release and normalize overlap | U04 |
+| UX-113 | Alt+Enter in file find | Select every current occurrence, retain bounded search/stale-result guards and return editing focus | U04 |
+| UX-114 | Ctrl+Shift+Up/Down | Add a cursor at the reached visual position across wraps/tabs/Unicode/folds, with boundary clamps | U04 |
+| UX-115 | Multi-selection edit/clipboard/history | One normalized transaction for typing/delete/paste; exact selection-set undo/redo, read-only guards and primary ownership in file/SQL/REST hosts | U04 |
+| UX-116 | Double-click / Alt+double-click | Select Unicode words or add their selections, coordinating the first click with cursor toggling | U06 |
+
 ## Qualification method
 
 For each row, record its fixture, event sequence, expected text/cursor/selection,
@@ -217,6 +231,6 @@ F01 additionally inventories every event branch in the audited source and links
 it to a UX row. Any newly discovered branch gets a new row before migration work
 is called complete. Tab insertion variants, word boundaries, trailing-newline
 handling, and browser shortcut limitations deserve explicit baseline recordings.
-Do not infer unimplemented IDE features such as multi-cursor editing, Vim modes,
+Do not infer unimplemented IDE features such as Vim modes,
 debugging, or a complete refactoring engine from the word “IDE.” Preserve all
 existing functionality and label additions separately.

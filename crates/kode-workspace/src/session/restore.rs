@@ -1,14 +1,33 @@
 use super::{EditorStateV1, resolve_path};
 use kode_core::{
-    DocumentId, DocumentOrigin, JobTag, Result,
+    DocumentId, DocumentOrigin, JobTag, Result, Selection,
     document::{
-        Document,
+        Document, TextSnapshot,
         encoding::{DecodedText, decode},
     },
     editor::selection::CaretState,
     services::{DiskIdentity, DocumentIo},
 };
 use std::path::Path;
+
+fn remap_caret(old: &TextSnapshot, new: &TextSnapshot, caret: &CaretState) -> Result<CaretState> {
+    let remap = |selection: Selection| -> Result<Selection> {
+        Ok(Selection {
+            head: new.utf16_to_byte_clamped(old.byte_to_utf16(selection.head)?),
+            anchor: new.utf16_to_byte_clamped(old.byte_to_utf16(selection.anchor)?),
+        })
+    };
+    CaretState {
+        selection: remap(caret.selection)?,
+        secondary: caret
+            .secondary
+            .iter()
+            .copied()
+            .map(remap)
+            .collect::<Result<_>>()?,
+    }
+    .normalized(new)
+}
 
 fn replace_legacy_text(
     buffer: &mut kode_core::editor::history::PersistedBuffer,
@@ -23,11 +42,17 @@ fn replace_legacy_text(
         label: String::new(),
     };
     let old = Document::new(DocumentId(0), origin.clone(), None, &buffer.text).snapshot();
-    let head = old.byte_to_utf16(buffer.selection.head)?;
-    let anchor = old.byte_to_utf16(buffer.selection.anchor)?;
     let new = Document::new(DocumentId(0), origin, None, &text).snapshot();
-    buffer.selection.head = new.utf16_to_byte_clamped(head);
-    buffer.selection.anchor = new.utf16_to_byte_clamped(anchor);
+    let caret = remap_caret(
+        &old,
+        &new,
+        &CaretState {
+            selection: buffer.selection,
+            secondary: buffer.secondary.clone(),
+        },
+    )?;
+    buffer.selection = caret.selection;
+    buffer.secondary = caret.secondary;
     buffer.text = text;
     Ok(())
 }
@@ -156,11 +181,7 @@ pub fn restore(
         let mut document = Document::from_decoded(id, origin, state.language.clone(), decoded);
         let old_snapshot = saved_document.snapshot();
         let new_snapshot = document.snapshot();
-        let mut caret = CaretState::default();
-        caret.selection.head = new_snapshot
-            .utf16_to_byte_clamped(old_snapshot.byte_to_utf16(old_caret.selection.head)?);
-        caret.selection.anchor = new_snapshot
-            .utf16_to_byte_clamped(old_snapshot.byte_to_utf16(old_caret.selection.anchor)?);
+        let caret = remap_caret(&old_snapshot, &new_snapshot, &old_caret)?;
         document.set_read_only(state.read_only);
         return Ok(RestoredEditor {
             document,

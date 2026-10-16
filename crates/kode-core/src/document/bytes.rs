@@ -38,6 +38,11 @@ impl ByteBuffer {
     pub fn bytes(&self) -> &[u8] {
         &self.data
     }
+    /// Clones share immutable storage until an edit. Background readers can
+    /// verify their snapshot without hashing or scanning the current buffer.
+    pub fn same_snapshot(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.data, &other.data)
+    }
     pub fn cursor(&self) -> ByteIndex {
         self.cursor
     }

@@ -73,13 +73,13 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | D09 | [End-to-end external JDBC qualification](tasks/09-database.md) | D08, W03, W05 | [done](../parity/D09.md) |
 | Z01 | [Shell suspension and browser terminal serve mode](tasks/10-delivery.md) | W05, F04, F03 | [done](../parity/Z01.md) |
 | Z02 | [Settings, help, about and operational status](tasks/10-delivery.md) | W05, L09, P01, D07, F05 | [done](../parity/Z02.md) |
-| Z03 | [Reproducible build and distribution](tasks/10-delivery.md) | Z01, Z02, D02, U03 | [done](../parity/Z03.md) |
+| Z03 | [Reproducible build and distribution](tasks/10-delivery.md) | Z01, Z02, D02, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12 | [todo](../parity/Z03.md) |
 | Z04 | [Full functional parity and release qualification](tasks/10-delivery.md) | E13, L12, W05, V02, V03, G03, D09, R08, R10, Z03, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12 | todo |
 | U01 | [Finalized file and project search shortcuts](tasks/11-uat.md) | Z02, E07, W04 | [done](../parity/U01.md) |
 | U02 | [Readable database errors and diagnostics](tasks/11-uat.md) | D09, Z02 | [done](../parity/U02.md) |
 | U03 | [Optional downloadable Java runtime artifact](tasks/11-uat.md) | D09 | [done](../parity/U03.md) |
-| U04 | [Multiple cursors and selections](tasks/11-uat.md) | E12, E07, E09 | todo |
-| U05 | [Hex layouts and text or binary find](tasks/11-uat.md) | V02, Z02 | in-progress |
+| U04 | [Multiple cursors and selections](tasks/11-uat.md) | E12, E07, E09 | in-progress |
+| U05 | [Hex layouts and text or binary find](tasks/11-uat.md) | V02, Z02 | [done](../parity/U05.md) |
 | U06 | [Word selection with double-click and Alt+double-click](tasks/11-uat.md) | U04 | todo |
 | U07 | [File-tree picker buttons for path fields](tasks/11-uat.md) | W05, D07, R07 | todo |
 | U08 | [Project-relative paths in the open-file list](tasks/11-uat.md) | W05, W03 | [done](../parity/U08.md) |

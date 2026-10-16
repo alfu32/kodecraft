@@ -45,16 +45,19 @@ TtydAdapterTest, native resource layout and source README remote-mode instructio
 
 ## Z03 — Reproducible build and distribution
 
-**Status:** done
+**Status:** todo
 
-**Depends:** Z01, Z02, D02, U03. **Owns:** `scripts/`, `.github/workflows/`, packaging
+**Depends:** Z01, Z02, D02, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12. **Owns:** `scripts/`, `.github/workflows/`, packaging
 metadata, notices, install/run documentation.
-**Continuation:** [qualified archive inputs and remaining gates](../Z03-INTEGRATION.md).
+**Continuation:** [qualified foundation](../Z03-INTEGRATION.md) and
+[requested full artifact matrix / Windows test host](../Z03-ARTIFACT-MATRIX.md).
+**Sequence:** finish the Uxx series before resuming this task, as requested.
 **Progress:** archive, actual AppImage and strict Snap, relocated ttyd/helper,
 full notices/provenance, clean Rust/native rebuilds, no-Java compilation and
 terminal/browser/SSH acceptance are qualified on Linux x86_64 GNU. CI and guarded
 draft orchestration are implemented and locally validated. Remote CI execution
-and final publication remain unperformed under Z04; [evidence](../../parity/Z03.md).
+and final publication remain unperformed under Z04. Reopened for the user's full
+six-target artifact matrix; [foundation evidence](../../parity/Z03.md).
 **Read:** source build.gradle.kts distribution tasks, snapcraft.yaml, scripts,
 LICENSE.md, native library licenses and source launcher behavior.
 
@@ -64,10 +67,13 @@ LICENSE.md, native library licenses and source launcher behavior.
 2. Package executable + resources + helper JAR + optional ttyd executable. Retain
    shell/Windows/PowerShell launcher ergonomics and executable-relative resources.
    Runtime JDBC uses external Java by default. No full original Kotlin app shipped.
-3. Produce archives for verified targets, Linux AppImage/Snap equivalents to
-   existing distribution, checksums and native dependency manifest. Add macOS/
-   Windows artifacts only with successful build/runtime evidence; record targets
-   formerly recognized but never bundled separately.
+3. Build and qualify portable Linux/macOS/Windows distributions for both x86_64
+   and arm64, plus architecture-specific Linux AppImages/Snaps, Windows MSI/MSIX
+   and macOS DMGs. Use the source workflow as the artifact-family reference, and
+   implement the [full matrix](../Z03-ARTIFACT-MATRIX.md) with checksums, manifests,
+   native notices and coordinated CI/release assets. Use the authorized Windows
+   SSH host/project directory for local testing; qualify each OS/CPU with actual
+   build/install/runtime evidence.
 
 **Accept:** install elsewhere, run from unrelated cwd, paths with spaces, clean
    configuration, no-Java core launch and external-Java JDBC launch. No hardcoded

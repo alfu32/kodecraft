@@ -600,3 +600,31 @@ fn native_completion_items_render_and_apply_unicode_member_and_qualified_import_
         assert_eq!(harness.doc.snapshot().text().as_ref(), source);
     }
 }
+
+#[test]
+fn secondary_cursor_change_rejects_late_completion_and_primary_accept_remaps_the_others() {
+    let mut h = Harness::new("Con tail", 3);
+    let secondary = kode_core::Selection {
+        anchor: ByteOffset(8),
+        head: ByteOffset(8),
+    };
+    h.input.state.caret.secondary.push(secondary);
+    let job = h.popup.begin(&h.doc.snapshot(), &h.input.state).unwrap();
+    let host = Host(vec!["Content-Type".into()]);
+    let result = prepare(&job, Some(&host), None, || false);
+    h.input.state.caret.secondary.clear();
+    assert!(
+        !h.popup
+            .complete(job.tag, result, &h.doc.snapshot(), &h.input.state, true)
+            .unwrap()
+    );
+    h.input.state.caret.secondary.push(secondary);
+    h.open(Some(&host), None);
+    let before = h.input.state.caret.clone();
+    h.send(key(Key::Enter)).unwrap();
+    assert_eq!(h.doc.snapshot().text().as_ref(), "Content-Type tail");
+    assert_eq!(h.input.state.caret.secondary[0].head, ByteOffset(17));
+    h.doc.undo(&mut h.input.state.caret).unwrap();
+    assert_eq!(h.input.state.caret, before);
+    assert_eq!(h.doc.snapshot().text().as_ref(), "Con tail");
+}

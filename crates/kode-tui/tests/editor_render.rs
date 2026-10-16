@@ -120,6 +120,7 @@ fn header_gutter_selection_overlay_cursor_and_owned_surface_have_exact_cells() {
     let layout = VisualLayout::build(&snapshot, geometry.text.width as usize, &[]).unwrap();
     let header = EditorHeader::for_document(&doc, Some("text/plain".into()), " (keyword)".into());
     let state = RenderState {
+        secondary: vec![],
         selection: Selection {
             anchor: ByteOffset(0),
             head: ByteOffset(1),
@@ -190,6 +191,7 @@ fn exact_wrap_and_eof_cursor_never_erase_source_punctuation() {
     assert_eq!(layout.position_to_cell(ByteOffset(6)).unwrap(), (1, 3));
     let header = EditorHeader::for_document(&doc, None, String::new());
     let state = RenderState {
+        secondary: vec![],
         selection: Selection {
             anchor: ByteOffset(6),
             head: ByteOffset(6),
@@ -285,5 +287,90 @@ fn zero_tiny_width_and_search_chrome_do_not_underflow_or_draw_outside() {
             },
         );
         assert_eq!(buffer.content.len(), width as usize * height as usize);
+    }
+}
+
+#[test]
+fn multiple_ranges_and_carets_paint_empty_lines_and_eof_with_only_primary_terminal_cursor() {
+    let doc = document("abc\n\nz");
+    let snapshot = doc.snapshot();
+    let area = Rect::new(3, 2, 30, 7);
+    let geometry = EditorGeometry::new(area, snapshot.len_lines(), 0);
+    let layout = VisualLayout::build(&snapshot, geometry.text.width as usize, &[]).unwrap();
+    let state = RenderState {
+        selection: Selection {
+            anchor: ByteOffset(0),
+            head: ByteOffset(1),
+        },
+        secondary: vec![
+            Selection {
+                anchor: ByteOffset(2),
+                head: ByteOffset(3),
+            },
+            Selection {
+                anchor: ByteOffset(4),
+                head: ByteOffset(4),
+            },
+            Selection {
+                anchor: ByteOffset(6),
+                head: ByteOffset(6),
+            },
+        ],
+        scroll_rows: 0,
+        focused: true,
+    };
+    let theme = Theme::compiled();
+    let header = EditorHeader::for_document(&doc, None, String::new());
+    let mut buffer = Buffer::empty(area);
+    let cursor = render_editor(
+        &layout,
+        &mut buffer,
+        &theme,
+        RenderOptions {
+            geometry,
+            header: &header,
+            state: &state,
+            overlays: &[],
+            warning_lines: &[],
+            fold_starts: &[],
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        cursor,
+        ratatui::layout::Position::new(geometry.text.x + 1, geometry.text.y)
+    );
+    for column in [0, 2] {
+        assert_eq!(
+            buffer[(geometry.text.x + column, geometry.text.y)].bg,
+            theme.style("code-selection").bg.unwrap()
+        );
+    }
+    for (row, column) in [(0, 1), (0, 3), (1, 0), (2, 1)] {
+        assert_eq!(
+            buffer[(geometry.text.x + column, geometry.text.y + row)].bg,
+            theme.style("code-cursor").bg.unwrap()
+        );
+    }
+    for width in 0..=8 {
+        for height in 0..=4 {
+            let area = Rect::new(3, 2, width, height);
+            let geometry = EditorGeometry::new(area, snapshot.len_lines(), 0);
+            let layout = VisualLayout::build(&snapshot, geometry.text.width as usize, &[]).unwrap();
+            let mut buffer = Buffer::empty(area);
+            render_editor(
+                &layout,
+                &mut buffer,
+                &theme,
+                RenderOptions {
+                    geometry,
+                    header: &header,
+                    state: &state,
+                    overlays: &[],
+                    warning_lines: &[],
+                    fold_starts: &[],
+                },
+            );
+        }
     }
 }

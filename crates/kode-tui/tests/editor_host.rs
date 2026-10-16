@@ -5,7 +5,7 @@ use kode_core::{
     commands::{EditorCommand, Movement},
     document::Document,
     editor::search::scan,
-    services::DocumentIo,
+    services::{Clipboard, DocumentIo},
 };
 use kode_platform::{
     clipboard::{ClipboardService, NativeClipboard},
@@ -81,9 +81,25 @@ fn virtual_view(
     clipboard: Arc<ClipboardService>,
 ) -> EditorView<QueuedEditorHost> {
     let descriptor = descriptor(role, key);
-    let id = documents
-        .create_virtual(&descriptor, WorkspaceGeneration(1), text)
-        .unwrap();
+    let id = if matches!(role, HostRole::File | HostRole::ProjectSearch) {
+        documents
+            .insert(
+                Document::new(
+                    DocumentId::fresh().unwrap(),
+                    DocumentOrigin::File(PathBuf::from("/project/multi-test.txt")),
+                    None,
+                    text,
+                ),
+                &descriptor,
+                WorkspaceGeneration(1),
+                None,
+            )
+            .unwrap()
+    } else {
+        documents
+            .create_virtual(&descriptor, WorkspaceGeneration(1), text)
+            .unwrap()
+    };
     EditorView::new(
         id,
         documents,
@@ -798,4 +814,151 @@ async fn real_file_host_save_after_detach_and_native_clipboard_jobs_use_workers(
         matches!(clips.next().await.unwrap().result.unwrap(),ClipboardResult::Read(text) if text == "raw\t😀")
     );
     assert!(clips.shutdown().await.is_empty());
+}
+
+#[test]
+fn multiple_cursors_edit_undo_and_preserve_execution_primary_in_all_shared_hosts() {
+    let (clipboard, _) = clipboard();
+    let mut documents = EditorDocuments::default();
+    for role in [
+        HostRole::File,
+        HostRole::ProjectSearch,
+        HostRole::Sql,
+        HostRole::RestBody,
+        HostRole::RestHeaders,
+        HostRole::Environment,
+    ] {
+        let mut view = virtual_view(
+            role,
+            &format!("multi-{role:?}"),
+            "ab\ncd",
+            &mut documents,
+            clipboard.clone(),
+        );
+        let mut focus = focus(&view);
+        view.command(
+            EditorCommand::MoveTo {
+                position: ByteOffset(1),
+                extend: false,
+            },
+            &mut documents,
+            AREA,
+        )
+        .unwrap();
+        view.dispatch(
+            &key(
+                Key::Down,
+                Modifiers {
+                    ctrl: true,
+                    shift: true,
+                    ..Default::default()
+                },
+            ),
+            &mut documents,
+            &mut focus,
+            AREA,
+        )
+        .unwrap();
+        assert_eq!(view.input.state.caret.secondary.len(), 1);
+        let before = view.input.state.caret.clone();
+        view.dispatch(
+            &InputEvent::Paste("Ω".into()),
+            &mut documents,
+            &mut focus,
+            AREA,
+        )
+        .unwrap();
+        assert_eq!(text(&documents, view.document_id()), "aΩb\ncΩd");
+        assert_eq!(
+            documents
+                .document(view.document_id())
+                .unwrap()
+                .history_depth(),
+            (1, 0)
+        );
+        assert!(view.host.take_events().iter().any(|event| matches!(event, HostEvent::Changed(change) if change.deltas.as_ref().is_some_and(|deltas| deltas.len() == 2))));
+        if role == HostRole::Sql || role == HostRole::RestBody || role == HostRole::RestHeaders {
+            view.dispatch(&execute(), &mut documents, &mut focus, AREA)
+                .unwrap();
+            assert!(view.host.take_events().iter().any(|event| matches!(event, HostEvent::Execute(execution) if execution.selection == view.input.state.caret.selection)));
+        }
+        view.command(EditorCommand::Undo, &mut documents, AREA)
+            .unwrap();
+        assert_eq!(view.input.state.caret, before);
+        assert_eq!(text(&documents, view.document_id()), "ab\ncd");
+        view.command(EditorCommand::Redo, &mut documents, AREA)
+            .unwrap();
+        assert_eq!(text(&documents, view.document_id()), "aΩb\ncΩd");
+    }
+}
+
+#[test]
+fn readonly_hosts_allow_multiple_selection_and_copy_but_reject_all_multi_mutations() {
+    let (clipboard, _) = clipboard();
+    let mut documents = EditorDocuments::default();
+    for role in [
+        HostRole::Response,
+        HostRole::RawRequest,
+        HostRole::Historical,
+    ] {
+        let mut view = virtual_view(
+            role,
+            &format!("multi-ro-{role:?}"),
+            "ab\ncd",
+            &mut documents,
+            clipboard.clone(),
+        );
+        let mut focus = focus(&view);
+        view.dispatch(
+            &key(
+                Key::Down,
+                Modifiers {
+                    ctrl: true,
+                    shift: true,
+                    ..Default::default()
+                },
+            ),
+            &mut documents,
+            &mut focus,
+            AREA,
+        )
+        .unwrap();
+        assert_eq!(view.input.state.caret.secondary.len(), 1);
+        let before = view.input.state.caret.clone();
+        for command in [
+            EditorCommand::InsertText("X".into()),
+            EditorCommand::PasteText("X".into()),
+            EditorCommand::InsertNewline,
+            EditorCommand::InsertTab,
+            EditorCommand::DeleteBackward,
+            EditorCommand::DeleteForward,
+            EditorCommand::Cut,
+            EditorCommand::Paste,
+            EditorCommand::Undo,
+            EditorCommand::Redo,
+        ] {
+            assert!(matches!(
+                view.command(command, &mut documents, AREA),
+                Err(DomainError::ReadOnly)
+            ));
+            assert_eq!(view.input.state.caret, before);
+            assert_eq!(text(&documents, view.document_id()), "ab\ncd");
+        }
+        view.dispatch(
+            &key(
+                Key::Right,
+                Modifiers {
+                    shift: true,
+                    ..Default::default()
+                },
+            ),
+            &mut documents,
+            &mut focus,
+            AREA,
+        )
+        .unwrap();
+        view.command(EditorCommand::Copy, &mut documents, AREA)
+            .unwrap();
+        assert_eq!(ClipboardService::read(&clipboard).unwrap(), "a\nc");
+    }
 }

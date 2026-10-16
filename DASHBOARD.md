@@ -8,7 +8,7 @@ Full Kode → Rust migration, including the [finalized UAT batch](docs/migration
 
 ## Ongoing tasks
 
-- **U05** — [Hex layouts and text or binary find](docs/migration/tasks/11-uat.md#u05--hex-layouts-and-text-or-binary-find)
+- **U04** — [Multiple cursors and selections](docs/migration/tasks/11-uat.md#u04--multiple-cursors-and-selections)
 
 ## Task status
 
@@ -79,13 +79,13 @@ Full Kode → Rust migration, including the [finalized UAT batch](docs/migration
 | D09  | [End-to-end external JDBC qualification](docs/migration/tasks/09-database.md)                   | done        | [Report](docs/parity/D09.md) |
 | Z01  | [Shell suspension and browser terminal serve mode](docs/migration/tasks/10-delivery.md)         | done        | [Report](docs/parity/Z01.md) |
 | Z02  | [Settings, help, about and operational status](docs/migration/tasks/10-delivery.md)             | done        | [Report](docs/parity/Z02.md) |
-| Z03  | [Reproducible build and distribution](docs/migration/tasks/10-delivery.md)                      | done        | [Report](docs/parity/Z03.md) |
+| Z03  | [Reproducible build and distribution](docs/migration/tasks/10-delivery.md)                      | todo        | [Report](docs/parity/Z03.md) |
 | Z04  | [Full functional parity and release qualification](docs/migration/tasks/10-delivery.md)         | todo        | —                            |
 | U01  | [Finalized file and project search shortcuts](docs/migration/tasks/11-uat.md)                   | done        | [Report](docs/parity/U01.md) |
 | U02  | [Readable database errors and diagnostics](docs/migration/tasks/11-uat.md)                      | done        | [Report](docs/parity/U02.md) |
 | U03  | [Optional downloadable Java runtime artifact](docs/migration/tasks/11-uat.md)                   | done        | [Report](docs/parity/U03.md) |
-| U04  | [Multiple cursors and selections](docs/migration/tasks/11-uat.md)                               | todo        | —                            |
-| U05  | [Hex layouts and text or binary find](docs/migration/tasks/11-uat.md)                           | in-progress | —                            |
+| U04  | [Multiple cursors and selections](docs/migration/tasks/11-uat.md)                               | in-progress | —                            |
+| U05  | [Hex layouts and text or binary find](docs/migration/tasks/11-uat.md)                           | done        | [Report](docs/parity/U05.md) |
 | U06  | [Word selection with double-click and Alt+double-click](docs/migration/tasks/11-uat.md)         | todo        | —                            |
 | U07  | [File-tree picker buttons for path fields](docs/migration/tasks/11-uat.md)                      | todo        | —                            |
 | U08  | [Project-relative paths in the open-file list](docs/migration/tasks/11-uat.md)                  | done        | [Report](docs/parity/U08.md) |

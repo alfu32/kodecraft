@@ -72,10 +72,12 @@ execution/publication qualification.
 
 ## U04 — Multiple cursors and selections
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** E12, E07, E09. **Owns:** editor selection/mutation core, pointer and
 keyboard reducers, search match commands and all shared editor hosts. **UAT:** B004.
+
+**Continuation:** [core checkpoint and remaining integration](../U04-INTEGRATION.md).
 
 1. Alt+left-click adds a cursor and toggles an existing cursor off, retaining a
    valid primary selection. Alt+mousedown/drag/release adds a selection.
@@ -93,7 +95,7 @@ keyboard reducers, search match commands and all shared editor hosts. **UAT:** B
 
 ## U05 — Hex layouts and text or binary find
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** V02, Z02. **Owns:** hex viewer layout, controls, search and fixtures.
 **UAT:** M004.

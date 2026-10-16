@@ -41,6 +41,11 @@ pub enum EditorCommand {
         extend: bool,
     },
     InsertText(String),
+    PasteText(String),
+    AddCursor {
+        down: bool,
+    },
+    ClearSecondaryCursors,
     InsertNewline,
     InsertTab,
     DeleteBackward,

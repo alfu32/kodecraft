@@ -132,6 +132,7 @@ fn snapshot(snapshot: &LegacySnapshot) -> PersistedBuffer {
     PersistedBuffer {
         text,
         selection: Selection { head, anchor },
+        secondary: vec![],
     }
 }
 pub fn convert_buffer(buffer: &LegacyBuffer) -> HistoryStateV1 {
