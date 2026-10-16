@@ -45,7 +45,11 @@ impl AppState {
         if let InputEvent::Resize { width, height } = event {
             self.geometry = self.layout(Rect::new(0, 0, *width, *height));
         }
+        let editor_area = self.rest_editor_area();
         if let InputEvent::Focus(active) = event {
+            if let Some(form) = &mut self.rest.form {
+                form.dispatch(event, &mut self.rest.model, &mut self.focus)?;
+            }
             self.window_focused = *active;
             self.rest
                 .sidebar
@@ -54,12 +58,7 @@ impl AppState {
                 self.focus.captured = None;
             }
             if let Some(view) = &mut self.editor {
-                view.dispatch(
-                    event,
-                    &mut self.documents,
-                    &mut self.focus,
-                    self.geometry.viewer,
-                )?;
+                view.dispatch(event, &mut self.documents, &mut self.focus, editor_area)?;
             }
             if let Some(dialog) = &mut self.search {
                 dialog.dispatch(event, &mut self.documents, &mut self.focus)?;
@@ -88,6 +87,11 @@ impl AppState {
             self.quit_requested = true;
             self.closing = true;
             self.pending_open = None;
+            self.rest.pending_open = None;
+            self.rest.ready_open = None;
+            if let Some(form) = &mut self.rest.form {
+                form.invalidate(&mut self.focus);
+            }
             self.dismiss_sql_dialog()?;
             self.rest.sidebar.dismiss(&mut self.focus);
             return self.drain_ui();
@@ -103,6 +107,10 @@ impl AppState {
             self.rest
                 .sidebar
                 .dispatch(event, &mut self.rest.model, &mut self.focus)?;
+            return self.drain_ui();
+        }
+        if self.rest.form.as_ref().is_some_and(|form| form.has_modal()) {
+            self.dispatch_rest_editor(event)?;
             return self.drain_ui();
         }
         if self.database.has_modal() {
@@ -220,12 +228,7 @@ impl AppState {
             .is_some_and(|view| view.input.is_dragging(&self.focus));
         if (popup || captured)
             && let Some(view) = &mut self.editor
-            && view.dispatch(
-                event,
-                &mut self.documents,
-                &mut self.focus,
-                self.geometry.viewer,
-            )?
+            && view.dispatch(event, &mut self.documents, &mut self.focus, editor_area)?
         {
             return self.drain_ui();
         }
@@ -248,6 +251,9 @@ impl AppState {
                 .sidebar
                 .dispatch(event, &mut self.rest.model, &mut self.focus)?
         {
+            return self.drain_ui();
+        }
+        if self.dispatch_rest_editor(event)? {
             return self.drain_ui();
         }
         if self.dispatch_sql(event)? {
@@ -353,12 +359,7 @@ impl AppState {
         } else if let Some(diff) = &mut self.diff {
             diff.dispatch(event, &mut self.documents, &mut self.focus)?;
         } else if let Some(view) = &mut self.editor {
-            view.dispatch(
-                event,
-                &mut self.documents,
-                &mut self.focus,
-                self.geometry.viewer,
-            )?;
+            view.dispatch(event, &mut self.documents, &mut self.focus, editor_area)?;
         } else if let Some(view) = &mut self.image {
             view.dispatch(event, &mut self.focus);
         } else if let Some(path) = &self.active_hex
@@ -383,6 +384,7 @@ impl AppState {
         }
     }
     pub fn tick(&mut self) -> Result<()> {
+        let editor_area = self.rest_editor_area();
         if !self.closing {
             self.git
                 .tick(&self.documents, &self.focus, self.tabs.selected == 4)?;
@@ -396,7 +398,7 @@ impl AppState {
                 self.files.poll_refresh(self.clock.now_millis(), watcher)?;
             }
             if let Some(view) = &mut self.editor {
-                view.tick(&self.documents, &self.focus, self.geometry.viewer)?;
+                view.tick(&self.documents, &self.focus, editor_area)?;
             }
             if let Some(dialog) = &mut self.search {
                 dialog.tick(&self.documents, &self.focus)?;

@@ -19,6 +19,9 @@ use tokio::sync::mpsc;
 pub type Keys = Arc<HashMap<NodePath, String>>;
 #[derive(Default)]
 pub struct RunState {
+    pub live: Option<super::editor::response::Live>,
+    pub display_revision: u64,
+    pub structure: u64,
     pub keys: Keys,
     pub pending: Option<JobTag>,
     pub running: Option<Running>,
@@ -38,6 +41,9 @@ pub struct Running {
 }
 pub struct Prepare {
     pub tag: JobTag,
+    pub structure: u64,
+    pub overrides: Vec<super::editor::buffers::Override>,
+    pub drafts: super::editor::drafts::Drafts,
     pub collection: Arc<serde_json::Value>,
     pub root: PathBuf,
     pub selection: NodePath,
@@ -77,6 +83,14 @@ impl Prepare {
                 .expect("imported environment")
                 .clone();
         }
+        super::editor::drafts::apply(
+            &mut model,
+            &self.drafts,
+            &self.overrides,
+            &self.selection,
+            cancel,
+        )?;
+        let collection = model.export_collection();
         let mut keys = (*self.keys).clone();
         let mut items = Vec::new();
         for node in model.tree() {
@@ -103,7 +117,7 @@ impl Prepare {
         Ok(Prepared {
             keys: Arc::new(keys),
             definition: Definition {
-                collection: self.collection,
+                collection,
                 root: self.root,
                 environment,
                 items,
@@ -114,6 +128,7 @@ impl Prepare {
 }
 impl RunState {
     pub fn tree_changed(&mut self, change: TreeChange) {
+        self.structure = self.structure.saturating_add(1);
         if matches!(change, TreeChange::Replaced) {
             self.keys = Arc::default();
             self.pending = None;
@@ -146,6 +161,8 @@ impl RunState {
         }
     }
     pub fn retain_response(&mut self, response: Arc<Response>) {
+        if self.live.as_ref().is_some_and(|live|live.key==response.key) {self.live=None;}
+        self.display_revision=self.display_revision.saturating_add(1);
         // Count captures conservatively, including multipart metadata and both
         // logical requests. Bound history by bytes as well as entry count.
         let weight = |response: &Response| {
@@ -221,9 +238,18 @@ impl RunState {
             if event.key.tag.workspace != running.tag.workspace {
                 continue;
             }
-            running.current = Some(event.key.item_id);
-            if let EventKind::Progress { received_bytes, .. } = event.kind {
-                running.received_bytes = received_bytes;
+            running.current = Some(event.key.item_id.clone());
+            self.display_revision=self.display_revision.saturating_add(1);
+            match event.kind {
+                EventKind::Opened {status,headers,normalized_request,normalizations,..}=>{
+                    self.live=Some(super::editor::response::Live {key:event.key,request:normalized_request,normalizations,headers,status,chunks:Arc::default(),retained:0,received:0,truncated:false,started:std::time::Instant::now()});
+                },
+                EventKind::Data {bytes,truncated,..}=>if let Some(live)=self.live.as_mut().filter(|live|live.key==event.key) {live.append(bytes,truncated);},
+                EventKind::Progress { received_bytes,truncated,.. }=>{
+                    running.received_bytes = received_bytes;
+                    if let Some(live)=self.live.as_mut().filter(|live|live.key==event.key) {live.received=received_bytes;live.truncated|=truncated;}
+                },
+                _=>{},
             }
             changed = true;
         }

@@ -141,6 +141,7 @@ enum Context {
     Picker(PickerKind),
 }
 enum ClipboardTarget {
+    RestForm(crate::panels::rest::editor::form::PasteProof),
     Rest(crate::panels::rest::sidebar::PasteProof),
     Sql(crate::panels::database::session_dialog::PasteProof),
     Database(crate::panels::database::controller::PasteProof),
@@ -268,6 +269,12 @@ impl AppRuntime {
         if let Some(key) = pending.key {
             if let Some(old) = self.latest.insert(key, pending.tag) {
                 self.jobs.cancel_request(old);
+                // Cancellable delivery may omit completion entirely. Release
+                // captured proofs/resources when superseding the request.
+                self.contexts.remove(&old);
+                self.open_requests.remove(&old);
+                self.query_versions.remove(&old);
+                self.git_reload_tags.remove(&old);
             }
             self.pending.retain(|old| old.key != Some(key));
         }
@@ -368,6 +375,10 @@ impl AppRuntime {
             .collect();
         for (key, tag) in stale {
             self.jobs.cancel_request(tag);
+            self.contexts.remove(&tag);
+            self.open_requests.remove(&tag);
+            self.query_versions.remove(&tag);
+            self.git_reload_tags.remove(&tag);
             self.latest.remove(&key);
             self.pending.retain(|work| work.key != Some(key));
         }
@@ -407,6 +418,11 @@ impl AppRuntime {
     }
     fn accept(&mut self, work: AppWork) -> Result<()> {
         match work {
+            AppWork::RestFormClipboard { tag, job, proof } => self.clipboard_work(
+                tag,
+                job,
+                proof.map_or(ClipboardTarget::None, ClipboardTarget::RestForm),
+            ),
             AppWork::SqlCancel {
                 tag,
                 console,
@@ -1161,6 +1177,7 @@ impl AppRuntime {
                 )
             }
             EditorWork::Changed(change) => {
+                self.state.rest_buffer_changed(change.snapshot.clone())?;
                 self.state.rest_environment_changed(change.snapshot)?;
                 self.state.changed()?;
                 Ok(())
@@ -1185,7 +1202,13 @@ impl AppRuntime {
                     OpenDestination::Main,
                 )
             }
-            EditorWork::Execute(execution) => self.sql_execute(execution),
+            EditorWork::Execute(execution) => {
+                if execution.action == crate::editor::host::ExecutionAction::SendRequest {
+                    self.state.execute_rest_snapshot(execution)
+                } else {
+                    self.sql_execute(execution)
+                }
+            }
             EditorWork::FieldLimitReached => Err(DomainError::Unsupported(
                 "editor field exceeds its character limit".into(),
             )),
@@ -1729,7 +1752,7 @@ impl AppRuntime {
             return Some((
                 EditorSlot::Main,
                 self.state.editor.take()?,
-                self.state.geometry.viewer,
+                self.state.rest_editor_area(),
             ));
         }
         if self
@@ -1891,6 +1914,15 @@ impl AppRuntime {
             }
         });
         match target {
+            ClipboardTarget::RestForm(proof) => match result {
+                Ok(ClipboardResult::Read(text)) => {
+                    if let Some(form) = &mut self.state.rest.form {
+                        form.paste(proof, text, &mut self.state.rest.model, &self.state.focus)?;
+                    }
+                }
+                Err(error) => self.state.notice = error.to_string(),
+                _ => {}
+            },
             ClipboardTarget::Rest(proof) => match result {
                 Ok(ClipboardResult::Read(text)) => {
                     self.state

@@ -82,6 +82,324 @@ fn submit(app: &mut AppRuntime, text: &str) {
     app.state.dispatch(&InputEvent::Paste(text.into())).unwrap();
     app.state.dispatch(&key(Key::Enter)).unwrap();
 }
+fn click(x: u16, y: u16) -> InputEvent {
+    InputEvent::Pointer(kode_tui::input::terminal::PointerInput {
+        x,
+        y,
+        action: kode_tui::input::terminal::PointerAction::Down(crossterm::event::MouseButton::Left),
+        modifiers: Modifiers::default(),
+    })
+}
+async fn select_request_tab(app: &mut AppRuntime, tab: kode_tui::panels::rest::editor::form::Tab) {
+    render(app);
+    let rect = app
+        .state
+        .rest
+        .form
+        .as_ref()
+        .unwrap()
+        .geometry
+        .tabs
+        .iter()
+        .find(|(item, _)| *item == tab)
+        .unwrap()
+        .1;
+    app.state.dispatch(&click(rect.x, rect.y)).unwrap();
+    until(app, |app| {
+        app.state.rest.pending_open.is_none() && app.state.rest.ready_open.is_none()
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn native_request_buffers_keep_identity_history_search_and_caret_across_request_switches() {
+    use kode_tui::panels::rest::editor::form::{BufferKind, Tab};
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state.rest.model.replace_collection(json!({"info":{"name":"Editors"},"item":[
+        {"name":"First","request":{"url":"https://example.test","header":[{"key":"X-Keep","value":" old ","x-extra":7}],"body":{"mode":"raw","raw":"original"}}},
+        {"name":"Second","request":{"url":"https://other.test"}}
+    ]})).unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    let owner = app.state.rest.form.as_ref().unwrap().key.clone();
+    select_request_tab(&mut app, Tab::Headers).await;
+    let headers = app.state.editor.as_ref().unwrap().document_id();
+    assert_eq!(
+        app.state.rest.buffers[&(owner.clone(), BufferKind::Headers)],
+        headers
+    );
+    // Merely opening headers must preserve structured metadata and whitespace.
+    app.pump().unwrap();
+    assert_eq!(
+        app.state
+            .rest
+            .model
+            .collection()
+            .pointer("/item/0/request/header/0/value")
+            .unwrap(),
+        " old "
+    );
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("X-Keep: edited\nX-Extra: value".into()))
+        .unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .model
+            .collection()
+            .pointer("/item/0/request/header/0/value")
+            == Some(&json!("edited"))
+    })
+    .await;
+    assert_eq!(
+        app.state
+            .rest
+            .model
+            .collection()
+            .pointer("/item/0/request/header/0/x-extra")
+            .unwrap(),
+        7
+    );
+    let caret = app.state.editor.as_ref().unwrap().input.state.caret.clone();
+    app.state.open_rest_node(NodePath(vec![1])).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .form
+            .as_ref()
+            .is_some_and(|form| form.path == NodePath(vec![1]))
+    })
+    .await;
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .editor
+            .as_ref()
+            .is_some_and(|view| view.document_id() == headers)
+    })
+    .await;
+    assert_eq!(app.state.editor.as_ref().unwrap().input.state.caret, caret);
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('u'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    assert!(
+        app.state
+            .documents
+            .document(headers)
+            .unwrap()
+            .snapshot()
+            .text()
+            .contains(" old ")
+    );
+    select_request_tab(&mut app, Tab::Body).await;
+    let body = app.state.editor.as_ref().unwrap().document_id();
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("raw bytes\n".into()))
+        .unwrap();
+    // Search owns Ctrl+Enter; it must never trigger REST execution.
+    app.state.dispatch(&ctrl('f')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("raw".into()))
+        .unwrap();
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Enter,
+            modifiers: Modifiers {
+                ctrl: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    assert!(app.state.rest.run.pending.is_none());
+    assert_eq!(
+        app.state
+            .documents
+            .document(body)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "raw bytes\n"
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn unfinished_request_drafts_survive_immediate_quit_and_native_recents_do_not_override_rest_restore()
+ {
+    use kode_tui::panels::rest::editor::form::Tab;
+    let root = tempfile::tempdir().unwrap();
+    let file = root.path().join("native.txt");
+    std::fs::write(&file, "native").unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state
+        .open(
+            kode_tui::app::workspace::OpenRequest {
+                path: file.clone(),
+                saved: None,
+                navigation: None,
+            },
+            kode_tui::app::state::OpenDestination::Main,
+        )
+        .unwrap();
+    until(&mut app, |app| app.state.pending_open.is_none()).await;
+    app.state.rest.model.replace_collection(json!({"info":{},"item":[{"name":"Draft","request":{"url":"https://example.test","header":[{"key":"X-Valid","value":"retained"}]}}]})).unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    select_request_tab(&mut app, Tab::Headers).await;
+    app.state.dispatch(&ctrl('a')).unwrap();
+    let draft = "# owned comment\nunfinished header";
+    app.state
+        .dispatch(&InputEvent::Paste(draft.into()))
+        .unwrap();
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    let (mut restored, _) = make(root.path(), 2);
+    until(&mut restored, |app| app.state.rest.form.is_some()).await;
+    select_request_tab(&mut restored, Tab::Headers).await;
+    let id = restored.state.editor.as_ref().unwrap().document_id();
+    assert_eq!(
+        restored
+            .state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        draft
+    );
+    assert_eq!(
+        restored
+            .state
+            .rest
+            .model
+            .collection()
+            .pointer("/item/0/request/header/0/value")
+            .unwrap(),
+        "retained"
+    );
+    assert!(
+        !restored
+            .state
+            .rest
+            .model
+            .collection()
+            .to_string()
+            .contains("unfinished header")
+    );
+    restored.flush_before_leave().await.unwrap();
+    restored.quiesce().await.unwrap();
+    // An explicit startup file still takes precedence over the saved REST view.
+    let prepared = prepare_workspace(
+        root.path(),
+        WorkspaceGeneration(3),
+        Some(file),
+        &CancellationToken::new(),
+    )
+    .unwrap();
+    let mut explicit = AppRuntime::new(prepared).unwrap();
+    until(&mut explicit, |app| app.state.pending_open.is_none()).await;
+    assert!(explicit.state.rest.form.is_none());
+    explicit.flush_before_leave().await.unwrap();
+    explicit.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn send_captures_unpublished_header_and_body_ropes_and_rejects_invalid_headers_before_io() {
+    use kode_tui::panels::rest::editor::form::Tab;
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let url = format!("http://{}/captured", listener.local_addr().unwrap());
+    let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
+    let server = tokio::spawn(async move {
+        loop {
+            let (mut socket, _) = listener.accept().await.unwrap();
+            let mut bytes = Vec::new();
+            while !bytes.ends_with(b"\r\n\r\n") {
+                let mut byte = [0];
+                socket.read_exact(&mut byte).await.unwrap();
+                bytes.push(byte[0]);
+            }
+            let headers = String::from_utf8(bytes).unwrap();
+            let length: usize = headers
+                .lines()
+                .find_map(|line| {
+                    line.to_ascii_lowercase()
+                        .strip_prefix("content-length: ")
+                        .map(str::to_string)
+                })
+                .unwrap()
+                .parse()
+                .unwrap();
+            let mut body = vec![0; length];
+            socket.read_exact(&mut body).await.unwrap();
+            tx.send((headers, body)).unwrap();
+            socket
+                .write_all(b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok")
+                .await
+                .unwrap();
+        }
+    });
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state.rest.model.replace_collection(json!({"info":{},"item":[{"name":"Capture","request":{"method":"POST","url":url,"body":{"mode":"raw","raw":"old"}}}]})).unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    select_request_tab(&mut app, Tab::Headers).await;
+    app.state
+        .dispatch(&InputEvent::Paste("unfinished".into()))
+        .unwrap();
+    let enter = InputEvent::Key(KeyInput {
+        key: Key::Enter,
+        modifiers: Modifiers {
+            ctrl: true,
+            ..Default::default()
+        },
+        repeat: false,
+    });
+    app.state.dispatch(&enter).unwrap();
+    until(&mut app, |app| app.state.rest.run.pending.is_none()).await;
+    assert!(app.state.rest.run.running.is_none());
+    assert!(rx.try_recv().is_err());
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("X-Current: exact".into()))
+        .unwrap();
+    select_request_tab(&mut app, Tab::Body).await;
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("new raw bytes\n".into()))
+        .unwrap();
+    app.state.dispatch(&enter).unwrap();
+    // Further metadata edits during preparation must not invalidate/retarget the captured send.
+    app.state
+        .rest
+        .model
+        .rename(&NodePath(vec![0]), "Renamed after Send")
+        .unwrap();
+    until(&mut app, |app| !app.state.rest.run.responses.is_empty()).await;
+    let (headers, body) = rx.try_recv().unwrap();
+    assert!(headers.to_ascii_lowercase().contains("x-current: exact"));
+    assert_eq!(body, b"new raw bytes\n");
+    let key = app.state.rest.form.as_ref().unwrap().key.clone();
+    assert_eq!(app.state.rest.run.responses[0].key.item_id, key);
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    server.abort();
+}
 #[tokio::test]
 async fn original_environment_editor_typing_clipboard_native_search_and_metadata_use_the_shared_editor()
  {
@@ -281,10 +599,12 @@ async fn file_import_inspection_and_guarded_export_are_real_worker_actions_and_p
     .await;
     assert_eq!(app.state.rest.model.collection(), &original);
     app.state.open_rest_node(NodePath(vec![0])).unwrap();
-    until(&mut app,|app|app.state.editor.as_ref().is_some_and(|view|matches!(app.state.documents.document(view.document_id()).unwrap().origin(),DocumentOrigin::Virtual{owner,..}if owner=="rest"))).await;
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    select_request_tab(&mut app, kode_tui::panels::rest::editor::form::Tab::Raw).await;
     let id = app.state.editor.as_ref().unwrap().document_id();
     assert!(app.state.documents.document(id).unwrap().is_read_only());
     let snapshot = app.state.documents.document(id).unwrap().snapshot().text();
+    assert!(snapshot.contains("GET /"));
     assert!(
         app.state
             .dispatch(&InputEvent::Paste("cannot mutate".into()))
@@ -657,8 +977,14 @@ async fn validation_and_stale_preparation_fail_before_network_and_do_not_retarge
     app.state
         .rest
         .model
-        .rename(&NodePath(vec![0]), "Changed")
+        .add_request(&NodePath::default(), "Inserted")
         .unwrap();
+    app.state
+        .rest
+        .run
+        .tree_changed(kode_tui::panels::rest::sidebar::TreeChange::Inserted(
+            NodePath(vec![1]),
+        ));
     until(&mut app, |app| app.state.rest.run.pending.is_none()).await;
     assert!(
         app.state

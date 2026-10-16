@@ -214,6 +214,9 @@ pub fn prepare_workspace(
                 path,
                 navigation: None,
             })
+    } else if matches!(&loaded.session.active_origin, Some(DocumentOrigin::Virtual {owner,..}) if matches!(owner.as_str(), "database"|"rest-environment"|"rest-node"))
+    {
+        None
     } else if let Some(recent) = loaded
         .session
         .recent_files

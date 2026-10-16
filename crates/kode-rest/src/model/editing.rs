@@ -770,6 +770,23 @@ pub fn headers(model: &mut Workspace, path: &NodePath, next: &str) -> Result<boo
         model.set_node_field(path, key, value.get(key).cloned())
     }
 }
+/// Publish already parsed local headers without reinterpreting the editor rope
+/// on the application thread. Other request fields retain their current values.
+pub fn replace_headers(model: &mut Workspace, path: &NodePath, headers: Value) -> Result<bool> {
+    if !headers.is_array() {
+        return Err(invalid("Prepared headers must be an array"));
+    }
+    let node = model
+        .node(path)
+        .ok_or_else(|| invalid("REST item no longer exists"))?;
+    if is_request(node, path) {
+        let mut value = request(node)?;
+        value["header"] = headers;
+        model.set_node_field(path, "request", Some(value))
+    } else {
+        model.set_node_field(path, "x-kode-headers", Some(headers))
+    }
+}
 /// Called only by the explicit import-review acknowledgement action.
 pub fn acknowledge_import(model: &mut Workspace, path: &NodePath) -> Result<bool> {
     model.set_node_field(path, "x-kode-import-incomplete", Some(Value::Bool(false)))

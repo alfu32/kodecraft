@@ -6,6 +6,17 @@ impl AppRuntime {
         let tag = work.tag();
         let context = work.context();
         let (owner, operation, critical) = match &work {
+            Work::Editor(job) => match job.as_ref() {
+                crate::panels::rest::editor::jobs::Job::Change { snapshot, .. } => (
+                    self.state.documents.save_owner(snapshot.id)?,
+                    "rest-buffer-change",
+                    false,
+                ),
+                crate::panels::rest::editor::jobs::Job::Derived { .. } => {
+                    (self.root_owner, "rest-derived", false)
+                }
+                _ => (self.root_owner, "rest-open", false),
+            },
             Work::Run(_) => (self.root_owner, "rest-prepare-run", false),
             Work::Open { .. } => (self.root_owner, "rest-open", false),
             Work::Environment { snapshot, .. } => (
@@ -44,7 +55,19 @@ impl AppRuntime {
             }
         });
         match context {
-            state::Context::Run { collection } => {
+            state::Context::Editor(context) => {
+                let reply = result.and_then(|reply| {
+                    if let Reply::Editor(reply) = reply {
+                        Ok(*reply)
+                    } else {
+                        Err(DomainError::Unsupported(
+                            "wrong request-editor result".into(),
+                        ))
+                    }
+                });
+                self.state.complete_rest_editor(tag, context, reply)?;
+            }
+            state::Context::Run { structure } => {
                 if self.state.rest.run.pending != Some(tag) {
                     return Ok(());
                 }
@@ -52,7 +75,7 @@ impl AppRuntime {
                 if self.state.closing {
                     return Ok(());
                 }
-                if !Arc::ptr_eq(&collection, &self.state.rest.model.export_collection()) {
+                if structure != self.state.rest.run.structure {
                     self.state.rest.sidebar.message =
                         "REST collection changed while preparing; run the selection again".into();
                     return Ok(());
@@ -170,9 +193,21 @@ impl AppRuntime {
     fn start_rest_run(
         &mut self,
         tag: JobTag,
-        prepared: crate::panels::rest::run::Prepared,
+        mut prepared: crate::panels::rest::run::Prepared,
     ) -> Result<()> {
         use crate::panels::rest::run::Running;
+        // A view may have acquired its item key while preparation was running.
+        // Reconcile by unchanged structural paths before handing off the frozen run.
+        let mut keys = (*prepared.keys).clone();
+        for (path, key) in self.state.rest.run.keys.iter() {
+            keys.insert(path.clone(), key.clone());
+        }
+        for item in &mut prepared.definition.items {
+            if let Some(key) = keys.get(&item.path) {
+                item.id = key.clone();
+            }
+        }
+        prepared.keys = Arc::new(keys);
         let total = prepared.definition.items.len();
         if total == 0 {
             self.state.rest.sidebar.message = "No requests in this selection".into();

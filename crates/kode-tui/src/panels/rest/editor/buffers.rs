@@ -82,6 +82,7 @@ pub struct Input {
     pub environment_text: Option<TextSnapshot>,
     pub overrides: Vec<Override>,
     pub draft: Option<Arc<str>>,
+    pub drafts: super::drafts::Drafts,
 }
 pub struct Prepared {
     pub document: Document,
@@ -145,13 +146,13 @@ pub fn prepare(input: Input, cancel: &CancellationToken) -> Result<Prepared> {
         .and_then(|node| node.pointer("/request/body"));
     let mut content_type = None;
     let (text, language) = if input.kind == BufferKind::RawRequest {
-        for capture in input
-            .overrides
-            .iter()
-            .filter(|capture| capture.path == input.path)
-        {
-            apply_override(&mut model, capture, cancel)?;
-        }
+        super::drafts::apply(
+            &mut model,
+            &input.drafts,
+            &input.overrides,
+            &input.path,
+            cancel,
+        )?;
         let request = RequestResolver::new(
             model.collection(),
             input.path.clone(),

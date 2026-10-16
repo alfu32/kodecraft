@@ -17,10 +17,14 @@ impl AppState {
         if self.pending_open.is_none()
             && let Some(DocumentOrigin::Virtual { owner, key, .. }) =
                 self.persistence.session().active_origin.clone()
-            && owner == "rest-environment"
-            && self.rest.model.environment(&key).is_some()
         {
-            self.open_rest_environment(&key, None)?;
+            if owner == "rest-environment" && self.rest.model.environment(&key).is_some() {
+                self.open_rest_environment(&key, None)?;
+            } else if owner == "rest-node"
+                && let Ok(path) = kode_rest::model::NodePath::decode(Some(&key))
+            {
+                self.open_rest_node(path)?;
+            }
         }
         Ok(())
     }
@@ -29,6 +33,7 @@ impl AppState {
         id: &str,
         override_text: Option<kode_core::document::snapshot::TextSnapshot>,
     ) -> Result<()> {
+        self.deactivate_rest_form();
         if let Some(document) = self.rest.environment_document(id) {
             self.rest.pending_open = None;
             self.rest.ready_open = None;
@@ -70,39 +75,10 @@ impl AppState {
         Ok(())
     }
     pub fn open_rest_node(&mut self, path: kode_rest::model::NodePath) -> Result<()> {
-        if self.rest.model.node(&path).is_none() {
-            return Ok(());
-        }
-        self.rest.model.select(&path);
-        self.rest.sidebar.cursor = path.clone();
-        let mut descriptor = HostDescriptor::new(
-            HostRole::RawRequest,
-            "rest".into(),
-            format!("node:{}", path.encode()),
-            "REST collection JSON snapshot".into(),
-            self.project.root.clone(),
-        );
-        descriptor.language = Some("json".into());
-        descriptor.grammar = "json".into();
-        let expected = self.rest.model.export_collection();
-        let data = OpenData::Node {
-            collection: expected.clone(),
-            path: path.clone(),
-        };
-        let tag = self.tag()?;
-        self.rest.pending_open = Some(tag);
-        self.rest.ready_open = None;
-        self.pending_open = None;
-        self.work.push(AppWork::Rest(Box::new(Work::Open {
-            tag,
-            descriptor,
-            kind: DocumentKind::Node(path),
-            data,
-            expected: Some(expected),
-        })));
-        Ok(())
+        self.begin_rest_form(path)
     }
-    fn inspect_rest_notices(&mut self) -> Result<()> {
+    pub(super) fn inspect_rest_notices(&mut self) -> Result<()> {
+        self.deactivate_rest_form();
         let descriptor = HostDescriptor::new(
             HostRole::RawRequest,
             "rest".into(),
@@ -128,6 +104,11 @@ impl AppState {
             return Ok(());
         };
         let descriptor = entry.descriptor.clone();
+        let kind = entry.kind.clone();
+        let marker = self.rest.markers.get(&id).cloned();
+        if marker.is_some() || !matches!(kind, DocumentKind::Buffer { .. }) {
+            self.deactivate_rest_form();
+        }
         self.cache_main_view()?;
         self.clear_diff()?;
         self.detach_image();
@@ -153,6 +134,21 @@ impl AppState {
                     .map(|work| AppWork::Editor { owner, work }),
             );
         }
+        if matches!(
+            kind,
+            DocumentKind::Buffer {
+                kind: crate::panels::rest::editor::form::BufferKind::Headers,
+                ..
+            }
+        ) {
+            view.host.external = Some(Arc::new(crate::panels::rest::editor::headers::HeaderNames));
+            view.host.warnings = self
+                .rest
+                .buffer_warnings
+                .get(&id)
+                .cloned()
+                .unwrap_or_default();
+        }
         self.focus.focused = Some(view.input.id);
         let owner = view.owner();
         self.work.extend(
@@ -161,6 +157,14 @@ impl AppState {
                 .map(|work| AppWork::Editor { owner, work }),
         );
         self.editor = Some(view);
+        let mut restore_buffer = None;
+        if let Some(key) = marker {
+            self.rest.form = self.rest.forms.remove(&key);
+            if let Some(form) = &self.rest.form {
+                self.focus.focused = Some(form.id);
+                restore_buffer = form.selected_buffer;
+            }
+        }
         self.splash = false;
         // Read-only snapshots are replaceable views. Environment buffers retain
         // their registry/document identity across request and file switches.
@@ -169,13 +173,28 @@ impl AppState {
             .documents
             .iter()
             .filter_map(|(old, entry)| {
-                (*old != id && !matches!(entry.kind, DocumentKind::Environment(_))).then_some(*old)
+                (*old != id
+                    && matches!(
+                        entry.kind,
+                        DocumentKind::Node(_)
+                            | DocumentKind::Notices
+                            | DocumentKind::Buffer {
+                                kind: crate::panels::rest::editor::form::BufferKind::RawRequest,
+                                ..
+                            }
+                    ))
+                .then_some(*old)
             })
             .collect();
         for old in stale {
             self.documents.remove(old)?;
             self.rest.documents.remove(&old);
+            self.rest.markers.remove(&old);
+            self.rest.buffer_warnings.remove(&old);
             self.views.remove(&old);
+        }
+        if let Some(kind) = restore_buffer {
+            self.open_rest_buffer(kind)?;
         }
         self.changed()
     }
@@ -217,7 +236,41 @@ impl AppState {
                     self.rest.staged_buffers.remove(&id);
                 }
                 Intent::Run(path) => self.run_rest_selection(path)?,
-                Intent::TreeChanged(change) => self.rest.run.tree_changed(change),
+                Intent::TreeChanged(change) => {
+                    if let Some(form) = &mut self.rest.form {
+                        form.rebase(&change, &mut self.focus);
+                    }
+                    for form in self.rest.forms.values_mut() {
+                        form.rebase(&change, &mut self.focus);
+                    }
+                    self.rest.forms.retain(|_, form| !form.closed);
+                    self.rest.request_drafts = std::mem::take(&mut self.rest.request_drafts)
+                        .into_iter()
+                        .filter_map(|((path, kind), text)| {
+                            let path = match &change {
+                                crate::panels::rest::sidebar::TreeChange::Inserted(inserted) => {
+                                    Some(path.after_insert(inserted))
+                                }
+                                crate::panels::rest::sidebar::TreeChange::Removed(removed) => {
+                                    path.after_remove(removed)
+                                }
+                                crate::panels::rest::sidebar::TreeChange::Moved { from, to }
+                                    if path.starts_with(from) =>
+                                {
+                                    let mut moved = to.clone();
+                                    moved.0.extend_from_slice(&path.0[from.0.len()..]);
+                                    Some(moved)
+                                }
+                                crate::panels::rest::sidebar::TreeChange::Moved { from, to } => {
+                                    path.after_remove(from).map(|path| path.after_insert(to))
+                                }
+                                crate::panels::rest::sidebar::TreeChange::Replaced => None,
+                            }?;
+                            Some(((path, kind), text))
+                        })
+                        .collect();
+                    self.rest.run.tree_changed(change);
+                }
                 Intent::InspectNotices => self.inspect_rest_notices()?,
                 Intent::Import {
                     nonce,
@@ -274,7 +327,10 @@ impl AppState {
                 }
             }
         }
-        if !self.rest.sidebar.has_modal()
+        self.drain_rest_form()?;
+        if !self.closing
+            && !self.rest.form.as_ref().is_some_and(|form| form.has_modal())
+            && !self.rest.sidebar.has_modal()
             && !self.files.has_modal()
             && !self.database.has_modal()
             && self.sql.dialog.is_none()
@@ -331,6 +387,9 @@ impl AppState {
         self.work
             .push(AppWork::Rest(Box::new(Work::Run(Box::new(Prepare {
                 tag,
+                structure: self.rest.run.structure,
+                overrides: self.request_buffer_captures(),
+                drafts: self.rest.request_drafts.clone(),
                 selection,
                 collection: self.rest.model.export_collection(),
                 root: self.project.root.clone(),

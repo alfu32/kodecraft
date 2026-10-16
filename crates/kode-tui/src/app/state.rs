@@ -69,6 +69,11 @@ pub enum ConfigAction {
     RemoveExclusion(PathBuf),
 }
 pub enum AppWork {
+    RestFormClipboard {
+        tag: JobTag,
+        job: ClipboardJob,
+        proof: Option<crate::panels::rest::editor::form::PasteProof>,
+    },
     Rest(Box<crate::panels::rest::state::Work>),
     RestClipboard {
         tag: JobTag,
@@ -403,6 +408,9 @@ impl AppState {
         Ok(())
     }
     pub fn viewer_id(&self) -> Option<FocusId> {
+        if let Some(form) = &self.rest.form {
+            return Some(form.id);
+        }
         if let Some(diff) = &self.diff {
             return Some(diff.id());
         }
@@ -638,6 +646,7 @@ impl AppState {
         clear: bool,
     ) -> Result<()> {
         if destination == OpenDestination::Main {
+            self.deactivate_rest_form();
             self.rest.pending_open = None;
             self.rest.ready_open = None;
         }
@@ -831,15 +840,25 @@ impl AppState {
             })
             .collect();
         let active = self
-            .editor
+            .rest
+            .form
             .as_ref()
-            .and_then(|view| self.documents.document(view.document_id()).ok())
-            .map(|document| document.origin().clone())
-            .or_else(|| self.active_hex.clone().map(DocumentOrigin::File))
+            .map(|form| DocumentOrigin::Virtual {
+                owner: "rest-node".into(),
+                key: form.path.encode(),
+                label: "REST request".into(),
+            })
             .or_else(|| {
-                self.image
+                self.editor
                     .as_ref()
-                    .map(|view| DocumentOrigin::File(view.path.clone()))
+                    .and_then(|view| self.documents.document(view.document_id()).ok())
+                    .map(|document| document.origin().clone())
+                    .or_else(|| self.active_hex.clone().map(DocumentOrigin::File))
+                    .or_else(|| {
+                        self.image
+                            .as_ref()
+                            .map(|view| DocumentOrigin::File(view.path.clone()))
+                    })
             });
         let tag = self.tag()?;
         self.pending_capture = Some(tag);
@@ -1027,15 +1046,19 @@ impl AppState {
         }
         if let Some(view) = &mut self.editor {
             let owner = view.owner();
-            self.work.extend(
-                view.take_work()
-                    .into_iter()
-                    .map(|work| AppWork::Editor { owner, work }),
-            );
-            // EditorWork is the application's event queue. Host callbacks are
-            // useful to embedded consumers, but must not retain SQL snapshots
-            // after this composition layer has drained the equivalent work.
+            let work = view.take_work();
             let _ = view.host.take_events();
+            for work in work {
+                match work {
+                    EditorWork::Execute(execution)
+                        if execution.action
+                            == crate::editor::host::ExecutionAction::SendRequest =>
+                    {
+                        self.execute_rest_snapshot(execution)?
+                    }
+                    work => self.work.push(AppWork::Editor { owner, work }),
+                }
+            }
         }
         Ok(())
     }
@@ -1173,6 +1196,10 @@ impl AppState {
             if caret.is_some() {
                 cursor = caret;
             }
+        } else if self.rest.form.is_some() {
+            if let Some(caret) = self.render_rest_editor(geometry.viewer, buffer, theme)? {
+                cursor = Some(caret);
+            }
         } else if let Some(view) = &mut self.editor {
             view.synchronize(&self.documents)?;
             if self.center_editor && !geometry.viewer.is_empty() {
@@ -1266,6 +1293,11 @@ impl AppState {
             menu.render(area, buffer, theme);
             cursor = None;
         }
+        if let Some(form) = &mut self.rest.form
+            && form.has_modal()
+        {
+            cursor = form.render_modal(area, buffer, theme);
+        }
         if self.rest.sidebar.has_modal() {
             cursor = self.rest.sidebar.render_modal(area, buffer, theme);
         }
@@ -1279,6 +1311,7 @@ impl AppState {
             .iter()
             .any(|definition| definition.id == source)
         {
+            self.deactivate_rest_form();
             self.rest.pending_open = None;
             self.rest.ready_open = None;
             self.pending_open = None;
@@ -1381,6 +1414,7 @@ impl AppState {
         if !self.sql_sources.contains_key(&id) {
             return Ok(());
         }
+        self.deactivate_rest_form();
         self.rest.pending_open = None;
         self.rest.ready_open = None;
         self.cache_main_view()?;

@@ -2,6 +2,7 @@ pub mod dispatch;
 pub mod effects;
 pub mod events;
 mod rest;
+mod rest_editor;
 pub mod runner;
 pub mod runtime;
 mod sql;

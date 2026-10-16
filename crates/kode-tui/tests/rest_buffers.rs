@@ -38,6 +38,7 @@ fn input(model: &Workspace, kind: BufferKind, root: &Path) -> Input {
         environment_text: None,
         overrides: Vec::new(),
         draft: None,
+        drafts: Default::default(),
     }
 }
 fn snapshot(text: &str) -> kode_core::document::snapshot::TextSnapshot {

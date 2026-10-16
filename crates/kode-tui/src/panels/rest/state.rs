@@ -1,5 +1,12 @@
 //! Application-owned model, virtual buffers and immutable worker captures.
-use super::sidebar::Sidebar;
+use super::{
+    editor::{
+        drafts,
+        form::{BufferKind, Form},
+        jobs,
+    },
+    sidebar::Sidebar,
+};
 use crate::{app::workspace::CapturedDocument, editor::host::HostDescriptor};
 use kode_core::{
     DocumentId, DocumentOrigin, DomainError, JobTag, Result,
@@ -11,19 +18,34 @@ use kode_rest::{
     model::{Environment, EnvironmentValue, NodePath, ProjectState, Workspace},
 };
 use serde_json::Value;
-use std::{collections::HashMap, path::PathBuf, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    path::PathBuf,
+    sync::Arc,
+};
 const DRAFTS: &str = "x-kode-rs-environment-buffers";
 #[derive(Clone, PartialEq, Eq)]
 pub enum DocumentKind {
     Environment(String),
     Node(NodePath),
     Notices,
+    Buffer { key: String, kind: BufferKind },
 }
 pub struct Entry {
     pub kind: DocumentKind,
     pub descriptor: HostDescriptor,
 }
 pub struct RestState {
+    pub response: super::editor::response::Panel,
+    pub form: Option<Form>,
+    pub forms: HashMap<String, Form>,
+    pub markers: HashMap<DocumentId, String>,
+    pub buffers: HashMap<(String, BufferKind), DocumentId>,
+    pub dirty_buffers: HashSet<DocumentId>,
+    pub pending_changes: HashMap<DocumentId, JobTag>,
+    pub pending_derived: Option<JobTag>,
+    pub derived_revision: u64,
+    pub buffer_warnings: HashMap<DocumentId, Vec<kode_core::LineIndex>>,
     pub model: Workspace,
     pub sidebar: Sidebar,
     pub documents: HashMap<DocumentId, Entry>,
@@ -34,6 +56,7 @@ pub struct RestState {
     pub warning: Option<String>,
     pub pending_environments: HashMap<DocumentId, JobTag>,
     pub drafts: HashMap<String, Arc<str>>,
+    pub request_drafts: drafts::Drafts,
     pub staged_buffers: HashMap<String, TextSnapshot>,
     pub run: super::run::RunState,
     pub exports: HashMap<PathBuf, kode_core::services::DiskIdentity>,
@@ -51,6 +74,7 @@ impl RestState {
         let mut warning = None;
         let mut persistence_enabled = true;
         let mut drafts = HashMap::new();
+        let mut request_drafts = drafts::Drafts::new();
         if let Ok(project) = &mut parsed {
             match read_drafts(project) {
                 Ok(saved) => drafts = saved,
@@ -62,6 +86,14 @@ impl RestState {
             // Large owned buffers live behind Arcs, outside the model's unknown
             // JSON metadata map, so capturing a keystroke never clones them.
             project.extra.remove(DRAFTS);
+            match drafts::read(project) {
+                Ok(saved) => request_drafts = saved,
+                Err(error) => {
+                    warning = Some(error.to_string());
+                    persistence_enabled = false;
+                }
+            }
+            project.extra.remove(drafts::KEY);
         }
         let model = match parsed.and_then(Workspace::from_state) {
             Ok(model) => model,
@@ -73,6 +105,16 @@ impl RestState {
         };
         let observed_revision = model.revision();
         Ok(Self {
+            response: Default::default(),
+            form: None,
+            forms: HashMap::new(),
+            markers: HashMap::new(),
+            buffers: HashMap::new(),
+            dirty_buffers: HashSet::new(),
+            pending_changes: HashMap::new(),
+            pending_derived: None,
+            derived_revision: 0,
+            buffer_warnings: HashMap::new(),
             sidebar: Sidebar::new(&model)?,
             model,
             documents: HashMap::new(),
@@ -83,6 +125,7 @@ impl RestState {
             warning,
             pending_environments: HashMap::new(),
             drafts,
+            request_drafts,
             staged_buffers: HashMap::new(),
             run: super::run::RunState::default(),
             exports: HashMap::new(),
@@ -93,11 +136,37 @@ impl RestState {
             matches!(&entry.kind,DocumentKind::Environment(key)if key==environment).then_some(*id)
         })
     }
+    pub fn path_for_key(&self, key: &str) -> Option<NodePath> {
+        self.run
+            .keys
+            .iter()
+            .find_map(|(path, candidate)| (candidate == key).then(|| path.clone()))
+    }
     pub fn capture(&self) -> Option<Capture> {
         self.persistence_enabled.then(|| Capture {
             project: self.model.project_state(),
             staged_buffers: self.staged_buffers.clone(),
             drafts: self.drafts.clone(),
+            request_drafts: self.request_drafts.clone(),
+            requests: self
+                .documents
+                .iter()
+                .filter_map(|(id, entry)| {
+                    if let DocumentKind::Buffer { key, kind } = &entry.kind {
+                        if kind.editable() {
+                            return Some((
+                                *id,
+                                (
+                                    self.path_for_key(key)?,
+                                    *kind,
+                                    self.dirty_buffers.contains(id),
+                                ),
+                            ));
+                        }
+                    }
+                    None
+                })
+                .collect(),
             environments: self
                 .documents
                 .iter()
@@ -136,6 +205,8 @@ pub struct Capture {
     staged_buffers: HashMap<String, TextSnapshot>,
     drafts: HashMap<String, Arc<str>>,
     environments: HashMap<DocumentId, String>,
+    request_drafts: drafts::Drafts,
+    requests: HashMap<DocumentId, (NodePath, BufferKind, bool)>,
 }
 impl Capture {
     /// Worker-only: materialize captured ropes, merge typed metadata and retain
@@ -162,7 +233,31 @@ impl Capture {
             drafts.insert(environment.clone(), Arc::from(text));
         }
         drafts.retain(|id, _| model.environment(id).is_some());
+        let mut request_drafts = self.request_drafts;
+        for captured in documents {
+            if let Some((path, kind, dirty)) = self.requests.get(&captured.document.id())
+                && (*dirty || captured.document.revision().0 > 0)
+                && model.node(path).is_some()
+            {
+                request_drafts.insert(
+                    (path.clone(), kind.name().into()),
+                    captured.document.snapshot().text(),
+                );
+            }
+        }
+        request_drafts.retain(|(path, _), _| model.node(path).is_some());
+        for ((path, name), text) in &request_drafts {
+            if let Some(kind) = drafts::kind(name) {
+                // Unfinished text is saved verbatim; typed JSON retains its last valid value.
+                let _ = drafts::apply_text(&mut model, path, kind, text);
+            }
+        }
         let mut state = model.project_state();
+        if !request_drafts.is_empty() {
+            state
+                .extra
+                .insert(drafts::KEY.into(), drafts::write(request_drafts));
+        }
         if !drafts.is_empty() || state.extra.contains_key(DRAFTS) {
             state.extra.insert(
                 DRAFTS.into(),
@@ -190,6 +285,7 @@ pub enum OpenData {
     Notices(Arc<Value>),
 }
 pub enum Work {
+    Editor(Box<jobs::Job>),
     Run(Box<super::run::Prepare>),
     Open {
         tag: JobTag,
@@ -222,8 +318,9 @@ pub enum Work {
 }
 #[derive(Clone)]
 pub enum Context {
+    Editor(jobs::Context),
     Run {
-        collection: Arc<Value>,
+        structure: u64,
     },
     Open {
         descriptor: HostDescriptor,
@@ -245,6 +342,7 @@ pub enum Context {
     },
 }
 pub enum Reply {
+    Editor(Box<jobs::Reply>),
     Run(Box<super::run::Prepared>),
     Opened(Document),
     Environment(Vec<EnvironmentValue>),
@@ -254,8 +352,9 @@ pub enum Reply {
 impl Work {
     pub fn context(&self) -> Context {
         match self {
+            Self::Editor(job) => Context::Editor(job.context()),
             Self::Run(work) => Context::Run {
-                collection: work.collection.clone(),
+                structure: work.structure,
             },
             Self::Open {
                 descriptor,
@@ -293,6 +392,7 @@ impl Work {
     }
     pub fn tag(&self) -> JobTag {
         match self {
+            Self::Editor(job) => job.tag(),
             Self::Run(work) => work.tag,
             Self::Open { tag, .. }
             | Self::Environment { tag, .. }
@@ -306,9 +406,13 @@ impl Work {
             return Err(DomainError::Cancelled);
         }
         let result = match self {
+            Self::Editor(job) => {
+                let context = Context::Editor(job.context());
+                (context, Reply::Editor(Box::new(job.prepare(cancel)?)))
+            }
             Self::Run(work) => {
                 let context = Context::Run {
-                    collection: work.collection.clone(),
+                    structure: work.structure,
                 };
                 (context, Reply::Run(Box::new(work.prepare(cancel)?)))
             }
