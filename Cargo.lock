@@ -1721,6 +1721,7 @@ dependencies = [
  "kode-core",
  "kode-platform",
  "mime",
+ "percent-encoding",
  "psl",
  "regex",
  "reqwest",

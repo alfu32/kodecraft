@@ -1,5 +1,6 @@
 //! Persisted collection data stays a JSON tree. Runtime responses, cookies and
 //! execution handles deliberately have no fields in this model.
+pub mod editing;
 pub mod environment;
 pub mod path;
 pub mod workspace;

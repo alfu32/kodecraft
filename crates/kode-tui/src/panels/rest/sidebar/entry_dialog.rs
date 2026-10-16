@@ -10,35 +10,12 @@ use crate::{
 };
 use crossterm::event::MouseButton;
 use kode_core::{RequestId, Result};
+pub use kode_rest::model::editing::EntryValue;
 use ratatui::{
     buffer::Buffer,
     layout::{Position, Rect},
     widgets::{Block, Borders, Clear, Widget},
 };
-#[derive(Clone, PartialEq, Eq)]
-pub struct EntryValue {
-    pub key: String,
-    pub value: String,
-    pub description: String,
-    pub kind: String,
-    pub enabled: bool,
-}
-impl Default for EntryValue {
-    fn default() -> Self {
-        Self {
-            key: String::new(),
-            value: String::new(),
-            description: String::new(),
-            kind: "string".into(),
-            enabled: true,
-        }
-    }
-}
-impl std::fmt::Debug for EntryValue {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str("RestEntryValue(..)")
-    }
-}
 #[derive(Clone)]
 pub struct PasteProof {
     nonce: RequestId,

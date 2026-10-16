@@ -15,7 +15,7 @@ pub struct RequestResolver<'a> {
 }
 struct UrlPlan {
     raw: String,
-    query: Option<Vec<(String, String)>>,
+    query: Option<Vec<(String, Option<String>)>>,
 }
 pub(super) struct Context<'a> {
     pub variables: &'a VariableResolver,
@@ -234,8 +234,14 @@ impl<'a> RequestResolver<'a> {
         if let Some(query) = query {
             url.set_query(None);
             if !query.is_empty() {
-                url.query_pairs_mut()
-                    .extend_pairs(query.iter().map(|(key, value)| (key, value)));
+                let mut pairs = url.query_pairs_mut();
+                for (key, value) in query {
+                    if let Some(value) = value {
+                        pairs.append_pair(&key, &value);
+                    } else {
+                        pairs.append_key_only(&key);
+                    }
+                }
             }
         }
         if let Some((key, value)) = auth_query {
@@ -399,7 +405,11 @@ fn resolve_url(request: &Value, context: &mut Context<'_>) -> Result<UrlPlan> {
             .filter(|entry| !boolean(entry.get("disabled")))
         {
             let key = context.value(&primitive(entry.get("key")).unwrap_or_default())?;
-            let value = context.value(&primitive(entry.get("value")).unwrap_or_default())?;
+            let value = if entry.get("value") == Some(&Value::Null) {
+                None
+            } else {
+                Some(context.value(&primitive(entry.get("value")).unwrap_or_default())?)
+            };
             if !key.trim().is_empty() {
                 pairs.push((key, value));
             }
