@@ -1,0 +1,398 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1528.0" height="845.0" viewBox="0 0 1528.0 845.0">
+<rect width="100%" height="100%" fill="#0F1424"/>
+<rect x="10.00" y="10.00" width="50.75" height="15.00" fill="#3C4678"/>
+<text x="10.00" y="21.85" xml:space="preserve" fill="#DD9E00" font-family="DejaVu Sans Mono, monospace" font-size="12"> Files </text>
+<rect x="60.75" y="10.00" width="384.25" height="15.00" fill="#242C44"/>
+<text x="60.75" y="21.85" xml:space="preserve" fill="#A5B2FF" font-family="DejaVu Sans Mono, monospace" font-size="12"> Project  Git  Database  REST  About  Settings  Help </text>
+<text x="452.25" y="21.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="10.00" width="935.25" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="21.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">/home/******/************/***-****-**/lib/freeglut-3.4.0.tar.gz [application/gzip] · 413389 bytes                                </text>
+<rect x="1394.75" y="10.00" width="50.75" height="15.00" fill="#FFBF55"/>
+<text x="1394.75" y="21.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[8][16]</text>
+<rect x="1445.50" y="10.00" width="29.00" height="15.00" fill="#243250"/>
+<text x="1445.50" y="21.85" xml:space="preserve" fill="#FFBF55" font-family="DejaVu Sans Mono, monospace" font-size="12">[32]</text>
+<rect x="1474.50" y="10.00" width="43.50" height="15.00" fill="#FFBF55"/>
+<text x="1474.50" y="21.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[Find]</text>
+<rect x="10.00" y="25.00" width="333.50" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="36.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">/home/******/************/***-****-**         </text>
+<rect x="343.50" y="25.00" width="116.00" height="15.00" fill="#FFBF55"/>
+<text x="343.50" y="36.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[change][+d][+f]</text>
+<text x="459.50" y="36.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="466.75" y="25.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="466.75" y="36.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000000  </text>
+<rect x="539.25" y="25.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="539.25" y="36.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">1F 8B 08 00 00 00 00 00 00 03 EC 3C 6B 77 DB B6 92 FD 5A FD 0A 5C A7 67 2B F5 58 B4 24 BF 72 BD   ...........&lt;kw....Z..\.g+.X.$.r.     </text>
+<rect x="10.00" y="40.00" width="362.50" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="51.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">Recent                                            </text>
+<rect x="372.50" y="40.00" width="79.75" height="15.00" fill="#FFBF55"/>
+<text x="372.50" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[paths:rel]</text>
+<text x="452.25" y="51.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="40.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="51.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000020  </text>
+<rect x="532.00" y="40.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="51.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">4D 1B 59 A2 6C 35 B2 E4 D5 23 71 3E F1 50 14 24 B1 26 09 5E 82 B4 AC 74 B3 BF 7D 67 00 90 22 A9   M.Y.l5...#q&gt;.P.$.&amp;.^...t..}g..&quot;.     </text>
+<rect x="10.00" y="55.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="66.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x .gitignore                                                 </text>
+<text x="452.25" y="66.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="55.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="66.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000040  </text>
+<rect x="532.00" y="55.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="66.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">97 9D 9B 64 EF 9E 6B 9E C6 A2 80 C1 60 30 EF 01 A0 FA E6 A3 31 73 D8 D8 74 8C 39 35 27 34 F8 E1   ...d..k.....`0......1s..t.95&#x27;4..     </text>
+<rect x="10.00" y="70.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="81.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x assets/shaders/raytracing.glsl                             </text>
+<text x="452.25" y="81.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="70.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="81.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000060  </text>
+<rect x="532.00" y="70.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="81.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">EB 3F 15 78 CE CE CE C4 27 3C F9 4F E8 3C F9 A1 7A 72 5C AB 54 4E E1 CB 31 B4 57 4F 4E CE 4F 7F   .?.x....&#x27;&lt;.O.&lt;..zr\.TN..1.WON.O.     </text>
+<rect x="10.00" y="85.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="96.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x build-linux.sh                                             </text>
+<text x="452.25" y="96.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="85.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="96.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000080  </text>
+<rect x="532.00" y="85.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="96.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">98 7D 03 5A D6 9E 88 87 66 00 53 06 8C 85 BB E0 F6 F5 E7 17 F7 FF E4 39 AD 11 8B B9 2E F5 C2 37   .}.Z....f.S............9.......7     </text>
+<rect x="10.00" y="100.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="111.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x build-mingw.cmd                                            </text>
+<text x="452.25" y="111.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="100.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="111.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000000A0  </text>
+<rect x="532.00" y="100.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="111.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">67 C7 56 85 9E BF 9E BC 3E A1 D6 78 6A 4D 5F 9B 96 35 79 3D 36 AD CA C9 09 FC 57 3B 7F FD F7 BF   g.V.....&gt;..xjM_..5y=6.....W;....     </text>
+<rect x="10.00" y="115.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="126.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x build.sh                                                   </text>
+<text x="452.25" y="126.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="115.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="126.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000000C0  </text>
+<rect x="532.00" y="115.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="126.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">57 4E 8F C7 85 FF 6B 9A 5F 9E AF F7 4C 03 4A 67 4E 14 96 8F B5 13 AD 72 F4 4D E6 40 7B 38 07 7B   WN....k._...L.JgN......r.M.@{8.{     </text>
+<rect x="10.00" y="130.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="141.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x buttons.svg                                                </text>
+<text x="452.25" y="141.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="130.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="141.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000000E0  </text>
+<rect x="532.00" y="130.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="141.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">DE 6A FF F0 9E B3 FF E3 E3 EA D9 0F A7 DF 84 9A DC F3 6F 6E FF 39 F9 6B 33 3B 9C 47 E3 AF AB 07   .j................on.9.k3;.G....     </text>
+<rect x="10.00" y="145.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="156.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x house.vxde                                                 </text>
+<text x="452.25" y="156.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="145.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="156.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000100  </text>
+<rect x="532.00" y="145.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="156.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">5F 20 FF 93 B3 D3 17 F9 7F 8F 67 8B FC 17 2C B8 9F 3A 6C C1 BF 86 26 7C 81 FC CF CE AB C7 2F F2   _ ........g...,..:l...&amp;|....../.     </text>
+<rect x="10.00" y="160.00" width="442.25" height="15.00" fill="#243250"/>
+<text x="10.00" y="171.85" xml:space="preserve" fill="#FFBF55" font-family="DejaVu Sans Mono, monospace" font-size="12">x lib/freeglut-3.4.0.tar.gz                                  </text>
+<text x="452.25" y="171.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="160.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="171.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000120  </text>
+<rect x="532.00" y="160.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="171.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">FF 0E CF 5E F9 8F 23 DB 99 18 33 2F 72 6C 2F 7A 34 1E AB 55 6D E9 3A CF 9A 43 E6 7F 27 DB E4 5F   ...^..#...3/rl/z4..Um.:..C..&#x27;.._     </text>
+<rect x="10.00" y="175.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="186.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x main.code-workspace                                        </text>
+<text x="452.25" y="186.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="175.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="186.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000140  </text>
+<rect x="532.00" y="175.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="186.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">AD 9D E4 F3 BF 1A B8 7F E8 FF 46 6B CE 3C FF E6 F2 F7 4C 97 5E 90 AB EE E8 A8 83 F2 25 C5 BB 6A   ..........Fk.&lt;....L.^.......%..j     </text>
+<rect x="10.00" y="190.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="201.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x Makefile                                                   </text>
+<text x="452.25" y="201.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="190.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="201.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000160  </text>
+<rect x="532.00" y="190.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="201.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">B5 44 84 D0 0B 05 E6 5D 14 08 F1 23 3E 97 9F 8E 63 04 F4 1F 11 E5 21 7E 8F 75 C4 98 D8 DC 37 43   .D.....]...#&gt;...c.....!~.u....7C     </text>
+<rect x="10.00" y="205.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="216.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x Makefile.Android                                           </text>
+<text x="452.25" y="216.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="205.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="216.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000180  </text>
+<rect x="532.00" y="205.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="216.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">0B 80 0A 7F B2 31 C7 3E 81 00 BE 13 78 82 C8 E3 65 40 45 A2 71 E4 85 51 D9 31 43 C0 20 FB 78 48   .....1.&gt;....x...e@E.q..Q.1C. .xH     </text>
+<rect x="10.00" y="220.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="231.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x SQLite_1.sql                                               </text>
+<text x="452.25" y="231.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="220.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="231.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000001A0  </text>
+<rect x="532.00" y="220.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="231.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">7D 31 80 90 32 89 38 E5 17 C4 B4 42 9B 79 FC C8 9A 53 EB 9E 45 E1 DB 87 E3 82 02 90 C4 DA 1E 88   }1..2.8....B.y...S..E...........     </text>
+<rect x="10.00" y="235.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="246.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">x temp.vxdi                                                  </text>
+<text x="452.25" y="246.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="235.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="246.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000001C0  </text>
+<rect x="532.00" y="235.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="246.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">CC 71 C8 84 FA D4 9B 50 CF B2 29 17 00 62 AA 0B F2 DF EA 0B 60 8F 26 8C 98 7E 58 9E D1 90 44 FE   .q.....P..)..b......`.&amp;..~X...D.     </text>
+<text x="10.00" y="261.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">-------------------------------------------------------------│</text>
+<rect x="459.50" y="250.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="261.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000001E0  </text>
+<rect x="532.00" y="250.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="261.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">04 26 DE DC 17 A3 74 EC F1 CC 29 4F E8 83 7C 8B AA 65 97 72 33 6E 00 DD 4F 5E 03 D3 9B 04 C9 37   .&amp;....t...)O..|..e.r3n..O^.....7     </text>
+<rect x="10.00" y="265.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="276.85" xml:space="preserve" fill="#B86F4B" font-family="DejaVu Sans Mono, monospace" font-size="12">[+] .git                                             16 items</text>
+<text x="452.25" y="276.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="265.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="276.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000200  </text>
+<rect x="532.00" y="265.00" width="130.50" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="276.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">1B DF B2 54 CE A8 </text>
+<rect x="662.50" y="265.00" width="14.50" height="15.00" fill="#B6B9C5"/>
+<text x="662.50" y="276.85" xml:space="preserve" fill="#3F4E7E" font-family="DejaVu Sans Mono, monospace" font-size="12">47</text>
+<rect x="677.00" y="265.00" width="609.00" height="15.00" fill="#1A2237"/>
+<text x="677.00" y="276.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> 03 98 90 B8 E6 3D 9D DA 0E 4D 93 68 61 23 29 37 1B 37 F5 77 BA 71 39 6A 77   ...T..</text>
+<rect x="1286.00" y="265.00" width="7.25" height="15.00" fill="#B6B9C5"/>
+<text x="1286.00" y="276.85" xml:space="preserve" fill="#3F4E7E" font-family="DejaVu Sans Mono, monospace" font-size="12">G</text>
+<rect x="1293.25" y="265.00" width="217.50" height="15.00" fill="#1A2237"/>
+<text x="1293.25" y="276.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">.....=...M.ha#)7.7.w.q9jw     </text>
+<rect x="10.00" y="280.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="291.85" xml:space="preserve" fill="#B86F4B" font-family="DejaVu Sans Mono, monospace" font-size="12">[+] .vscode                                           4 items</text>
+<text x="452.25" y="291.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="280.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="291.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000220  </text>
+<rect x="532.00" y="280.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="291.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">9A C6 F0 E3 AD FE A6 4F 1D 6A 72 4A B4 2C 32 C1 4E 12 DB 6A 1A 13 22 CA C2 C2 4A 66 34 5E 51 1A   .......O.jrJ.,2.N..j..&quot;...Jf4^Q.     </text>
+<rect x="10.00" y="295.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="306.85" xml:space="preserve" fill="#FFCC22" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">[+] assets                                            1 items</text>
+<text x="452.25" y="306.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="295.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="306.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000240  </text>
+<rect x="532.00" y="295.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="306.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">B4 A9 0F 86 CD 76 FF 4D 62 F2 08 33 B1 03 81 23 19 B0 51 16 91 EF 30 73 52 36 83 D0 9E 42 1B 8A   .....v.Mb..3...#..Q...0sR6...B..     </text>
+<rect x="10.00" y="310.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="321.85" xml:space="preserve" fill="#B86F4B" font-family="DejaVu Sans Mono, monospace" font-size="12">[+] build                                             5 items</text>
+<text x="452.25" y="321.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="310.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="321.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000260  </text>
+<rect x="532.00" y="310.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="321.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">44 22 5E 80 BB B8 48 78 2A 09 C8 E3 4F BA 41 49 E6 1B BA 0B AF C8 83 7D 11 F2 37 35 A0 5D FC 5D   D&quot;^...Hx*...O.AI.......}..75.].]     </text>
+<rect x="10.00" y="325.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="336.85" xml:space="preserve" fill="#FFCC22" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">[-] lib                                              12 items</text>
+<text x="452.25" y="336.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="325.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="336.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000280  </text>
+<rect x="532.00" y="325.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="336.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">C0 1F FA E8 03 8B 43 73 7C F1 52 6F 7C C3 E7 89 FE DF 35 2D C6 BF CC FB 3F C1 FF 9F 1F E7 FD 7F   ......Cs|.Ro|.....5-....?.......     </text>
+<rect x="10.00" y="340.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="351.85" xml:space="preserve" fill="#FFCC22" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">  [+] freeglut-3.4.0                                  6 items</text>
+<text x="452.25" y="351.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="340.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="351.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000002A0  </text>
+<rect x="532.00" y="340.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="351.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">ED 0C 3F BF C9 8A 73 CF 8B FF 07 93 BD 31 AD DE 80 DC 7D 53 EF 2F 54 E8 3B 3A FF 71 40 17 69 C7   ..?...s......1....}S./T.;:.q@.i.     </text>
+<rect x="10.00" y="355.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="366.85" xml:space="preserve" fill="#FFCC22" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">  [+] raylib-4.5.0_linux_amd64                        5 items</text>
+<text x="452.25" y="366.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="355.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="366.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000002C0  </text>
+<rect x="532.00" y="355.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="366.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">0E BA 2B 7D F5 CA 7F 8B B7 C7 E9 EB B3 07 97 F8 F7 B3 B2 C5 BC A9 3D 23 E8 F3 BF A6 33 2F 37 5B   ..+}..................=#....3/7[     </text>
+<rect x="10.00" y="370.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="381.85" xml:space="preserve" fill="#FFCC22" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">  [+] raylib-4.5.0_win64_mingw-w64                    5 items</text>
+<text x="452.25" y="381.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="370.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="381.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000002E0  </text>
+<rect x="532.00" y="370.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="381.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">7D 5D BF EA 8C 86 AA B7 A9 DF F4 06 6F 7A AD 16 74 F5 6E F5 EE 55 C7 98 39 46 A7 7D D9 AF F7 3F   }]..........oz..t.n..U..9F.}...?     </text>
+<rect x="10.00" y="385.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="396.85" xml:space="preserve" fill="#FFCC22" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">  [+] raylib-5.0_linux_amd64                          5 items</text>
+<text x="452.25" y="396.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="385.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="396.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000300  </text>
+<rect x="532.00" y="385.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="396.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">BE 39 8A 78 70 E4 30 CB 74 8E 80 3E FC 77 D5 D1 26 4B F8 7C 09 0B 2F 61 E1 2B 3F 4F F4 FF 0B DB   .9.xp.0.t..&gt;.w..&amp;K.|../a.+?O....     </text>
+<rect x="10.00" y="400.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="411.85" xml:space="preserve" fill="#FFCC22" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">  [+] raylib-5.0_win64_mingw-w64                      5 items</text>
+<text x="452.25" y="411.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="400.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="411.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000320  </text>
+<rect x="532.00" y="400.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="411.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">33 5C FE 60 7D 81 F7 DF EF FF 8F 2B D5 35 FF 7F 72 7C FA E2 FF BF C3 23 6D F3 83 ED 4D 40 D8 E4   3\.`}......+.5..r|.....#m...M@..     </text>
+<rect x="10.00" y="415.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="426.85" xml:space="preserve" fill="#FFCC22" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">  [+] raylib-5.0_win64_msvc16                         5 items</text>
+<text x="452.25" y="426.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="415.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="426.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000340  </text>
+<rect x="532.00" y="415.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="426.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">66 F0 BE F1 8D DC FF 42 4E F1 4F 07 00 3F A0 BE 19 50 42 BD 07 3B 60 1E EE 5C 2B 4F 22 11 B8 B6   f......BN.O..?...PB..;`..\+O&quot;...     </text>
+<rect x="10.00" y="430.00" width="442.25" height="15.00" fill="#243250"/>
+<text x="10.00" y="441.85" xml:space="preserve" fill="#FFBF55" font-family="DejaVu Sans Mono, monospace" font-size="12">  [=] freeglut-3.4.0.tar.gz                         403.7 KiB</text>
+<text x="452.25" y="441.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="430.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="441.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000360  </text>
+<rect x="532.00" y="430.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="441.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">15 30 CE A6 E1 11 A7 61 E4 97 5D 2E C8 79 FB 50 D5 2A 5A 6D 8B 5B F7 03 F6 27 B5 42 82 AE 9D 3F   .0.....a..]..y.P.*Zm.[...&#x27;.B...?     </text>
+<rect x="10.00" y="445.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="456.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">  [=] raylib-4.5.0_linux_amd64.tar.gz                 1.6 MiB</text>
+<text x="452.25" y="456.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="445.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="456.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000380  </text>
+<rect x="532.00" y="445.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="456.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">D3 B7 CB AE 2B BD AB F7 EB C3 5E FF CD C1 7B 9B 47 A6 43 06 61 34 B1 19 A9 9E 93 1A E8 F3 41 02   ....+.....^...{.G.C.a4........A.     </text>
+<rect x="10.00" y="460.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="471.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">  [=] raylib-4.5.0_win64_mingw-w64.zip                1.5 MiB</text>
+<text x="452.25" y="471.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="460.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="471.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000003A0  </text>
+<rect x="532.00" y="460.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="471.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">D9 EE 0E 86 F5 4E C7 B8 ED EB AD F6 DD BA DB 7D B2 8F 57 B4 95 25 84 06 6F 2A 7E 29 DA 9E E8 FF   .....N.........}..W..%..o*~)....     </text>
+<rect x="10.00" y="475.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="486.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">  [=] raylib-5.0_linux_amd64.tar.gz                   1.8 MiB</text>
+<text x="452.25" y="486.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="475.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="486.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000003C0  </text>
+<rect x="532.00" y="475.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="486.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">63 34 71 A8 D4 BE BD AF 5F 05 69 B2 1D 14 F4 C8 F6 5E A2 C0 37 7E 36 F8 7F 7B E6 B1 80 7E C5 39   c4q....._.i......^..7~6..{...~.9     </text>
+<rect x="10.00" y="490.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="501.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">  [=] raylib-5.0_win64_mingw-w64.zip                  1.6 MiB</text>
+<text x="452.25" y="501.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="490.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="501.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000003E0  </text>
+<rect x="532.00" y="490.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="501.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">F6 F8 FF CA E9 D9 79 7E FF EF 14 F7 FF 5F FC FF B7 7F 6E 54 42 AB 81 AD C5 EF 05 E5 A2 0A 1A 64   ......y~....._....nTB..........d     </text>
+<rect x="10.00" y="505.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="516.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">  [=] raylib-5.0_win64_msvc16.zip                     2.4 MiB</text>
+<text x="452.25" y="516.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="505.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="516.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000400  </text>
+<rect x="532.00" y="505.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="516.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">D9 BC 60 5A 22 19 D5 DC 93 82 19 85 CC 3D 09 A9 66 99 E0 A0 0B 16 73 7D 84 97 7E 47 9B 41 70 E0   ..`Z&quot;........=..f.....s}..~G.Ap.     </text>
+<rect x="10.00" y="520.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="531.85" xml:space="preserve" fill="#C18A3A" font-family="DejaVu Sans Mono, monospace" font-size="12">[+] raylib                                           22 items</text>
+<text x="452.25" y="531.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="520.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="531.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000420  </text>
+<rect x="532.00" y="520.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="531.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">F1 17 1E 8D D5 6B 14 D0 D5 5B 32 52 00 39 6C 96 C0 87 66 18 25 A3 E7 05 98 1A D1 17 94 5B 2A F3   .....k...[2R.9l...f.%........[*.     </text>
+<rect x="10.00" y="535.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="546.85" xml:space="preserve" fill="#FFCC22" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">[+] resources                                         1 items</text>
+<text x="452.25" y="546.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="535.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="546.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000440  </text>
+<rect x="532.00" y="535.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="546.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">79 C1 09 5D D3 F6 34 78 73 6D CE 6D 6F 56 80 2E D7 2F CF AB 85 5F 34 90 A2 FC AB CD 3E A9 97 F1   y..]..4xsm.moV.../..._4.....&gt;...     </text>
+<rect x="10.00" y="550.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="561.85" xml:space="preserve" fill="#FFCC22" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">[+] vxde                                              5 items</text>
+<text x="452.25" y="561.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="550.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="561.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000460  </text>
+<rect x="532.00" y="550.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="561.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">A7 1A BC 7D B2 7D F8 CB E0 9F 59 F8 E5 7F E0 83 2F FC 02 C6 08 5E C6 1A 80 D9 13 F5 6D C1 68 C1   ...}.}....Y...../....^......m.h.     </text>
+<rect x="10.00" y="565.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="576.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] .gitignore                                           80 B</text>
+<text x="452.25" y="576.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="565.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="576.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000480  </text>
+<rect x="532.00" y="565.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="576.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">33 43 FB 81 02 10 7D C4 BF 13 70 95 38 AE 81 AC 69 20 E5 5A F8 18 CA AF 2D 8C 15 47 05 E1 3E 0D   3C....}...p.8...i .Z....-..G..&gt;.     </text>
+<rect x="10.00" y="580.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="591.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] Makefile                                         15.7 KiB</text>
+<text x="452.25" y="591.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="580.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="591.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000004A0  </text>
+<rect x="532.00" y="580.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="591.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">45 A5 26 BE 15 62 A3 D2 7C 6B F5 1E 58 85 16 BC 63 19 70 F4 AF E3 B5 72 F6 5F 1F 0D AF 7B FD C1   E.&amp;..b..|k..X...c.p....r._...{..     </text>
+<rect x="10.00" y="595.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="606.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] Makefile.Android                                 17.0 KiB</text>
+<text x="452.25" y="606.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="595.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="606.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000004C0  </text>
+<rect x="532.00" y="595.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="606.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">D7 9D 63 8F FD D7 8E 4F F2 F9 1F 7C 3B 7B B1 FF EF F1 34 A2 20 80 14 8A A0 65 85 F0 8F 06 10 F3   ..c....O...|;{....4. ....e......     </text>
+<rect x="10.00" y="610.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="621.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] SQLite_1.sql                                        746 B</text>
+<text x="452.25" y="621.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="610.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="621.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000004E0  </text>
+<rect x="532.00" y="610.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="621.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">FF 60 73 8F B4 34 D2 32 97 87 A4 69 D3 09 0D 6C EB 9E 34 34 D2 B5 E9 9C 05 90 B7 05 87 12 6A C8   .`s..4.2...i...l..44..........j.     </text>
+<rect x="10.00" y="625.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="636.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] build-linux.sh                                      431 B</text>
+<text x="452.25" y="636.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="625.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="636.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000500  </text>
+<rect x="532.00" y="625.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="636.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">6D E6 8E ED 7B 93 17 0A 85 5B 73 41 1D F2 41 23 3D 87 7F 0A 4D F2 2B 13 9F 6F 39 8B 02 8B 4E 59   m...{....[sA..A#=...M.+..o9...NY     </text>
+<rect x="10.00" y="640.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="651.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] build-mingw.cmd                                     691 B</text>
+<text x="452.25" y="651.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="640.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="651.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000520  </text>
+<rect x="532.00" y="640.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="651.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">30 A3 9A 47 C3 DF 44 8C 0F E7 90 77 C1 74 CC 23 21 23 63 4A C6 0E E4 0E 90 EA B0 60 95 EE 14 EA   0..G..D....w.t.#!#cJ.......`....     </text>
+<rect x="10.00" y="655.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="666.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] build.cmd                                           744 B</text>
+<text x="452.25" y="666.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="655.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="666.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000540  </text>
+<rect x="532.00" y="655.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="666.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">60 A2 90 CC 90 91 3B 06 F3 23 BF BA 66 F0 60 7B 6F 27 66 68 2E CC A5 66 CD 57 C8 A6 36 10 96 42   `.....;..#..f.`{o&#x27;fh...f.W..6..B     </text>
+<rect x="10.00" y="670.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="681.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] build.sh                                            838 B</text>
+<text x="452.25" y="681.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="670.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="681.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000560  </text>
+<rect x="532.00" y="670.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="681.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">09 AE 24 0C EC 71 04 F9 1D 7C 13 10 0A 6D 9C EF 1D 8A B1 2B B8 89 80 B2 22 20 06 5C 03 E1 FE 9C   ..$..q...|...m.....+....&quot; .\....     </text>
+<rect x="10.00" y="685.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="696.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] buttons.svg                                      35.8 KiB</text>
+<text x="452.25" y="696.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="685.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="696.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000580  </text>
+<rect x="532.00" y="685.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="696.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">42 A6 39 A3 CC A5 61 B0 04 C0 09 24 55 83 90 3E 50 72 09 76 1E 90 5F F9 9F 63 7C A9 BE 35 ED 00   B.9...a....$U..&gt;Pr.v.._..c|..5..     </text>
+<rect x="10.00" y="700.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="711.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] house.vxde                                       16.4 KiB</text>
+<text x="452.25" y="711.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="700.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="711.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000005A0  </text>
+<rect x="532.00" y="700.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="711.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">58 E8 AC 96 F7 27 5B F2 10 B9 86 A3 48 71 1A 30 97 CC 6D 4E 66 B0 9C 90 DC 42 B1 5F 3A 24 5E E4   X....&#x27;[.....Hq.0..mNf....B._:$^.     </text>
+<rect x="10.00" y="715.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="726.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] main.c                                            9.4 KiB</text>
+<text x="452.25" y="726.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="715.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="726.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000005C0  </text>
+<rect x="532.00" y="715.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="726.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">D2 80 45 1C 7A BC 90 13 B9 14 DB E7 04 57 90 26 38 E2 E6 D8 76 EC 70 29 40 90 38 64 53 68 DE 83   ..E.z........W.&amp;8...v.p)@.8dSh..     </text>
+<rect x="10.00" y="730.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="741.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] main.code-workspace                                 183 B</text>
+<text x="452.25" y="741.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="730.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="741.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">000005E0  </text>
+<rect x="532.00" y="730.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="741.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">17 94 9C 54 19 2C 7B 00 B2 16 73 EA 11 29 8C 31 5B C0 B2 18 B2 B2 31 0F 6C 1E 32 5C 94 94 DD 6D   ...T.,{...s..).1[.....1.l.2\...m     </text>
+<rect x="10.00" y="745.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="756.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] temp.vxdi                                        19.4 KiB</text>
+<text x="452.25" y="756.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="745.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="756.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000600  </text>
+<rect x="532.00" y="745.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="756.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">14 78 14 3C 5C 13 66 BB A6 4B C8 18 9B 26 2C ED C6 6A 38 51 30 2B A4 B4 A0 D0 65 B0 3C 8F BC 07   .x.&lt;\.f..K...&amp;,..j8Q0+....e.&lt;...     </text>
+<rect x="10.00" y="760.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="771.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] test.db                                           8.0 KiB</text>
+<text x="452.25" y="771.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="760.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="771.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000620  </text>
+<rect x="532.00" y="760.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="771.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">05 01 20 CF 46 31 9B 33 D0 96 C2 E0 41 CC E5 79 14 B8 01 EF 9A 8F EF 6F 4D 0A C9 AF 07 01 E4 B7   .. .F1.3....A..y.......oM.......     </text>
+<rect x="10.00" y="775.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="786.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] vxdi-app-camera-orbit-control.h                   3.3 KiB</text>
+<text x="452.25" y="786.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="775.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="786.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000640  </text>
+<rect x="532.00" y="775.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="786.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">2C 8F 05 BD 2C 4D F2 21 2C 2E B5 8A 49 84 4D B8 42 99 9D 3B CE 92 DC 53 EA 23 88 1D 92 19 43 BF   ,...,M.!,...I.M.B..;...S.#....C.     </text>
+<rect x="10.00" y="790.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="801.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] vxdi-app-editor.h                                 6.7 KiB</text>
+<text x="452.25" y="801.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="790.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="801.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000660  </text>
+<rect x="532.00" y="790.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="801.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">5F B8 0C 6C 13 A7 8D 9C 82 0E BA 49 06 30 20 CE 6B 67 F6 03 02 03 57 11 25 83 20 32 FF 1B CE 29   _..l.......I.0 .kg....W.%. 2...)     </text>
+<rect x="10.00" y="805.00" width="442.25" height="15.00" fill="#1A2134"/>
+<text x="10.00" y="816.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[=] vxdi-app-light.h                                    210 B</text>
+<text x="452.25" y="816.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="805.00" width="72.50" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="816.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">00000680  </text>
+<rect x="532.00" y="805.00" width="978.75" height="15.00" fill="#1A2237"/>
+<text x="532.00" y="816.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">F2 5C 18 C5 A6 53 DB B2 21 43 0F E2 3C F9 0F 50 3C 4E 7E FE 43 6B 68 3F 03 6B 3C 55 03 4C 28 87   .\...S..!C..&lt;..P&lt;N~.Ckh?.k&lt;U.L(.     </text>
+<text x="10.00" y="831.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">Hex: edits in memory; no binary save | Hex edits remain in memory; binary saving is unavailable | index Resolving r449: 75 files / 22403 symbols | 98 / 98 processed | c: pa Loop:59 Draw:2 RSS:790MiB CPU:0.0%</text>
+</svg>

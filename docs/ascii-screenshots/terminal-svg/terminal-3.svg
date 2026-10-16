@@ -1,0 +1,303 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520.8" height="845.0" viewBox="0 0 1520.8 845.0">
+<rect width="100%" height="100%" fill="#0F1424"/>
+<rect x="10.00" y="10.00" width="224.75" height="15.00" fill="#242C44"/>
+<text x="10.00" y="21.85" xml:space="preserve" fill="#A5B2FF" font-family="DejaVu Sans Mono, monospace" font-size="12"> Files  Project  Git  Database </text>
+<rect x="234.75" y="10.00" width="43.50" height="15.00" fill="#3C4678"/>
+<text x="234.75" y="21.85" xml:space="preserve" fill="#DD9E00" font-family="DejaVu Sans Mono, monospace" font-size="12"> REST </text>
+<rect x="278.25" y="10.00" width="166.75" height="15.00" fill="#242C44"/>
+<text x="278.25" y="21.85" xml:space="preserve" fill="#A5B2FF" font-family="DejaVu Sans Mono, monospace" font-size="12"> About  Settings  Help </text>
+<text x="452.25" y="21.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<text x="459.50" y="21.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">REQUEST | create-meta-types                                                                                                                      </text>
+<text x="10.00" y="36.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">REST API                                                     </text>
+<text x="452.25" y="36.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="25.00" width="1007.75" height="15.00" fill="#1A2237"/>
+<text x="459.50" y="36.85" xml:space="preserve" fill="#E6E9F5" font-family="DejaVu Sans Mono, monospace" font-size="12">[POST  ][https://{{HOST}}/api/rest/api/meta-types-rest                                                                                    ]</text>
+<rect x="1467.25" y="25.00" width="43.50" height="15.00" fill="#FFBF55"/>
+<text x="1467.25" y="36.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">Send  </text>
+<rect x="10.00" y="40.00" width="29.00" height="15.00" fill="#FFBF55"/>
+<text x="10.00" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">+Req</text>
+<rect x="46.25" y="40.00" width="29.00" height="15.00" fill="#FFBF55"/>
+<text x="46.25" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">+Dir</text>
+<rect x="82.50" y="40.00" width="21.75" height="15.00" fill="#FFBF55"/>
+<text x="82.50" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">Run</text>
+<rect x="111.50" y="40.00" width="43.50" height="15.00" fill="#FFBF55"/>
+<text x="111.50" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">Import</text>
+<rect x="162.25" y="40.00" width="21.75" height="15.00" fill="#FFBF55"/>
+<text x="162.25" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">OAS</text>
+<rect x="191.25" y="40.00" width="43.50" height="15.00" fill="#FFBF55"/>
+<text x="191.25" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">Export</text>
+<rect x="242.00" y="40.00" width="7.25" height="15.00" fill="#FFBF55"/>
+<text x="242.00" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">!</text>
+<text x="452.25" y="51.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="40.00" width="43.50" height="15.00" fill="#FFBF55"/>
+<text x="459.50" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">Params</text>
+<rect x="510.25" y="40.00" width="29.00" height="15.00" fill="#FFBF55"/>
+<text x="510.25" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">Auth</text>
+<rect x="546.50" y="40.00" width="50.75" height="15.00" fill="#FFBF55"/>
+<text x="546.50" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">Headers</text>
+<rect x="604.50" y="40.00" width="29.00" height="15.00" fill="#243250"/>
+<text x="604.50" y="51.85" xml:space="preserve" fill="#FFBF55" font-family="DejaVu Sans Mono, monospace" font-size="12">Body</text>
+<rect x="640.75" y="40.00" width="29.00" height="15.00" fill="#FFBF55"/>
+<text x="640.75" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">Vars</text>
+<rect x="677.00" y="40.00" width="58.00" height="15.00" fill="#FFBF55"/>
+<text x="677.00" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">Settings</text>
+<rect x="742.25" y="40.00" width="21.75" height="15.00" fill="#FFBF55"/>
+<text x="742.25" y="51.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">Raw</text>
+<text x="10.00" y="66.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">REST run finished: 8 completed, 8 failed                     </text>
+<text x="452.25" y="66.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<text x="459.50" y="66.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">Previous send: invalid REST authentication: oauth2 requires accessToken                                                                          </text>
+<text x="10.00" y="81.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">[-] archisource                                     </text>
+<rect x="387.00" y="70.00" width="36.25" height="15.00" fill="#FFBF55"/>
+<text x="387.00" y="81.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[...]</text>
+<rect x="430.50" y="70.00" width="21.75" height="15.00" fill="#FFBF55"/>
+<text x="430.50" y="81.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[+]</text>
+<text x="452.25" y="81.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<text x="459.50" y="81.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">Body mode: raw                                                                                                                                   </text>
+<text x="10.00" y="96.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">  [+] tasks                                         </text>
+<rect x="387.00" y="85.00" width="36.25" height="15.00" fill="#FFBF55"/>
+<text x="387.00" y="96.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[...]</text>
+<rect x="430.50" y="85.00" width="21.75" height="15.00" fill="#FFBF55"/>
+<text x="430.50" y="96.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[+]</text>
+<text x="452.25" y="96.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="85.00" width="29.00" height="15.00" fill="#FFBF55"/>
+<text x="459.50" y="96.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">none</text>
+<rect x="495.75" y="85.00" width="21.75" height="15.00" fill="#FFBF55"/>
+<text x="495.75" y="96.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">raw</text>
+<rect x="524.75" y="85.00" width="72.50" height="15.00" fill="#FFBF55"/>
+<text x="524.75" y="96.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">urlencoded</text>
+<rect x="604.50" y="85.00" width="58.00" height="15.00" fill="#FFBF55"/>
+<text x="604.50" y="96.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">formdata</text>
+<rect x="669.75" y="85.00" width="29.00" height="15.00" fill="#FFBF55"/>
+<text x="669.75" y="96.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">file</text>
+<rect x="706.00" y="85.00" width="50.75" height="15.00" fill="#FFBF55"/>
+<text x="706.00" y="96.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">graphql</text>
+<text x="10.00" y="111.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">      GET    test                                       </text>
+<rect x="416.00" y="100.00" width="36.25" height="15.00" fill="#FFBF55"/>
+<text x="416.00" y="111.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[...]</text>
+<text x="452.25" y="111.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="100.00" width="79.75" height="15.00" fill="#FFBF55"/>
+<text x="459.50" y="111.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">Format body</text>
+<text x="10.00" y="126.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">      GET    get-meta-types                             </text>
+<rect x="416.00" y="115.00" width="36.25" height="15.00" fill="#FFBF55"/>
+<text x="416.00" y="126.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[...]</text>
+<text x="452.25" y="126.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<text x="459.50" y="126.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">Raw request body                                                                                                                                 </text>
+<text x="10.00" y="141.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">      GET    get-user-counter                           </text>
+<rect x="416.00" y="130.00" width="36.25" height="15.00" fill="#FFBF55"/>
+<text x="416.00" y="141.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[...]</text>
+<text x="452.25" y="141.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="130.00" width="1051.25" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="141.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> [TreeSitter] REST body [application/json] · json                                                                                                </text>
+<rect x="10.00" y="145.00" width="406.00" height="15.00" fill="#243250"/>
+<text x="10.00" y="156.85" xml:space="preserve" fill="#FFBF55" font-family="DejaVu Sans Mono, monospace" font-size="12">      POST   create-meta-types                          </text>
+<rect x="416.00" y="145.00" width="36.25" height="15.00" fill="#FFBF55"/>
+<text x="416.00" y="156.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[...]</text>
+<text x="452.25" y="156.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="145.00" width="21.75" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="156.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> 1 </text>
+<rect x="481.25" y="145.00" width="7.25" height="15.00" fill="#3F4E7E"/>
+<text x="481.25" y="156.85" xml:space="preserve" fill="#FFCC66" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">-</text>
+<rect x="488.50" y="145.00" width="7.25" height="15.00" fill="#B6B9C5"/>
+<rect x="495.75" y="145.00" width="870.00" height="15.00" fill="#1A2237"/>
+<text x="495.75" y="156.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> {                                                                                                                      </text>
+<rect x="1365.75" y="145.00" width="145.00" height="15.00" fill="#3F4E7E"/>
+<text x="1365.75" y="156.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">⠀⠁⠒⠖⣒⣂⡂⣀⣀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀</text>
+<text x="10.00" y="171.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">      POST   create-user-counter                        </text>
+<rect x="416.00" y="160.00" width="36.25" height="15.00" fill="#FFBF55"/>
+<text x="416.00" y="171.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[...]</text>
+<text x="452.25" y="171.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="160.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="171.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> 2  </text>
+<rect x="488.50" y="160.00" width="29.00" height="15.00" fill="#1A2237"/>
+<rect x="517.50" y="160.00" width="43.50" height="15.00" fill="#1A2237"/>
+<text x="517.50" y="171.85" xml:space="preserve" fill="#6A8759" font-family="DejaVu Sans Mono, monospace" font-size="12">&quot;rows&quot;</text>
+<rect x="561.00" y="160.00" width="949.75" height="15.00" fill="#1A2237"/>
+<text x="561.00" y="171.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">: [                                                                                                            ⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣪⣿⣿⣋⣉⡀⣀⣀⠀⠀</text>
+<text x="10.00" y="186.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">      PATCH  update-meta-types                          </text>
+<rect x="416.00" y="175.00" width="36.25" height="15.00" fill="#FFBF55"/>
+<text x="416.00" y="186.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[...]</text>
+<text x="452.25" y="186.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="175.00" width="21.75" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="186.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> 3 </text>
+<rect x="481.25" y="175.00" width="7.25" height="15.00" fill="#3F4E7E"/>
+<text x="481.25" y="186.85" xml:space="preserve" fill="#FFCC66" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">-</text>
+<rect x="488.50" y="175.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="488.50" y="186.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">      {                                                                                                                  ⠀⠄⠂⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀</text>
+<text x="10.00" y="201.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">      DELETE delete-meta-types                          </text>
+<rect x="416.00" y="190.00" width="36.25" height="15.00" fill="#FFBF55"/>
+<text x="416.00" y="201.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">[...]</text>
+<text x="452.25" y="201.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="190.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="201.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> 4  </text>
+<rect x="488.50" y="190.00" width="58.00" height="15.00" fill="#1A2237"/>
+<rect x="546.50" y="190.00" width="29.00" height="15.00" fill="#1A2237"/>
+<text x="546.50" y="201.85" xml:space="preserve" fill="#6A8759" font-family="DejaVu Sans Mono, monospace" font-size="12">&quot;ID&quot;</text>
+<rect x="575.50" y="190.00" width="14.50" height="15.00" fill="#1A2237"/>
+<text x="575.50" y="201.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">: </text>
+<rect x="590.00" y="190.00" width="65.25" height="15.00" fill="#1A2237"/>
+<text x="590.00" y="201.85" xml:space="preserve" fill="#6A8759" font-family="DejaVu Sans Mono, monospace" font-size="12">&quot;ADDRESS&quot;</text>
+<rect x="655.25" y="190.00" width="855.50" height="15.00" fill="#1A2237"/>
+<text x="655.25" y="201.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">,                                                                                                                     </text>
+<text x="452.25" y="216.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="205.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="216.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> 5  </text>
+<rect x="488.50" y="205.00" width="58.00" height="15.00" fill="#1A2237"/>
+<rect x="546.50" y="205.00" width="79.75" height="15.00" fill="#1A2237"/>
+<text x="546.50" y="216.85" xml:space="preserve" fill="#6A8759" font-family="DejaVu Sans Mono, monospace" font-size="12">&quot;BASE_TYPE&quot;</text>
+<rect x="626.25" y="205.00" width="14.50" height="15.00" fill="#1A2237"/>
+<text x="626.25" y="216.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">: </text>
+<rect x="640.75" y="205.00" width="58.00" height="15.00" fill="#1A2237"/>
+<text x="640.75" y="216.85" xml:space="preserve" fill="#6A8759" font-family="DejaVu Sans Mono, monospace" font-size="12">&quot;STRING&quot;</text>
+<rect x="698.75" y="205.00" width="812.00" height="15.00" fill="#1A2237"/>
+<text x="698.75" y="216.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">,                                                                                                               </text>
+<text x="452.25" y="231.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="220.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="231.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> 6  </text>
+<rect x="488.50" y="220.00" width="58.00" height="15.00" fill="#1A2237"/>
+<rect x="546.50" y="220.00" width="7.25" height="15.00" fill="#1A2237"/>
+<text x="546.50" y="231.85" xml:space="preserve" fill="#6A8759" font-family="DejaVu Sans Mono, monospace" font-size="12">&quot;</text>
+<rect x="553.75" y="220.00" width="72.50" height="15.00" fill="#1A2237"/>
+<text x="553.75" y="231.85" xml:space="preserve" fill="#6A8759" font-family="DejaVu Sans Mono, monospace" font-size="12">SERIALIZER</text>
+<rect x="626.25" y="220.00" width="7.25" height="15.00" fill="#1A2237"/>
+<text x="626.25" y="231.85" xml:space="preserve" fill="#6A8759" font-family="DejaVu Sans Mono, monospace" font-size="12">&quot;</text>
+<rect x="633.50" y="220.00" width="877.25" height="15.00" fill="#1A2237"/>
+<text x="633.50" y="231.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">: null,                                                                                                                  </text>
+<text x="452.25" y="246.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="235.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="246.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> 7  </text>
+<rect x="488.50" y="235.00" width="58.00" height="15.00" fill="#1A2237"/>
+<rect x="546.50" y="235.00" width="79.75" height="15.00" fill="#1A2237"/>
+<text x="546.50" y="246.85" xml:space="preserve" fill="#6A8759" font-family="DejaVu Sans Mono, monospace" font-size="12">&quot;VALIDATOR&quot;</text>
+<rect x="626.25" y="235.00" width="884.50" height="15.00" fill="#1A2237"/>
+<text x="626.25" y="246.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">: null,                                                                                                                   </text>
+<text x="452.25" y="261.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="250.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="261.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> 8  </text>
+<rect x="488.50" y="250.00" width="58.00" height="15.00" fill="#1A2237"/>
+<rect x="546.50" y="250.00" width="159.50" height="15.00" fill="#1A2237"/>
+<text x="546.50" y="261.85" xml:space="preserve" fill="#6A8759" font-family="DejaVu Sans Mono, monospace" font-size="12">&quot;CONFIGURATION_SCHEMA&quot;</text>
+<rect x="706.00" y="250.00" width="804.75" height="15.00" fill="#1A2237"/>
+<text x="706.00" y="261.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">: null                                                                                                         </text>
+<text x="452.25" y="276.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="265.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="276.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> 9  </text>
+<rect x="488.50" y="265.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="488.50" y="276.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">      }                                                                                                                                      </text>
+<text x="452.25" y="291.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="280.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="291.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">10  </text>
+<rect x="488.50" y="280.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="488.50" y="291.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">    ]                                                                                                                                        </text>
+<text x="452.25" y="306.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="295.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="306.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">11  </text>
+<rect x="488.50" y="295.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="488.50" y="306.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">  }                                                                                                                                          </text>
+<text x="452.25" y="321.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="310.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<text x="459.50" y="321.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">12  </text>
+<rect x="488.50" y="310.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="336.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="325.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="325.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="351.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="340.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="340.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="366.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="355.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="355.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="381.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="370.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="370.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="396.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="385.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="385.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="411.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="400.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="400.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="426.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="415.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="415.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="441.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="430.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="430.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="456.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="445.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="445.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="471.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="460.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="460.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="486.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="475.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="475.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="501.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="490.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="490.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="516.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="505.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="505.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="531.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="520.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="520.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="546.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="535.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="535.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="561.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="550.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="550.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="576.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="565.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="565.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="591.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="580.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="580.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="606.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="595.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="595.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="621.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="610.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="610.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="636.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="625.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="625.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="651.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="640.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="640.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="666.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="655.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="655.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="681.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="670.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="670.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="10.00" y="696.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">─────────────────────────────────────────────────────────────│</text>
+<rect x="459.50" y="685.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="685.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="10.00" y="711.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">Environments (Tab)                                           </text>
+<text x="452.25" y="711.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="700.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="700.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<rect x="10.00" y="715.00" width="7.25" height="15.00" fill="#FFBF55"/>
+<text x="10.00" y="726.85" xml:space="preserve" fill="#0F1424" font-family="DejaVu Sans Mono, monospace" font-size="12">+</text>
+<text x="452.25" y="726.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="715.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="715.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="741.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="730.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="730.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="756.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="745.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="745.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="771.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="760.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="760.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="786.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="775.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="775.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="801.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="790.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="790.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="452.25" y="816.85" xml:space="preserve" fill="#202B4E" font-family="DejaVu Sans Mono, monospace" font-size="12">│</text>
+<rect x="459.50" y="805.00" width="29.00" height="15.00" fill="#3F4E7E"/>
+<rect x="488.50" y="805.00" width="1022.25" height="15.00" fill="#1A2237"/>
+<text x="10.00" y="831.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">Hex edits remain in memory; binary saving is unavailable | index Ready r539: 82 files / 22404 symbols | 105 / 105 processed | no native fsharp grammar; using cached heurist Loop:60 Draw:6 RSS:891MiB CPU:5.4%</text>
+</svg>

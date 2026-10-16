@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="730.5" height="245.0" viewBox="0 0 730.5 245.0">
+<rect width="100%" height="100%" fill="#0F1424"/>
+<text x="10.00" y="21.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">Usage:</text>
+<text x="60.75" y="21.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">kode-rs</text>
+<text x="111.50" y="21.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> [OPTIONS] [TARGET]</text>
+<text x="60.75" y="36.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">kode-rs</text>
+<text x="111.50" y="36.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> &lt;COMMAND&gt;</text>
+<text x="10.00" y="66.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">Commands:</text>
+<text x="24.50" y="81.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">version</text>
+<text x="24.50" y="96.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">serve</text>
+<text x="60.75" y="96.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">    Serve the terminal IDE through an installed or bundled ttyd executable</text>
+<text x="24.50" y="111.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">help</text>
+<text x="53.50" y="111.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">     Print this message or the help of the given subcommand(s)</text>
+<text x="10.00" y="141.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">Arguments:</text>
+<text x="10.00" y="156.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">  [TARGET]  Open a file or folder. A file takes precedence over restored session focus</text>
+<text x="10.00" y="186.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">Options:</text>
+<text x="53.50" y="201.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">--resources</text>
+<text x="133.25" y="201.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12"> &lt;DIRECTORY&gt;  Override the resource directory (styles, MIME and service catalogs)</text>
+<text x="24.50" y="216.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">-v</text>
+<text x="39.00" y="216.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">, </text>
+<text x="53.50" y="216.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">--version</text>
+<text x="24.50" y="231.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">-h</text>
+<text x="39.00" y="231.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">, </text>
+<text x="53.50" y="231.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold">--help</text>
+<text x="97.00" y="231.85" xml:space="preserve" fill="#B6B9C5" font-family="DejaVu Sans Mono, monospace" font-size="12">                   Print help</text>
+</svg>
