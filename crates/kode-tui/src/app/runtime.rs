@@ -361,7 +361,7 @@ impl AppRuntime {
         if let Some(view) = &self.state.editor {
             active.push(view.owner());
         }
-        if self.state.rest.form.is_some()
+        if self.state.rest_response_visible()
             && self.state.rest.response.installed.is_some()
             && let Some(view) = &self.state.rest.response.editor
         {
@@ -921,7 +921,7 @@ impl AppRuntime {
                 self.state.rest.response.editor.as_ref().filter(|view| {
                     view.owner() == owner
                         && self.state.rest.response.installed.is_some()
-                        && self.state.rest.form.is_some()
+                        && self.state.rest_response_visible()
                 })
             })
             .or_else(|| {
@@ -1756,7 +1756,7 @@ impl AppRuntime {
         &mut self,
         owner: OwnerId,
     ) -> Option<(EditorSlot, EditorView<QueuedEditorHost>, Rect)> {
-        if self.state.rest.form.is_some()
+        if self.state.rest_response_visible()
             && self.state.rest.response.installed.is_some()
             && self
                 .state

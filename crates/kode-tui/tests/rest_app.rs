@@ -136,6 +136,129 @@ async fn select_response_tab(
     })
     .await;
 }
+#[tokio::test]
+async fn collection_runner_presents_live_progress_validation_and_rebased_results_and_never_opens_a_replacement_item()
+ {
+    use kode_tui::panels::rest::sidebar::Action;
+    let (url, mut hits, release, worker) = server().await;
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state.rest.model.replace_collection(json!({"info":{"name":"Run UI"},"item":[
+        {"name":"Scope","item":[{"name":"First","request":{"url":url}},{"name":"Invalid","request":{"url":"{{unresolved}}"}}]},
+        {"name":"Outside","request":{"url":"{{must-not-run}}"}}
+    ]})).unwrap();
+    app.state.run_rest_selection(NodePath(vec![0])).unwrap();
+    next_hit(&mut app, &mut hits).await;
+    until(&mut app, |app| {
+        app.state.rest.form.is_some() && !app.state.rest.runner.area.is_empty()
+    })
+    .await;
+    assert!(app.state.rest.runner.visible);
+    assert_eq!(
+        app.state.rest.run.active_item.as_ref().unwrap().name,
+        "First"
+    );
+    assert!(app.state.rest.run.outcomes.is_empty());
+    let first = app.state.rest.run.keys[&NodePath(vec![0, 0])].clone();
+    let invalid = app.state.rest.run.keys[&NodePath(vec![0, 1])].clone();
+    app.state
+        .rest
+        .sidebar
+        .perform(
+            Action::MoveDown(NodePath(vec![0])),
+            &mut app.state.rest.model,
+            &mut app.state.focus,
+        )
+        .unwrap();
+    app.state.drain_ui().unwrap();
+    assert_eq!(app.state.rest.run.scope, Some(NodePath(vec![1])));
+    release.send(()).unwrap();
+    until(&mut app, |app| {
+        app.state.rest.run.summary.is_some() && app.state.rest.run.outcomes.len() == 2
+    })
+    .await;
+    assert_eq!(app.state.rest.run.outcomes[0].item.id, first);
+    assert_eq!(app.state.rest.run.outcomes[1].item.id, invalid);
+    assert!(app.state.rest.run.outcomes[1].validation_error.is_some());
+    app.state.dispatch(&key(Key::Function(7))).unwrap();
+    assert_eq!(app.state.focus.focused, Some(app.state.rest.runner.id));
+    app.state.dispatch(&key(Key::Down)).unwrap();
+    app.state.dispatch(&key(Key::Enter)).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .form
+            .as_ref()
+            .is_some_and(|form| form.key == invalid)
+    })
+    .await;
+    assert_eq!(
+        app.state.rest.form.as_ref().unwrap().path,
+        NodePath(vec![1, 1])
+    );
+    assert!(
+        app.state
+            .rest
+            .form
+            .as_ref()
+            .unwrap()
+            .message
+            .contains("Unresolved")
+    );
+    assert!(app.state.rest.response.body.is_empty());
+    app.state.dispatch(&key(Key::Function(7))).unwrap();
+    render(&mut app);
+    app.state.dispatch(&key(Key::Home)).unwrap();
+    app.state.dispatch(&key(Key::Enter)).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .response
+            .installed
+            .as_ref()
+            .is_some_and(|proof| proof.key == first)
+    })
+    .await;
+    assert_eq!(
+        app.state.rest.form.as_ref().unwrap().path,
+        NodePath(vec![1, 0])
+    );
+    assert_eq!(app.state.rest.run.responses[0].body.as_ref(), b"abcd");
+    app.state
+        .rest
+        .sidebar
+        .perform(
+            Action::DeleteConfirmed(NodePath(vec![1, 0])),
+            &mut app.state.rest.model,
+            &mut app.state.focus,
+        )
+        .unwrap();
+    app.state.drain_ui().unwrap();
+    assert!(app.state.rest.form.is_none());
+    app.state.dispatch(&alt7()).unwrap();
+    app.state.dispatch(&key(Key::Function(7))).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .form
+            .as_ref()
+            .is_some_and(|form| form.path == NodePath(vec![1]))
+            && app.state.focus.focused == Some(app.state.rest.runner.id)
+    })
+    .await;
+    render(&mut app);
+    app.state.dispatch(&key(Key::Home)).unwrap();
+    app.state.dispatch(&key(Key::Enter)).unwrap();
+    assert!(app.state.rest.runner.message.contains("removed"));
+    assert_eq!(
+        app.state.rest.form.as_ref().unwrap().path,
+        NodePath(vec![1])
+    );
+    assert!(hits.try_recv().is_err());
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    worker.abort();
+}
 fn click_label(app: &mut AppRuntime, label: &str) {
     let area = Rect::new(0, 0, 100, 34);
     let mut buffer = Buffer::empty(area);

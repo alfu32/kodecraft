@@ -203,10 +203,17 @@ impl AppState {
                 self.focus_panel();
                 return Ok(());
             }
+            if input.key == Key::Function(7)
+                && (self.rest.form.is_some() || self.tabs.selected == 6)
+            {
+                self.show_rest_runner()?;
+                return self.drain_ui();
+            }
             if input.key == Key::Function(6) {
                 if self
                     .viewer_id()
                     .is_some_and(|id| self.focus.focused == Some(id))
+                    || (self.rest.runner.visible && self.focus.focused == Some(self.rest.runner.id))
                     || (self.rest.form.is_some()
                         && (self
                             .editor
@@ -425,7 +432,7 @@ impl AppState {
             if let Some(view) = &mut self.editor {
                 view.tick(&self.documents, &self.focus, editor_area)?;
             }
-            if self.rest.form.is_some()
+            if self.rest_response_visible()
                 && self.rest.response.installed.is_some()
                 && let Some(view) = &mut self.rest.response.editor
             {

@@ -1305,7 +1305,7 @@ most 64 events/four completed responses per pump, caches at most 32 responses /
 request/response presentation to these same identities and dispose view jobs;
 R08 must finish runner presentation and full HTTP/SSE/WS workflow qualification.
 
-## REST display formatting and header adapters (R07 in progress)
+## REST request/response editors and display formatting
 
 `format::language_for_content_type` maps MIME subtypes/suffixes to editor grammar
 names. `pretty_print(content, content_type, enabled, cancel)` is worker-only display
@@ -1363,6 +1363,10 @@ reject obsolete preparation. Key reconciliation preserves identities assigned by
 new views during preparation. Plain Tab remains native editor input; Ctrl+Tab
 switches request tabs. Search Ctrl+Enter precedes host execution. REST-owned raw
 request previews may invoke Send without acquiring write permission.
+
+Late request-buffer attachment waits for its initiating focus to return. Live raw
+preview refresh preserves field/editor focus, and worker field refresh reflects
+query-row URL edits without overwriting a currently edited field.
 
 The response pane has its own readonly shared-editor owner, request key, display
 proof and modal attachment gate. Display preparation is worker-only and serialized

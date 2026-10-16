@@ -4,6 +4,7 @@ pub mod events;
 mod rest;
 mod rest_editor;
 mod rest_response;
+mod rest_runner;
 pub mod runner;
 pub mod runtime;
 mod sql;

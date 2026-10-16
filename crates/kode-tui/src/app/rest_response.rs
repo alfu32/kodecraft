@@ -25,7 +25,13 @@ use ratatui::{
 };
 impl AppState {
     fn rest_response_source(&self) -> Option<Source> {
+        if self.rest_runner_visible() {
+            return None;
+        }
         let key = &self.rest.form.as_ref().filter(|form| !form.closed)?.key;
+        if self.rest.run.failures.contains_key(key) {
+            return None;
+        }
         if let Some(live) = self
             .rest
             .run
@@ -48,7 +54,7 @@ impl AppState {
         self.rest_response_source().is_some()
     }
     pub(super) fn rest_response_request_area(&self, area: Rect) -> Rect {
-        if self.rest_response_visible() && area.height >= 12 {
+        if (self.rest_response_visible() || self.rest_runner_visible()) && area.height >= 12 {
             split(
                 area,
                 Axis::Vertical,
@@ -172,7 +178,7 @@ impl AppState {
         }
         Ok(())
     }
-    fn rest_response_modal(&self) -> bool {
+    pub(super) fn rest_response_modal(&self) -> bool {
         self.rest.sidebar.has_modal()
             || self.rest.form.as_ref().is_some_and(|form| form.has_modal())
             || self.files.has_modal()

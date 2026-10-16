@@ -36,6 +36,7 @@ pub struct Entry {
     pub descriptor: HostDescriptor,
 }
 pub struct RestState {
+    pub runner: super::runner::Runner,
     pub response: super::editor::response::Panel,
     pub form: Option<Form>,
     pub forms: HashMap<String, Form>,
@@ -110,6 +111,7 @@ impl RestState {
             ..Default::default()
         };
         Ok(Self {
+            runner: super::runner::Runner::new()?,
             response,
             form: None,
             forms: HashMap::new(),

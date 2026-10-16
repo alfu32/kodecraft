@@ -23,6 +23,7 @@ pub struct Item {
     pub path: NodePath,
     pub name: String,
 }
+#[derive(Clone)]
 pub struct Outcome {
     pub item: Item,
     pub status: Option<u16>,
@@ -35,12 +36,49 @@ pub struct Summary {
     pub outcomes: Vec<Outcome>,
     pub cancelled: bool,
 }
+pub const PROGRESS_CAPACITY: usize = 64;
+#[derive(Clone)]
+pub enum Progress {
+    Started(Item),
+    Completed(Outcome),
+}
+pub type ProgressSender = mpsc::Sender<Progress>;
+pub type ProgressReceiver = mpsc::Receiver<Progress>;
+pub fn progress_channel() -> (ProgressSender, ProgressReceiver) {
+    mpsc::channel(PROGRESS_CAPACITY)
+}
+async fn publish(
+    sender: &Option<ProgressSender>,
+    event: Progress,
+    cancel: &CancellationToken,
+) -> Result<()> {
+    let Some(sender) = sender else {
+        return Ok(());
+    };
+    match sender.try_send(event) {
+        Ok(()) => Ok(()),
+        Err(mpsc::error::TrySendError::Closed(_)) => Err(DomainError::Cancelled),
+        Err(mpsc::error::TrySendError::Full(event)) => {
+            tokio::select! {biased;_=cancel.cancelled()=>Err(DomainError::Cancelled),sent=sender.send(event)=>sent.map_err(|_|DomainError::Cancelled)}
+        }
+    }
+}
 pub async fn execute(
     definition: Definition,
     client: stream::Executor,
     cancel: CancellationToken,
     events: Option<EventSender>,
     responses: mpsc::Sender<Arc<Response>>,
+) -> Result<Summary> {
+    execute_with_progress(definition, client, cancel, events, responses, None).await
+}
+pub async fn execute_with_progress(
+    definition: Definition,
+    client: stream::Executor,
+    cancel: CancellationToken,
+    events: Option<EventSender>,
+    responses: mpsc::Sender<Arc<Response>>,
+    progress: Option<ProgressSender>,
 ) -> Result<Summary> {
     // A disposed scheduler may drop this future while a blocking file read is
     // still running. That read must observe cancellation too.
@@ -50,6 +88,14 @@ pub async fn execute(
             "REST response queue exceeds one response".into(),
         ));
     }
+    if progress
+        .as_ref()
+        .is_some_and(|sender| sender.max_capacity() > PROGRESS_CAPACITY)
+    {
+        return Err(DomainError::Unsupported(
+            "REST run progress queue exceeds 64 events".into(),
+        ));
+    }
     let mut outcomes = vec![];
     for item in definition.items {
         if responses.is_closed() {
@@ -57,6 +103,12 @@ pub async fn execute(
         }
         if cancel.is_cancelled() {
             break;
+        }
+        if let Err(error) = publish(&progress, Progress::Started(item.clone()), &cancel).await {
+            if cancel.is_cancelled() {
+                break;
+            }
+            return Err(error);
         }
         let collection = definition.collection.clone();
         let environment = definition.environment.clone();
@@ -130,6 +182,15 @@ pub async fn execute(
                 duration: started.elapsed(),
                 received_bytes: 0,
             }),
+        }
+        if let Some(outcome) = outcomes.last()
+            && let Err(error) =
+                publish(&progress, Progress::Completed(outcome.clone()), &cancel).await
+        {
+            if cancel.is_cancelled() {
+                break;
+            }
+            return Err(error);
         }
     }
     Ok(Summary {

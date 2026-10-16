@@ -133,7 +133,7 @@ RestHttpTest.
 
 ## R07 — Request/response editors and complete REST UX
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** R02, R04, R05, R06, E09, E12, L02.
 **Owns:** `kode-tui/src/panels/rest/editor/`, `kode-rest/src/format.rs`.
@@ -164,7 +164,7 @@ results by captured runtime identity even when imported IDs are absent/duplicate
 
 ## R08 — Collection runner, persistence and REST qualification
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** R07, W03, W05. **Owns:** `kode-rest/src/runner.rs`,
 `kode-tui/src/panels/rest/runner.rs`, REST integration fixtures/report.

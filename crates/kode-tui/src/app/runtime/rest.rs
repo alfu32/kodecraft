@@ -240,19 +240,27 @@ impl AppRuntime {
             }
         }
         prepared.keys = Arc::new(keys);
+        for item in &prepared.definition.items {
+            self.state.rest.run.failures.remove(&item.id);
+        }
+        self.state.rest.run.summary = None;
+        self.state.rest.run.outcomes.clear();
+        self.state.rest.run.active_item = None;
         let total = prepared.definition.items.len();
         if total == 0 {
             self.state.rest.sidebar.message = "No requests in this selection".into();
+            self.state.rest.runner.message = "No requests in this selection".into();
             return Ok(());
         }
         let cancel = CancellationToken::new();
         let token = cancel.clone();
         let (events, receiver) = kode_rest::stream::event_channel();
         let (responses, response_receiver) = mpsc::channel(1);
+        let (progress, progress_receiver) = kode_rest::runner::progress_channel();
         let client = self.state.rest.run.client.clone();
         let submitted = self.jobs.submit(self.root_owner,tag,Delivery::Cancellable,move |scheduler_cancel|async move {
             let _cancel_on_drop = token.clone().drop_guard();
-            let future = kode_rest::runner::execute(prepared.definition,client,token.clone(),Some(events),responses);
+            let future = kode_rest::runner::execute_with_progress(prepared.definition,client,token.clone(),Some(events),responses,Some(progress));
             tokio::pin!(future);
             tokio::select! {biased;
                 _=scheduler_cancel.cancelled()=>{token.cancel();future.await.map(Output::RestRun)},
@@ -271,6 +279,7 @@ impl AppRuntime {
             cancel,
             events: receiver,
             responses: response_receiver,
+            progress: progress_receiver,
             completed: 0,
             total,
             current: None,
@@ -309,6 +318,18 @@ impl AppRuntime {
         self.state.rest.run.running = None;
         match result {
             Ok(Output::RestRun(summary)) => {
+                self.state.rest.runner.message.clear();
+                let count = self.state.rest.run.outcomes.len();
+                for outcome in summary.outcomes.iter().skip(count) {
+                    if let Some(error) = &outcome.validation_error {
+                        self.state
+                            .rest
+                            .run
+                            .failures
+                            .insert(outcome.item.id.clone(), error.clone());
+                    }
+                    self.state.rest.run.outcomes.push(outcome.clone());
+                }
                 let failed = summary
                     .outcomes
                     .iter()

@@ -1,6 +1,6 @@
 # External JDBC qualification matrix
 
-Status: in-progress (D09). Source baseline:
+Status: done (D09 feature qualification). Source baseline:
 `7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68`, clean.
 Linux x86_64; Rust/Cargo stable 1.99.0; Java 21.0.9; Maven 3.9.16; H2 2.2.224.
 All configurations, credentials, databases, repositories and sessions are isolated

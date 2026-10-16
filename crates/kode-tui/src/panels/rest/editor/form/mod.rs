@@ -60,6 +60,7 @@ pub enum Action {
     Setting(&'static str),
     Cookies,
     FormatBody,
+    RunHistory,
     Notices,
     Acknowledge,
     Buffer(BufferKind),
@@ -72,6 +73,7 @@ pub enum Intent {
     Send,
     ClearCookies,
     FormatBody,
+    RunHistory,
     Notices,
     Buffer(BufferKind),
     Changed,
@@ -395,6 +397,10 @@ impl Form {
         }
         match self.tab {
             Tab::Overview => {
+                rows.push(Row::Buttons(vec![(
+                    "Run history".into(),
+                    Action::RunHistory,
+                )]));
                 rows.push(Row::Field("Name", Field::Name));
                 rows.push(Row::Field("Description", Field::Description));
                 rows.push(Row::Info(if self.path.is_root() {
@@ -582,10 +588,10 @@ impl Form {
                     )]));
                 }
                 rows.push(Row::Field("Timeout ms", Field::Timeout));
-                rows.push(Row::Buttons(vec![(
-                    "Clear cookies".into(),
-                    Action::Cookies,
-                )]));
+                rows.push(Row::Buttons(vec![
+                    ("Clear cookies".into(), Action::Cookies),
+                    ("Run history".into(), Action::RunHistory),
+                ]));
                 rows.push(Row::Info(
                     "Cookie jar belongs to this workspace and is not persisted".into(),
                 ));

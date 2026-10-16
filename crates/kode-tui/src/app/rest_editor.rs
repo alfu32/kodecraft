@@ -27,6 +27,8 @@ use std::sync::Arc;
 
 impl AppState {
     pub(super) fn deactivate_rest_form(&mut self) {
+        self.rest.runner.visible = false;
+        self.rest.runner.focus_after_open = false;
         if let Some(mut form) = self.rest.form.take() {
             form.invalidate(&mut self.focus);
             if !form.closed {
@@ -307,6 +309,9 @@ impl AppState {
                             None => Form::new(live.clone(), key.clone(), prepared)?,
                         };
                         form.set_derived(derived);
+                        if let Some(error) = self.rest.run.failures.get(&key) {
+                            form.message = format!("Previous send: {error}");
+                        }
                         let descriptor = HostDescriptor::new(
                             HostRole::RawRequest,
                             "rest-node".into(),
@@ -496,6 +501,7 @@ impl AppState {
                 Intent::Buffer(kind) => self.open_rest_buffer(kind)?,
                 Intent::Changed => self.changed()?,
                 Intent::FormatBody => self.format_rest_body()?,
+                Intent::RunHistory => self.show_rest_runner()?,
                 Intent::ClearCookies => {
                     self.rest.run.client.clear_cookies();
                     self.rest.response.requested = None;
@@ -611,6 +617,9 @@ impl AppState {
         self.rest.form.as_ref().is_some_and(|form| self.editor.as_ref().and_then(|view|self.rest.documents.get(&view.document_id())).is_some_and(|entry|matches!(&entry.kind,DocumentKind::Buffer {key,kind} if *key==form.key && Some(*kind)==form.selected_buffer)))
     }
     pub(super) fn dispatch_rest_editor(&mut self, event: &InputEvent) -> Result<bool> {
+        if self.dispatch_rest_runner(event)? {
+            return Ok(true);
+        }
         if self.dispatch_rest_response(event)? {
             return Ok(true);
         }
@@ -720,6 +729,7 @@ impl AppState {
         if let Some(position) = self.render_rest_response(area, buffer, theme)? {
             cursor = Some(position);
         }
+        self.render_rest_runner(area, buffer, theme);
         Ok(cursor)
     }
 }

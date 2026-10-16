@@ -1,6 +1,6 @@
 # R07 application integration map
 
-Status: implementation attached; final qualification tracked in
+Status: done; implementation and qualification tracked in
 [the R07 report](../parity/R07.md). This file locates the composition paths and
 does not narrow the complete migration goal.
 

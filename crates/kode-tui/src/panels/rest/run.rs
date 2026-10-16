@@ -19,6 +19,10 @@ use tokio::sync::mpsc;
 pub type Keys = Arc<HashMap<NodePath, String>>;
 #[derive(Default)]
 pub struct RunState {
+    pub active_item: Option<Item>,
+    pub scope: Option<NodePath>,
+    pub failures: HashMap<String, String>,
+    pub outcomes: Vec<kode_rest::runner::Outcome>,
     pub live: Option<super::editor::response::Live>,
     pub display_revision: u64,
     pub structure: u64,
@@ -34,6 +38,7 @@ pub struct Running {
     pub cancel: CancellationToken,
     pub events: EventReceiver,
     pub responses: mpsc::Receiver<Arc<Response>>,
+    pub progress: kode_rest::runner::ProgressReceiver,
     pub completed: usize,
     pub total: usize,
     pub current: Option<String>,
@@ -129,6 +134,7 @@ impl Prepare {
 impl RunState {
     pub fn tree_changed(&mut self, change: TreeChange) {
         self.structure = self.structure.saturating_add(1);
+        self.scope = self.scope.as_ref().and_then(|path| change.rebase(path));
         if matches!(change, TreeChange::Replaced) {
             self.keys = Arc::default();
             self.pending = None;
@@ -238,6 +244,28 @@ impl RunState {
         };
         let mut changed = false;
         for _ in 0..64 {
+            let Ok(progress) = running.progress.try_recv() else {
+                break;
+            };
+            match progress {
+                kode_rest::runner::Progress::Started(item) => {
+                    running.current = Some(item.id.clone());
+                    running.received_bytes = 0;
+                    self.active_item = Some(item);
+                }
+                kode_rest::runner::Progress::Completed(outcome) => {
+                    running.completed += 1;
+                    if let Some(error) = &outcome.validation_error {
+                        self.failures.insert(outcome.item.id.clone(), error.clone());
+                    } else {
+                        self.failures.remove(&outcome.item.id);
+                    }
+                    self.outcomes.push(outcome);
+                }
+            }
+            changed = true;
+        }
+        for _ in 0..64 {
             let Ok(event) = running.events.try_recv() else {
                 break;
             };
@@ -294,7 +322,6 @@ impl RunState {
             let Ok(response) = running.responses.try_recv() else {
                 break;
             };
-            running.completed += 1;
             responses.push(response);
         }
         changed |= !responses.is_empty();

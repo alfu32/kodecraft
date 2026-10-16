@@ -172,7 +172,7 @@ SqlSessionSaveDialog, SqlStatementMenu and Main SQL toolbar/dispatch helpers.
 
 ## D09 — End-to-end external JDBC qualification
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** D08, W03, W05. **Owns:** `jdbc-bridge/src/test/`,
 `kode-database/tests/bridge_integration/`, `docs/parity/jdbc.md`.

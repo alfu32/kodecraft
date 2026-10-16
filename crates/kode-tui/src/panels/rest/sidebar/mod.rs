@@ -88,6 +88,22 @@ pub enum TreeChange {
     Moved { from: NodePath, to: NodePath },
     Replaced,
 }
+impl TreeChange {
+    pub fn rebase(&self, path: &NodePath) -> Option<NodePath> {
+        match self {
+            Self::Inserted(inserted) => Some(path.after_insert(inserted)),
+            Self::Removed(removed) => path.after_remove(removed),
+            Self::Moved { from, to } if path.starts_with(from) => {
+                let mut moved = to.clone();
+                moved.0.extend_from_slice(&path.0[from.0.len()..]);
+                Some(moved)
+            }
+            Self::Moved { from, to } => path.after_remove(from).map(|path| path.after_insert(to)),
+            Self::Replaced => None,
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct PasteProof {
     nonce: Option<RequestId>,

@@ -106,6 +106,7 @@ impl AppState {
             return Ok(());
         };
         let previous_focus = self.focus.focused;
+        let previous_editor_focus = self.editor.as_ref().map(|view| view.input.id);
         let transfer = self
             .rest
             .open_focus
@@ -115,7 +116,11 @@ impl AppState {
         let kind = entry.kind.clone();
         let marker = self.rest.markers.get(&id).cloned();
         if marker.is_some() || !matches!(kind, DocumentKind::Buffer { .. }) {
+            let runner = (self.rest.runner.visible, self.rest.runner.focus_after_open);
             self.deactivate_rest_form();
+            if marker.is_some() {
+                (self.rest.runner.visible, self.rest.runner.focus_after_open) = runner;
+            }
         }
         self.cache_main_view()?;
         self.clear_diff()?;
@@ -173,6 +178,10 @@ impl AppState {
                 restore_buffer = form.selected_buffer;
             }
         }
+        if self.rest.runner.visible && self.rest.runner.focus_after_open {
+            self.focus.focused = Some(self.rest.runner.id);
+            self.rest.runner.focus_after_open = false;
+        }
         self.splash = false;
         // Read-only snapshots are replaceable views. Environment buffers retain
         // their registry/document identity across request and file switches.
@@ -202,11 +211,18 @@ impl AppState {
             self.views.remove(&old);
         }
         if !transfer {
-            self.focus.focused = previous_focus;
+            self.focus.focused =
+                if previous_focus.is_some() && previous_focus == previous_editor_focus {
+                    self.editor.as_ref().map(|view| view.input.id)
+                } else {
+                    previous_focus
+                };
         }
         if let Some(kind) = restore_buffer {
             self.open_rest_buffer(kind)?;
-            if !transfer && let Some((_, transfer)) = &mut self.rest.open_focus {
+            if (!transfer || self.focus.focused == Some(self.rest.runner.id))
+                && let Some((_, transfer)) = &mut self.rest.open_focus
+            {
                 *transfer = false;
             }
         }
@@ -386,6 +402,7 @@ impl AppState {
             }
         }
         self.drain_rest_form()?;
+        self.drain_rest_runner()?;
         if !self.closing
             && !self.rest.form.as_ref().is_some_and(|form| form.has_modal())
             && !self.rest.sidebar.has_modal()
@@ -429,6 +446,28 @@ impl AppState {
             self.rest.run.cancel();
             self.rest.sidebar.message = "Stopping REST run…".into();
             return Ok(());
+        }
+        if let Some(form) = self
+            .rest
+            .form
+            .as_mut()
+            .filter(|form| form.path == selection)
+        {
+            form.message.clear();
+        }
+        self.rest.run.scope = Some(selection.clone());
+        self.rest.runner.reset();
+        if self
+            .rest
+            .model
+            .node(&selection)
+            .is_some_and(|node| !kode_rest::model::editing::is_request(node, &selection))
+        {
+            self.open_rest_node(selection.clone())?;
+            if let Some((_, transfer)) = &mut self.rest.open_focus {
+                *transfer = false;
+            }
+            self.rest.runner.visible = true;
         }
         let environment = self.rest.model.active_environment().cloned();
         let environment_text = environment.as_ref().and_then(|environment| {
