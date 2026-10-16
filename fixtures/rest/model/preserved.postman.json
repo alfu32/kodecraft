@@ -1,0 +1,22 @@
+{
+  "info": {
+    "name": "Synthetic preserved collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "x-info": {"future": [false, null, 123456789012345678901234567890]}
+  },
+  "variable": [
+    {"key": "structured", "value": {"nested": [1, true, {"keep": "value"}]}, "disabled": true, "description": {"content": "Rich description", "type": "text/plain"}}
+  ],
+  "item": [
+    {
+      "name": "Folder",
+      "event": [{"listen": "test", "script": {"exec": ["pm.test('preserved, never executed by the model')"], "type": "text/javascript"}}],
+      "item": [
+        {"id": "synthetic-request", "name": "Get example", "request": {"method": "GET", "url": {"raw": "https://example.invalid/", "x-url": true}, "header": [{"key": "X-Disabled", "value": "retained", "disabled": true}]}, "response": [{"id": "saved-example", "name": "Saved example", "body": "example body", "x-example": true}], "x-kode-headers": [{"key": "X-Inherited", "value": "retained"}], "x-item": {"keep": "nested"}},
+        null,
+        ["unrecognized array child"]
+      ]
+    }
+  ],
+  "x-kode-future": {"enabled": false, "policy": ["retained"]}
+}

@@ -23,8 +23,21 @@ sources, versioned install manifests and isolated loaders. The backend supports
 temporary connection tests, shared datasource connections, context changes and
 commit/rollback through serialized JDBC owners. SQL execution streams typed,
 bounded previews and supports independent cancellation; helper failure retains
-received rows and never replays SQL. Database panels and consoles remain tracked
-implementation tasks.
+received rows and never replays SQL. Open **Databases** with Alt+6: `n` creates a
+datasource, F2 edits, `c` connects/disconnects, `r` refreshes metadata, `R` explicitly
+restarts the database service and `s` opens a SQL editor. The connection dialog
+uses Alt+T to test, Alt+D to install a driver and Ctrl+S to save. URL Down opens
+Recents/Standard suggestions. Passwords are masked and stored separately from
+public definitions. SQL consoles share the editor: Ctrl+Enter executes the current
+statement or selection, Ctrl+Shift+Enter executes the script, Escape requests
+cancellation, and Ctrl+Alt+A/C/R changes shared autocommit/commit/rollback state.
+Ctrl+S exports a guarded `.sql` file; unsaved console buffers and context bindings
+also survive workspace restarts. Click Catalog/Schema to bind a console. Results
+keep their own focus; Alt+Arrows/PageUp/PageDown scroll and Alt+Tab switches result
+sets/messages while the editor stays focused. Hover Execute to preview its target.
+End-to-end JDBC qualification remains D09.
+After a helper crash, check the database outcome, then use Alt+6, `R` to restart
+the service and `c` to reconnect. Previous SQL is retained and never replayed.
 
 Ctrl+Space requests completion and Ctrl-click follows definitions/usages.
 The Project panel provides `r` rescan, `b` rebuild index and `c` clear index.

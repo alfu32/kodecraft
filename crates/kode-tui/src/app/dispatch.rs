@@ -85,6 +85,7 @@ impl AppState {
             self.quit_requested = true;
             self.closing = true;
             self.pending_open = None;
+            self.dismiss_sql_dialog()?;
             return self.drain_ui();
         }
         if let Some(dialog) = &mut self.rescan {
@@ -92,6 +93,13 @@ impl AppState {
             if dialog.finished {
                 self.rescan = None;
             }
+            return self.drain_ui();
+        }
+        if self.database.has_modal() {
+            self.database.dispatch(event, &mut self.focus)?;
+            return self.drain_ui();
+        }
+        if self.dispatch_sql_modal(event)? {
             return self.drain_ui();
         }
         if let Some((_, picker)) = &mut self.picker {
@@ -147,13 +155,16 @@ impl AppState {
         }
         if let InputEvent::Key(input) = event {
             if input.modifiers.alt
-                && let Key::Character(number @ '1'..='5') = input.key
+                && let Key::Character(number @ '1'..='6') = input.key
             {
                 if number != '5' {
                     self.clear_diff()?;
                     self.git.deactivate(&mut self.documents, &mut self.focus)?;
                 }
                 self.tabs.selected = (number as u8 - b'1') as usize;
+                if self.tabs.selected == 5 {
+                    self.database.initialize()?;
+                }
                 self.focus_panel();
                 return Ok(());
             }
@@ -218,6 +229,9 @@ impl AppState {
         {
             return Ok(());
         }
+        if self.dispatch_sql(event)? {
+            return self.drain_ui();
+        }
         if self.splitter.handle(event, self.geometry.body) {
             return Ok(());
         }
@@ -234,6 +248,8 @@ impl AppState {
                     self.lsp_settings.id
                 } else if self.tabs.selected == 0 {
                     self.files.id
+                } else if self.tabs.selected == 5 {
+                    self.database.tree.id
                 } else {
                     self.project_panel.id
                 })
@@ -253,6 +269,9 @@ impl AppState {
             .tabs
             .handle(event, self.focus.focused == Some(self.tabs_id))
         {
+            if self.tabs.selected == 5 {
+                self.database.initialize()?;
+            }
             if self.tabs.selected != 4 {
                 self.clear_diff()?;
                 self.git.deactivate(&mut self.documents, &mut self.focus)?;
@@ -273,6 +292,8 @@ impl AppState {
                             self.lsp_settings.id
                         } else if self.tabs.selected == 0 {
                             self.files.id
+                        } else if self.tabs.selected == 5 {
+                            self.database.tree.id
                         } else {
                             self.project_panel.id
                         })
@@ -290,6 +311,8 @@ impl AppState {
             } else if self.tabs.selected == 4 {
                 self.git
                     .dispatch(event, &mut self.documents, &mut self.focus)?;
+            } else if self.tabs.selected == 5 {
+                self.database.dispatch(event, &mut self.focus)?;
             }
         } else if let Some(diff) = &mut self.diff {
             diff.dispatch(event, &mut self.documents, &mut self.focus)?;
@@ -315,6 +338,7 @@ impl AppState {
             1 => self.project_panel.id,
             3 => self.lsp_settings.id,
             4 => self.git.focus_id(),
+            5 => self.database.tree.id,
             _ => self.tabs_id,
         });
         if let Some(view) = &mut self.editor {

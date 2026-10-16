@@ -1,0 +1,53 @@
+{
+  "cases": [
+    {
+      "case": "actual-h2-ctrl-enter-file-save-dirty-session-quit",
+      "owned_helper_reaped": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restore-unsaved-sql-without-starting-java",
+      "credential_store_untouched": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "actual-h2-ctrl-enter-file-save-dirty-session-quit",
+      "owned_helper_reaped": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restore-unsaved-sql-without-starting-java",
+      "credential_store_untouched": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 4
+}

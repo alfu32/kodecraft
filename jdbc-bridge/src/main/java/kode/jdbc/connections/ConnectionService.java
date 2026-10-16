@@ -168,6 +168,7 @@ public final class ConnectionService implements AutoCloseable {
         }
         private ObjectNode safeSnapshot(){try{return snapshot();}catch(Exception ignored){return FrameCodec.JSON.createObjectNode().put("connectionId",id).put("dataSourceId",source).put("contextRevision",contextRevision).put("stateRevision",++stateRevision).put("transactionUsable",false).put("contextUnknown",true);}}
         public ObjectNode currentState(){owner();return safeSnapshot();}
+        public long contextRevision(){owner();return contextRevision;}
         private void connect(Opening opening) throws Exception {
             owner();if(closing())throw rejected(SqlErrors.STALE_CONNECTION,"Connection opening was cancelled");
             lease=loaders.acquire(opening.loader(),opening.driver());Thread.currentThread().setContextClassLoader(lease.contextLoader());

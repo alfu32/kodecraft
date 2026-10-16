@@ -1,5 +1,14 @@
 # Instructions for an implementation agent
 
+## Standing user authorization
+
+For this implementation, the user has already authorized `cargo fmt`,
+`cargo test`, and Bash commands needed to build, verify and complete the work.
+Do not ask for confirmation again for these routine commands. Keep commands
+simple and use existing execution permissions; shell redirections and wrappers
+can accidentally trigger redundant approval requests. This does not authorize
+unrelated destructive actions or publishing to external services.
+
 ## Before editing
 
 1. Read `README.md`, `PLAN.md`, `CONTRACTS.md`, and your task card.

@@ -7,7 +7,7 @@ and `REP.HTTP_API_TEST_MODULE.md` for context; executable source determines base
 
 ## R01 — Lossless collection and environment model
 
-**Status:** todo
+**Status:** done
 
 **Depends:** F02. **Owns:** `kode-rest/src/model/` and `fixtures/rest/model/`.
 **Read:** `rest/model/{RestModels,RestWorkspaceModel,RestEnvironmentCodec}.kt`;
@@ -28,7 +28,7 @@ RestModelTest.
 
 ## R02 — Variables, auth, headers, URLs and request bodies
 
-**Status:** todo
+**Status:** done
 
 **Depends:** R01, F03. **Owns:** `kode-rest/src/resolve/`.
 **Read:** `rest/resolve/RestResolver.kt`; RestResolverTest.
@@ -48,7 +48,7 @@ RestModelTest.
 
 ## R03 — Postman and OpenAPI import/export
 
-**Status:** todo
+**Status:** done
 
 **Depends:** R01. **Owns:** `kode-rest/src/import/` and import fixtures.
 **Read:** RestOpenApiImporter.kt, RestWorkspaceModel import/export,
@@ -69,7 +69,7 @@ RestModelTest OpenAPI JSON/YAML cases.
 
 ## R04 — HTTP execution, cookies and cancellation
 
-**Status:** todo
+**Status:** done
 
 **Depends:** R02, F03. **Owns:** `kode-rest/src/http/`.
 **Read:** `rest/http/RestHttp.kt` ordinary HTTP/cookie/request-builder paths;
@@ -90,7 +90,7 @@ RestHttpTest.
 
 ## R05 — SSE and WebSocket execution
 
-**Status:** todo
+**Status:** done
 
 **Depends:** R04. **Owns:** `kode-rest/src/stream/{sse,websocket}.rs`.
 **Read:** RestHttp.executeSse/executeWebSocket and incremental stream tests.
@@ -98,8 +98,10 @@ RestHttpTest.
 1. Compose reqwest byte streams with eventsource-stream for SSE, using request
    headers/body/settings and `sse://`/Accept selection. Preserve event/data boundaries
    and incremental output even when bytes/UTF-8 sequences split across reads.
-2. Use tokio-tungstenite for ws/wss; reproduce initial outgoing payload and incoming
-   text/binary fragment behavior, close/error reporting and flow control. Verify
+2. Use tokio-tungstenite for ws/wss; preserve the source's receive-only connection
+   opening (the audited source sends no initial request body). Any explicit initial
+   message mode is an extension. Reproduce incoming text/binary fragment behavior,
+   close/error reporting and flow control. Verify
    authentication/cookies/TLS independently from the HTTP client.
 3. Provide one transport-neutral execution event stream and cancellation handle;
    cap retained output, retain received counts and update the UI incrementally.
@@ -110,7 +112,7 @@ RestHttpTest.
 
 ## R06 — REST tree, environments and management dialogs
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** R01, R03, F05, E12, W03. **Owns:** `kode-tui/src/panels/rest/sidebar/`.
 **Read:** RestPanelView.kt, RestKeyValueDialog.kt, Main REST management wiring.
@@ -118,6 +120,8 @@ RestHttpTest.
 1. Port collection/folder/request tree, keyboard and mouse expansion/selection,
    `/` filter, context menus, add request/folder, rename/copy/move/delete,
    import/export and run-selection actions. Preserve shortcuts in source handlers.
+   Show structured import notices and file errors; unsupported OpenAPI conversion
+   must remain visible when its generated request is marked incomplete.
 2. Port environment list in same sidebar, resizable horizontal divider, activation
    and create/rename/copy/delete actions. Use the shared virtual editor for values.
 3. Persist selected path and divider state; repair selection after model changes.
@@ -139,6 +143,8 @@ RestEditorViewTest and RestCodeFormattingTest.
 1. Port method/URL/Send controls and request tabs: params, auth, headers, body,
    variables and settings as actually exposed; enabled/inherited rows, secret
    reveal/masking, key/value dialogs and body modes. Reuse the complete editor.
+   Incomplete OpenAPI imports require correction/explicit acknowledgement before
+   their blocking marker is cleared; show the retained conversion notices.
 2. Implement header-name completion and duplicate-line warnings, resolved raw
    request preview, language/content-type selection and optional JSON/XML pretty
    formatting that leaves invalid raw content intact.

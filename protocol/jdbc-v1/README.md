@@ -1,5 +1,41 @@
 # JDBC stdio protocol v1
 
+## Lazy metadata
+
+`metadata.list` takes `connectionId` and a normalized request (`ROOT`, `CATALOG`,
+`SCHEMA`, `CATEGORY`, `OBJECT`). Category requests require `category`; object
+requests require `objectName` and `objectType`. Optional catalog/schema/name
+identifiers are at most 4,096 UTF-8 bytes and cannot contain NUL. The connection
+owner performs every JDBC getter, metadata iteration and ResultSet close.
+Schema/table name patterns are escaped as literal identifiers. Catalog-scoped
+schema/table calls retain the source's unscoped fallback when the first result
+is empty; no vendor package SQL is invented.
+
+Results preserve normalized objects, qualified names, attributes, expandable/leaf
+flags and capabilities, and include the owner's `contextRevision`. Unsupported
+accessors add a static visible `message`, preserving other supported sections;
+ordinary SQL failures remain SQL errors. Standard JDBC has no package discovery,
+so that category reports the limitation. Table children include columns, primary
+keys, indexes and imported foreign keys; routine children are parameters only.
+Responses are bounded to 10,000 objects / 3 MiB serialized objects, with at most
+50,000 scanned rows and 8,192 UTF-8 bytes per string. Exceeding bounds returns an
+explicit SQLSTATE 54000 failure. These limits do not bound driver allocations.
+[Shared metadata fixtures](metadata-fixtures.json) exercise Unicode names,
+foreign-key attributes and unsupported messages in Java and Rust.
+
+Native caching is lazy and memory-only: 256 entries / 16 MiB encoded payloads,
+16 concurrent native waits, a 60-second request deadline. UI-retained result Arcs
+outlive cache eviction and are outside that cache accounting. Cache identity
+includes datasource, helper epoch, connection ID, context revision, native
+connection revision and the complete normalized request. Every SQL submission
+and final invalidates conservatively, including procedure calls with unknown
+schema effects. Refresh invalidates individual nodes or whole datasources and
+rejects replies started before that refresh. Reconnect/helper loss/context change
+cannot refill a newer tree from an older response. UI composition additionally
+checks `Metadata.is_current` immediately before publishing an async tree update.
+Cancellation/drop stops the native wait; JDBC metadata may continue on its owner
+until return, disconnect/abort or helper shutdown. Metadata is never replayed.
+
 Normative lifecycle/operation semantics: [JDBC.md](../../docs/migration/JDBC.md).
 Each frame is four unsigned big-endian length bytes followed by exactly that many
 UTF-8 JSON bytes. Payload bounds are 1..8,388,608 bytes. Zero, oversized, truncated,

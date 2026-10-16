@@ -11,3 +11,26 @@ workspace = true
 [dependencies]
 kode-core.workspace = true
 kode-platform.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+indexmap.workspace = true
+regex.workspace = true
+base64.workspace = true
+url.workspace = true
+http.workspace = true
+mime.workspace = true
+serde-saphyr.workspace = true
+reqwest = { workspace = true, features = ["cookies", "http2"] }
+cookie_store.workspace = true
+psl.workspace = true
+tokio.workspace = true
+tokio-rustls.workspace = true
+rustls-platform-verifier.workspace = true
+eventsource-stream.workspace = true
+tokio-tungstenite.workspace = true
+futures-util = { workspace = true, features = ["sink"] }
+
+[dev-dependencies]
+tempfile.workspace = true
+tokio = { workspace = true, features = ["net"] }

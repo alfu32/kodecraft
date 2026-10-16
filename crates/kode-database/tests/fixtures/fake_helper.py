@@ -15,6 +15,7 @@ connection_lock = threading.Lock()
 cancelled_queries = set()
 query_waits = {}
 query_modes = {}
+metadata_release = threading.Event()
 def connection_info(params):
     return {'connectionId':str(uuid.uuid4()),'dataSourceId':params['dataSourceId'],'capabilities':{'transactions':True,'savepoints':True,'catalogs':True,'schemas':True},'productName':'Synthetic','productVersion':'1','driverName':'Fixture','driverVersion':'1','autoCommit':params.get('autoCommit',True),'readOnly':params.get('readOnly',False),'catalog':params.get('catalog'),'schema':params.get('schema'),'contextRevision':1,'stateRevision':1,'transactionUsable':True}
 def send(value, fragmented=False):
@@ -94,6 +95,25 @@ def perform(message):
             for key in ('catalog','schema','autoCommit','readOnly'):
                 if key in params: state[key]=params[key]
             state['contextRevision']+=1;state['stateRevision']+=1;result(id,state)
+    elif method == 'test.release-metadata':
+        metadata_release.set(); result(id,{'released':True})
+    elif method == 'metadata.list':
+        with connection_lock:
+            pair=connections.get(params['connectionId'])
+            state=dict(pair[0]) if pair else None
+        if state is None:
+            send({'jsonrpc':'2.0','id':id,'error':{'code':-32021,'message':'Stale connection','data':{'notStarted':True}}});return
+        request=params['request']
+        if request.get('schema')=='__failure':
+            state.update(transactionUsable=False,autoCommit=False,stateRevision=state['stateRevision']+1)
+            send({'jsonrpc':'2.0','id':id,'error':{'code':-32020,'message':'Database operation failed','data':{'state':state,'notStarted':False,'sqlError':{'message':'Synthetic metadata failure','sqlState':'42000','vendorCode':123,'chained':[]}}}});return
+        if request.get('schema')=='__block': metadata_release.wait(20)
+        if request.get('schema')=='__crash': os._exit(7)
+        node={'id':'schema:fixture','name':'fixture','qualifiedName':'fixture','objectType':'SCHEMA','hasChildren':True}
+        value={'objects':[node], 'contextRevision':state['contextRevision'],'capabilities':{'schemas':True}}
+        if request.get('schema')=='__unsupported': value.update(objects=[],message='Driver does not support functions',capabilities={'functions':False})
+        if request.get('schema')=='__bad': value['objects']=[node,node]
+        result(id,value)
     elif method == 'query.execute':
         execution=params['executionId'];sql=params['sql'];wait=threading.Event();query_waits[execution]=wait;query_modes[execution]=sql
         with connection_lock:
@@ -127,7 +147,7 @@ while True:
         if mode in ('poison','zero','oversize','truncated'):
             raw={'poison':b'driver-stdout','zero':b'\0\0\0\0','oversize':struct.pack('>I',8388609),'truncated':b'\0\0\0\x08{'}[mode]
             sys.stdout.buffer.write(raw);sys.stdout.buffer.flush();sys.exit(2)
-        send({'jsonrpc':'2.0','id':id,'result':{'protocolVersion':99 if mode=='wrong-version' else 1,'helperVersion':'fixture','javaVersion':'21.0.9','helperEpoch':epoch,'maxFrameBytes':8388608,'capabilities':['hello','ping','shutdown','query.cancel','query.execute']}},True)
+        send({'jsonrpc':'2.0','id':id,'result':{'protocolVersion':99 if mode=='wrong-version' else 1,'helperVersion':'fixture','javaVersion':'21.0.9','helperEpoch':epoch,'maxFrameBytes':8388608,'capabilities':['hello','ping','shutdown','query.cancel','query.execute','metadata.list']}},True)
         if mode=='slow-reader': time.sleep(0.5)
     elif method=='ping': result(id,{'status':'ok','helperEpoch':epoch})
     elif method=='shutdown': result(id,{'closing':True});break

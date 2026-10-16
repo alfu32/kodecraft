@@ -11,6 +11,14 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
 class FrameCodecTest {
+    @Test void sharedMetadataFixturesPreserveQualifiedNamesAttributesAndUnsupportedMessages() throws Exception {
+        JsonNode fixtures=FrameCodec.JSON.readTree(Path.of(System.getProperty("kode.protocol.fixtures"),"metadata-fixtures.json").toFile());
+        int id=0;for(JsonNode result:fixtures.path("results")){
+            var envelope=FrameCodec.JSON.createObjectNode().put("jsonrpc","2.0").put("id","metadata-"+(id++));envelope.set("result",result);
+            assertEquals(envelope,FrameCodec.decode(FrameCodec.encode(envelope)));assertEquals(7,result.path("contextRevision").asInt());
+        }
+        JsonNode objects=fixtures.path("results").get(0).path("objects");assertEquals("catalog.é界😀",objects.get(0).path("qualifiedName").asText());assertEquals("parent",objects.get(1).path("attributes").path("referencedTable").asText());assertTrue(fixtures.path("results").get(1).path("message").asText().contains("does not support"));
+    }
     @org.junit.jupiter.api.Test void everyDocumentedMethodHasSharedWireFixture() throws Exception {
         var root=java.nio.file.Path.of(System.getProperty("kode.protocol.fixtures"));
         JsonNode schema=FrameCodec.JSON.readTree(root.resolve("operations.schema.json").toFile());

@@ -1026,3 +1026,246 @@ for the matching current epoch/ID; unknown context invalidates use. D06 owns cac
 invalidation after relevant executions. D08 owns SQL targeting, retained editor
 text and result presentation; no JDBC terminal UI is claimed by this backend.
 Workspace disposal shuts down the executor before Connections/runtime teardown.
+
+## JDBC metadata and cache identity
+
+D06 supplies Java `metadata/MetadataService` and native `metadata::Metadata`.
+All introspection and ResultSet cleanup uses D04's serialized connection owner.
+Normalized D01 request/result/object/capability DTOs retain source names, category
+attributes, leaves and catalog fallback behavior; table children also expose
+imported foreign keys. Unsupported accessors are visible messages/capabilities,
+not successful empty placeholders. Packages report the standard JDBC limitation.
+Routine expansion reads parameters without asking for unrelated table keys.
+
+`Metadata::new`, `cached`, `is_current`, `invalidate` and `refresh_all` never start
+Java or touch credentials. `introspect` requires an explicitly connected session,
+uses a bounded tracked worker and caches immutable results. Helper epoch,
+connection ID, context revision, native connection revision and complete request
+identify entries. Explicit refresh rejects outstanding pre-refresh replies; even
+an unrelated simultaneous refresh may conservatively force a pending read to
+retry, while already cached unrelated nodes remain available. Every SQL submission
+and final bumps native connection revision, conservatively invalidating metadata
+for statements/procedures whose effects cannot safely be inferred from SQL text.
+Metadata SQL failures apply authoritative transaction state from their owner.
+
+D07 must check `Metadata::is_current(source, request, result)` alongside its
+workspace/request tags immediately before mutating the tree. A result that was
+valid when its future completed may be stale when the application processes it.
+Cache eviction can conservatively require a retry. Shutdown cancels/joins Metadata
+before Connections; canceled native waits do not pretend to interrupt arbitrary
+JDBC metadata. Detailed limits, protocol fields and shared fixtures are in
+`protocol/jdbc-v1/README.md`.
+
+## Database explorer and application composition
+
+D07 supplies application-thread `DatabasePanel`, `DatabaseTree`, connection and
+object dialogs, composing D03's driver-install modal. Alt+6 lazily loads Rust
+definitions on an owned job; ordinary startup neither reads user database files
+nor starts Java. Configuration/resource failures remain database feature errors
+and leave native file editing operational. Native JDBC operations use F03's async
+scheduler, with critical completion delivery and workspace tags. Configuration,
+credentials and URL recents use blocking workers. Paint/input never performs I/O.
+
+Save closes even an equal definition before changing private credentials. New
+passwords use fresh references; failed public publication cleans up the owned new
+entry without changing the old reference. Old/shared references are removed only
+after successful publication and only when unused by remaining definitions.
+Driver progress/cancel retains the original final; modal dismissal restores
+parent fields and focus. Clipboard paste proofs check dialog, field, value,
+selection and caret. Session rows refer to real shared editor documents and
+preserve those documents when switching views; D08 owns their persisted manager,
+targeting, execution/history and result UI.
+
+Metadata publication checks both its node's tag and `Metadata::is_current`.
+Refresh prunes obsolete descendants and cancels their loads; explicit refresh
+conservatively invalidates the datasource cache. Display retention is bounded to
+256 loaded nodes / 50,000 normalized objects / 32 MiB estimated object storage,
+with explicit capacity/nesting errors, rather than a hard RSS guarantee. Closing
+a branch releases its display subtree; native caching can still satisfy reopen.
+Workspace disposal cancels panel jobs, stops metadata/connections/helper and joins
+scheduler work; accepted config saves/deletions finish before leaving. Service
+restart is explicit (`R`), invalidates old connection IDs and never replays SQL.
+
+## SQL consoles and result ownership
+
+D08's inert `console::Manager` owns stable `source:counter` session identities,
+context preferences and bounded history (512 per console, 4,096 entries / 16 MiB
+SQL text globally). Documents own current buffers. Capturing persistence clones
+Arc metadata and rope snapshots; the blocking capture worker materializes buffers
+from the same application sequence and preserves unknown fields. Restoring a
+session never opens a connection, starts Java, restores a result or replays SQL.
+
+`statement::{locate,script,statements}` borrow source text and use UTF-8 byte ranges.
+Selections retain their actual offsets, including repeated text. Current at EOF
+never falls back to the entire script. Quoted semicolons and comments are scanned;
+PostgreSQL dollar/E strings and default MySQL escapes/comments are supported.
+This is a statement locator, not a complete vendor procedural grammar. Explicit
+selection/script remains available for nondefault SQL modes and procedural blocks.
+
+Execution captures the host snapshot/selection, targets SQL on a blocking worker
+and uses the native tracked executor. `execution::Options` has optional nullable
+catalog/schema: absent preserves context; explicit null restores login defaults.
+The helper applies context and SQL within one serialized connection job. Console
+bindings resolve through datasource defaults; another console cannot accidentally
+inherit a previous query's schema. Transactions remain shared by datasource.
+
+Query results and cancel retries publish only to the original console/request.
+Editing or changing focus does not discard a valid execution result. Results use
+bounded immutable chunks, sampled widths, separate result/messages tabs, explicit
+NULL/binary/truncation/incomplete/unknown/cancel status and independent focus.
+Alt navigation preserves editor selection; ordinary arrows stay with the focused
+owner. Search and editor popups precede SQL shortcuts. Hover targeting uses a
+replaceable worker and validates document revision/selection before highlighting.
+
+SQL export uses an owner save snapshot and native guarded atomic file I/O. A
+known exported path uses its last disk identity; external changes and existing
+unowned targets fail visibly without replacement. Failure retains the path and
+editor buffer. Unsubmitted save dialogs are dismissed on workspace closure while
+the SQL buffer is persisted. Accepted file saves finish before leaving. Executor
+shutdown precedes metadata/connections/helper shutdown and scheduler join.
+
+## REST model ownership
+
+R01's `kode_rest::model::Workspace` owns one raw Postman v2.1 JSON collection,
+typed environment/UI metadata and a mutation revision. `ProjectState` snapshots
+share immutable collection/environment Arcs and retain arbitrary extra fields.
+Collection edits preserve unknown JSON data, object-valued variables, disabled
+entries, scripts, saved examples, ordering and `x-kode-*` fields. The model never
+executes scripts and has no runtime response, cookie or execution-handle fields.
+Saved examples in the imported collection remain collection data.
+
+`NodePath` uses item-array indices, including positions occupied by unknown
+nonobject entries. Invalid encoded paths return an error rather than dropping
+components and targeting another item. Tree traversal skips nonobjects for
+display, while export/copy retains them. Mutations rebase selected paths and move
+destinations after array removal/insertion; moved request identities are preserved,
+copied request identities are fresh UUID v4 values. Tree operations retain up to
+100,000 nodes / 64 levels; this is a model bound, not a hard RSS guarantee.
+
+Environment values retain enabled/type/description/secret/extra metadata and
+structured JSON values. Enabled variables have ordered last-value-wins lookup.
+The text codec matches source trimming/comment/escape behavior for `key=value`
+lines; it escapes = and backslash. Text edits merge existing metadata by key and
+occurrence, preserving an unchanged structured value's JSON type. Structured APIs
+represent values outside that line syntax. Secret is display metadata and does
+not imply encrypted storage; diagnostic Debug output omits environment values.
+R03 owns file import/export/OpenAPI, R04 owns runtime HTTP/cookies, and R08 owns
+application persistence and runner integration.
+
+## REST request resolution
+
+R02's `RequestResolver` reads a captured collection/path, project root and optional
+typed environment. It supplies effective variable/header/auth rows for the UI and
+pure `plan()` output. Scope precedence is collection→ancestor→request→environment;
+disabled definitions do not shadow an earlier enabled value. Substitution returns
+ordered unresolved/cycle sets and preserves literal dollar/backslash text.
+Resolution is bounded to 64 nesting levels, 10,000 substitutions and 4 MiB per value.
+
+Headers follow source case-insensitive last-enabled-value override semantics;
+auth replaces and appends its own header. Effective row access retains duplicates,
+disabled flags, source and editability. Nearest noauth/basic/bearer/apikey is
+implemented; unsupported authentication and body modes fail before execution.
+Path parameters are encoded as path data, query/form entries use form encoding,
+fragments remain separate, and SSE intent survives URL normalization. Timeout,
+redirect and TLS preferences are carried per request.
+
+`BodyPlan` covers empty/raw/urlencoded/file/multipart/GraphQL without filesystem
+I/O. `ResolvedRequest::materialize(limit,cancel)` runs explicitly on a blocking
+worker, validates/reads regular files with cancellation and size/change checks,
+and returns `PreparedRequest` with captured immutable bytes. The caller supplies
+its buffering budget; errors never return a partial outgoing body. Multipart
+names/filenames are quoted, explicit boundaries are honored, missing boundaries
+are supplied in the resolved header, and payload delimiter collisions fail.
+Missing/unreadable paths and other errors omit resolved secret values.
+
+Prepared request previews use the same captured bytes, canonical Host and actual
+Content-Length, with a caller-selected display cap. They are logical HTTP views,
+not packet captures, and never mutate outgoing bytes. Request/header/auth/preview
+Debug implementations omit values. HTTP/cookies/redirect execution is R04; SSE/WS
+is R05. These pure model services never start networking themselves.
+
+## REST import/export
+
+R03's `import::Import` is a captured Postman collection plus source kind and
+structured pointer/code/message notices. Parsing/conversion is pure; bounded
+regular-file reads and guarded atomic exports run on blocking workers. Root
+Postman import replaces the collection. Nested imports retain collection scope
+and arbitrary fields. OpenAPI imports append tag folders and preserve the source
+document/notices once under `x-kode-openapi`; operation items have fresh UUIDs
+and source pointers. `Workspace::append_items` validates a candidate atomically
+without changing existing indices, identities or selection.
+
+Local JSON pointers are resolved with cycle/depth checks. No external reference,
+example, include or credential acquisition can perform I/O during conversion.
+Unsupported conversion has explicit notices; affected request items carry
+`x-kode-import-incomplete`, which `RequestResolver::plan` rejects. R06/R07 must
+show the notices and require correction/explicit acknowledgement before clearing
+that marker. Supported security maps to unresolved credential variables; absent
+OpenAPI security maps to noauth, avoiding destination authentication inheritance.
+
+Import/export bounds are 16 MiB, 500,000 JSON values / 96 JSON levels (including
+metadata and the nested destination), plus existing model tree limits. YAML has
+additional event/anchor/alias budgets and preserves exact decimal number spelling
+through source spans. Parser errors omit source snippets/values. Exports accept
+only collection data, retain saved examples and require expected disk identity
+to replace an existing file. Runtime results/cookies remain separate owners.
+
+## REST HTTP execution
+
+R04's inert per-workspace `http::Executor` consumes a captured `PreparedRequest`,
+`ExecutionKey { tag: JobTag, item_id }` and independent `CancellationToken`.
+The caller schedules/polls its native async future and cancels it on workspace
+disposal. Editing/switching requests cannot retarget its immutable result.
+Validation errors return before network I/O. Network/cancel/timeout outcomes
+return typed responses with partial headers/body/counts retained. Non-2xx is
+response data. No failure is retried; redirects obey their explicit setting.
+
+Responses contain original/normalized initial request captures and normalization
+notices, duplicate response headers with raw value bytes, runtime Set-Cookie data,
+status/final URL/timing, capped raw body and total received counts. Logical previews
+use captured bytes and normalized initial headers/auth/cookies. Redirect hops and
+TLS frames are not packet captures. Expect/Upgrade/framing/authority are transport
+managed, with omission/replacement notices. Formatting never changes raw bytes.
+
+Cookie jars are runtime-only and expose inspection/clear/rejection-count APIs.
+Domain/host-only/path/secure/expiry matching uses cookie_store with a static PSL
+check and cookie-prefix rules. Explicit Cookie overrides jar values. Retention is
+1,024 cookies / 1 MiB including effective domain/path metadata, with 16 KiB per
+incoming cookie header and oldest-update eviction. HTTP limits are 256 headers /
+256 KiB header data and 64 MiB outgoing body/maximum response preview (10 MiB
+default). Request settings control redirect/timeout/TLS independently. These are
+bounded captures, not hard RSS limits. R05 extends this boundary for SSE/WS;
+R07 owns UI execution routing and owner lifecycle integration.
+
+## REST streaming execution
+
+R05's `stream::Executor` shares the HTTP owner's runtime cookie jar and accepts
+the same execution key/request/token. `event_channel()` supplies at most 64 queued
+events; a closed owner prevents connection, and cancellation interrupts reads or
+backpressure. The returned tagged `Response` is authoritative completion. Normal
+HTTP publishes on completion; SSE/WS publish incrementally. UI publication follows
+workspace/item/execution identity rather than active focus or editor revision.
+
+Events expose normalized initial request/notices and opened response metadata,
+retained raw chunks (≤16 KiB), parsed SSE fields, replaceable progress counters,
+display-limit notices and close details. Consumers append raw bytes, replace
+counts, cap formatted/event-history displays and associate old responses with
+their original request. Runtime events/results/cookies never enter project export.
+Raw counts continue beyond preview truncation. SSE typed history has an independent
+preview-sized byte budget / 4,096 records, with an explicit display-limit notice.
+
+SSE accepts only bounded valid UTF-8 prefixes after split-BOM handling; raw bytes
+remain separate. Limits: 64 KiB line, 256 KiB unfinished/parsed event, 1 MiB input
+chunk. WS bounds are 64 KiB/frame, 256 KiB/message and 512 KiB write buffering.
+Tungstenite assembles valid fragments before message publication; chunk events
+retain text/binary identity and message-end flags. WS counts complete accepted
+message payloads rather than wire bytes or rejected partial messages. Close code/
+reason and failures retain previous data. Normal 101 WS completion is successful.
+
+Connection/handshake timeout is distinct from established stream lifetime; live
+streams continue until close/EOF/cancel. There is no reconnect or failure replay.
+WS independently applies auth/cookies/redirects/TLS, strips cross-origin sensitive
+headers and refuses downgrade. Certificate bypass is per-request; cryptographic
+signature verification remains active. Default WS opening sends no body, matching
+source. `InitialMessage::Text|Binary` is an explicit bounded extension. R07 must
+make handshake/body normalization and source receive-only behavior visible.

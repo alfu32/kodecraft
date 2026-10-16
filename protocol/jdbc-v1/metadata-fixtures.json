@@ -1,0 +1,9 @@
+{
+  "results": [
+    {"contextRevision": 7, "objects": [
+      {"id":"schema:catalog:é界😀","name":"é界😀","qualifiedName":"catalog.é界😀","objectType":"SCHEMA","catalog":"catalog","schema":"é界😀","attributes":{},"hasChildren":true},
+      {"id":"fk:catalog:é界😀:child:fk:parent_id","name":"fk","qualifiedName":"fk","objectType":"FOREIGN_KEY","catalog":"catalog","schema":"é界😀","attributes":{"column":"parent_id","referencedTable":"parent","referencedColumn":"id","sequence":"1"},"hasChildren":false}
+    ], "capabilities":{"catalogs":true,"schemas":true,"transactions":true,"savepoints":true}},
+    {"contextRevision": 7, "objects": [], "capabilities":{"functions":false}, "message":"Driver does not support functions"}
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "openapi": "3.1.0",
+  "info": {"title": "Pets", "version": "1"},
+  "servers": [{"url": "https://{region}.example.test/v1", "variables": {"region": {"default": "api"}}}],
+  "security": [{"token": []}],
+  "components": {
+    "securitySchemes": {"token": {"type": "http", "scheme": "bearer"}},
+    "parameters": {"Id": {"name": "id", "in": "path", "required": true, "example": "a/b"}},
+    "schemas": {"Pet": {"type": "object", "properties": {"name": {"type": "string", "default": "Miso"}, "age": {"type": ["integer", "null"], "default": 3}}}},
+    "examples": {"PetExample": {"value": {"name": "Miso", "age": 3}}}
+  },
+  "paths": {
+    "/pets/{id}": {
+      "parameters": [{"$ref": "#/components/parameters/Id"}, {"name": "q", "in": "query", "example": "old"}],
+      "get": {"tags": ["Pets"], "summary": "Get pet", "parameters": [{"name": "q", "in": "query", "example": "new value"}, {"name": "X-Trace", "in": "header", "examples": {"first": {"value": "trace"}}}]},
+      "post": {"tags": ["Pets"], "operationId": "updatePet", "security": [], "requestBody": {"content": {"application/vnd.pet+json": {"schema": {"$ref": "#/components/schemas/Pet"}}}}}
+    },
+    "/example": {"post": {"tags": ["Examples"], "security": [], "requestBody": {"content": {"application/json": {"examples": {"first": {"$ref": "#/components/examples/PetExample"}}}}}}},
+    "/text": {"post": {"tags": ["Examples"], "security": [], "servers": [{"url": "https://write.example.test"}], "requestBody": {"content": {"application/json": {"example": "string body"}}}}},
+    "/xml": {"put": {"tags": ["Examples"], "security": [], "requestBody": {"content": {"application/vnd.pet+xml": {"example": "<pet/>"}}}}}
+  },
+  "x-preserve": {"large": 123456789012345678901234567890, "nested": [null, true]}
+}

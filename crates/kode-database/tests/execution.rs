@@ -472,6 +472,7 @@ async fn actual_java_h2_streaming_transactions_types_limits_errors_and_context_a
             Options {
                 max_rows: 450,
                 fetch_size: 200,
+                ..Options::default()
             },
             send,
             &token,
@@ -513,6 +514,53 @@ async fn actual_java_h2_streaming_transactions_types_limits_errors_and_context_a
             .session("query-source")
             .unwrap()
             .transaction_usable
+    );
+    execute(&executor, "create schema FIRST_CONSOLE").await;
+    execute(&executor, "create schema SECOND_CONSOLE").await;
+    let run_context = |schema: &str| {
+        let executor = executor.clone();
+        let token = token.clone();
+        let schema = schema.to_owned();
+        async move {
+            let (send, _) = watch::channel(Snapshot::default());
+            executor
+                .execute(
+                    "query-source",
+                    "select current_schema".into(),
+                    Options {
+                        schema: Some(Some(schema)),
+                        ..Default::default()
+                    },
+                    send,
+                    &token,
+                )
+                .await
+                .unwrap()
+        }
+    };
+    let (first, second) = tokio::join!(run_context("FIRST_CONSOLE"), run_context("SECOND_CONSOLE"));
+    assert!(
+        matches!(&first.preview.result_sets[0].chunks[0][0][0],Cell::Text{text,..}if text=="FIRST_CONSOLE")
+    );
+    assert!(
+        matches!(&second.preview.result_sets[0].chunks[0][0][0],Cell::Text{text,..}if text=="SECOND_CONSOLE")
+    );
+    let (send, _) = watch::channel(Snapshot::default());
+    let login = executor
+        .execute(
+            "query-source",
+            "select current_schema".into(),
+            Options {
+                schema: Some(None),
+                ..Default::default()
+            },
+            send,
+            &token,
+        )
+        .await
+        .unwrap();
+    assert!(
+        matches!(&login.preview.result_sets[0].chunks[0][0][0],Cell::Text{text,..}if text=="PUBLIC")
     );
     executor.shutdown().await;
     connections.shutdown().await.unwrap();

@@ -47,16 +47,22 @@ pub struct Snapshot {
     pub cancel_status: Option<CancelStatus>,
     pub cancel_error: Option<BridgeError>,
 }
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct Options {
     pub max_rows: u32,
     pub fetch_size: u32,
+    /// Absent leaves context unchanged; Some(None) restores the login default.
+    /// Context changes and execution share the connection owner's serialized job.
+    pub catalog: Option<Option<String>>,
+    pub schema: Option<Option<String>>,
 }
 impl Default for Options {
     fn default() -> Self {
         Self {
             max_rows: 500,
             fetch_size: 200,
+            catalog: None,
+            schema: None,
         }
     }
 }
@@ -145,6 +151,14 @@ impl Executor {
             || sql.len() > 4 * 1024 * 1024
             || !(1..=100_000).contains(&options.max_rows)
             || options.fetch_size > 10_000
+            || [&options.catalog, &options.schema]
+                .into_iter()
+                .any(|value| {
+                    value
+                        .as_ref()
+                        .and_then(Option::as_ref)
+                        .is_some_and(|value| value.len() > 4096 || value.contains('\0'))
+                })
         {
             return Err(BridgeError::new(
                 Failure::Protocol,
@@ -384,6 +398,7 @@ impl Shared {
                 "SQL connection changed before submission",
             ));
         }
+        self.connections.execution_submitted(&session);
         let pending = Arc::new(Pending {
             session: session.clone(),
             accumulator: Mutex::new(Accumulator::new(id.clone(), self.retention.clone())),
@@ -414,7 +429,13 @@ impl Shared {
             id: id.clone(),
         };
         pending.publish(&pending.accumulator.lock().expect("SQL preview"));
-        let params = json!({"connectionId":session.connection_id,"executionId":id,"sql":sql,"maxRows":options.max_rows,"fetchSize":options.fetch_size});
+        let mut params = json!({"connectionId":session.connection_id,"executionId":id,"sql":sql,"maxRows":options.max_rows,"fetchSize":options.fetch_size});
+        if let Some(catalog) = options.catalog {
+            params["catalog"] = json!(catalog);
+        }
+        if let Some(schema) = options.schema {
+            params["schema"] = json!(schema);
+        }
         let no_cancel = CancellationToken::new();
         let request = client.request_with_timeout(
             "query.execute",

@@ -71,6 +71,10 @@ unknown methods and incompatible major protocol versions produce explicit errors
 | `query.execute` | Execute SQL; stream all result sets/update counts/warnings in order | D05 |
 | `query.cancel` | Independent control request for one execution ID; acknowledgement is not completion | D05 |
 
+Metadata results include owner `contextRevision`, normalized objects/capabilities
+and a visible message for unsupported accessors. Native cache identity and refresh
+barriers are defined in [the wire contract](../../protocol/jdbc-v1/README.md#lazy-metadata).
+
 `connection.open` creates one connection per active datasource by default, matching
 the source's datasource-level transaction behavior. Multiple SQL consoles bound
 to that datasource share its transaction context. Make that visible in the UI.

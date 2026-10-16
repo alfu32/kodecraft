@@ -1,7 +1,9 @@
 //! Bounded work execution and application-thread publication.
+pub mod database;
 mod git;
 mod intelligence;
 pub mod lsp;
+mod sql;
 use super::{
     state::{AppState, AppWork, ConfigAction, OpenDestination, PickerKind},
     workspace::{self, OpenRequest, PreparedOpen, PreparedWorkspace},
@@ -52,6 +54,11 @@ use std::{
 use tokio::sync::mpsc;
 
 enum Output {
+    SqlCancelled,
+    SqlControl(kode_database::connections::SessionInfo),
+    SqlHighlight(Option<kode_core::TextRange>),
+    Sql(sql::QueryReport),
+    Database(crate::panels::database::controller::Report),
     GitDiff(Arc<kode_git::diff::DiffPlan>),
     DiffLayout(crate::panels::git::diff::projection::Projection),
     DiffRestored(kode_git::diff::RestoreReceipt),
@@ -89,6 +96,19 @@ enum Output {
     Picker(Project),
 }
 enum Context {
+    SqlCancel {
+        console: String,
+        request: kode_core::RequestId,
+    },
+    SqlControl(String),
+    SqlHighlight(kode_core::Selection),
+    SqlSave {
+        console: String,
+        job: crate::editor::host::OwnerSaveJob,
+        path: std::path::PathBuf,
+    },
+    Sql(sql::QueryContext),
+    Database(crate::panels::database::controller::Context),
     DiffLayout,
     DiffRestore,
     GitRead(crate::panels::git::ReadKind),
@@ -116,6 +136,8 @@ enum Context {
     Picker(PickerKind),
 }
 enum ClipboardTarget {
+    Sql(crate::panels::database::session_dialog::PasteProof),
+    Database(crate::panels::database::controller::PasteProof),
     Git,
     None,
     Names,
@@ -138,6 +160,8 @@ struct Pending {
     work: BlockingJobFactory<Output>,
 }
 pub struct AppRuntime {
+    database: Option<Arc<database::Services>>,
+    database_error: Option<String>,
     git_fresh_paths: std::collections::HashSet<std::path::PathBuf>,
     git_reload_tags: std::collections::HashSet<JobTag>,
     open_requests: HashMap<JobTag, (OpenDestination, OpenRequest)>,
@@ -187,6 +211,8 @@ impl AppRuntime {
         let detector = Self::image_detector(MimeDetector::compiled())?;
         state.detector = detector.clone();
         Ok(Self {
+            database: None,
+            database_error: None,
             git_fresh_paths: Default::default(),
             git_reload_tags: Default::default(),
             open_requests: HashMap::new(),
@@ -280,6 +306,8 @@ impl AppRuntime {
         while let Some(completion) = self.jobs.try_next() {
             self.complete(completion)?;
         }
+        self.pump_database()?;
+        self.pump_sql();
         for progress in self.notifications.take_progress().into_values() {
             self.state.lsp_settings.progress(&progress);
             if let Some(dialog) = &mut self.state.rescan {
@@ -365,6 +393,92 @@ impl AppRuntime {
     }
     fn accept(&mut self, work: AppWork) -> Result<()> {
         match work {
+            AppWork::SqlCancel {
+                tag,
+                console,
+                request,
+                execution,
+            } => {
+                let Some(database) = self.database.clone() else {
+                    return Ok(());
+                };
+                let submitted = self.jobs.submit(
+                    self.root_owner,
+                    tag,
+                    Delivery::Critical,
+                    move |cancel| async move {
+                        database
+                            .executor
+                            .cancel(&execution, &cancel)
+                            .await
+                            .map_err(|error| DomainError::Unsupported(error.to_string()))?;
+                        Ok(Output::SqlCancelled)
+                    },
+                );
+                if let Err(error) = submitted {
+                    if let Some(running) = self
+                        .state
+                        .sql
+                        .running
+                        .get_mut(&console)
+                        .filter(|running| running.tag.request == request)
+                    {
+                        running.cancel_retry = None;
+                    }
+                    self.state.notice = error.to_string();
+                } else {
+                    self.contexts
+                        .insert(tag, Context::SqlCancel { console, request });
+                }
+                Ok(())
+            }
+            AppWork::SqlHighlight { tag, execution } => self.blocking(
+                tag,
+                self.root_owner,
+                "sql-highlight",
+                false,
+                Context::SqlHighlight(execution.selection),
+                Box::new(move |cancel| {
+                    if cancel.is_cancelled() {
+                        return Err(DomainError::Cancelled);
+                    }
+                    let text = execution.snapshot.text();
+                    let range = execution.selection.range();
+                    let target = kode_database::statement::locate(
+                        &text,
+                        execution.selection.head.0,
+                        (!range.is_empty()).then_some(range.start.0..range.end.0),
+                        execution.dialect,
+                    )?;
+                    Ok(Output::SqlHighlight(target.map(|found| {
+                        kode_core::TextRange {
+                            start: kode_core::ByteOffset(found.range.start),
+                            end: kode_core::ByteOffset(found.range.end),
+                        }
+                    })))
+                }),
+            ),
+            AppWork::SqlControl {
+                tag,
+                source,
+                action,
+            } => self.sql_control(tag, source, action),
+            AppWork::SqlSave {
+                job,
+                path,
+                expected,
+            } => self.sql_save(job, path, expected),
+            AppWork::SqlClipboard { tag, job, proof } => self.clipboard_work(
+                tag,
+                job,
+                proof.map_or(ClipboardTarget::None, ClipboardTarget::Sql),
+            ),
+            AppWork::Database(work) => self.database_work(*work),
+            AppWork::DatabaseClipboard { tag, job, proof } => self.clipboard_work(
+                tag,
+                job,
+                proof.map_or(ClipboardTarget::None, ClipboardTarget::Database),
+            ),
             AppWork::Git(work) => self.git_work(work),
             AppWork::LspSettings(action) => self.lsp_work(action),
             AppWork::Image(job) => {
@@ -576,6 +690,7 @@ impl AppRuntime {
                 documents,
                 active,
                 changes,
+                sql,
             } => self.blocking(
                 tag,
                 self.root_owner,
@@ -586,8 +701,22 @@ impl AppRuntime {
                     if cancel.is_cancelled() {
                         return Err(DomainError::Cancelled);
                     }
-                    workspace::capture_changes(base, &project, documents, active, changes)
-                        .map(|session| Output::Session(Box::new(session)))
+                    let database = sql.map(|(sql, ids)| {
+                        sql.into_state(documents.iter().filter_map(|captured| {
+                            let id = ids.get(&captured.document.id())?;
+                            Some((id.clone(), captured.document.snapshot().text().to_string()))
+                        }))
+                    });
+                    let mut session =
+                        workspace::capture_changes(base, &project, documents, active, changes)?;
+                    if let Some(database) = database {
+                        session.database =
+                            serde_json::to_value(database).map_err(|error| DomainError::Parse {
+                                format: "SQL sessions",
+                                message: error.to_string(),
+                            })?;
+                    }
+                    Ok(Output::Session(Box::new(session)))
                 }),
             ),
             AppWork::Persist(job) => {
@@ -855,6 +984,17 @@ impl AppRuntime {
                 )
             }
             EditorWork::SaveOwner(job) => {
+                if self.state.sql.documents.contains_key(&job.snapshot.id) {
+                    if self.state.closing {
+                        self.state.documents.complete_owner_save(
+                            job.snapshot.id,
+                            job.tag,
+                            Err(DomainError::Cancelled),
+                        )?;
+                        return Ok(());
+                    }
+                    return self.state.start_sql_save(job);
+                }
                 self.state.documents.complete_owner_save(
                     job.snapshot.id,
                     job.tag,
@@ -1019,9 +1159,7 @@ impl AppRuntime {
                     OpenDestination::Main,
                 )
             }
-            EditorWork::Execute(_) => Err(DomainError::Unsupported(
-                "no execution service registered for this editor".into(),
-            )),
+            EditorWork::Execute(execution) => self.sql_execute(execution),
             EditorWork::FieldLimitReached => Err(DomainError::Unsupported(
                 "editor field exceeds its character limit".into(),
             )),
@@ -1083,6 +1221,105 @@ impl AppRuntime {
             return Ok(());
         }
         match context {
+            Context::SqlCancel { console, request } => {
+                if let Some(running) = self.state.sql.running.get_mut(&console).filter(|running| {
+                    running.tag.request == request && running.cancel_retry == Some(tag)
+                }) {
+                    running.cancel_retry = None;
+                    if let Err(error) = result {
+                        self.state.notice = error.to_string();
+                    }
+                }
+            }
+            Context::SqlHighlight(selection) => {
+                if let Some(view) = &mut self.state.editor
+                    && self.state.sql.hover
+                        == tag.document.map(|(id, revision)| (id, revision, selection))
+                    && tag.document
+                        == Some((
+                            view.document_id(),
+                            self.state
+                                .documents
+                                .document(view.document_id())?
+                                .revision(),
+                        ))
+                {
+                    view.host.transient = result.ok().and_then(|output| match output {
+                        Output::SqlHighlight(range) => {
+                            range.map(|range| crate::editor::host::TransientHighlight {
+                                revision: tag.document.expect("hover document").1,
+                                range,
+                            })
+                        }
+                        _ => None,
+                    });
+                }
+            }
+            Context::SqlControl(source) => self.sql_control_complete(
+                tag,
+                source,
+                result.and_then(|output| match output {
+                    Output::SqlControl(session) => Ok(session),
+                    _ => Err(DomainError::Unsupported(
+                        "Invalid transaction completion".into(),
+                    )),
+                }),
+            )?,
+            Context::SqlSave { console, job, path } => self.sql_save_complete(
+                console,
+                job,
+                path,
+                result.and_then(|output| match output {
+                    Output::Saved(identity) => Ok(identity),
+                    _ => Err(DomainError::Unsupported(
+                        "Invalid SQL save completion".into(),
+                    )),
+                }),
+            )?,
+            Context::Sql(context) => self.sql_complete(
+                tag,
+                context,
+                result.and_then(|output| match output {
+                    Output::Sql(report) => Ok(report),
+                    _ => Err(DomainError::Unsupported("Invalid SQL completion".into())),
+                }),
+            )?,
+            Context::Database(context) => {
+                let result = result.and_then(|output| match output {
+                    Output::Database(report) => Ok(report),
+                    _ => Err(DomainError::Unsupported(
+                        "Invalid database completion".into(),
+                    )),
+                });
+                let current = match (&context, &result, &self.database) {
+                    (
+                        crate::panels::database::controller::Context::Metadata(load),
+                        Ok(crate::panels::database::controller::Report::Metadata(result)),
+                        Some(database),
+                    ) => database
+                        .metadata
+                        .is_current(load.key.source(), &load.request, result),
+                    _ => true,
+                };
+                let sources_changed = matches!(
+                    &result,
+                    Ok(crate::panels::database::controller::Report::Sources { .. })
+                );
+                self.state.database.complete(
+                    tag,
+                    context,
+                    result.map_err(|error| error.to_string()),
+                    current,
+                    &mut self.state.focus,
+                );
+                if sources_changed {
+                    self.state
+                        .sql
+                        .manager
+                        .set_data_sources(self.state.database.tree.sources.clone());
+                    self.state.changed()?;
+                }
+            }
             Context::DiffLayout => {
                 if let Some(diff) = &mut self.state.diff
                     && diff.owner() == owner
@@ -1626,6 +1863,22 @@ impl AppRuntime {
             }
         });
         match target {
+            ClipboardTarget::Sql(proof) => match result {
+                Ok(ClipboardResult::Read(text)) => {
+                    if let Some(dialog) = &mut self.state.sql.dialog {
+                        dialog.paste(proof, text);
+                    }
+                }
+                Err(error) => self.state.notice = error.to_string(),
+                _ => {}
+            },
+            ClipboardTarget::Database(proof) => match result {
+                Ok(ClipboardResult::Read(text)) => {
+                    self.state.database.paste(proof, text);
+                }
+                Err(error) => self.state.notice = error.to_string(),
+                _ => {}
+            },
             ClipboardTarget::Git => {
                 self.state
                     .git
@@ -1706,6 +1959,11 @@ impl AppRuntime {
                         | Context::Project
                         | Context::GitWrite(_)
                         | Context::DiffRestore
+                        | Context::SqlSave { .. }
+                        | Context::Database(
+                            crate::panels::database::controller::Context::Save
+                                | crate::panels::database::controller::Context::Delete
+                        )
                 )
             })
             && !self
@@ -1715,6 +1973,7 @@ impl AppRuntime {
     }
     pub async fn flush_before_leave(&mut self) -> Result<()> {
         self.state.closing = true;
+        self.state.dismiss_sql_dialog()?;
         loop {
             self.pump()?;
             if self.ready_to_leave() {
@@ -1738,6 +1997,7 @@ impl AppRuntime {
         self.dispose_services().await
     }
     async fn dispose_services(&mut self) -> Result<()> {
+        self.state.database.cancel_all();
         self.state.lsp_settings.cancel();
         if let Some(editor) = self.editor_lsp() {
             editor.stop();
@@ -1749,6 +2009,11 @@ impl AppRuntime {
             token.cancel();
         }
         self.jobs.cancel_workspace(self.state.generation);
+        let database_cleanup = if let Some(database) = &self.database {
+            database.shutdown().await
+        } else {
+            Ok(())
+        };
         let jobs = std::mem::replace(&mut self.jobs, Scheduler::new(self.notifications.clone()));
         for completion in jobs.shutdown().await {
             self.complete(completion)?;
@@ -1786,6 +2051,7 @@ impl AppRuntime {
                 })?;
         }
         lsp_cleanup?;
+        database_cleanup?;
         intelligence_cleanup
     }
     /// A broken terminal cannot keep an interactive workspace open. Try the
@@ -1871,6 +2137,7 @@ impl AppRuntime {
                 if self.lsp.is_some() {
                     self.state.lsp_settings.request_refresh();
                 }
+                self.rebind_database()?;
                 return Err(error);
             }
         };
@@ -1881,6 +2148,7 @@ impl AppRuntime {
         )?;
         next.detector = self.detector.clone();
         let previous = std::mem::replace(&mut self.state, next);
+        self.rebind_database()?;
         tokio::task::spawn_blocking(move || drop(previous))
             .await
             .map_err(|error| {

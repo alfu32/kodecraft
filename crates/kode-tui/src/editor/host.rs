@@ -982,6 +982,13 @@ impl<H: EditorHost> EditorView<H> {
             && matches!(event,InputEvent::Key(input) if input.key == Key::Enter && input.modifiers.ctrl && !input.modifiers.alt && !input.modifiers.meta)
             && let Some(action) = self.host.descriptor().execute
         {
+            let action = if action == ExecutionAction::SqlSelectionOrStatement
+                && matches!(event,InputEvent::Key(input) if input.modifiers.shift)
+            {
+                ExecutionAction::SqlScript
+            } else {
+                action
+            };
             self.execute(action, documents)?;
             handled = true;
         }

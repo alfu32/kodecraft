@@ -25,6 +25,17 @@ unicode-width = "0.2.2"
 ropey = { version = "=1.6.1", default-features = false, features = ["simd"] }
 sha2 = "=0.10.9"
 base64 = "=0.23.1"
+uuid = { version = "=1.28.0", features = ["v4"] }
+url = "=2.5.8"
+http = "=1.5.0"
+mime = "=0.3.17"
+serde-saphyr = { version = "=2.0.0", default-features = false, features = ["deserialize"] }
+cookie_store = { version = "=0.22.1", default-features = false }
+psl = "=2.1.241"
+tokio-rustls = { version = "=0.26.6", default-features = false, features = ["aws_lc_rs", "tls12"] }
+rustls-platform-verifier = "=0.7.1"
+eventsource-stream = "=0.2.3"
+tokio-tungstenite = { version = "=0.30.0", default-features = false, features = ["connect", "handshake", "rustls-tls-native-roots"] }
 arboard = { version = "=3.6.1", default-features = false }
 unicode-general-category = "=0.6.0"
 regex = "=1.13.1"

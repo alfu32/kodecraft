@@ -218,6 +218,9 @@ impl Connections {
     /// Reference for execution/metadata clients. This never starts Java and
     /// never returns a connection belonging to a failed or closing epoch.
     pub fn session(&self, source: &str) -> Result<SessionInfo> {
+        self.session_revision(source).map(|(session, _)| session)
+    }
+    pub(crate) fn session_revision(&self, source: &str) -> Result<(SessionInfo, u64)> {
         let entries = self.owner.shared.entries.lock().expect("connection state");
         let entry = entries
             .get(source)
@@ -242,7 +245,21 @@ impl Connections {
             .snapshot
             .session
             .clone()
+            .map(|session| (session, entry.snapshot.revision))
             .ok_or_else(|| error(Failure::Protocol, "Connected datasource has no session"))
+    }
+    /// Conservatively invalidate metadata for every SQL submission, including
+    /// procedures whose schema effects cannot be inferred from the SQL text.
+    pub(crate) fn execution_submitted(&self, session: &SessionInfo) {
+        let mut entries = self.owner.shared.entries.lock().expect("connection state");
+        if let Some(entry) = entries.get_mut(&session.data_source_id).filter(|entry| {
+            entry.snapshot.session.as_ref().is_some_and(|current| {
+                current.connection_id == session.connection_id
+                    && current.helper_epoch == session.helper_epoch
+            })
+        }) {
+            entry.snapshot.revision = entry.snapshot.revision.saturating_add(1);
+        }
     }
     pub fn runtime(&self) -> &Runtime {
         &self.owner.shared.runtime
@@ -308,6 +325,18 @@ impl Connections {
                     && current.helper_epoch == session.helper_epoch
             })
         }) {
+            if let Some(state) = failure.remote_data().and_then(|data| data.get("state"))
+                && let Some(client) = entry.client.as_ref()
+                && let Ok(info) = operations::info(state.clone(), client, &session.data_source_id)
+                && info.connection_id == session.connection_id
+                && entry
+                    .snapshot
+                    .session
+                    .as_ref()
+                    .is_some_and(|current| current.state_revision <= info.state_revision)
+            {
+                entry.snapshot.session = Some(info);
+            }
             entry.snapshot.error = Some(failure.clone().into());
             entry.snapshot.unknown_outcome |= failure.unknown_outcome;
             if failure.kind != Failure::Remote

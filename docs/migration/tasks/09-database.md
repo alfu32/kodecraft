@@ -90,7 +90,7 @@ manifests; `kode-tui/src/panels/database/driver_install.rs`.
 
 ## D05 — SQL execution, results and independent cancellation
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** D04. **Owns:** Java `queries/`, `kode-database/src/execution.rs`.
 **Read:** SqlQuery.kt execution/conversion/warning code; JdbcDatabaseIntegrationTest.
@@ -111,7 +111,7 @@ manifests; `kode-tui/src/panels/database/driver_install.rs`.
 
 ## D06 — Lazy metadata and cache invalidation
 
-**Status:** todo
+**Status:** done
 
 **Depends:** D04. **Owns:** Java `metadata/`, `kode-database/src/metadata.rs`.
 **Read:** DatabaseMetadata.kt, DatabaseModels metadata types; MetadataCacheTest.
@@ -129,7 +129,7 @@ manifests; `kode-tui/src/panels/database/driver_install.rs`.
 
 ## D07 — Database explorer, connection and driver dialogs
 
-**Status:** todo
+**Status:** done
 
 **Depends:** D01, D03, D04, D06, F05, W03.
 **Owns:** `kode-tui/src/panels/database/{tree,connection_dialog,object_menu}.rs`.
@@ -150,7 +150,7 @@ JdbcDriverDownloadDialog.kt and Main database callbacks.
 
 ## D08 — SQL editor, statement targeting and result panel
 
-**Status:** todo
+**Status:** done
 
 **Depends:** D05, D07, E12, E09, L02.
 **Owns:** `kode-database/src/{statement,console}.rs`,
@@ -172,7 +172,7 @@ SqlSessionSaveDialog, SqlStatementMenu and Main SQL toolbar/dispatch helpers.
 
 ## D09 — End-to-end external JDBC qualification
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** D08, W03, W05. **Owns:** `jdbc-bridge/src/test/`,
 `kode-database/tests/bridge_integration/`, `docs/parity/jdbc.md`.

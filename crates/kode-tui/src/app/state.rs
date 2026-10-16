@@ -69,6 +69,31 @@ pub enum ConfigAction {
     RemoveExclusion(PathBuf),
 }
 pub enum AppWork {
+    SqlCancel {
+        tag: JobTag,
+        console: String,
+        request: RequestId,
+        execution: String,
+    },
+    SqlHighlight {
+        tag: JobTag,
+        execution: crate::panels::database::console::Highlight,
+    },
+    SqlControl {
+        tag: JobTag,
+        source: String,
+        action: crate::panels::database::console::Control,
+    },
+    SqlSave {
+        job: crate::editor::host::OwnerSaveJob,
+        path: PathBuf,
+        expected: Option<kode_core::services::DiskIdentity>,
+    },
+    SqlClipboard {
+        tag: JobTag,
+        job: ClipboardJob,
+        proof: Option<crate::panels::database::session_dialog::PasteProof>,
+    },
     Tree {
         picker: bool,
         job: TreeJob,
@@ -88,6 +113,12 @@ pub enum AppWork {
     },
     Project(ProjectWork),
     Git(crate::panels::git::GitWork),
+    Database(Box<crate::panels::database::controller::Work>),
+    DatabaseClipboard {
+        tag: JobTag,
+        job: ClipboardJob,
+        proof: Option<crate::panels::database::controller::PasteProof>,
+    },
     Diff(crate::panels::git::diff::DiffWork),
     LspSettings(crate::panels::settings::lsp::SettingsAction),
     Image(crate::viewers::image::ImageJob),
@@ -114,6 +145,10 @@ pub enum AppWork {
         documents: Vec<CapturedDocument>,
         active: Option<DocumentOrigin>,
         changes: Vec<SessionChange>,
+        sql: Option<(
+            kode_database::console::PersistenceSnapshot,
+            HashMap<DocumentId, String>,
+        )>,
     },
     Persist(SessionWriteJob),
     Picker {
@@ -128,6 +163,9 @@ pub struct AppGeometry {
     pub panel: Rect,
     pub viewer: Rect,
     pub body: Rect,
+    pub sql_toolbar: Rect,
+    pub sql_context: Rect,
+    pub sql_results: Rect,
 }
 #[derive(Clone)]
 pub struct StoredView {
@@ -148,6 +186,9 @@ pub struct AppState {
     pub project_panel: ProjectPanel,
     pub lsp_settings: crate::panels::settings::lsp::LspSettings,
     pub git: crate::panels::git::GitPanel,
+    pub database: crate::panels::database::controller::DatabasePanel,
+    pub sql_sources: HashMap<DocumentId, String>,
+    pub sql: crate::panels::database::console::SqlConsoles,
     pub diff: Option<crate::panels::git::diff::DiffViewer>,
     pub tabs: Tabs,
     pub tabs_id: FocusId,
@@ -221,6 +262,9 @@ impl AppState {
             project_panel: ProjectPanel::new()?,
             lsp_settings: crate::panels::settings::lsp::LspSettings::new()?,
             git,
+            database: crate::panels::database::controller::DatabasePanel::new(generation)?,
+            sql_sources: HashMap::new(),
+            sql: Default::default(),
             tabs: Tabs::new(
                 vec![
                     "Files".into(),
@@ -228,6 +272,7 @@ impl AppState {
                     "Help".into(),
                     "Settings".into(),
                     "Git".into(),
+                    "Databases".into(),
                 ],
                 Axis::Vertical,
             ),
@@ -272,6 +317,7 @@ impl AppState {
         if let Some(initial) = initial {
             state.open(initial, OpenDestination::Main)?;
         }
+        state.restore_sql()?;
         Ok(state)
     }
     pub fn tag(&self) -> Result<JobTag> {
@@ -793,6 +839,10 @@ impl AppState {
                 .iter()
                 .map(|(_, change)| change.clone())
                 .collect(),
+            sql: self
+                .sql
+                .persistence_enabled
+                .then(|| (self.sql.manager.snapshot(), self.sql.documents.clone())),
         });
         Ok(())
     }
@@ -868,6 +918,37 @@ impl AppState {
         Ok(())
     }
     pub fn drain_ui(&mut self) -> Result<()> {
+        self.database.drain_tree(&mut self.focus)?;
+        for intent in self.database.take_intents() {
+            use crate::panels::database::controller::Intent;
+            use crate::widgets::field::FieldAction;
+            match intent {
+                Intent::Work(work) => self.work.push(AppWork::Database(work)),
+                Intent::Console { source, sql } => self.open_database_console(source, sql)?,
+                Intent::OpenSession(id) => {
+                    if let Some(document) = self.sql_document(&id) {
+                        self.open_database_session(document)?;
+                    }
+                }
+                Intent::RemoveSession(id) => {
+                    if let Some(document) = self.sql_document(&id) {
+                        self.remove_database_session(document)?;
+                    }
+                }
+                Intent::Clipboard { action, proof } => {
+                    let tag = self.tag()?;
+                    let job = match action {
+                        FieldAction::Copy(text) => {
+                            ClipboardJob::Publish(self.clipboard.remember(&text)?)
+                        }
+                        FieldAction::PasteRequested => ClipboardJob::Read,
+                        _ => continue,
+                    };
+                    self.work
+                        .push(AppWork::DatabaseClipboard { tag, job, proof });
+                }
+            }
+        }
         if let Some(diff) = &mut self.diff {
             self.work
                 .extend(diff.take_work().into_iter().map(AppWork::Diff));
@@ -933,6 +1014,10 @@ impl AppState {
                     .into_iter()
                     .map(|work| AppWork::Editor { owner, work }),
             );
+            // EditorWork is the application's event queue. Host callbacks are
+            // useful to embedded consumers, but must not retain SQL snapshots
+            // after this composition layer has drained the equivalent work.
+            let _ = view.host.take_events();
         }
         Ok(())
     }
@@ -953,13 +1038,50 @@ impl AppState {
             panes.first.width.saturating_sub(tabs_width),
             panes.first.height,
         );
-        AppGeometry {
+        let mut geometry = AppGeometry {
             status,
             tabs,
             panel,
             viewer: panes.second,
             body,
+            ..Default::default()
+        };
+        if self.active_sql().is_some() {
+            let outer = geometry.viewer;
+            let columns = (outer.width / 11).clamp(1, 6);
+            let toolbar_height = 6_u16.div_ceil(columns).min(outer.height.saturating_sub(4));
+            geometry.sql_toolbar = Rect::new(outer.x, outer.y, outer.width, toolbar_height);
+            let context_height = u16::from(outer.height > toolbar_height + 4);
+            geometry.sql_context = Rect::new(
+                outer.x,
+                outer.y + toolbar_height,
+                outer.width,
+                context_height,
+            );
+            let available = outer.height.saturating_sub(toolbar_height + context_height);
+            let results_height = if self
+                .active_sql()
+                .is_some_and(|id| self.sql.results.contains_key(id))
+                && available >= 10
+            {
+                (available / 3).max(6)
+            } else {
+                0
+            };
+            geometry.sql_results = Rect::new(
+                outer.x,
+                outer.bottom() - results_height,
+                outer.width,
+                results_height,
+            );
+            geometry.viewer = Rect::new(
+                outer.x,
+                outer.y + toolbar_height + context_height,
+                outer.width,
+                available - results_height,
+            );
         }
+        geometry
     }
     pub fn render(
         &mut self,
@@ -995,8 +1117,14 @@ impl AppState {
                     self.git
                         .render(geometry.panel, buffer, theme, &self.documents, &self.focus)?
             }
+            5 => self.database.render(
+                geometry.panel,
+                buffer,
+                theme,
+                self.focus.focused == Some(self.database.tree.id),
+            ),
             _ => {
-                Paragraph::new("Files: open, rename, create, delete.\nProject: source roots and exclusions.\n\nCtrl+S save\nCtrl+F find/replace\nCtrl+Shift+F project search\nCtrl+Space completion\nF6 switch pane\nCtrl+Q quit\n\nGit: Space stage/unstage, a/A stage/unstage all, Tab message, Ctrl+Enter commit, Ctrl+Tab sections. b branches, t tag, T create/move tag, Enter expand history, m copy message.\n\nImage: Left/Right width, Enter mode, M advanced controls.\n\nHex: Shift+arrows select, Alt+C/X/V local bytes, Delete/Backspace edit memory. Binary saving unavailable.\n\nUse mouse or Alt+1/2/3/4/5 to select Files/Project/Help/Settings/Git.").wrap(Wrap { trim: false }).render(geometry.panel, buffer);
+                Paragraph::new("Files: open, rename, create, delete.\nProject: source roots and exclusions.\n\nCtrl+S save\nCtrl+F find/replace\nCtrl+Shift+F project search\nCtrl+Space completion\nF6 switch pane\nCtrl+Q quit\n\nGit: Space stage/unstage, a/A stage/unstage all, Tab message, Ctrl+Enter commit, Ctrl+Tab sections. b branches, t tag, T create/move tag, Enter expand history, m copy message.\n\nImage: Left/Right width, Enter mode, M advanced controls.\n\nHex: Shift+arrows select, Alt+C/X/V local bytes, Delete/Backspace edit memory. Binary saving unavailable.\n\nDatabases: Alt+6; n new, F2 edit, c connect/disconnect, r refresh, R restart service, s SQL console.\nConnection dialog: Alt+T test, Alt+D driver download, Ctrl+S save.\n\nUse mouse or Alt+1/2/3/4/5/6 to select Files/Project/Help/Settings/Git/Databases.").wrap(Wrap { trim: false }).render(geometry.panel, buffer);
             }
         }
         self.splitter.render(geometry.body, buffer, theme);
@@ -1056,6 +1184,7 @@ impl AppState {
         } else {
             Paragraph::new(if self.splash { "Kode\n\nSelect a file to begin editing.\nSource scanning runs in the background.\nPress Enter to dismiss this screen." } else { "Select a file from the project." }).wrap(Wrap { trim: false }).render(geometry.viewer, buffer);
         }
+        self.render_sql(buffer, theme)?;
         let status = if self.closing {
             "Saving workspace…".into()
         } else if self.active_hex.is_some() {
@@ -1088,7 +1217,158 @@ impl AppState {
         if self.git.has_modal() {
             cursor = self.git.render_modal(area, buffer, theme);
         }
+        if self.database.has_modal() {
+            cursor = self.database.render_modal(area, buffer, theme);
+        }
+        if let Some(dialog) = &mut self.sql.dialog {
+            cursor = dialog.dialog.render(area, buffer, theme);
+        }
+        if let Some(menu) = &mut self.sql.menu {
+            menu.render(area, buffer, theme);
+            cursor = None;
+        }
         Ok(cursor)
+    }
+    pub fn open_database_console(&mut self, source: String, sql: String) -> Result<()> {
+        if !sql.is_empty()
+            && let Some(view) = &mut self.editor
+            && self.sql_sources.get(&view.document_id()) == Some(&source)
+        {
+            self.focus.focused = Some(view.input.id);
+            view.dispatch(
+                &crate::input::terminal::InputEvent::Paste(sql),
+                &mut self.documents,
+                &mut self.focus,
+                self.geometry.viewer,
+            )?;
+            return self.changed();
+        }
+        self.cache_main_view()?;
+        self.clear_diff()?;
+        self.detach_image();
+        self.active_hex = None;
+        let mut definition = self
+            .database
+            .tree
+            .sources
+            .iter()
+            .find(|ds| ds.id == source)
+            .cloned()
+            .ok_or_else(|| kode_core::DomainError::MissingResource("SQL datasource".into()))?;
+        if let Some(session) = self
+            .sql
+            .connections
+            .get(&source)
+            .and_then(|snapshot| snapshot.session.as_ref())
+        {
+            definition.auto_commit = session.auto_commit;
+        }
+        let console = self.sql.manager.create(&definition)?;
+        let key = console.state.id.clone();
+        let text = if sql.is_empty() {
+            console.state.buffer.clone()
+        } else {
+            format!("{}{}\n", console.state.buffer, sql.trim_end())
+        };
+        let descriptor =
+            super::sql::descriptor(&self.project.root, key.clone(), console.state.title.clone());
+        let id = self
+            .documents
+            .create_virtual(&descriptor, self.generation, &text)?;
+        let mut view = EditorView::new(
+            id,
+            &self.documents,
+            QueuedEditorHost::new(descriptor),
+            self.generation,
+            self.clipboard.clone(),
+            self.clock.clone(),
+        )?;
+        view.input.state.caret.move_to(
+            &self.documents.document(id)?.snapshot(),
+            kode_core::ByteOffset(text.len()),
+            false,
+        )?;
+        if let Some(mut old) = self.editor.take() {
+            old.detach(&mut self.focus);
+            let owner = old.owner();
+            self.work.extend(
+                old.take_work()
+                    .into_iter()
+                    .map(|work| AppWork::Editor { owner, work }),
+            );
+        }
+        self.focus.focused = Some(view.input.id);
+        self.splash = false;
+        let owner = view.owner();
+        self.work.extend(
+            view.take_work()
+                .into_iter()
+                .map(|work| AppWork::Editor { owner, work }),
+        );
+        self.sql_sources.insert(id, source);
+        self.sql.documents.insert(id, key);
+        self.editor = Some(view);
+        self.sync_database_sessions();
+        self.changed()
+    }
+    pub fn sync_database_sessions(&mut self) {
+        let sessions = self
+            .sql
+            .manager
+            .all()
+            .map(|console| crate::panels::database::tree::Session {
+                id: console.state.id.clone(),
+                source: console.state.data_source_id.clone(),
+                title: console.state.title.clone(),
+            })
+            .collect();
+        self.database.tree.set_sessions(sessions);
+    }
+    pub fn open_database_session(&mut self, id: DocumentId) -> Result<()> {
+        if !self.sql_sources.contains_key(&id) {
+            return Ok(());
+        }
+        self.cache_main_view()?;
+        self.clear_diff()?;
+        self.detach_image();
+        self.active_hex = None;
+        self.attach_sql_document(id)?;
+        self.changed()
+    }
+    pub fn remove_database_session(&mut self, id: DocumentId) -> Result<()> {
+        if !self.sql_sources.contains_key(&id) {
+            return Ok(());
+        }
+        if self.documents.save_in_progress(id) {
+            return Err(kode_core::DomainError::Unsupported(
+                "Wait for this SQL session to finish saving".into(),
+            ));
+        }
+        if let Some(key) = self.sql.documents.get(&id) {
+            self.sql.manager.remove(key)?;
+            self.sql.results.remove(key);
+        }
+        if self
+            .editor
+            .as_ref()
+            .is_some_and(|view| view.document_id() == id)
+            && let Some(mut old) = self.editor.take()
+        {
+            old.detach(&mut self.focus);
+            let owner = old.owner();
+            self.work.extend(
+                old.take_work()
+                    .into_iter()
+                    .map(|work| AppWork::Editor { owner, work }),
+            );
+            self.focus.focused = Some(self.database.tree.id);
+        }
+        self.documents.remove(id)?;
+        self.sql_sources.remove(&id);
+        self.sql.documents.remove(&id);
+        self.views.remove(&id);
+        self.sync_database_sessions();
+        self.changed()
     }
 }
 fn origin_key(origin: &DocumentOrigin) -> String {

@@ -4,11 +4,12 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|    17 |           1 |   47 |       0 |    65 |
+|     7 |           2 |   56 |       0 |    65 |
 
 ## Ongoing tasks
 
-- **D05** — [SQL execution, results and independent cancellation](docs/migration/tasks/09-database.md#d05--sql-execution-results-and-independent-cancellation)
+- **R06** — [REST tree, environments and management dialogs](docs/migration/tasks/08-rest.md#r06--rest-tree-environments-and-management-dialogs)
+- **D09** — [End-to-end external JDBC qualification](docs/migration/tasks/09-database.md#d09--end-to-end-external-jdbc-qualification)
 
 ## Task status
 
@@ -58,23 +59,23 @@ Full Kode → Rust migration. Counts are derived from the status in every task d
 | P01  | [Server catalog, discovery and installation](docs/migration/tasks/07-lsp.md)                    | done        | [Report](docs/parity/P01.md) |
 | P02  | [LSP client transport and lifecycle](docs/migration/tasks/07-lsp.md)                            | done        | [Report](docs/parity/P02.md) |
 | P03  | [Editor enrichment and provider fallback](docs/migration/tasks/07-lsp.md)                       | done        | [Report](docs/parity/P03.md) |
-| R01  | [Lossless collection and environment model](docs/migration/tasks/08-rest.md)                    | todo        | —                            |
-| R02  | [Variables, auth, headers, URLs and request bodies](docs/migration/tasks/08-rest.md)            | todo        | —                            |
-| R03  | [Postman and OpenAPI import/export](docs/migration/tasks/08-rest.md)                            | todo        | —                            |
-| R04  | [HTTP execution, cookies and cancellation](docs/migration/tasks/08-rest.md)                     | todo        | —                            |
-| R05  | [SSE and WebSocket execution](docs/migration/tasks/08-rest.md)                                  | todo        | —                            |
-| R06  | [REST tree, environments and management dialogs](docs/migration/tasks/08-rest.md)               | todo        | —                            |
+| R01  | [Lossless collection and environment model](docs/migration/tasks/08-rest.md)                    | done        | [Report](docs/parity/R01.md) |
+| R02  | [Variables, auth, headers, URLs and request bodies](docs/migration/tasks/08-rest.md)            | done        | [Report](docs/parity/R02.md) |
+| R03  | [Postman and OpenAPI import/export](docs/migration/tasks/08-rest.md)                            | done        | [Report](docs/parity/R03.md) |
+| R04  | [HTTP execution, cookies and cancellation](docs/migration/tasks/08-rest.md)                     | done        | [Report](docs/parity/R04.md) |
+| R05  | [SSE and WebSocket execution](docs/migration/tasks/08-rest.md)                                  | done        | [Report](docs/parity/R05.md) |
+| R06  | [REST tree, environments and management dialogs](docs/migration/tasks/08-rest.md)               | in-progress | —                            |
 | R07  | [Request/response editors and complete REST UX](docs/migration/tasks/08-rest.md)                | todo        | —                            |
 | R08  | [Collection runner, persistence and REST qualification](docs/migration/tasks/08-rest.md)        | todo        | —                            |
 | D01  | [Database models, settings, credentials and URL catalogs](docs/migration/tasks/09-database.md)  | done        | [Report](docs/parity/D01.md) |
 | D02  | [Protocol, Java bootstrap and Rust process supervisor](docs/migration/tasks/09-database.md)     | done        | [Report](docs/parity/D02.md) |
 | D03  | [Driver install, Maven resolution and classloaders](docs/migration/tasks/09-database.md)        | done        | [Report](docs/parity/D03.md) |
 | D04  | [Connections, testing and transaction control](docs/migration/tasks/09-database.md)             | done        | [Report](docs/parity/D04.md) |
-| D05  | [SQL execution, results and independent cancellation](docs/migration/tasks/09-database.md)      | in-progress | —                            |
-| D06  | [Lazy metadata and cache invalidation](docs/migration/tasks/09-database.md)                     | todo        | —                            |
-| D07  | [Database explorer, connection and driver dialogs](docs/migration/tasks/09-database.md)         | todo        | —                            |
-| D08  | [SQL editor, statement targeting and result panel](docs/migration/tasks/09-database.md)         | todo        | —                            |
-| D09  | [End-to-end external JDBC qualification](docs/migration/tasks/09-database.md)                   | todo        | —                            |
+| D05  | [SQL execution, results and independent cancellation](docs/migration/tasks/09-database.md)      | done        | [Report](docs/parity/D05.md) |
+| D06  | [Lazy metadata and cache invalidation](docs/migration/tasks/09-database.md)                     | done        | [Report](docs/parity/D06.md) |
+| D07  | [Database explorer, connection and driver dialogs](docs/migration/tasks/09-database.md)         | done        | [Report](docs/parity/D07.md) |
+| D08  | [SQL editor, statement targeting and result panel](docs/migration/tasks/09-database.md)         | done        | [Report](docs/parity/D08.md) |
+| D09  | [End-to-end external JDBC qualification](docs/migration/tasks/09-database.md)                   | in-progress | [Report](docs/parity/D09.md) |
 | Z01  | [Shell suspension and browser terminal serve mode](docs/migration/tasks/10-delivery.md)         | todo        | —                            |
 | Z02  | [Settings, help, about and operational status](docs/migration/tasks/10-delivery.md)             | todo        | —                            |
 | Z03  | [Reproducible build and distribution](docs/migration/tasks/10-delivery.md)                      | todo        | —                            |

@@ -25,7 +25,7 @@ pub async fn run_with_resources(
     initial_file: Option<PathBuf>,
     resources: Option<PathBuf>,
 ) -> Result<()> {
-    let (prepared, theme, detector, log, intelligence, lsp) =
+    let (prepared, theme, detector, log, intelligence, lsp, database) =
         tokio::task::spawn_blocking(move || {
             let paths = ResourcePaths::from_environment(resources)?;
             let defaults = compiled_resources();
@@ -54,7 +54,9 @@ pub async fn run_with_resources(
                 &CancellationToken::new(),
             )?;
             let lsp = super::runtime::lsp::LspConfiguration::from_environment(&paths);
-            Ok::<_, DomainError>((prepared, theme, detector, log, intelligence, lsp))
+            let database =
+                super::runtime::database::DatabaseConfiguration::from_environment(&paths);
+            Ok::<_, DomainError>((prepared, theme, detector, log, intelligence, lsp, database))
         })
         .await
         .map_err(|error| {
@@ -64,6 +66,9 @@ pub async fn run_with_resources(
     runtime.set_detector(detector)?;
     runtime.start_intelligence(intelligence).await?;
     runtime.configure_lsp(lsp)?;
+    if let Err(error) = database.and_then(|config| runtime.configure_database(config)) {
+        runtime.database_configuration_failed(error);
+    }
     let terminal = TerminalSession::open(Some(log.clone()), true).map_err(terminal_error);
     let mut terminal = match terminal {
         Ok(terminal) => terminal,

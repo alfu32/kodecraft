@@ -1,0 +1,360 @@
+{
+  "catalog_entries": 59,
+  "catalog_validation": "all entries match the frozen source in kode-database/tests/catalog.rs",
+  "runtime_qualification": [
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "driver_class": "org.postgresql.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "mysql",
+      "name": "MySQL",
+      "driver_class": "com.mysql.cj.jdbc.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "mariadb",
+      "name": "MariaDB",
+      "driver_class": "org.mariadb.jdbc.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "oracle",
+      "name": "Oracle",
+      "driver_class": "oracle.jdbc.OracleDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "sqlserver",
+      "name": "Microsoft SQL Server",
+      "driver_class": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "db2",
+      "name": "IBM Db2 LUW",
+      "driver_class": "com.ibm.db2.jcc.DB2Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "sqlite",
+      "name": "SQLite",
+      "driver_class": "org.sqlite.JDBC",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "h2",
+      "name": "H2",
+      "driver_class": "org.h2.Driver",
+      "status": "passed: actual external Java/H2 application and backend tests"
+    },
+    {
+      "id": "hsqldb",
+      "name": "HSQLDB / HyperSQL",
+      "driver_class": "org.hsqldb.jdbc.JDBCDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "derby-embedded",
+      "name": "Apache Derby Embedded",
+      "driver_class": "org.apache.derby.jdbc.EmbeddedDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "derby-client",
+      "name": "Apache Derby Network",
+      "driver_class": "org.apache.derby.jdbc.ClientDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "firebird",
+      "name": "Firebird",
+      "driver_class": "org.firebirdsql.jdbc.FBDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "informix",
+      "name": "IBM Informix",
+      "driver_class": "com.informix.jdbc.IfxDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "iris",
+      "name": "InterSystems IRIS",
+      "driver_class": "com.intersystems.jdbc.IRISDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "tibero",
+      "name": "TmaxTibero",
+      "driver_class": "com.tmax.tibero.jdbc.TbDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "teradata",
+      "name": "Teradata Vantage",
+      "driver_class": "com.teradata.jdbc.TeraDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "vertica",
+      "name": "Vertica",
+      "driver_class": "com.vertica.jdbc.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "exasol",
+      "name": "Exasol",
+      "driver_class": "com.exasol.jdbc.EXADriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "sap-hana",
+      "name": "SAP HANA",
+      "driver_class": "com.sap.db.jdbc.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "snowflake",
+      "name": "Snowflake",
+      "driver_class": "net.snowflake.client.jdbc.SnowflakeDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "redshift",
+      "name": "Amazon Redshift",
+      "driver_class": "com.amazon.redshift.jdbc.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "bigquery",
+      "name": "Google BigQuery",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "trino",
+      "name": "Trino",
+      "driver_class": "io.trino.jdbc.TrinoDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "presto",
+      "name": "PrestoDB",
+      "driver_class": "com.facebook.presto.jdbc.PrestoDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "hive",
+      "name": "Apache Hive",
+      "driver_class": "org.apache.hive.jdbc.HiveDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "databricks",
+      "name": "Databricks",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "clickhouse",
+      "name": "ClickHouse",
+      "driver_class": "com.clickhouse.jdbc.ClickHouseDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "duckdb",
+      "name": "DuckDB",
+      "driver_class": "org.duckdb.DuckDBDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "singlestore",
+      "name": "SingleStore",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "spanner",
+      "name": "Google Cloud Spanner",
+      "driver_class": "com.google.cloud.spanner.jdbc.JdbcDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "ignite2",
+      "name": "Apache Ignite 2",
+      "driver_class": "org.apache.ignite.IgniteJdbcThinDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "mongodb-atlas",
+      "name": "MongoDB Atlas SQL",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "neo4j",
+      "name": "Neo4j",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "athena",
+      "name": "Amazon Athena",
+      "driver_class": "com.amazon.athena.jdbc.AthenaDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "documentdb",
+      "name": "Amazon DocumentDB SQL/JDBC",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "elasticsearch",
+      "name": "Elasticsearch SQL JDBC",
+      "driver_class": "org.elasticsearch.xpack.sql.jdbc.EsDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "cockroachdb",
+      "name": "CockroachDB",
+      "driver_class": "org.postgresql.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "greenplum",
+      "name": "Greenplum",
+      "driver_class": "org.postgresql.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "yugabytedb",
+      "name": "YugabyteDB YSQL",
+      "driver_class": "org.postgresql.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "timescaledb",
+      "name": "TimescaleDB",
+      "driver_class": "org.postgresql.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "citus",
+      "name": "Citus",
+      "driver_class": "org.postgresql.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "aurora-postgresql",
+      "name": "Amazon Aurora PostgreSQL",
+      "driver_class": "org.postgresql.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "tidb",
+      "name": "TiDB",
+      "driver_class": "com.mysql.cj.jdbc.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "oceanbase-mysql",
+      "name": "OceanBase MySQL mode",
+      "driver_class": "com.mysql.cj.jdbc.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "aurora-mysql",
+      "name": "Amazon Aurora MySQL",
+      "driver_class": "com.mysql.cj.jdbc.Driver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "azure-sql",
+      "name": "Azure SQL Database",
+      "driver_class": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "sqlserver-localdb",
+      "name": "Microsoft SQL Server LocalDB",
+      "driver_class": "sqlserver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "spark-thrift",
+      "name": "Apache Spark SQL / Thrift Server",
+      "driver_class": "org.apache.hive.jdbc.HiveDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "sybase-ase",
+      "name": "SAP/Sybase ASE",
+      "driver_class": "com.sybase.jdbc4.jdbc.SybDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "denodo",
+      "name": "Denodo VDP",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "mimer",
+      "name": "Mimer SQL",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "openedge",
+      "name": "Progress OpenEdge",
+      "driver_class": "com.ddtek.jdbc.openedge.OpenEdgeDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "phoenix",
+      "name": "Apache Phoenix",
+      "driver_class": "org.apache.phoenix.jdbc.PhoenixDriver",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "tarantool",
+      "name": "Tarantool",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "couchbase",
+      "name": "Couchbase",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "cassandra",
+      "name": "Apache Cassandra",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "redis",
+      "name": "Redis",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "dynamodb",
+      "name": "Amazon DynamoDB",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    },
+    {
+      "id": "custom-jdbc",
+      "name": "Custom JDBC",
+      "driver_class": "",
+      "status": "not run: no isolated vendor database fixture configured"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "cases": [
+    {
+      "case": "actual-h2-connect-metadata-edit-mouse-save",
+      "helper_started": true,
+      "owned_helper_absent_after_exit": true,
+      "private_credentials_untouched": true,
+      "source_document_unchanged": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "actual-h2-connect-metadata-edit-mouse-save",
+      "helper_started": true,
+      "owned_helper_absent_after_exit": true,
+      "private_credentials_untouched": true,
+      "source_document_unchanged": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "no-java-form-error-edit-mouse-save",
+      "helper_started": false,
+      "owned_helper_absent_after_exit": true,
+      "private_credentials_untouched": true,
+      "source_document_unchanged": true,
+      "size": [
+        60,
+        18
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 3
+}

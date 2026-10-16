@@ -52,23 +52,23 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | P01 | [Server catalog, discovery and installation](tasks/07-lsp.md) | F03, F05 | [done](../parity/P01.md) |
 | P02 | [LSP client transport and lifecycle](tasks/07-lsp.md) | P01, E01, F03 | [done](../parity/P02.md) |
 | P03 | [Editor enrichment and provider fallback](tasks/07-lsp.md) | P02, L09, E09, E10 | [done](../parity/P03.md) |
-| R01 | [Lossless collection and environment model](tasks/08-rest.md) | F02 | todo |
-| R02 | [Variables, auth, headers, URLs and request bodies](tasks/08-rest.md) | R01, F03 | todo |
-| R03 | [Postman and OpenAPI import/export](tasks/08-rest.md) | R01 | todo |
-| R04 | [HTTP execution, cookies and cancellation](tasks/08-rest.md) | R02, F03 | todo |
-| R05 | [SSE and WebSocket execution](tasks/08-rest.md) | R04 | todo |
-| R06 | [REST tree, environments and management dialogs](tasks/08-rest.md) | R01, R03, F05, E12, W03 | todo |
+| R01 | [Lossless collection and environment model](tasks/08-rest.md) | F02 | [done](../parity/R01.md) |
+| R02 | [Variables, auth, headers, URLs and request bodies](tasks/08-rest.md) | R01, F03 | [done](../parity/R02.md) |
+| R03 | [Postman and OpenAPI import/export](tasks/08-rest.md) | R01 | [done](../parity/R03.md) |
+| R04 | [HTTP execution, cookies and cancellation](tasks/08-rest.md) | R02, F03 | [done](../parity/R04.md) |
+| R05 | [SSE and WebSocket execution](tasks/08-rest.md) | R04 | [done](../parity/R05.md) |
+| R06 | [REST tree, environments and management dialogs](tasks/08-rest.md) | R01, R03, F05, E12, W03 | in-progress |
 | R07 | [Request/response editors and complete REST UX](tasks/08-rest.md) | R02, R04, R05, R06, E09, E12, L02 | todo |
 | R08 | [Collection runner, persistence and REST qualification](tasks/08-rest.md) | R07, W03, W05 | todo |
 | D01 | [Database models, settings, credentials and URL catalogs](tasks/09-database.md) | F02, F03 | [done](../parity/D01.md) |
 | D02 | [Protocol, Java bootstrap and Rust process supervisor](tasks/09-database.md) | D01, F03 | [done](../parity/D02.md) |
 | D03 | [Driver install, Maven resolution and classloaders](tasks/09-database.md) | D02, F05 | [done](../parity/D03.md) |
 | D04 | [Connections, testing and transaction control](tasks/09-database.md) | D03 | [done](../parity/D04.md) |
-| D05 | [SQL execution, results and independent cancellation](tasks/09-database.md) | D04 | in-progress |
-| D06 | [Lazy metadata and cache invalidation](tasks/09-database.md) | D04 | todo |
-| D07 | [Database explorer, connection and driver dialogs](tasks/09-database.md) | D01, D03, D04, D06, F05, W03 | todo |
-| D08 | [SQL editor, statement targeting and result panel](tasks/09-database.md) | D05, D07, E12, E09, L02 | todo |
-| D09 | [End-to-end external JDBC qualification](tasks/09-database.md) | D08, W03, W05 | todo |
+| D05 | [SQL execution, results and independent cancellation](tasks/09-database.md) | D04 | [done](../parity/D05.md) |
+| D06 | [Lazy metadata and cache invalidation](tasks/09-database.md) | D04 | [done](../parity/D06.md) |
+| D07 | [Database explorer, connection and driver dialogs](tasks/09-database.md) | D01, D03, D04, D06, F05, W03 | [done](../parity/D07.md) |
+| D08 | [SQL editor, statement targeting and result panel](tasks/09-database.md) | D05, D07, E12, E09, L02 | [done](../parity/D08.md) |
+| D09 | [End-to-end external JDBC qualification](tasks/09-database.md) | D08, W03, W05 | [in-progress](../parity/D09.md) |
 | Z01 | [Shell suspension and browser terminal serve mode](tasks/10-delivery.md) | W05, F04, F03 | todo |
 | Z02 | [Settings, help, about and operational status](tasks/10-delivery.md) | W05, L09, P01, D07, F05 | todo |
 | Z03 | [Reproducible build and distribution](tasks/10-delivery.md) | Z01, Z02, D02 | todo |

@@ -18,6 +18,7 @@ public final class Main {
         var connections=new kode.jdbc.connections.ConnectionService(drivers.loaders);
         connections.register(server);
         new kode.jdbc.queries.QueryService(connections).register(server);
+        new kode.jdbc.metadata.MetadataService(connections).register(server);
         return server;
     }
     public static void main(String[] args) {
