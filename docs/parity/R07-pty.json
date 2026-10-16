@@ -1,0 +1,53 @@
+{
+  "cases": [
+    {
+      "case": "headers-body-send-response-transaction-arrow-focus-readonly-raw",
+      "header_caret_preserved": true,
+      "only_owned_drafts_persisted": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restore-request-body-without-sending-or-starting-java",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "headers-body-send-response-transaction-arrow-focus-readonly-raw",
+      "header_caret_preserved": true,
+      "only_owned_drafts_persisted": true,
+      "size": [
+        60,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restore-request-body-without-sending-or-starting-java",
+      "size": [
+        60,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 4
+}
