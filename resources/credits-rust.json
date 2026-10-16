@@ -2228,6 +2228,13 @@
       "homepage": null
     },
     {
+      "name": "ruzstd",
+      "version": "0.9.0",
+      "license": "MIT",
+      "repository": "https://github.com/KillingSpark/zstd-rs",
+      "homepage": "https://github.com/KillingSpark/zstd-rs"
+    },
+    {
       "name": "ryu",
       "version": "1.0.23",
       "license": "Apache-2.0 OR BSL-1.0",
@@ -2947,6 +2954,13 @@
       "license": "MIT OR Apache-2.0",
       "repository": "https://github.com/snapview/tungstenite-rs",
       "homepage": "https://github.com/snapview/tungstenite-rs"
+    },
+    {
+      "name": "twox-hash",
+      "version": "2.1.5",
+      "license": "MIT",
+      "repository": "https://github.com/shepmaster/twox-hash",
+      "homepage": null
     },
     {
       "name": "typed-path",

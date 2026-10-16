@@ -95,6 +95,13 @@ fn directory(path: &Path) -> Result<()> {
     }
     Ok(())
 }
+fn location(path: &Path) -> Result<String> {
+    let absolute =
+        std::path::absolute(path).map_err(|error| io("resolve JDT LS location", path, error))?;
+    reqwest::Url::from_directory_path(absolute)
+        .map(String::from)
+        .map_err(|_| invalid("JDT LS location must be an absolute file URL"))
+}
 fn copy_config(source: &Path, target: &Path, cancel: &CancellationToken) -> Result<()> {
     let mut work = vec![(source.to_path_buf(), target.to_path_buf())];
     let mut files = 0;
@@ -201,18 +208,14 @@ pub fn workspace_command(
         directory(&config)?;
     }
     copy_config(&source, &config, cancel)?;
-    command.args[position] = config
-        .to_str()
-        .ok_or_else(|| invalid("JDT LS cache path is not UTF-8"))?
-        .into();
+    // Equinox accepts file URLs. ASCII arguments preserve Unicode and special
+    // characters across Windows Java native encodings; Equinox decodes the URL.
+    command.args[position] = location(&config)?;
     let data = cache.join("data");
     directory(&data)?;
     for arg in &mut command.args {
         if arg == DATA {
-            *arg = data
-                .to_str()
-                .ok_or_else(|| invalid("JDT LS data path is not UTF-8"))?
-                .into();
+            *arg = location(&data)?;
         }
     }
     Ok(command)

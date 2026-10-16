@@ -8,6 +8,7 @@ use std::{
     path::{Path, PathBuf},
 };
 pub const MAX_CATALOG_BYTES: usize = 1024 * 1024;
+pub const MAX_MANIFEST_BYTES: usize = 128 * 1024;
 pub type Extra = Map<String, Value>;
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -206,6 +207,7 @@ impl Catalog {
                 }
                 for download in &version.downloads {
                     crate::package::plan(&download.extra)?;
+                    crate::package::extraction(&download.extra)?;
                     let url =
                         reqwest::Url::parse(&download.url).map_err(|e| invalid(e.to_string()))?;
                     if !matches!(url.scheme(), "http" | "https")

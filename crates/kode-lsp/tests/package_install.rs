@@ -115,6 +115,41 @@ async fn dependency_closure_is_pinned_isolated_and_published_with_runtime_manife
     assert!(!root.path().join("node_modules").exists());
     assert!(!root.path().join("MUST-NOT-RUN").exists());
 }
+
+#[tokio::test]
+async fn primary_archive_selection_cannot_hide_a_dependency_or_override_its_own_selection() {
+    let root = tempfile::tempdir().unwrap();
+    for own_selection in [false, true] {
+        let (mut job, packages) = fixture(&root.path().join(own_selection.to_string()));
+        let download = &mut job.entry.versions[0].downloads[0];
+        download.extra.insert(
+            kode_lsp::package::EXTRACT_KEY.into(),
+            json!({"version":1,"paths":["package/server.js"]}),
+        );
+        if own_selection {
+            download.extra["kodeRsPackage"]["dependencies"][0]["extract"] =
+                json!({"version":1,"paths":["package/index.js"]});
+        }
+        let receipt = tokio::task::spawn_blocking(move || {
+            job.run(&packages, &CancellationToken::new(), |_| {})
+        })
+        .await
+        .unwrap()
+        .unwrap();
+        assert!(receipt.directory.join("package/server.js").is_file());
+        assert!(!receipt.directory.join("package/package.json").exists());
+        assert_eq!(
+            fs::read_to_string(receipt.directory.join("node_modules/dependency/index.js")).unwrap(),
+            "module.exports = 42;"
+        );
+        assert!(
+            receipt
+                .manifest
+                .extra
+                .contains_key(kode_lsp::package::EXTRACT_KEY)
+        );
+    }
+}
 #[tokio::test]
 async fn dependency_checksum_http_collision_and_cancellation_failures_keep_previous_install() {
     let root = tempfile::tempdir().unwrap();
@@ -358,9 +393,19 @@ async fn jdt_launch_uses_distinct_project_data_and_copied_configuration_without_
             .position(|arg| arg == "-configuration")
             .unwrap();
         assert_eq!(
-            fs::read_to_string(Path::new(&command.args[index + 1]).join("config.ini")).unwrap(),
+            fs::read_to_string(
+                reqwest::Url::parse(&command.args[index + 1])
+                    .unwrap()
+                    .to_file_path()
+                    .unwrap()
+                    .join("config.ini")
+            )
+            .unwrap(),
             "immutable template"
         );
+        assert!(command.args[index + 1].is_ascii());
+        assert!(command.args[index + 1].contains("%20"));
+        assert!(command.args[index + 1].contains("%E7%95%8C"));
     }
     assert_eq!(
         fs::read_to_string(receipt.directory.join("config_linux/config.ini")).unwrap(),
@@ -394,7 +439,11 @@ async fn jdt_launch_uses_distinct_project_data_and_copied_configuration_without_
             .iter()
             .position(|arg| arg == "-configuration")
             .unwrap();
-        Path::new(&command.args[index + 1]).join("config.ini")
+        reqwest::Url::parse(&command.args[index + 1])
+            .unwrap()
+            .to_file_path()
+            .unwrap()
+            .join("config.ini")
     };
     assert_eq!(data(&upgraded), data(&commands[0]));
     assert_ne!(config(&upgraded), config(&commands[0]));

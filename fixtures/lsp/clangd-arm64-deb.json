@@ -1,0 +1,21 @@
+{
+  "servers": [{
+    "id": "clangd-arm64-candidate",
+    "name": "Official LLVM ARM64 Debian archive qualification",
+    "versions": [{
+      "version": "23.1.4~20261014054259+0cd28174a1f6",
+      "downloads": [{
+        "os": "linux",
+        "arch": "arm64",
+        "url": "https://apt.llvm.org/jammy/pool/main/l/llvm-toolchain-23/clangd-23_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb",
+        "sha256": "ea1848f21c9e306f13fd854bf2233b47df60e25f1bfc31cbf5f9a654fded1ee6",
+        "command": ["usr/lib/llvm-23/bin/clangd"],
+        "kodeRsExtract": {
+          "version": 1,
+          "paths": ["usr/lib/llvm-23/bin/clangd", "usr/share/doc/clangd-23/copyright"]
+        }
+      }]
+    }]
+  }],
+  "qualification": "Archive adapter and selected file layout only. Native libraries, launcher and ARM64 lifecycle remain unqualified; this is not a shipped server catalog."
+}

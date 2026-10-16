@@ -7,6 +7,38 @@ use std::collections::BTreeSet;
 pub const PLAN_KEY: &str = "kodeRsPackage";
 /// Installer output, retained separately so later manifest command edits are overrides.
 pub const COMMAND_KEY: &str = "kodeRsInstalledCommand";
+pub const EXTRACT_KEY: &str = "kodeRsExtract";
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ExtractionPlan {
+    pub version: u32,
+    pub paths: Vec<String>,
+}
+impl ExtractionPlan {
+    fn validate(&self) -> Result<()> {
+        if self.version != 1 || self.paths.is_empty() || self.paths.len() > 64 {
+            return Err(invalid(
+                "Extraction plan requires version 1 and 1..64 paths",
+            ));
+        }
+        for path in &self.paths {
+            let path = relative_path(path)?;
+            if path.as_os_str().is_empty() {
+                return Err(invalid("Extraction paths must be nonempty relative paths"));
+            }
+        }
+        Ok(())
+    }
+}
+pub fn extraction(extra: &Extra) -> Result<Option<ExtractionPlan>> {
+    let Some(value) = extra.get(EXTRACT_KEY) else {
+        return Ok(None);
+    };
+    let plan: ExtractionPlan = serde_json::from_value(value.clone())
+        .map_err(|error| invalid(format!("Invalid extraction plan: {error}")))?;
+    plan.validate()?;
+    Ok(Some(plan))
+}
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PackagePlan {
@@ -28,6 +60,7 @@ pub struct Dependency {
     pub sha256: String,
     pub directory: String,
     pub unpack_subdir: Option<String>,
+    pub extract: Option<ExtractionPlan>,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
@@ -110,6 +143,9 @@ pub fn plan(extra: &Extra) -> Result<Option<PackagePlan>> {
     }
     let mut directories = BTreeSet::new();
     for dependency in &plan.dependencies {
+        if let Some(extract) = &dependency.extract {
+            extract.validate()?;
+        }
         url(&dependency.url)?;
         checksum(&dependency.sha256)?;
         let path = relative_path(&dependency.directory)?;

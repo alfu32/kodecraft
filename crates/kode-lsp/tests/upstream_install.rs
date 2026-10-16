@@ -3,7 +3,7 @@ use kode_lsp::{
     catalog::{Catalog, Platform},
     client::ClientState,
     discovery::DiscoveryOptions,
-    install::{HttpFetcher, InstallJob},
+    install::{HttpFetcher, InstallJob, InstallReceipt},
     service::LspService,
 };
 use kode_platform::jobs::CancellationToken;
@@ -20,6 +20,12 @@ async fn actual_upstream_packages_install_initialize_and_shutdown_in_isolated_ro
     );
     fs::create_dir_all(&work).unwrap();
     let catalog = Catalog::compiled().unwrap();
+    // Explicitly diagnose one already installed server without redownloading its
+    // closure. This mode writes separate evidence and never claims a fresh install.
+    let replay = std::env::var("KODE_TEST_LSP_REPLAY").ok();
+    if let Some(id) = &replay {
+        assert!(catalog.entry(id).is_some(), "unknown replay server");
+    }
     let mut search = vec![PathBuf::from(
         std::env::var_os("KODE_TEST_NODE_BIN")
             .expect("set KODE_TEST_NODE_BIN to the external Node bin directory"),
@@ -37,11 +43,15 @@ async fn actual_upstream_packages_install_initialize_and_shutdown_in_isolated_ro
         configured_commands: BTreeMap::new(),
     };
     assert!(
-        !options.install_root.exists(),
+        replay.is_some() || !options.install_root.exists(),
         "qualification requires a fresh owned install root"
     );
     let fetcher = Arc::new(HttpFetcher::new(tokio::runtime::Handle::current()).unwrap());
     let mut evidence = vec![];
+    let report = work.join(replay.as_ref().map_or_else(
+        || "qualification.json".into(),
+        |id| format!("replay-{id}.json"),
+    ));
     for (id, file, text, language) in [
         (
             "typescript-language-server",
@@ -75,28 +85,42 @@ async fn actual_upstream_packages_install_initialize_and_shutdown_in_isolated_ro
         ),
         ("clangd", "example.c", "int selected = 42;\n", "c"),
     ] {
+        if replay.as_deref().is_some_and(|selected| selected != id) {
+            continue;
+        }
         let entry = catalog.entry(id).unwrap().clone();
         let job = InstallJob {
             entry: entry.clone(),
             options: options.clone(),
         };
         let fetcher = fetcher.clone();
-        let receipt = tokio::task::spawn_blocking(move || {
-            job.run(fetcher.as_ref(), &CancellationToken::new(), |progress| {
-                if progress.phase == "Publishing" {
-                    eprintln!("{id}: verified package ready for publication");
-                }
+        let receipt = if replay.is_some() {
+            InstallReceipt {
+                manifest: options
+                    .read_manifest(id)
+                    .unwrap()
+                    .expect("installed replay manifest"),
+                directory: options.directory(id).unwrap(),
+                previous: None,
+            }
+        } else {
+            tokio::task::spawn_blocking(move || {
+                job.run(fetcher.as_ref(), &CancellationToken::new(), |progress| {
+                    if progress.phase == "Publishing" {
+                        eprintln!("{id}: verified package ready for publication");
+                    }
+                })
             })
-        })
-        .await
-        .unwrap()
-        .unwrap_or_else(|error| panic!("{id}: install: {error}"));
+            .await
+            .unwrap()
+            .unwrap_or_else(|error| panic!("{id}: install: {error}"))
+        };
         assert!(
             receipt.previous.is_none(),
             "qualification needs a fresh owned root"
         );
         let workspace = work.join(format!("workspace {id} 界"));
-        fs::create_dir(&workspace).unwrap();
+        fs::create_dir_all(&workspace).unwrap();
         let path = workspace.join(file);
         fs::write(&path, text).unwrap();
         let discovery = options.clone();
@@ -133,12 +157,26 @@ async fn actual_upstream_packages_install_initialize_and_shutdown_in_isolated_ro
         service.shutdown().await.unwrap();
         assert_eq!(client.state(), ClientState::Stopped);
         assert!(!process::running(pid), "{id}: child was not reaped");
-        evidence.push(json!({"id":id,"version":receipt.manifest.version,"platform":options.platform.os,"arch":options.platform.arch,"commandProgram":PathBuf::from(command.args[0].clone()).file_name().unwrap().to_str().unwrap(),"serverName":info.server_name,"serverVersion":info.server_version,"startupMillis":startup_millis,"clientOptions":"production LspService defaults","initialize":true,"didOpen":true,"shutdown":true,"reaped":true,"archiveSha256":receipt.manifest.extra["archiveSha256"]}));
-        eprintln!("{id}: installed, initialized, opened document, shut down and reaped");
+        evidence.push(json!({"id":id,"version":receipt.manifest.version,"platform":options.platform.os,"arch":options.platform.arch,"commandProgram":PathBuf::from(command.args[0].clone()).file_name().unwrap().to_str().unwrap(),"serverName":info.server_name,"serverVersion":info.server_version,"installed":replay.is_none(),"startupMillis":startup_millis,"clientOptions":"production LspService defaults","initialize":true,"didOpen":true,"shutdown":true,"reaped":true,"archiveSha256":receipt.manifest.extra["archiveSha256"]}));
+        // A later failure retains completed cases. Only the final write marks
+        // the complete selected run as passed.
+        fs::write(&report, serde_json::to_vec_pretty(&json!({"status":"in-progress","mode":if replay.is_some() {"installed-replay"} else {"fresh-upstream-install"},"cases":evidence})).unwrap()).unwrap();
+        eprintln!(
+            "{id}: {}, initialized, opened document, shut down and reaped",
+            if replay.is_some() {
+                "replayed existing install"
+            } else {
+                "installed"
+            }
+        );
     }
+    assert!(
+        !evidence.is_empty(),
+        "no reported server selected for qualification"
+    );
     fs::write(
-        work.join("qualification.json"),
-        serde_json::to_vec_pretty(&json!({"status":"passed","cases":evidence})).unwrap(),
+        report,
+        serde_json::to_vec_pretty(&json!({"status":"passed","mode":if replay.is_some() {"installed-replay"} else {"fresh-upstream-install"},"cases":evidence})).unwrap(),
     )
     .unwrap();
 }

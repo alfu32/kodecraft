@@ -329,8 +329,176 @@
     ]
   },
   "pending": [
-    "Linux arm64 clangd installer artifact/adapter",
+    "Linux arm64 clangd library/resource closure, launcher and runtime",
     "Windows arm64 clangd installer artifact/adapter",
     "Native Windows and macOS install/start/shutdown qualification"
-  ]
+  ],
+  "clangdWindowsLibraries": {
+    "importedDlls": [
+      "VERSION.dll",
+      "ADVAPI32.dll",
+      "ntdll.dll",
+      "WSOCK32.dll",
+      "WS2_32.dll",
+      "KERNEL32.dll",
+      "OLEAUT32.dll",
+      "dbghelp.dll"
+    ],
+    "inspection": "PE import table via objdump -p; imports are Windows system DLLs; native launch qualification pending"
+  },
+  "clangdMacLibraries": {
+    "x86_64LoadCommandMinimum": "10.13",
+    "arm64LoadCommandMinimum": "11.0",
+    "sdk": "14.5",
+    "dylibs": [
+      "/usr/lib/libresolv.9.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+      "/usr/lib/libSystem.B.dylib",
+      "/usr/lib/libedit.3.dylib",
+      "/usr/lib/libz.1.dylib",
+      "/usr/lib/libc++.1.dylib"
+    ],
+    "inspection": "Universal Mach-O, per-slice load commands via llvm-objdump-18; native execution remains pending"
+  },
+  "arm64ClangdResearch": {
+    "status": "Debian ar/Zstandard adapter archive-qualified; closure/launcher/runtime still pending",
+    "officialLLVMRelease": {
+      "version": "23.1.0",
+      "linuxArm64TarXzBytes": 1828948604,
+      "windowsArm64TarZstBytes": 424902634,
+      "issue": "Exceeds current 256 MiB download budget; installer does not yet support XZ/Zstandard selective extraction"
+    },
+    "smallerOfficialLinuxPackages": {
+      "index": "https://apt.llvm.org/jammy/dists/llvm-toolchain-jammy-23/main/binary-arm64/Packages.gz",
+      "indexSha256": "72e5ec368c1ed05d3fb57bd3ecdfc4d23f7d6c3fc76cbcefe5ad65d469b77366",
+      "packages": [
+        {
+          "Package": "clangd-23",
+          "Source": "llvm-toolchain-23",
+          "Version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+          "Architecture": "arm64",
+          "Maintainer": "LLVM Packaging Team <pkg-llvm-team@lists.alioth.debian.org>",
+          "Installed-Size": "17852",
+          "Depends": "libc6 (>= 2.34), libclang-cpp23 (>= 1:23.1.4~++20261014054259+0cd28174a1f6), libgcc-s1 (>= 3.0), libllvm23 (= 1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84), libstdc++6 (>= 12), libclang-common-23-dev (= 1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84)",
+          "Homepage": "https://www.llvm.org/",
+          "Priority": "optional",
+          "Section": "devel",
+          "Filename": "pool/main/l/llvm-toolchain-23/clangd-23_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb",
+          "Size": "3946936",
+          "SHA256": "ea1848f21c9e306f13fd854bf2233b47df60e25f1bfc31cbf5f9a654fded1ee6",
+          "SHA1": "95a3c96b012db5e2be16eadaac5d3fd0bc9c3f6e",
+          "MD5sum": "432fa519135ea0e7be4ad391c79d27b8",
+          "Description": "Language server that provides IDE-like features to editors"
+        },
+        {
+          "Package": "libclang-common-23-dev",
+          "Source": "llvm-toolchain-23",
+          "Version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+          "Architecture": "arm64",
+          "Maintainer": "LLVM Packaging Team <pkg-llvm-team@lists.alioth.debian.org>",
+          "Installed-Size": "14944",
+          "Recommends": "libclang-rt-23-dev",
+          "Multi-Arch": "same",
+          "Homepage": "https://www.llvm.org/",
+          "Priority": "optional",
+          "Section": "libdevel",
+          "Filename": "pool/main/l/llvm-toolchain-23/libclang-common-23-dev_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb",
+          "Size": "852928",
+          "SHA256": "76cb8128568910b284945e387da973b859625c2d6c79aa9b84d2e2b801426405",
+          "SHA1": "1fb1e1673154729ccc9af24bd4769ec4d69bf94d",
+          "MD5sum": "449e4d8e47e7da4f43796f1bda92e528",
+          "Description": "Clang library - Common development package"
+        },
+        {
+          "Package": "libclang-cpp23",
+          "Source": "llvm-toolchain-23",
+          "Version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+          "Architecture": "arm64",
+          "Maintainer": "LLVM Packaging Team <pkg-llvm-team@lists.alioth.debian.org>",
+          "Installed-Size": "60969",
+          "Depends": "libc6 (>= 2.34), libgcc-s1 (>= 4.5), libllvm23 (= 1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84), libstdc++6 (>= 12)",
+          "Homepage": "https://www.llvm.org/",
+          "Priority": "optional",
+          "Section": "libs",
+          "Filename": "pool/main/l/llvm-toolchain-23/libclang-cpp23_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb",
+          "Size": "14488256",
+          "SHA256": "cc9004beb0cabf6cec3d222235b879bd3efe8b7928341cfd03a2ac1275a2c715",
+          "SHA1": "1bd2c5e044134bacc6684a8a050951e3eeba9dda",
+          "MD5sum": "80c0d4512d29d111ac185cdf4fa4d03e",
+          "Description": "C++ interface to the Clang library"
+        },
+        {
+          "Package": "libllvm23",
+          "Source": "llvm-toolchain-23",
+          "Version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+          "Architecture": "arm64",
+          "Maintainer": "LLVM Packaging Team <pkg-llvm-team@lists.alioth.debian.org>",
+          "Installed-Size": "142015",
+          "Depends": "libc6 (>= 2.34), libedit2 (>= 2.11-20080614-0), libffi8 (>= 3.4), libgcc-s1 (>= 4.2), libstdc++6 (>= 12), libxml2 (>= 2.7.4), libz3-4 (>= 4.8.12), libzstd1 (>= 1.4.0), zlib1g (>= 1:1.2.0)",
+          "Multi-Arch": "same",
+          "Homepage": "https://www.llvm.org/",
+          "Priority": "optional",
+          "Section": "libs",
+          "Filename": "pool/main/l/llvm-toolchain-23/libllvm23_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb",
+          "Size": "32302396",
+          "SHA256": "f85bc984348de55b270cf27f494df95afbf86837df667cf2cda8dd3d9fc100a1",
+          "SHA1": "3110e2d81168cc0d0c110a6019044dc482afd79e",
+          "MD5sum": "7a0b32818ad24a76c6d60b7314c1253f",
+          "Description": "Modular compiler and toolchain technologies, runtime library"
+        }
+      ]
+    },
+    "debInspection": {
+      "clangdPackageSha256": "ea1848f21c9e306f13fd854bf2233b47df60e25f1bfc31cbf5f9a654fded1ee6",
+      "dataMember": "data.tar.zst",
+      "canonicalBinary": "usr/lib/llvm-23/bin/clangd",
+      "binaryBytes": 18178328,
+      "alias": "usr/bin/clangd-23 is a symlink and must not bypass archive link rules",
+      "issue": "Bounded ar/Zstandard adapter and selected files now qualified; isolated library/resource closure, native loader/prerequisites and ARM64 lifecycle remain pending"
+    },
+    "archiveQualification": "U09-deb.json",
+    "dependencyArchivesVerified": [
+      {
+        "Package": "clangd-23",
+        "Version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+        "Size": "3946936",
+        "SHA256": "ea1848f21c9e306f13fd854bf2233b47df60e25f1bfc31cbf5f9a654fded1ee6",
+        "Filename": "pool/main/l/llvm-toolchain-23/clangd-23_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb"
+      },
+      {
+        "Package": "libclang-common-23-dev",
+        "Version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+        "Size": "852928",
+        "SHA256": "76cb8128568910b284945e387da973b859625c2d6c79aa9b84d2e2b801426405",
+        "Filename": "pool/main/l/llvm-toolchain-23/libclang-common-23-dev_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb"
+      },
+      {
+        "Package": "libclang-cpp23",
+        "Version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+        "Size": "14488256",
+        "SHA256": "cc9004beb0cabf6cec3d222235b879bd3efe8b7928341cfd03a2ac1275a2c715",
+        "Filename": "pool/main/l/llvm-toolchain-23/libclang-cpp23_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb"
+      },
+      {
+        "Package": "libllvm23",
+        "Version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+        "Size": "32302396",
+        "SHA256": "f85bc984348de55b270cf27f494df95afbf86837df667cf2cda8dd3d9fc100a1",
+        "Filename": "pool/main/l/llvm-toolchain-23/libllvm23_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb"
+      }
+    ]
+  },
+  "jdtPlatformConfigurations": [
+    "config_linux",
+    "config_linux_arm",
+    "config_mac",
+    "config_mac_arm",
+    "config_win"
+  ],
+  "jdtWindowsArm64": {
+    "status": "not provided by pinned upstream archive",
+    "configurationPresent": false,
+    "nativeLauncherPluginPresent": false,
+    "remaining": "Provide/qualify a Windows ARM64 launcher path or explicitly qualified external x64-JDK emulation requirements; no native Windows ARM64 JDT success is claimed"
+  }
 }

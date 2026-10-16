@@ -1,0 +1,82 @@
+{
+  "status": "partial",
+  "platform": "windows",
+  "arch": "x86_64",
+  "host": "192.168.234.128",
+  "project": "C:/Users/alfu64/Development/kode-rs-u09-20261016-01",
+  "os": "Windows NT 10.0.26200.0",
+  "rust": {
+    "version": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "channel": "stable",
+    "target": "x86_64-pc-windows-gnu",
+    "scope": "isolated LSP qualification; Z03 MSVC application artifacts remain unqualified"
+  },
+  "runtimes": {
+    "node": "24.19.0 (pre-existing external runtime)",
+    "java": "Temurin 25.0.4.1+1 (isolated external qualification runtime)",
+    "javaArchiveSha256": "00c847d804f4a78e9f04f2683faf14fed898535b177b7fc704486cb0284e9283"
+  },
+  "ordinaryTests": {
+    "command": "cargo +stable test --locked -p kode-lsp",
+    "passed": 26,
+    "ignored": 1,
+    "logSha256": "6e59e0a99e2513d9418e2061383f08028c333e830325f8738e4631c159e0f638",
+    "nativeExitCheck": "OpenProcess(SYNCHRONIZE) / WaitForSingleObject with managed handle cleanup through the Python fixture probe"
+  },
+  "freshUpstream02": {
+    "durationSeconds": 70.46,
+    "clientOptions": "production LspService defaults",
+    "installedInitializedOpenedShutdownReaped": [
+      "typescript-language-server",
+      "vscode-langservers-extracted",
+      "vscode-css-language-server",
+      "vscode-json-language-server"
+    ],
+    "failure": {
+      "id": "jdtls",
+      "phase": "initialize",
+      "detail": "Equinox Windows configuration/cache path fails with InvalidPathException: trailing space after path containing Unicode; encoded file URL candidate pending native replay"
+    },
+    "notRun": [
+      "clangd"
+    ],
+    "evidence": "Observed native test process output; full partial-run log retained on the Windows host at .qualification/lsp-upstream-02.log; final success JSON was not produced"
+  },
+  "initialHtmlTimeout": {
+    "run": "upstream-01",
+    "startupDeadlineMillis": 10000,
+    "result": "timeout before host restart",
+    "subsequentRawProtocolProbeSeconds": 1.625,
+    "postRestartRustInstalledReplaySeconds": 2.08,
+    "postRestartFreshUpstream02": "passed with unchanged production deadline",
+    "cause": "not established; retained as a prior observation"
+  },
+  "pending": [
+    "Native JDT file URL repair qualification on the existing install",
+    "Native clangd install/lifecycle",
+    "Native Windows Clippy",
+    "Remaining platform/CPU coverage and ARM64 clangd adapters"
+  ],
+  "sourceSnapshots": [
+    {
+      "name": "windows-source",
+      "sha256": "987b792a92c824b4cdeb6c61c187d6dd6882915ab079511b09037f065c9b1f6a"
+    },
+    {
+      "name": "windows-update-02",
+      "sha256": "edbba9889a0d8394a92fff29d0ad4a5c295db6c567500a64f1c17d0550074c61"
+    },
+    {
+      "name": "windows-update-03",
+      "sha256": "ab7475c4fa35b9b04b591d7502f47d0f66e4d5da74205e9d1a5be34b8e7b3a40"
+    },
+    {
+      "name": "windows-update-04",
+      "sha256": "ef10927698e1eb2ade71d2db8308be3160cec80e95436623601985e3aba9161e"
+    },
+    {
+      "name": "windows-update-05",
+      "sha256": "f04d08eb69f5d1006a3e67713ec836988900dedccd3e5ec330a70cebc3a30dba"
+    }
+  ]
+}

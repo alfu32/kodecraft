@@ -1,7 +1,7 @@
 //! Worker-only catalog/manifest/filesystem discovery. Drawing consumes statuses.
 use crate::catalog::{
-    Catalog, InstallManifest, Platform, ServerEntry, invalid, relative_path, validate_command,
-    validate_id,
+    Catalog, InstallManifest, MAX_MANIFEST_BYTES, Platform, ServerEntry, invalid, relative_path,
+    validate_command, validate_id,
 };
 use kode_core::{DomainError, Result};
 use kode_platform::{files::open_regular_file, paths::ResourcePaths, process::ProcessSpec};
@@ -99,10 +99,10 @@ impl DiscoveryOptions {
             }
             Err(error) => return Err(error),
         };
-        file.take(128 * 1024 + 1)
+        file.take(MAX_MANIFEST_BYTES as u64 + 1)
             .read_to_end(&mut bytes)
             .map_err(|e| invalid(e.to_string()))?;
-        if bytes.len() > 128 * 1024 {
+        if bytes.len() > MAX_MANIFEST_BYTES {
             return Err(invalid("install manifest exceeds 128 KiB"));
         }
         let manifest: InstallManifest =

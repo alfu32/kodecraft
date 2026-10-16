@@ -1,0 +1,149 @@
+{
+  "status": "archive-qualified",
+  "runtimeQualified": false,
+  "architecture": "arm64",
+  "format": "Debian 2.0 ar / data.tar.zst",
+  "downloadSha256": "ea1848f21c9e306f13fd854bf2233b47df60e25f1bfc31cbf5f9a654fded1ee6",
+  "binaryBytes": 18178328,
+  "canonicalBinary": "usr/lib/llvm-23/bin/clangd",
+  "copyrightIncluded": true,
+  "unselectedAliasesMaterialized": false,
+  "controlScriptsExecuted": false,
+  "remaining": "Isolated shared-library/resource closure, native launcher and actual ARM64 LSP lifecycle",
+  "decoderWindowLimitBytes": 33554432,
+  "hostPlatform": "linux",
+  "hostArchitecture": "x86_64",
+  "candidateVersion": "23.1.4~20261014054259+0cd28174a1f6",
+  "binaryRunpath": "$ORIGIN/../lib",
+  "directNeededLibraries": [
+    "libclang-cpp.so.23.1",
+    "libLLVM.so.23.1",
+    "libstdc++.so.6",
+    "libm.so.6",
+    "libgcc_s.so.1",
+    "libc.so.6",
+    "ld-linux-aarch64.so.1"
+  ],
+  "llvmAdditionalNeededLibraries": [
+    "libffi.so.8",
+    "libedit.so.2",
+    "libz3.so.4",
+    "libz.so.1",
+    "libzstd.so.1",
+    "libxml2.so.2"
+  ],
+  "dependencyLayouts": {
+    "libclang-cpp23": {
+      "entries": 17,
+      "librariesCopyrightAndAliases": [
+        {
+          "path": "./usr/lib/aarch64-linux-gnu/libclang-cpp.so.23.1",
+          "size": 62325752,
+          "type": "0",
+          "target": ""
+        },
+        {
+          "path": "./usr/share/doc/libclang-cpp23/copyright",
+          "size": 6456,
+          "type": "0",
+          "target": ""
+        },
+        {
+          "path": "./usr/lib/llvm-23/lib/libclang-cpp.so.23.1",
+          "size": 0,
+          "type": "2",
+          "target": "../../aarch64-linux-gnu/libclang-cpp.so.23.1"
+        }
+      ]
+    },
+    "libllvm23": {
+      "entries": 15,
+      "librariesCopyrightAndAliases": [
+        {
+          "path": "./usr/lib/aarch64-linux-gnu/libLLVM.so.23.1",
+          "size": 145318512,
+          "type": "0",
+          "target": ""
+        },
+        {
+          "path": "./usr/share/doc/libllvm23/copyright",
+          "size": 6456,
+          "type": "0",
+          "target": ""
+        },
+        {
+          "path": "./usr/lib/aarch64-linux-gnu/libLLVM-23.so",
+          "size": 0,
+          "type": "2",
+          "target": "libLLVM.so.23.1"
+        }
+      ]
+    },
+    "libclang-common-23-dev": {
+      "entries": 337,
+      "librariesCopyrightAndAliases": [
+        {
+          "path": "./usr/share/doc/libclang-common-23-dev/copyright",
+          "size": 6456,
+          "type": "0",
+          "target": ""
+        },
+        {
+          "path": "./usr/include/clang/23/include",
+          "size": 0,
+          "type": "2",
+          "target": "../../../lib/llvm-23/lib/clang/23/include"
+        },
+        {
+          "path": "./usr/include/clang/23.1.4/include",
+          "size": 0,
+          "type": "2",
+          "target": "../../../lib/llvm-23/lib/clang/23/include"
+        },
+        {
+          "path": "./usr/lib/clang/23/include",
+          "size": 0,
+          "type": "2",
+          "target": "../../llvm-23/lib/clang/23/include"
+        },
+        {
+          "path": "./usr/lib/clang/23/lib",
+          "size": 0,
+          "type": "2",
+          "target": "../../llvm-23/lib/clang/23/lib"
+        },
+        {
+          "path": "./usr/lib/clang/23.1.4/include",
+          "size": 0,
+          "type": "2",
+          "target": "../../llvm-23/lib/clang/23/include"
+        },
+        {
+          "path": "./usr/lib/clang/23.1.4/lib",
+          "size": 0,
+          "type": "2",
+          "target": "../../llvm-23/lib/clang/23/lib"
+        }
+      ]
+    }
+  },
+  "elfRequiredSymbolVersions": {
+    "clangd": {
+      "GLIBC": "2.34",
+      "GLIBCXX": "3.4.30",
+      "CXXABI": "1.3.13"
+    },
+    "libclang-cpp": {
+      "GLIBC": "2.34",
+      "GLIBCXX": "3.4.30",
+      "CXXABI": "1.3.9",
+      "GCC": "4.5.0"
+    },
+    "libLLVM": {
+      "GLIBC": "2.34",
+      "GLIBCXX": "3.4.30",
+      "CXXABI": "1.3.13",
+      "GCC": "3.3"
+    }
+  }
+}

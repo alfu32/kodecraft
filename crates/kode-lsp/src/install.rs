@@ -249,6 +249,7 @@ impl InstallJob {
             ))
         })?;
         let plan = crate::package::plan(&download.extra)?;
+        let extraction = crate::package::extraction(&download.extra)?;
         if let Some(requirement) = plan.as_ref().and_then(|plan| plan.runtime.as_ref()) {
             let program = self.options.runtime_program(requirement)?;
             crate::runtime::verify(&program, requirement, cancel)?;
@@ -337,6 +338,14 @@ impl InstallJob {
                 let mut archive_download = download.clone();
                 archive_download.url = dependency.url.clone();
                 archive_download.command = None;
+                archive_download.extra.remove(crate::package::EXTRACT_KEY);
+                if let Some(extract) = &dependency.extract {
+                    archive_download.extra.insert(
+                        crate::package::EXTRACT_KEY.into(),
+                        serde_json::to_value(extract)
+                            .map_err(|error| invalid(error.to_string()))?,
+                    );
+                }
                 archive::extract(
                     &package,
                     &staging,
@@ -410,6 +419,12 @@ impl InstallJob {
                 ("archiveSha256".into(), checksum.into()),
             ]),
         };
+        if let Some(extraction) = extraction {
+            manifest.extra.insert(
+                crate::package::EXTRACT_KEY.into(),
+                serde_json::to_value(extraction).map_err(|error| invalid(error.to_string()))?,
+            );
+        }
         if let Some(plan) = &plan {
             manifest.extra.insert(
                 crate::package::PLAN_KEY.into(),
@@ -429,13 +444,19 @@ impl InstallJob {
         let mut staged_entry = self.entry.clone();
         staged_entry.id = "contents".into();
         staged_options.resolve_command(&staged_entry, Some(&manifest))?;
+        let encoded = serde_json::to_vec_pretty(&manifest).map_err(|e| invalid(e.to_string()))?;
+        if encoded.len() > crate::catalog::MAX_MANIFEST_BYTES {
+            return Err(invalid(
+                "install manifest exceeds 128 KiB; previous installation retained",
+            ));
+        }
         let path = contents.join("installed.json");
         let mut file = OpenOptions::new()
             .write(true)
             .create_new(true)
             .open(&path)
             .map_err(|e| io("write install manifest", &path, e))?;
-        file.write_all(&serde_json::to_vec_pretty(&manifest).map_err(|e| invalid(e.to_string()))?)
+        file.write_all(&encoded)
             .map_err(|e| io("write install manifest", &path, e))?;
         file.sync_all()
             .map_err(|e| io("sync install manifest", &path, e))?;

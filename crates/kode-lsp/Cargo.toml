@@ -17,6 +17,7 @@ reqwest.workspace = true
 zip.workspace = true
 tar.workspace = true
 flate2.workspace = true
+ruzstd.workspace = true
 sha2.workspace = true
 tempfile.workspace = true
 tokio.workspace = true

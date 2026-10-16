@@ -488,6 +488,21 @@ rolls back failed replacement; uninstall removes only the selected server direct
 Root locks serialize operations. A crash-retained lock/stage/previous directory is
 preserved for inspection, not silently removed.
 
+U09 also reads Debian 2.0 ar packages with TAR/GZIP/Zstandard data, without
+unpacking control payloads or executing maintainer scripts. Member headers, lengths,
+padding and order are checked; compressed TARs stage on disk with the existing
+1 GiB bound, and Zstandard windows cap at 32 MiB. XZ data and concatenated/trailing
+Zstandard frames are rejected explicitly. The pinned pure Rust decoder adds no
+system decompressor dependency.
+
+An optional versioned `kodeRsExtract` plan selects at most 64 normalized relative
+path prefixes. Every entry still undergoes path and count checks; selected links
+remain forbidden. Unselected aliases may be skipped, never materialized. Devices
+and sparse entries remain forbidden throughout. Dependencies have independent
+optional `extract` plans, so a primary archive's selection cannot filter its
+dependencies. Extraction plans are retained in manifests, and serialization above
+the 128 KiB reader bound is refused before publication, retaining the old install.
+
 U09 adds the versioned `kodeRsPackage` plan for checksum-pinned dependency archives,
 external Node/Java version requirements and the JDT launcher. Known plans validate
 strictly; other catalog fields remain lossless. Dependencies share the primary

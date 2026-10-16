@@ -1,3 +1,4 @@
+mod deb;
 use super::{MAX_ARCHIVE_FILES, MAX_EXTRACTED_BYTES, check, io};
 use crate::catalog::{Platform, ServerDownload, invalid, relative_path, validate_command};
 use kode_core::Result;
@@ -5,7 +6,7 @@ use kode_platform::jobs::CancellationToken;
 use std::{
     fs::{self, File, OpenOptions},
     io::{Read, Seek, SeekFrom, Write},
-    path::Path,
+    path::{Path, PathBuf},
 };
 const MAX_FILE: u64 = 512 * 1024 * 1024;
 struct Extract<'a> {
@@ -13,17 +14,11 @@ struct Extract<'a> {
     cancel: &'a CancellationToken,
     bytes: u64,
     files: usize,
+    paths: Vec<PathBuf>,
     progress: &'a mut dyn FnMut(u64),
 }
 impl Extract<'_> {
-    fn entry(
-        &mut self,
-        name: &str,
-        directory: bool,
-        mode: Option<u32>,
-        size: Option<u64>,
-        input: &mut dyn Read,
-    ) -> Result<()> {
+    fn keep(&mut self, name: &str, directory: bool) -> Result<bool> {
         check(self.cancel)?;
         self.files += 1;
         if self.files > MAX_ARCHIVE_FILES {
@@ -33,6 +28,29 @@ impl Extract<'_> {
         if relative == Path::new("installed.json") {
             return Err(invalid("package contains reserved install manifest"));
         }
+        Ok(self.paths.is_empty()
+            || self.paths.iter().any(|path| {
+                relative.starts_with(path) || (directory && path.starts_with(&relative))
+            }))
+    }
+    fn link(&mut self, name: &str) -> Result<()> {
+        if self.keep(name, false)? {
+            return Err(invalid("selected archive links are unsupported"));
+        }
+        Ok(())
+    }
+    fn entry(
+        &mut self,
+        name: &str,
+        directory: bool,
+        mode: Option<u32>,
+        size: Option<u64>,
+        input: &mut dyn Read,
+    ) -> Result<()> {
+        if !self.keep(name, directory)? {
+            return Ok(());
+        }
+        let relative = relative_path(name)?;
         let target = self.root.join(relative);
         if directory {
             fs::create_dir_all(&target)
@@ -104,11 +122,21 @@ pub(super) fn extract(
         .filter(|name| !name.is_empty())
         .ok_or_else(|| invalid("download URL has no package filename"))?;
     let lower = name.to_ascii_lowercase();
+    let paths = crate::package::extraction(&download.extra)?
+        .map(|plan| {
+            plan.paths
+                .iter()
+                .map(|path| relative_path(path))
+                .collect::<Result<Vec<_>>>()
+        })
+        .transpose()?
+        .unwrap_or_default();
     let mut extract = Extract {
         root,
         cancel,
         bytes: budget.bytes,
         files: budget.files,
+        paths,
         progress,
     };
     if lower.ends_with(".zip") {
@@ -122,9 +150,6 @@ pub(super) fn extract(
             let mut entry = archive
                 .by_index(index)
                 .map_err(|e| invalid(e.to_string()))?;
-            if entry.is_symlink() {
-                return Err(invalid("package symlinks are unsupported"));
-            }
             if entry.enclosed_name().is_none() {
                 return Err(invalid("ZIP path escapes the install directory"));
             }
@@ -133,94 +158,27 @@ pub(super) fn extract(
                 .map_err(|e| invalid(e.to_string()))?
                 .into_owned();
             let directory = entry.is_dir();
+            if entry.is_symlink() {
+                extract.link(&name)?;
+                continue;
+            }
             let mode = entry.unix_mode();
             let size = entry.size();
             extract.entry(&name, directory, mode, Some(size), &mut entry)?;
         }
+    } else if lower.ends_with(".deb") {
+        let tar_file = deb::unpack(package, cancel)?;
+        extract_tar(tar_file, &mut extract, package, cancel)?;
     } else if lower.ends_with(".tar") || lower.ends_with(".tar.gz") || lower.ends_with(".tgz") {
-        let mut tar_file = if lower.ends_with(".tar") {
+        let tar_file = if lower.ends_with(".tar") {
             File::open(package).map_err(|e| io("open TAR package", package, e))?
         } else {
-            let mut unpacked = tempfile::tempfile_in(package.parent().expect("staged package"))
-                .map_err(|e| io("stage unpacked TAR", package, e))?;
             let mut decoder = flate2::read::GzDecoder::new(
                 File::open(package).map_err(|e| io("open compressed TAR", package, e))?,
             );
-            let mut buffer = [0; 64 * 1024];
-            let mut bytes = 0u64;
-            loop {
-                check(cancel)?;
-                let count = decoder
-                    .read(&mut buffer)
-                    .map_err(|e| invalid(e.to_string()))?;
-                if count == 0 {
-                    break;
-                }
-                bytes = bytes.saturating_add(count as u64);
-                if bytes > MAX_EXTRACTED_BYTES {
-                    return Err(invalid("unpacked TAR exceeds 1 GiB"));
-                }
-                unpacked
-                    .write_all(&buffer[..count])
-                    .map_err(|e| io("stage unpacked TAR", package, e))?;
-            }
-            unpacked
-                .seek(SeekFrom::Start(0))
-                .map_err(|e| io("rewind TAR", package, e))?;
-            unpacked
+            unpack(&mut decoder, package, cancel)?
         };
-        // Preflight raw headers before tar-rs materializes GNU/PAX metadata.
-        // This bounds extended-name memory without reimplementing TAR parsing.
-        {
-            let mut archive = tar::Archive::new(&mut tar_file);
-            let entries = archive
-                .entries_with_seek()
-                .map_err(|e| invalid(e.to_string()))?
-                .raw(true);
-            for (index, entry) in entries.enumerate() {
-                check(cancel)?;
-                if index >= MAX_ARCHIVE_FILES {
-                    return Err(invalid("TAR entry limit exceeded"));
-                }
-                let entry = entry.map_err(|e| invalid(e.to_string()))?;
-                let kind = entry.header().entry_type();
-                let metadata = kind.is_gnu_longname()
-                    || kind.is_gnu_longlink()
-                    || kind.is_pax_local_extensions()
-                    || kind.is_pax_global_extensions();
-                if metadata && entry.size() > 64 * 1024 {
-                    return Err(invalid("TAR extended metadata exceeds 64 KiB"));
-                }
-                if !metadata && !kind.is_file() && !kind.is_dir() {
-                    return Err(invalid(
-                        "TAR links, devices and sparse entries are unsupported",
-                    ));
-                }
-                if entry.size() > MAX_FILE {
-                    return Err(invalid("TAR file exceeds 512 MiB"));
-                }
-            }
-        }
-        tar_file
-            .seek(SeekFrom::Start(0))
-            .map_err(|e| io("rewind validated TAR", package, e))?;
-        let mut archive = tar::Archive::new(tar_file);
-        for entry in archive.entries().map_err(|e| invalid(e.to_string()))? {
-            check(cancel)?;
-            let mut entry = entry.map_err(|e| invalid(e.to_string()))?;
-            let kind = entry.header().entry_type();
-            if kind.is_pax_global_extensions() {
-                continue;
-            }
-            if !kind.is_file() && !kind.is_dir() {
-                return Err(invalid("unsupported TAR entry"));
-            }
-            let name = String::from_utf8(entry.path_bytes().into_owned())
-                .map_err(|e| invalid(e.to_string()))?;
-            let size = entry.size();
-            let mode = entry.header().mode().map_err(|e| invalid(e.to_string()))?;
-            extract.entry(&name, kind.is_dir(), Some(mode), Some(size), &mut entry)?;
-        }
+        extract_tar(tar_file, &mut extract, package, cancel)?;
     } else if lower.ends_with(".gz") {
         let name = command
             .and_then(|c| c.first())
@@ -238,6 +196,103 @@ pub(super) fn extract(
     budget.files = extract.files;
     Ok(())
 }
+/// Disk-backed TAR staging bounds decompression before tar-rs reads metadata.
+fn unpack(input: &mut dyn Read, package: &Path, cancel: &CancellationToken) -> Result<File> {
+    let mut output = tempfile::tempfile_in(package.parent().expect("staged package"))
+        .map_err(|e| io("stage unpacked TAR", package, e))?;
+    let mut buffer = [0; 64 * 1024];
+    let mut bytes = 0u64;
+    loop {
+        check(cancel)?;
+        let count = input
+            .read(&mut buffer)
+            .map_err(|e| invalid(e.to_string()))?;
+        if count == 0 {
+            break;
+        }
+        bytes = bytes.saturating_add(count as u64);
+        if bytes > MAX_EXTRACTED_BYTES {
+            return Err(invalid("unpacked TAR exceeds 1 GiB"));
+        }
+        output
+            .write_all(&buffer[..count])
+            .map_err(|e| io("stage unpacked TAR", package, e))?;
+    }
+    output
+        .seek(SeekFrom::Start(0))
+        .map_err(|e| io("rewind TAR", package, e))?;
+    Ok(output)
+}
+fn extract_tar(
+    mut tar_file: File,
+    extract: &mut Extract<'_>,
+    package: &Path,
+    cancel: &CancellationToken,
+) -> Result<()> {
+    // Preflight raw headers before tar-rs materializes GNU/PAX metadata.
+    // This bounds extended-name memory without reimplementing TAR parsing.
+    {
+        let mut archive = tar::Archive::new(&mut tar_file);
+        let entries = archive
+            .entries_with_seek()
+            .map_err(|e| invalid(e.to_string()))?
+            .raw(true);
+        for (index, entry) in entries.enumerate() {
+            check(cancel)?;
+            if index >= MAX_ARCHIVE_FILES {
+                return Err(invalid("TAR entry limit exceeded"));
+            }
+            let entry = entry.map_err(|e| invalid(e.to_string()))?;
+            let kind = entry.header().entry_type();
+            let metadata = kind.is_gnu_longname()
+                || kind.is_gnu_longlink()
+                || kind.is_pax_local_extensions()
+                || kind.is_pax_global_extensions();
+            if metadata && entry.size() > 64 * 1024 {
+                return Err(invalid("TAR extended metadata exceeds 64 KiB"));
+            }
+            if !metadata
+                && !kind.is_file()
+                && !kind.is_dir()
+                && !(!extract.paths.is_empty() && (kind.is_symlink() || kind.is_hard_link()))
+            {
+                return Err(invalid(
+                    "TAR links, devices and sparse entries are unsupported",
+                ));
+            }
+            if entry.size() > MAX_FILE {
+                return Err(invalid("TAR file exceeds 512 MiB"));
+            }
+        }
+    }
+    tar_file
+        .seek(SeekFrom::Start(0))
+        .map_err(|e| io("rewind validated TAR", package, e))?;
+    let mut archive = tar::Archive::new(tar_file);
+    for entry in archive.entries().map_err(|e| invalid(e.to_string()))? {
+        check(cancel)?;
+        let mut entry = entry.map_err(|e| invalid(e.to_string()))?;
+        let kind = entry.header().entry_type();
+        if kind.is_pax_global_extensions() {
+            continue;
+        }
+        let name = String::from_utf8(entry.path_bytes().into_owned())
+            .map_err(|e| invalid(e.to_string()))?;
+        if kind.is_symlink() || kind.is_hard_link() {
+            extract.link(&name)?;
+            continue;
+        }
+        if !kind.is_file() && !kind.is_dir() {
+            return Err(invalid("unsupported TAR entry"));
+        }
+        let size = entry.size();
+        let mode = entry.header().mode().map_err(|e| invalid(e.to_string()))?;
+        extract.entry(&name, kind.is_dir(), Some(mode), Some(size), &mut entry)?;
+    }
+
+    Ok(())
+}
+
 fn executable(path: &Path) -> Result<()> {
     if !fs::metadata(path).is_ok_and(|meta| meta.is_file()) {
         return Err(invalid("package command is not a regular file"));
