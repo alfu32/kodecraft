@@ -17,6 +17,16 @@ use kode_tui::{
     theme::Theme,
 };
 use ratatui::{buffer::Buffer, layout::Rect};
+use std::sync::{
+    Arc,
+    atomic::{AtomicU64, Ordering},
+};
+struct SingleClickClock(AtomicU64);
+impl kode_platform::jobs::Clock for SingleClickClock {
+    fn now_millis(&self) -> u64 {
+        self.0.load(Ordering::SeqCst)
+    }
+}
 
 struct Harness {
     document: Document,
@@ -24,6 +34,7 @@ struct Harness {
     focus: FocusState,
     area: Rect,
     search: u16,
+    clock: Arc<SingleClickClock>,
 }
 impl Harness {
     fn new(text: &str, width: u16, height: u16) -> Self {
@@ -37,7 +48,8 @@ impl Harness {
             None,
             text,
         );
-        let view = EditorInput::new(FocusId(1), document.id());
+        let clock = Arc::new(SingleClickClock(AtomicU64::new(0)));
+        let view = EditorInput::with_clock(FocusId(1), document.id(), clock.clone());
         Self {
             document,
             view,
@@ -47,6 +59,7 @@ impl Harness {
             },
             area: Rect::new(0, 0, width, height),
             search: 0,
+            clock,
         }
     }
     fn geometry(&self) -> EditorGeometry {
@@ -60,6 +73,7 @@ impl Harness {
         event: InputEvent,
         hooks: &mut dyn EditorInputHooks,
     ) -> Result<InputOutcome> {
+        self.clock.0.fetch_add(1000, Ordering::SeqCst);
         let geometry = self.geometry();
         self.view.dispatch(
             &event,
@@ -791,9 +805,12 @@ fn visual_vertical_cursors_follow_wraps_clamp_boundaries_and_escape_keeps_primar
     h.send(add(Key::Down)).unwrap();
     assert_eq!(h.view.state.caret, before);
     assert_eq!(h.view.state.caret.secondary.len(), 3);
+    h.send(add(Key::Up)).unwrap();
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(22));
+    assert_eq!(h.view.state.caret.secondary.len(), 4);
     h.send(plain(Key::Escape)).unwrap();
     assert!(h.view.state.caret.secondary.is_empty());
-    assert_eq!(h.view.state.caret.cursor(), ByteOffset(25));
+    assert_eq!(h.view.state.caret.cursor(), ByteOffset(22));
 }
 
 #[test]
@@ -958,4 +975,39 @@ fn stale_additive_drag_is_disposed_after_shared_document_change_and_invalid_move
             .is_err()
     );
     assert_eq!(h.view.state.caret, before);
+}
+
+#[test]
+fn empty_document_multiple_cursor_gestures_keep_one_caret_and_readonly_guards() {
+    let mut h = Harness::new("", 10, 5);
+    click_byte(&mut h, 0, true);
+    h.send(key(
+        Key::Down,
+        Modifiers {
+            ctrl: true,
+            shift: true,
+            ..Default::default()
+        },
+    ))
+    .unwrap();
+    h.send(key(
+        Key::Up,
+        Modifiers {
+            ctrl: true,
+            shift: true,
+            ..Default::default()
+        },
+    ))
+    .unwrap();
+    assert_eq!(h.view.state.caret.selections().count(), 1);
+    h.document.set_read_only(true);
+    assert!(matches!(
+        h.send(InputEvent::Paste("X".into())),
+        Err(DomainError::ReadOnly)
+    ));
+    assert_eq!(h.document.snapshot().text().as_ref(), "");
+    h.document.set_read_only(false);
+    h.send(plain(Key::Character('é'))).unwrap();
+    assert_eq!(h.document.snapshot().text().as_ref(), "é");
+    assert_eq!(h.document.history_depth(), (1, 0));
 }

@@ -4,6 +4,7 @@ pub mod effects;
 pub mod events;
 pub mod metrics;
 pub mod panel;
+pub mod path_picker;
 mod rest;
 mod rest_editor;
 mod rest_oauth;

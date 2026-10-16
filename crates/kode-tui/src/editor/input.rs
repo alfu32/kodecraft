@@ -1,6 +1,7 @@
 use super::{
     layout::{CollapsedFold, LayoutCache, VisualLayout},
     render::{EditorGeometry, EditorHit, RenderState},
+    words::WordJob,
 };
 use crate::{
     focus::{FocusId, FocusState},
@@ -13,7 +14,10 @@ use kode_core::{
     document::{Document, EditDelta},
     editor::{edit, movement::move_caret, selection::CaretState},
 };
+use kode_platform::jobs::{CancellationToken, Clock, MonotonicClock};
 use std::sync::Arc;
+
+pub const DOUBLE_CLICK_MS: u64 = 350;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PasteTicket {
@@ -34,6 +38,7 @@ pub enum EditorEffect {
     OpenSearch(String),
     RequestCompletion,
     DismissCompletion,
+    SelectWord(WordJob),
     Changed {
         revision: Revision,
         deltas: Option<Vec<EditDelta>>,
@@ -131,6 +136,35 @@ pub struct EditorInput {
     additive_drag: Option<AdditiveDrag>,
     drag_revision: Option<Revision>,
     pending_paste: Option<PasteTicket>,
+    clock: Arc<dyn Clock>,
+    last_click: Option<ClickRecord>,
+    pending_word: Option<PendingWord>,
+}
+#[derive(PartialEq, Eq)]
+struct ClickKey {
+    cell: (u16, u16),
+    source: Option<kode_core::TextRange>,
+    body: ratatui::layout::Rect,
+    scroll: usize,
+    folds: Vec<CollapsedFold>,
+    modifiers: Modifiers,
+    revision: Revision,
+}
+struct ClickRecord {
+    key: ClickKey,
+    at: u64,
+    before: CaretState,
+    after: CaretState,
+    released: bool,
+}
+struct PendingWord {
+    job: WordJob,
+    proof: CaretState,
+    additive: bool,
+    base: CaretState,
+    body: ratatui::layout::Rect,
+    scroll: usize,
+    folds: Vec<CollapsedFold>,
 }
 struct AdditiveDrag {
     base: CaretState,
@@ -138,6 +172,9 @@ struct AdditiveDrag {
 }
 impl EditorInput {
     pub fn new(id: FocusId, document: DocumentId) -> Self {
+        Self::with_clock(id, document, Arc::new(MonotonicClock::default()))
+    }
+    pub fn with_clock(id: FocusId, document: DocumentId, clock: Arc<dyn Clock>) -> Self {
         Self {
             id,
             document,
@@ -148,7 +185,68 @@ impl EditorInput {
             additive_drag: None,
             drag_revision: None,
             pending_paste: None,
+            clock,
+            last_click: None,
+            pending_word: None,
         }
+    }
+    pub fn cancel_pointer_work(&mut self) {
+        self.last_click = None;
+        if let Some(pending) = self.pending_word.take() {
+            pending.job.cancel.cancel();
+        }
+    }
+    pub fn has_word_request(&self, request: RequestId) -> bool {
+        self.pending_word
+            .as_ref()
+            .is_some_and(|pending| pending.job.request == request)
+    }
+    pub fn complete_word(
+        &mut self,
+        request: RequestId,
+        range: kode_core::TextRange,
+        document: &Document,
+        focus: &FocusState,
+        viewport: InputViewport<'_>,
+    ) -> Result<bool> {
+        let Some(pending) = &self.pending_word else {
+            return Ok(false);
+        };
+        if pending.job.request != request {
+            return Ok(false);
+        }
+        if pending.job.cancel.is_cancelled()
+            || pending.job.snapshot.id != document.id()
+            || pending.job.snapshot.revision != document.revision()
+            || pending.proof != self.state.caret
+            || pending.body != viewport.geometry.text
+            || pending.scroll != self.state.scroll_rows
+            || pending.folds != viewport.folds
+            || self.state.search_has_focus
+            || !self.has_focus(focus)
+        {
+            self.cancel_pointer_work();
+            return Ok(false);
+        }
+        let additive = pending.additive;
+        let mut base = pending.base.clone();
+        document.snapshot().slice(range)?;
+        let selection = Selection {
+            anchor: range.start,
+            head: range.end,
+        };
+        if additive {
+            base.add(&document.snapshot(), selection)?;
+            self.state.caret = base;
+        } else {
+            self.state
+                .caret
+                .set_selection(&document.snapshot(), selection)?;
+        }
+        self.cancel_pointer_work();
+        let layout = self.layout(document, viewport)?;
+        self.ensure_caret_visible(&layout, viewport.geometry)?;
+        Ok(true)
     }
     pub fn is_dragging(&self, focus: &FocusState) -> bool {
         self.drag.is_some() && focus.captured == Some(self.id)
@@ -259,6 +357,7 @@ impl EditorInput {
         if pointer.y >= viewport.geometry.text.y && pointer.y < viewport.geometry.text.bottom() {
             return Ok(InputOutcome::default());
         }
+        self.cancel_pointer_work();
         let layout = self.layout(document, viewport)?;
         let before = (self.state.caret.selection, self.state.scroll_rows);
         self.drag_to(pointer, &layout, viewport.geometry)?;
@@ -334,6 +433,36 @@ impl EditorInput {
         viewport: InputViewport<'_>,
         hooks: &mut dyn EditorInputHooks,
     ) -> Result<InputOutcome> {
+        if matches!(
+            event,
+            InputEvent::Key(_)
+                | InputEvent::Paste(_)
+                | InputEvent::Resize { .. }
+                | InputEvent::Focus(_)
+        ) {
+            self.cancel_pointer_work();
+        }
+        if self
+            .last_click
+            .as_ref()
+            .is_some_and(|click| click.key.revision != document.revision())
+        {
+            self.cancel_pointer_work();
+        }
+        if let InputEvent::Pointer(pointer) = event {
+            match pointer.action {
+                PointerAction::Down(_) => {
+                    if pointer.action != PointerAction::Down(MouseButton::Left) {
+                        self.last_click = None;
+                    }
+                    if self.pending_word.is_some() {
+                        self.cancel_pointer_work();
+                    }
+                }
+                PointerAction::Drag(_) | PointerAction::Scroll { .. } => self.cancel_pointer_work(),
+                _ => {}
+            }
+        }
         if self.drag.is_some() && self.drag_revision != Some(document.revision()) {
             self.drag = None;
             self.additive_drag = None;
@@ -390,11 +519,13 @@ impl EditorInput {
         }
         if let InputEvent::Pointer(pointer) = event {
             if focus.captured.is_some() && focus.captured != Some(self.id) {
+                self.cancel_pointer_work();
                 return Ok(InputOutcome::default());
             }
             if self.is_dragging(focus) {
                 match pointer.action {
                     PointerAction::Move | PointerAction::Drag(MouseButton::Left) => {
+                        self.cancel_pointer_work();
                         self.drag = Some(*pointer);
                         self.drag_to(*pointer, &layout, geometry)?;
                         let mut outcome = InputOutcome::consumed();
@@ -402,6 +533,10 @@ impl EditorInput {
                         return Ok(outcome);
                     }
                     PointerAction::Up(MouseButton::Left) => {
+                        if let Some(click) = &mut self.last_click {
+                            click.released = click.key.cell == (pointer.x, pointer.y)
+                                && click.after == self.state.caret;
+                        }
                         if self.additive_drag.is_some()
                             && self
                                 .drag
@@ -424,6 +559,9 @@ impl EditorInput {
                 geometry.hit_test(&layout, self.state.scroll_rows, pointer.x, pointer.y),
                 EditorHit::Outside
             ) {
+                if matches!(pointer.action, PointerAction::Down(_)) {
+                    self.last_click = None;
+                }
                 let before = (document.revision(), self.state.caret.clone());
                 if hooks.dispatch(
                     InputTarget::Popup,
@@ -455,6 +593,7 @@ impl EditorInput {
             &mut self.state,
             context,
         )? {
+            self.last_click = None;
             self.pending_paste = None;
             return self.after_hook(document, viewport, before);
         }
@@ -471,6 +610,7 @@ impl EditorInput {
             || (self.state.search_has_focus
                 && matches!(event, InputEvent::Key(_) | InputEvent::Paste(_)))
         {
+            self.last_click = None;
             if search_pointer {
                 focus.focused = Some(self.id);
                 self.state.search_has_focus = true;
@@ -503,6 +643,7 @@ impl EditorInput {
                     })
                 }
                 PointerAction::Down(MouseButton::Left) => {
+                    let previous_click = self.last_click.take();
                     let hit =
                         geometry.hit_test(&layout, self.state.scroll_rows, pointer.x, pointer.y);
                     let target = match hit {
@@ -543,6 +684,70 @@ impl EditorInput {
                         ),
                         _ => return Ok(InputOutcome::default()),
                     };
+                    let original = self.state.caret.clone();
+                    let eligible = matches!(hit, EditorHit::Text(_))
+                        && !pointer.modifiers.ctrl
+                        && !pointer.modifiers.meta
+                        && !pointer.modifiers.shift;
+                    let key = ClickKey {
+                        cell: (pointer.x, pointer.y),
+                        source: if eligible {
+                            layout.cell_source(
+                                self.state.scroll_rows + (pointer.y - geometry.text.y) as usize,
+                                (pointer.x - geometry.text.x) as usize,
+                            )
+                        } else {
+                            None
+                        },
+                        body: geometry.text,
+                        scroll: self.state.scroll_rows,
+                        folds: viewport.folds.to_vec(),
+                        modifiers: pointer.modifiers,
+                        revision: document.revision(),
+                    };
+                    let now = self.clock.now_millis();
+                    if eligible
+                        && let Some(previous) = previous_click.filter(|previous| {
+                            previous.released
+                                && previous.key == key
+                                && previous.after == original
+                                && now
+                                    .checked_sub(previous.at)
+                                    .is_some_and(|elapsed| elapsed <= DOUBLE_CLICK_MS)
+                        })
+                    {
+                        let job = WordJob {
+                            request: RequestId::fresh()?,
+                            snapshot: document.snapshot(),
+                            position: key.source.map_or(position, |source| source.start),
+                            cancel: CancellationToken::new(),
+                        };
+                        let base = previous.before;
+                        self.pending_word = Some(PendingWord {
+                            job: job.clone(),
+                            proof: self.state.caret.clone(),
+                            additive: pointer.modifiers.alt,
+                            base,
+                            body: key.body,
+                            scroll: key.scroll,
+                            folds: key.folds,
+                        });
+                        self.drag = None;
+                        self.additive_drag = None;
+                        focus.captured = None;
+                        focus.focused = Some(self.id);
+                        self.state.search_has_focus = false;
+                        self.pending_paste = None;
+                        return Ok(InputOutcome {
+                            handled: true,
+                            repaint: true,
+                            effects: vec![
+                                EditorEffect::CaretMoved,
+                                EditorEffect::DismissCompletion,
+                                EditorEffect::SelectWord(job),
+                            ],
+                        });
+                    }
                     if pointer.modifiers.alt && !pointer.modifiers.ctrl && !pointer.modifiers.meta {
                         let original = self.state.caret.clone();
                         let removed = self.state.caret.toggle(&layout.snapshot, position)?;
@@ -564,6 +769,15 @@ impl EditorInput {
                                 head: position,
                             },
                         )?;
+                    }
+                    if eligible {
+                        self.last_click = Some(ClickRecord {
+                            key,
+                            at: now,
+                            before: original,
+                            after: self.state.caret.clone(),
+                            released: false,
+                        });
                     }
                     self.state.search_has_focus = false;
                     focus.focused = Some(self.id);
@@ -621,6 +835,7 @@ impl EditorInput {
         document: &mut Document,
         viewport: InputViewport<'_>,
     ) -> Result<InputOutcome> {
+        self.cancel_pointer_work();
         let layout = self.layout(document, viewport)?;
         let before = self.state.caret.clone();
         let previous_revision = document.revision();
@@ -865,6 +1080,11 @@ impl EditorInput {
             return Ok(InputOutcome::default());
         }
         self.command(EditorCommand::PasteText(text.into()), document, viewport)
+    }
+}
+impl Drop for EditorInput {
+    fn drop(&mut self) {
+        self.cancel_pointer_work();
     }
 }
 fn max_scroll(layout: &VisualLayout, geometry: EditorGeometry) -> usize {

@@ -212,6 +212,7 @@ part of E13's final shared-editor gate. Core tests alone do not qualify gestures
 | UX-114 | Ctrl+Shift+Up/Down | Add a cursor at the reached visual position across wraps/tabs/Unicode/folds, with boundary clamps | U04 |
 | UX-115 | Multi-selection edit/clipboard/history | One normalized transaction for typing/delete/paste; exact selection-set undo/redo, read-only guards and primary ownership in file/SQL/REST hosts | U04 |
 | UX-116 | Double-click / Alt+double-click | Select Unicode words or add their selections, coordinating the first click with cursor toggling | U06 |
+| UX-117 | Browse / Alt+P in a filesystem path field | Worker-backed open/save/directory chooser; preserve draft and focus on cancel, keep composites and reject stale field/owner/item/workspace results; controls remain reachable at 1×1 | U07 |
 
 ## Qualification method
 

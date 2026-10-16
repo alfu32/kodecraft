@@ -132,7 +132,38 @@ Newlines use each cursor's original indentation; colliding deletion results merg
 History v1 adds optional `secondary` fields with empty defaults, keeping old JSON
 readable. Import validates every selection before committing, and stale-file
 restore remaps every selection through UTF-16 coordinates before normalization.
-Input gestures, rendering and host qualification remain in progress under U04.
+Alt+click toggles an existing head or makes an added cursor primary, retaining at
+least one cursor. Alt+drag constructs a primary selection over the retained set
+and normalizes at release; shared-document revision changes dispose stale drags.
+Ctrl+Shift+Up/Down uses the actual visual layout, including wraps, folded rows and
+tab/Unicode display runs. Escape retains the primary; normal click resets the
+set. Every selection/caret is painted, but only the primary supplies the terminal
+cursor and scrolling anchor. Alt+Enter in file find selects all current bounded
+matches and returns editing focus; it cannot reuse a stale query or closed scan.
+Copy/cut joins nonempty selections in source order with LF separators. Native and
+bracketed paste repeat the complete text at every selection in one transaction.
+Clipboard, completion and navigation publication validate the entire set.
+Provider completions remain authoritative for the primary range; secondary
+positions remap through that explicit replacement and undo retains the old set.
+
+U06 uses the host's injectable monotonic clock for 350 ms click pairs. A pair
+requires a completed first click, the same document revision, source/cell,
+modifiers, pane geometry, scroll/folds and caret context. Drag, resize, focus loss,
+other keys and new document state invalidate it; a third click begins a new pair.
+Alt word selection starts from the state before the first U04 toggle, then adds
+and normalizes the selected word at publication. Until then the first click's
+selection stays visible; cancellation never rolls back a newer selection.
+
+`VisualLayout::cell_source` identifies the source scalar painted under tabs and
+Unicode escapes, independently of ordinary ceiling caret placement. Fold-prefix
+end boundaries retain their visible caret when the following scalar is clipped.
+UAX #29 analysis uses pinned unicode-segmentation 1.13.3 on a line-local worker
+snapshot; whitespace/punctuation segments are selectable, while logical line
+ends/blank areas remain carets. Word jobs share bounded blocking scheduling and
+local/scheduler cancellation. Publication validates view/workspace/request,
+document/revision, full selection set, actual focus and current geometry/scroll/
+folds. It changes selection only, and every subsequent mutation still uses the
+same core transaction/read-only guards. Detach/drop cancels pointer work.
 
 `EditorHost` supplies `read_only`, `save_target`, `language`, `completion_provider`,
 `intelligence_provider`, `on_change`, `on_navigate`, `warning_lines`, and
@@ -1573,3 +1604,37 @@ cycle detection. Native query validation admits the corresponding UTF-8 bound,
 retains SQLSTATE/vendor codes and rejects oversized or malformed payloads. The UI
 adds no earlier 2,048-character truncation. Generic transport/install diagnostics
 remain redacted; raw helper stderr and unknown remote data are never displayed.
+
+## Field-owned path choice (U07 / M006)
+
+`widgets::file_picker` reuses `FolderPicker` tree rows with OpenFile, SaveFile,
+Directory and AnyExisting modes. Preparation, parent/typed navigation, metadata
+validation and tree reads run through the bounded scheduler. The synthetic browser
+project is rooted at the native filesystem volume; it never reads another
+project's configuration or switches workspace merely to browse. Save validation
+requires an existing parent and does not create or overwrite anything. The actual
+owner retains its import/export/save/configuration guards. Keyboard and mouse
+selection update a draft path; cancellation preserves the owner's text, caret,
+selection and focus. Small layouts expose the focused control, including at 1×1.
+
+Each field request retains workspace generation, owner/modal identity, exact
+value/caret/focus and relevant driver or REST item/type/model proof. Preparation
+cannot take focus after those proofs change. Tree refreshes retain the typed path
+and selected native path; unavailable entries cannot silently retarget a key to
+the filesystem root. Deleted siblings are skipped during listing. Unsupported
+non-UTF-8 selections and classpath-separator filenames produce errors instead of
+lossy path substitution. Validation/navigation and clipboard replies have their
+own exact request proofs. Cancellation, closure, window focus loss and workspace
+departure invalidate pending work; scheduler owners remain alive while a chooser
+is active, and later replies cannot reach replacement choosers.
+
+Local JAR choice replaces the native-separator component under the caret, retaining
+other entries and the rest of the datasource draft. Enforce the helper's 256-path
+limit and field limit. Preserve exact path whitespace through SQL save and local
+JAR capture. Multipart choice is enabled only for a FormData row whose Type is
+`file`; it replaces a scalar source or appends to an existing JSON source array
+without dropping other sources or unknown metadata. Submission still uses the
+existing lossless row edit. Binary body choice writes the actual `body.file.src`
+field and is available only in file-body mode. Catalog/schema, URLs, Maven fields,
+generic REST values and single-name file create/rename inputs remain typed text
+with their established validation.

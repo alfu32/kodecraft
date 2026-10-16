@@ -56,12 +56,14 @@ const REFERENCES: usize = 12;
 const AUTO: usize = 14;
 const READ_ONLY: usize = 15;
 const BUTTONS: usize = 16;
-const TOTAL: usize = 20;
+const BROWSE: usize = 20;
+const TOTAL: usize = 21;
 pub struct Draft {
     pub definition: DataSourceDefinition,
     pub password: Option<Secret>,
 }
 pub enum Action {
+    Browse,
     Details,
     JavaRuntime,
     Test(Draft),
@@ -76,7 +78,18 @@ enum Popup {
     Drivers,
     Urls,
 }
+#[derive(Clone)]
+pub struct PathProof {
+    nonce: RequestId,
+    driver: usize,
+    focus: usize,
+    value: String,
+    cursor: usize,
+    anchor: Option<usize>,
+}
 pub struct ConnectionDialog {
+    nonce: RequestId,
+    browse_hit: Rect,
     pub fields: Vec<TextField>,
     pub focus: usize,
     pub status: String,
@@ -147,6 +160,8 @@ impl ConnectionDialog {
             .map(|ds| ds.id.clone())
             .unwrap_or(format!("database-{stamp}-{}", RequestId::fresh()?.0));
         let mut form = Self {
+            nonce: RequestId::fresh()?,
+            browse_hit: Rect::default(),
             fields: LABELS
                 .iter()
                 .map(|_| TextField::new(String::new()))
@@ -230,6 +245,77 @@ impl ConnectionDialog {
             form.set(REFERENCES, "{}".into());
         }
         Ok(form)
+    }
+    pub fn path_request(
+        &self,
+    ) -> Result<Option<(crate::widgets::file_picker::Request, PathProof)>> {
+        if self.busy.is_some() || self.popup.is_some() || !matches!(self.focus, BROWSE | 11) {
+            return Ok(None);
+        }
+        let field = &self.fields[JAR];
+        let separator = if cfg!(windows) { ';' } else { ':' };
+        let start = field.value[..field.cursor]
+            .rfind(separator)
+            .map_or(0, |index| index + 1);
+        let end = field.value[field.cursor..]
+            .find(separator)
+            .map_or(field.value.len(), |index| field.cursor + index);
+        let request = crate::widgets::file_picker::Request::new(
+            "Select local JDBC JAR (replace current classpath entry)".into(),
+            crate::widgets::file_picker::Mode::OpenFile,
+            field.value[start..end].into(),
+        )?;
+        Ok(Some((
+            request,
+            PathProof {
+                nonce: self.nonce,
+                driver: self.selected_driver,
+                focus: self.focus,
+                value: field.value.clone(),
+                cursor: field.cursor,
+                anchor: field.anchor,
+            },
+        )))
+    }
+    pub fn accepts_path(&self, proof: &PathProof) -> bool {
+        let field = &self.fields[JAR];
+        self.nonce == proof.nonce
+            && self.busy.is_none()
+            && self.popup.is_none()
+            && self.selected_driver == proof.driver
+            && self.focus == proof.focus
+            && field.value == proof.value
+            && field.cursor == proof.cursor
+            && field.anchor == proof.anchor
+    }
+    pub fn apply_path(&mut self, proof: &PathProof, path: &std::path::Path) -> bool {
+        if !self.accepts_path(proof) {
+            return false;
+        }
+        let Some(value) = path.to_str() else {
+            return false;
+        };
+        let separator = if cfg!(windows) { ';' } else { ':' };
+        if value.contains(separator) {
+            self.status = "A JDBC JAR path cannot contain the platform classpath separator".into();
+            return false;
+        }
+        let field = &self.fields[JAR];
+        let start = field.value[..field.cursor]
+            .rfind(separator)
+            .map_or(0, |index| index + 1);
+        let end = field.value[field.cursor..]
+            .find(separator)
+            .map_or(field.value.len(), |index| field.cursor + index);
+        let mut updated = field.value.clone();
+        updated.replace_range(start..end, value);
+        if updated.split(separator).count() > 256 || updated.chars().count() > field.max_chars {
+            self.status = "Local JDBC classpath exceeds the 256-path or field size limit".into();
+            return false;
+        }
+        self.set(JAR, updated);
+        self.fields[JAR].cursor = start + value.len();
+        true
     }
     fn set(&mut self, index: usize, value: String) {
         self.fields[index].cursor = value.len();
@@ -339,7 +425,8 @@ impl ConnectionDialog {
         }
         let coordinates = optional(&self.fields[COORDS].value);
         let repository = optional(&self.fields[REPOSITORY].value);
-        let local = optional(&self.fields[JAR].value);
+        let local =
+            (!self.fields[JAR].value.trim().is_empty()).then(|| self.fields[JAR].value.clone());
         if coordinates != spec.coordinates
             || repository != spec.artifact.as_ref().and_then(|a| a.repository.clone())
         {
@@ -454,6 +541,7 @@ impl ConnectionDialog {
         true
     }
     pub fn render(&mut self, area: Rect, buffer: &mut Buffer, theme: &Theme) -> Option<Position> {
+        self.browse_hit = Rect::default();
         self.field_hits.clear();
         self.popup_hits.clear();
         self.buttons = [Rect::default(); 4];
@@ -485,6 +573,9 @@ impl ConnectionDialog {
         }
         if content.height <= 4 && self.popup.is_none() {
             let hit = Rect::new(content.x, content.y, content.width, 1);
+            if self.focus == BROWSE {
+                return self.render_field(JAR, hit, buffer, theme);
+            }
             if self.focus > 0 && self.focus < AUTO {
                 return self.render_field(self.focus - 1, hit, buffer, theme);
             }
@@ -567,14 +658,16 @@ impl ConnectionDialog {
         let footer = if vertical { 4 } else { 1 };
         let status_rows = u16::from(content.height > footer + 1);
         let body_height = content.height.saturating_sub(footer + status_rows);
-        let focus_row = if self.focus == 0 {
+        let focus_row = if self.focus == BROWSE {
+            (JAR + 1) * 2
+        } else if self.focus == 0 {
             0
         } else if self.focus < AUTO {
             self.focus * 2
         } else {
             27 + self.focus.saturating_sub(AUTO)
         };
-        if self.focus < BUTTONS && body_height > 0 {
+        if (self.focus < BUTTONS || self.focus == BROWSE) && body_height > 0 {
             if focus_row < self.scroll {
                 self.scroll = focus_row;
             }
@@ -739,6 +832,25 @@ impl ConnectionDialog {
         buffer: &mut Buffer,
         theme: &Theme,
     ) -> Option<Position> {
+        if index == JAR {
+            if area.width >= 18 {
+                self.browse_hit = Rect::new(area.right() - 14, area.y, 14, 1);
+                area.width -= 14;
+            } else if self.focus == BROWSE {
+                self.browse_hit = area;
+                area = Rect::default();
+            }
+            draw_text(
+                self.browse_hit,
+                buffer,
+                "[Browse Alt+P]",
+                theme.style(if self.focus == BROWSE {
+                    "file-entry:selected"
+                } else {
+                    "lsp-button"
+                }),
+            );
+        }
         if index == URL && area.width >= 5 {
             let label = if area.width >= 16 {
                 "[Templates]"
@@ -823,7 +935,20 @@ impl EventTarget for ConnectionDialog {
             }
             return true;
         }
+        if button(event, self.browse_hit, false) {
+            self.focus = BROWSE;
+            self.actions.push(Action::Browse);
+            return true;
+        }
         if let InputEvent::Key(input) = event {
+            if (input.modifiers.alt
+                && matches!(input.key, Key::Character('p' | 'P'))
+                && matches!(self.focus, BROWSE | 11))
+                || (input.key == Key::Enter && self.focus == BROWSE)
+            {
+                self.actions.push(Action::Browse);
+                return true;
+            }
             if input.key == Key::Escape {
                 self.actions.push(Action::Dismiss);
                 return true;

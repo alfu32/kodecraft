@@ -9,12 +9,31 @@ impl Form {
     }
     fn text_field(
         &mut self,
-        area: Rect,
+        mut area: Rect,
         field: Field,
         buffer: &mut Buffer,
         theme: &Theme,
         focused: bool,
     ) -> Option<Position> {
+        if field == Field::File {
+            let selected = self
+                .controls
+                .get(self.selection)
+                .is_some_and(|(_, action)| *action == Action::Browse);
+            if area.width >= 7 {
+                let (width, label) = if area.width >= 18 {
+                    (14, "[Browse Alt+P]")
+                } else {
+                    (5, "[...]")
+                };
+                let browse = Rect::new(area.right() - width, area.y, width, 1);
+                area.width -= width;
+                self.button(browse, label, Action::Browse, buffer, theme);
+            } else if selected {
+                self.button(area, "Browse Alt+P", Action::Browse, buffer, theme);
+                return None;
+            }
+        }
         self.add_hit(area, Action::Focus(field));
         self.fields.get_mut(&field).and_then(|value| {
             value.render(area, buffer, theme, focused && self.focused == Some(field))
@@ -88,7 +107,12 @@ impl Form {
             for row in rows.iter() {
                 self.row_offsets.push(virtual_y);
                 match row {
-                    Row::Field(_, field) => self.controls.push((virtual_y, Action::Focus(*field))),
+                    Row::Field(_, field) => {
+                        self.controls.push((virtual_y, Action::Focus(*field)));
+                        if *field == Field::File {
+                            self.controls.push((virtual_y, Action::Browse));
+                        }
+                    }
                     Row::Buttons(buttons) => {
                         let mut x = 0usize;
                         for (label, action) in buttons {
@@ -137,6 +161,7 @@ impl Form {
                     }
                     action => {
                         let label = match action {
+                            Action::Browse => "Browse Alt+P",
                             Action::Send => {
                                 if self.running {
                                     "Stop"

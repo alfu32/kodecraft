@@ -97,27 +97,53 @@ def main():
             assert len(state['openEditors'][0]['history']['current']['secondary']) == 2
             cases.append({'case': 'file-search-all-typing-paste-undo-redo-vertical-cursors-save', **result})
 
+            clip_project = case / 'clipboard-project'
+            clip_project.mkdir()
+            clip_file = clip_project / 'clipboard.txt'
+            clip_file.write_text('é cd ef\n')
+            clip_expected = 'Yé\nef cd Yé\nef\n'
+            actions = [
+                (ENTERED, .15, when('é cd ef', b'\x06'+paste('é|ef')+ALL)),
+                (ENTERED, .15, lambda screen: editing(screen, 'é cd ef', b'\x03\x18')),
+                (ENTERED, .15, when(' cd ', paste('Y'))),
+                (ENTERED, .15, when('Y cd Y', b'\x16')),
+                (ENTERED, .15, when('ef cd Yé', b'\x13')),
+                (ENTERED, .10, lambda screen: b'\x11' if clip_file.read_text() == clip_expected else None),
+            ]
+            result = terminal.run_case(clip_file, case / 'config-clipboard', (width, height), actions, env_overrides=env)
+            assert clip_file.read_text() == clip_expected
+            cases.append({'case': 'source-ordered-multi-copy-cut-and-native-clipboard-worker-paste', **result})
+
             project = case / 'mouse-project'
             project.mkdir()
             file = project / 'mouse.txt'
-            file.write_text('abcdefgh\n')
+            file.write_text('ébcdefgh\n')
             def gestures(screen):
-                position = find(screen, 'abcdefgh')
+                position = find(screen, 'ébcdefgh')
                 if position is None:
                     return None
                 x, y = position
                 data = b''
-                for offset, alt in ((1, False), (4, True), (4, True), (4, True)):
+                for offset, alt in ((1, False), (4, True)):
                     data += mouse(x+offset, y, 8 if alt else 0) + mouse(x+offset, y, 8 if alt else 0, True)
-                data += mouse(x+2, y, 8) + mouse(x+3, y, 40) + mouse(x+3, y, 8, True)
-                return data + paste('X') + b'\x13'
-            changed = 'aXbXdXefgh\n'
-            actions = [(ENTERED, .15, gestures), (ENTERED, .10, lambda screen: b'\x11' if file.read_text() == changed else None)]
+                return data
+            def toggle(screen):
+                position = find(screen, 'ébcdefgh')
+                if position is None: return None
+                x, y = position
+                return mouse(x+4, y, 8) + mouse(x+4, y, 8, True)
+            def drag(screen):
+                position = find(screen, 'ébcdefgh')
+                if position is None: return None
+                x, y = position
+                return mouse(x+2, y, 8) + mouse(x+3, y, 40) + mouse(x+3, y, 8, True) + paste('X') + b'\x13'
+            changed = 'éXbXdXefgh\n'
+            actions = [(ENTERED, .15, gestures), (ENTERED, .45, toggle), (ENTERED, .45, toggle), (ENTERED, .45, drag), (ENTERED, .10, lambda screen: b'\x11' if file.read_text() == changed else None)]
             result = terminal.run_case(file, case / 'config-mouse', (width, height), actions, env_overrides=env)
             assert file.read_text() == changed
             cases.append({'case': 'alt-click-add-toggle-alt-drag-and-file-save', **result})
-            restored = 'aXYbXYdXYefgh\n'
-            actions = [(ENTERED, .15, when('aXbXdXefgh', b'Y\x13')),
+            restored = 'éXYbXYdXYefgh\n'
+            actions = [(ENTERED, .15, when('éXbXdXefgh', b'Y\x13')),
                        (ENTERED, .10, lambda screen: b'\x11' if file.read_text() == restored else None)]
             result = terminal.run_case(project, case / 'config-mouse', (width, height), actions, env_overrides=env)
             assert file.read_text() == restored

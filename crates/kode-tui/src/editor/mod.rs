@@ -9,3 +9,4 @@ pub mod overlays;
 pub mod popups;
 pub mod render;
 pub mod search_bar;
+pub mod words;

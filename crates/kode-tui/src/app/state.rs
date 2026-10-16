@@ -19,11 +19,7 @@ use crate::{
         project_search::{ProjectSearchDialog, ProjectSearchWork},
     },
     theme::Theme,
-    widgets::{
-        controls::draw_text,
-        folder_picker::{FolderPicker, PickerWork},
-        tabs::Tabs,
-    },
+    widgets::{controls::draw_text, file_picker::FilePicker, tabs::Tabs},
 };
 use kode_core::{
     DocumentId, DocumentOrigin, JobTag, RequestId, Result, WorkspaceGeneration,
@@ -69,6 +65,21 @@ pub enum ConfigAction {
     RemoveExclusion(PathBuf),
 }
 pub enum AppWork {
+    PathPrepare {
+        tag: JobTag,
+        base: PathBuf,
+        value: String,
+        cancel: CancellationToken,
+    },
+    PathWork {
+        request: RequestId,
+        work: crate::widgets::file_picker::Work,
+    },
+    PathClipboard {
+        tag: JobTag,
+        job: ClipboardJob,
+        proof: Option<super::path_picker::PasteProof>,
+    },
     RestFormClipboard {
         tag: JobTag,
         job: ClipboardJob,
@@ -224,7 +235,9 @@ pub struct AppState {
     pub splitter: Splitter,
     pub geometry: AppGeometry,
     pub search: Option<ProjectSearchDialog>,
-    pub picker: Option<(PickerKind, FolderPicker)>,
+    pub picker: Option<(PickerKind, FilePicker)>,
+    pub path_picker: Option<super::path_picker::Active>,
+    pub(super) pending_path: Option<super::path_picker::Pending>,
     pub rescan: Option<RescanDialog>,
     pub scan: ScanCollector,
     pub scan_token: Option<CancellationToken>,
@@ -249,6 +262,7 @@ pub struct AppState {
     pub pending_capture: Option<JobTag>,
     pub pending_open: Option<JobTag>,
     pub pending_picker: Option<JobTag>,
+    pub(super) pending_picker_focus: Option<FocusId>,
     center_editor: bool,
     pub detector: kode_workspace::mime::MimeDetector,
     pub session_changes: Vec<(u64, SessionChange)>,
@@ -315,6 +329,8 @@ impl AppState {
             geometry: Default::default(),
             search: None,
             picker: None,
+            path_picker: None,
+            pending_path: None,
             rescan: None,
             scan: ScanCollector::new(generation),
             scan_token: None,
@@ -339,6 +355,7 @@ impl AppState {
             pending_capture: None,
             pending_open: None,
             pending_picker: None,
+            pending_picker_focus: None,
             center_editor: false,
             detector: kode_workspace::mime::MimeDetector::compiled(),
             session_changes: vec![],
@@ -957,6 +974,7 @@ impl AppState {
                 FilesWork::ChangeWorkspace => {
                     let tag = self.tag()?;
                     self.pending_picker = Some(tag);
+                    self.pending_picker_focus = self.focus.focused;
                     self.work.push(AppWork::Picker {
                         tag,
                         kind: PickerKind::Workspace,
@@ -982,11 +1000,15 @@ impl AppState {
     }
     pub fn drain_ui(&mut self) -> Result<()> {
         self.drain_rest()?;
+        self.drain_path_picker()?;
         self.database.drain_tree(&mut self.focus)?;
         for intent in self.database.take_intents() {
             use crate::panels::database::controller::Intent;
             use crate::widgets::field::FieldAction;
             match intent {
+                Intent::Browse { request, proof } => {
+                    self.start_path_picker(request, super::path_picker::Target::Database(proof))?
+                }
                 Intent::Details { title, text } => self.show_diagnostic(title, text)?,
                 Intent::Work(work) => self.work.push(AppWork::Database(work)),
                 Intent::Console { source, sql } => self.open_database_console(source, sql)?,
@@ -1083,13 +1105,15 @@ impl AppState {
                 .extend(dialog.take_work().into_iter().map(AppWork::ProjectSearch));
         }
         if let Some((kind, picker)) = &mut self.picker {
+            let request = picker.request.id;
             for work in picker.take_work() {
-                match work {
-                    PickerWork::Refresh(job) => self.work.push(AppWork::Tree { picker: true, job }),
-                    PickerWork::Confirmed(path) if *kind == PickerKind::Workspace => {
-                        self.switch_requested = Some(path)
-                    }
-                    PickerWork::Confirmed(path) => {
+                self.work.push(AppWork::PathWork { request, work });
+            }
+            if picker.finished {
+                if let Some(path) = picker.result.take() {
+                    if *kind == PickerKind::Workspace {
+                        self.switch_requested = Some(path);
+                    } else {
                         let tag = JobTag {
                             workspace: self.generation,
                             request: RequestId::fresh()?,
@@ -1102,16 +1126,9 @@ impl AppState {
                         };
                         self.work.push(AppWork::Configure { tag, action });
                     }
-                    PickerWork::Cancelled => {}
                 }
+                self.picker = None;
             }
-        }
-        if self
-            .picker
-            .as_ref()
-            .is_some_and(|(_, picker)| picker.finished)
-        {
-            self.picker = None;
         }
         if let Some(view) = &mut self.editor {
             let owner = view.owner();
@@ -1377,8 +1394,7 @@ impl AppState {
             cursor = dialog.render(area, buffer, theme, &self.documents, &self.focus)?;
         }
         if let Some((_, picker)) = &mut self.picker {
-            picker.render(area, buffer, theme);
-            cursor = None;
+            cursor = picker.render(area, buffer, theme);
         }
         if let Some(dialog) = &mut self.rescan {
             dialog.render(area, buffer, theme);
@@ -1408,6 +1424,9 @@ impl AppState {
         if let Some(dialog) = &mut self.diagnostic {
             dialog.render(area, buffer, theme);
             cursor = None;
+        }
+        if let Some(active) = &mut self.path_picker {
+            cursor = active.picker.render(area, buffer, theme);
         }
         Ok(cursor)
     }

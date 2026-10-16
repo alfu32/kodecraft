@@ -1,0 +1,140 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "case": "file-search-all-typing-paste-undo-redo-vertical-cursors-save",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "source-ordered-multi-copy-cut-and-native-clipboard-worker-paste",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "alt-click-add-toggle-alt-drag-and-file-save",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restart-restores-all-cursors-and-edit-targets",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "sql-search-multiple-edits-undo-redo-vertical-and-owned-draft",
+      "javaRequired": false,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "rest-body-headers-multiple-edits-and-raw-readonly-guard",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "file-search-all-typing-paste-undo-redo-vertical-cursors-save",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "source-ordered-multi-copy-cut-and-native-clipboard-worker-paste",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "alt-click-add-toggle-alt-drag-and-file-save",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restart-restores-all-cursors-and-edit-targets",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "sql-search-multiple-edits-undo-redo-vertical-and-owned-draft",
+      "javaRequired": false,
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "rest-body-headers-multiple-edits-and-raw-readonly-guard",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 12
+}

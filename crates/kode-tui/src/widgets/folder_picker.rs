@@ -214,6 +214,51 @@ impl FolderPicker {
         }
         Ok(true)
     }
+    pub fn render_rows(&mut self, rows: Rect, buffer: &mut Buffer, theme: &Theme) {
+        self.rows = rows.intersection(buffer.area);
+        let entries = self.entries();
+        let index = entries
+            .iter()
+            .position(|(path, _, _, _)| path == &self.selected)
+            .unwrap_or(0);
+        if self.needs_focus {
+            self.reveal(index, entries.len());
+            self.needs_focus = false;
+        } else {
+            self.scroll = self
+                .scroll
+                .min(entries.len().saturating_sub(self.rows.height as usize));
+        }
+        for (row, (path, name, depth, directory)) in entries
+            .iter()
+            .skip(self.scroll)
+            .take(self.rows.height as usize)
+            .enumerate()
+        {
+            let prefix = if !directory {
+                "[=]"
+            } else if self.tree.is_open(path) {
+                "[-]"
+            } else {
+                "[+]"
+            };
+            draw_text(
+                Rect::new(self.rows.x, self.rows.y + row as u16, self.rows.width, 1),
+                buffer,
+                &format!(
+                    "{}{} {}",
+                    "  ".repeat((*depth).min(self.rows.width as usize / 2)),
+                    prefix,
+                    display_text(name)
+                ),
+                theme.style(if path == &self.selected {
+                    "file-entry:selected"
+                } else {
+                    "file-entry"
+                }),
+            );
+        }
+    }
     pub fn render(&mut self, area: Rect, buffer: &mut Buffer, theme: &Theme) {
         self.rows = Rect::default();
         if self.finished {
@@ -251,48 +296,7 @@ impl FolderPicker {
             inner.width,
             inner.height - header - footer,
         );
-        let entries = self.entries();
-        let index = entries
-            .iter()
-            .position(|(path, _, _, _)| path == &self.selected)
-            .unwrap_or(0);
-        if self.needs_focus {
-            self.reveal(index, entries.len());
-            self.needs_focus = false;
-        } else {
-            self.scroll = self
-                .scroll
-                .min(entries.len().saturating_sub(self.rows.height as usize));
-        }
-        for (row, (path, name, depth, directory)) in entries
-            .iter()
-            .skip(self.scroll)
-            .take(self.rows.height as usize)
-            .enumerate()
-        {
-            let prefix = if !directory {
-                "[=]"
-            } else if self.tree.is_open(path) {
-                "[-]"
-            } else {
-                "[+]"
-            };
-            draw_text(
-                Rect::new(inner.x, self.rows.y + row as u16, inner.width, 1),
-                buffer,
-                &format!(
-                    "{}{} {}",
-                    "  ".repeat((*depth).min(inner.width as usize / 2)),
-                    prefix,
-                    display_text(name)
-                ),
-                theme.style(if path == &self.selected {
-                    "file-entry:selected"
-                } else {
-                    "file-entry"
-                }),
-            );
-        }
+        self.render_rows(self.rows, buffer, theme);
         if footer > 0 {
             draw_text(
                 Rect::new(inner.x, inner.bottom() - 1, inner.width, 1),

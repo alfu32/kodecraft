@@ -24,11 +24,17 @@ impl Sidebar {
         model: &Workspace,
         focus: &mut FocusState,
     ) -> Result<()> {
+        let mut dialog = TextDialog::new(title.into(), initial);
+        dialog.path_mode = match &purpose {
+            Purpose::Import(..) => Some(crate::widgets::file_picker::Mode::OpenFile),
+            Purpose::Export => Some(crate::widgets::file_picker::Mode::SaveFile),
+            _ => None,
+        };
         self.install_modal(
             Dialog::Input {
                 nonce: RequestId::fresh()?,
                 purpose,
-                dialog: TextDialog::new(title.into(), initial),
+                dialog,
             },
             model,
             focus,
@@ -432,6 +438,28 @@ impl Sidebar {
                     }
                     Some(DialogAction::Field(action)) => {
                         self.field_action(action, Some(*nonce), &dialog.field)
+                    }
+                    Some(DialogAction::Browse) => {
+                        if let Some(mode) = dialog.path_mode {
+                            let request = crate::widgets::file_picker::Request::new(
+                                dialog.title.clone(),
+                                mode,
+                                dialog.field.value.clone(),
+                            )?;
+                            self.intents.push(Intent::Browse {
+                                request,
+                                proof: PathProof {
+                                    nonce: *nonce,
+                                    epoch: self.clipboard_epoch,
+                                    value: dialog.field.value.clone(),
+                                    cursor: dialog.field.cursor,
+                                    anchor: dialog.field.anchor,
+                                    focus: dialog.focus,
+                                    mode,
+                                    expected: modal.expected.clone(),
+                                },
+                            });
+                        }
                     }
                     _ => {}
                 }

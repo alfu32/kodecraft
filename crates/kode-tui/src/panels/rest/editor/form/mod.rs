@@ -1,6 +1,8 @@
 //! Request controls and dialogs. The application owns embedded editor buffers,
 //! workers and execution; this reducer edits only the selected model subtree.
 mod input;
+mod paths;
+pub use paths::PathProof;
 mod render;
 use crate::panels::rest::oauth::{Action as OAuthAction, View as OAuthView};
 use crate::{
@@ -52,6 +54,7 @@ pub enum BufferKind {
 }
 #[derive(Clone, PartialEq, Eq)]
 pub enum Action {
+    Browse,
     OAuth(OAuthAction),
     Focus(Field),
     Tab(Tab),
@@ -72,6 +75,10 @@ pub enum Action {
     Remove(Rows, usize),
 }
 pub enum Intent {
+    Browse {
+        request: crate::widgets::file_picker::Request,
+        proof: PathProof,
+    },
     OAuth(OAuthAction),
     OAuthRedirect {
         flow: JobTag,

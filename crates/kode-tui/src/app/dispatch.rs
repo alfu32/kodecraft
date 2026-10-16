@@ -8,7 +8,25 @@ use kode_core::Result;
 use ratatui::layout::{Position, Rect};
 
 impl AppState {
+    pub(super) fn cancel_editor_pointer_work(&mut self) {
+        for view in self
+            .editor
+            .iter_mut()
+            .chain(self.git.commit_editor.iter_mut())
+            .chain(self.rest.response.editor.iter_mut())
+            .chain(
+                self.search
+                    .iter_mut()
+                    .filter_map(|dialog| dialog.editor.as_mut()),
+            )
+            .chain(self.diff.iter_mut().filter_map(|diff| diff.editor.as_mut()))
+        {
+            view.input.cancel_pointer_work();
+        }
+    }
     pub(super) fn request_quit(&mut self) -> Result<()> {
+        self.cancel_path_picker();
+        self.cancel_editor_pointer_work();
         for view in self.hexes.values_mut() {
             view.detach(&mut self.focus);
         }
@@ -82,6 +100,15 @@ impl AppState {
                 );
             }
             self.window_focused = *active;
+            if !active && let Some(active) = &mut self.path_picker {
+                active.picker.suspend();
+            }
+            if !active {
+                self.pending_picker = None;
+                if let Some((_, picker)) = &mut self.picker {
+                    picker.suspend();
+                }
+            }
             self.rest
                 .sidebar
                 .dispatch(event, &mut self.rest.model, &mut self.focus)?;
@@ -126,6 +153,18 @@ impl AppState {
         if matches!(global,Some(input) if input.modifiers.ctrl && matches!(input.key,Key::Character('t')))
         {
             self.shell_requested = true;
+            return self.drain_ui();
+        }
+        if self.pending_picker.is_some()
+            && matches!(event, InputEvent::Key(input) if input.key == Key::Escape)
+        {
+            self.pending_picker = None;
+            self.work
+                .retain(|work| !matches!(work, AppWork::Picker { .. }));
+            return self.drain_ui();
+        }
+        if let Some(active) = &mut self.path_picker {
+            active.picker.dispatch(event, &mut self.focus)?;
             return self.drain_ui();
         }
         if self.dispatch_diagnostic(event)? {

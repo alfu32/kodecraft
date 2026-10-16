@@ -5,3 +5,4 @@ pub mod search;
 mod search_pattern;
 pub mod search_regex;
 pub mod selection;
+pub mod words;

@@ -237,6 +237,13 @@ impl VisualLayout {
                 .position(|cell| {
                     cell.source.is_some_and(|range| range.start == byte) && cell.position == byte
                 })
+                .or_else(|| {
+                    summary
+                        .cells
+                        .iter()
+                        .rposition(|cell| cell.source.is_some_and(|range| range.end == byte))
+                        .map(|index| index + 1)
+                })
                 .unwrap_or_else(|| {
                     if byte == row.source.end {
                         summary.cells.len()
@@ -272,6 +279,29 @@ impl VisualLayout {
         line.runs
             .get(index)
             .map_or(line.source.end, |run| run.source.start)
+    }
+    /// The scalar actually painted under a pointer, rather than the ceiling
+    /// caret boundary used for ordinary placement inside tab/escape glyphs.
+    /// Fold ellipses and blank cells have no source character.
+    pub fn cell_source(&self, row: usize, column: usize) -> Option<TextRange> {
+        let row = self.rows.get(row)?;
+        if let Some(summary) = &row.summary {
+            return summary.cells.get(column)?.source;
+        }
+        if column >= row.visual_width {
+            return None;
+        }
+        let line = &self.lines[row.line.0];
+        let visual = row.visual_start.checked_add(column)?;
+        let index = line
+            .runs
+            .partition_point(|run| run.visual_start <= visual)
+            .checked_sub(1)?;
+        let run = line.runs.get(index)?;
+        (index >= row.run_start
+            && index < row.run_end
+            && visual < run.visual_start + run.glyph.width())
+        .then_some(run.source)
     }
     pub fn visible_rows(
         &self,

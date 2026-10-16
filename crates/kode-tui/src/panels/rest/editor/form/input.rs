@@ -37,6 +37,13 @@ impl Form {
             return Err(invalid("REST item no longer exists"));
         }
         match action {
+            Action::Browse => {
+                if self.modal.is_none() {
+                    self.focused = Some(Field::File);
+                    focus.focused = Some(self.id);
+                }
+                self.request_path(model)?;
+            }
             Action::OAuth(op) => match op {
                 OAuthAction::CopyUrl => {
                     if let Some(url) = &self.oauth.url {
@@ -202,6 +209,7 @@ impl Form {
                         "Description"
                     },
                 )?;
+                dialog.file_source = kind == Rows::FormData;
                 if kind == Rows::Auth {
                     dialog.fields[0].read_only = true;
                     dialog.focus = 1;
@@ -312,6 +320,10 @@ impl Form {
                 target: PasteTarget::Entry(proof),
             });
             let finished = modal.dialog.finished;
+            let browse = modal.dialog.take_browse();
+            if browse {
+                self.request_path(model)?;
+            }
             for action in actions {
                 self.field_action(action, proof.clone());
             }
@@ -385,6 +397,13 @@ impl Form {
             return Ok(false);
         }
         if let InputEvent::Key(input) = event {
+            if input.modifiers.alt
+                && matches!(input.key, Key::Character('p' | 'P'))
+                && self.focused == Some(Field::File)
+            {
+                self.request_path(model)?;
+                return Ok(true);
+            }
             if input.key == Key::Enter
                 && input.modifiers.ctrl
                 && !input.modifiers.alt

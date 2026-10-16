@@ -345,3 +345,12 @@ fn search_replacement_from_a_multi_selection_keeps_valid_state_and_exact_undo() 
     assert_eq!(state, before);
     assert_eq!(doc.snapshot().text().as_ref(), "alpha alpha alpha");
 }
+
+#[test]
+fn adding_an_existing_reversed_cursor_promotes_it_without_changing_its_direction() {
+    let doc = document("abc\ndef");
+    let mut state = carets(selection(6, 6), &[selection(3, 0)]);
+    state.add(&doc.snapshot(), selection(0, 0)).unwrap();
+    assert_eq!(state, carets(selection(3, 0), &[selection(6, 6)]));
+    assert_eq!(state.cursor(), ByteOffset(0));
+}

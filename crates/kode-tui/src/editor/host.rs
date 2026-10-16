@@ -578,6 +578,10 @@ pub enum EditorWork {
         epoch: u64,
     },
     ClipboardRead(PasteTarget),
+    Word {
+        tag: JobTag,
+        job: super::words::WordJob,
+    },
     Search {
         tag: JobTag,
         snapshot: TextSnapshot,
@@ -732,15 +736,18 @@ impl<H: EditorHost> EditorView<H> {
                 "read-only host requires a read-only registry document".into(),
             ));
         }
-        let mut navigation =
-            NavigationController::new(workspace, host.descriptor().project_root.clone(), clock);
+        let mut navigation = NavigationController::new(
+            workspace,
+            host.descriptor().project_root.clone(),
+            clock.clone(),
+        );
         navigation.enabled = host.intelligence_provider().is_some();
         let mut completion = CompletionPopup::new(workspace);
         completion.auto_show_external = host.descriptor().auto_show_external;
         let mut view = Self {
             chrome: true,
             host,
-            input: EditorInput::new(FocusId(RequestId::fresh()?.0), document),
+            input: EditorInput::with_clock(FocusId(RequestId::fresh()?.0), document, clock),
             search: SearchBar::new(workspace),
             visuals: EditorVisuals::default(),
             completion,
@@ -872,6 +879,16 @@ impl<H: EditorHost> EditorView<H> {
                     self.navigation
                         .context_changed(&snapshot, &self.input.state);
                 }
+                EditorEffect::SelectWord(job) => {
+                    self.work.push(EditorWork::Word {
+                        tag: JobTag {
+                            workspace: self.workspace,
+                            request: job.request,
+                            document: Some((job.snapshot.id, job.snapshot.revision)),
+                        },
+                        job,
+                    });
+                }
                 _ => {}
             }
         }
@@ -936,6 +953,7 @@ impl<H: EditorHost> EditorView<H> {
         }
         let snapshot = documents.document(self.document_id())?.snapshot();
         if snapshot.revision != self.observed_revision {
+            self.input.cancel_pointer_work();
             self.input
                 .state
                 .caret
@@ -1188,6 +1206,58 @@ impl<H: EditorHost> EditorView<H> {
         self.reconcile(documents, area, false)?;
         Ok(true)
     }
+    pub fn complete_word(
+        &mut self,
+        tag: JobTag,
+        result: Result<TextRange>,
+        documents: &EditorDocuments,
+        focus: &FocusState,
+        area: Rect,
+    ) -> Result<bool> {
+        if self.detached
+            || tag.workspace != self.workspace
+            || !self.input.has_word_request(tag.request)
+        {
+            return Ok(false);
+        }
+        let document = documents.document(self.document_id())?;
+        if tag.document != Some((document.id(), document.revision())) {
+            self.input.cancel_pointer_work();
+            return Ok(false);
+        }
+        let range = match result {
+            Ok(range) => range,
+            Err(DomainError::Cancelled) => {
+                self.input.cancel_pointer_work();
+                return Ok(false);
+            }
+            Err(error) => {
+                self.input.cancel_pointer_work();
+                self.error = Some(error);
+                return Ok(true);
+            }
+        };
+        let geometry = self.geometry(documents, area)?;
+        let folds = self.visuals.folds.collapsed(&document.snapshot());
+        let accepted = self.input.complete_word(
+            tag.request,
+            range,
+            document,
+            focus,
+            InputViewport {
+                geometry,
+                folds: &folds,
+            },
+        )?;
+        if accepted {
+            self.completion
+                .context_changed(&document.snapshot(), &self.input.state);
+            self.navigation
+                .context_changed(&document.snapshot(), &self.input.state);
+            self.reconcile(documents, area, true)?;
+        }
+        Ok(accepted)
+    }
     pub fn complete_search(
         &mut self,
         tag: JobTag,
@@ -1315,6 +1385,7 @@ impl<H: EditorHost> EditorView<H> {
         self.overlays.invalidate();
     }
     pub fn detach(&mut self, focus: &mut FocusState) {
+        self.input.cancel_pointer_work();
         self.detached = true;
         self.search.close(&mut self.input.state);
         self.completion.dismiss();

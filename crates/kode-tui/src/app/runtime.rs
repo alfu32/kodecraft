@@ -4,6 +4,8 @@ mod git;
 mod intelligence;
 pub mod lsp;
 mod oauth;
+#[cfg(test)]
+mod path_tests;
 mod rest;
 #[cfg(test)]
 mod rest_tests;
@@ -28,7 +30,7 @@ use crate::{
     },
     focus::FocusId,
     panels::{project::ProjectWork, project_search::ProjectSearchWork},
-    widgets::folder_picker::FolderPicker,
+    widgets::file_picker::{self, FilePicker},
 };
 use kode_core::{
     DocumentId, DocumentOrigin, DomainError, JobTag, RequestId, Result,
@@ -60,6 +62,8 @@ use std::{
 use tokio::sync::mpsc;
 
 enum Output {
+    PathPrepared(crate::widgets::file_picker::Prepared),
+    PathReport(crate::widgets::file_picker::Report),
     Metrics(kode_platform::metrics::ProcessSample),
     RestRun(kode_rest::runner::Summary),
     OAuth(kode_rest::oauth::TokenSet),
@@ -96,6 +100,7 @@ enum Output {
     Fold(FoldReport),
     Overlays(crate::editor::overlays::OverlayReport),
     Search(SearchReport),
+    Word(kode_core::TextRange),
     ProjectSearch(ProjectSearchReport),
     Completion(
         Vec<CompletionItem>,
@@ -104,9 +109,13 @@ enum Output {
     Navigation(NavigationResult, Option<kode_lsp::provider::ProviderProof>),
     Clipboard(ClipboardResult),
     Project(Project),
-    Picker(Project),
 }
 enum Context {
+    PathPrepare,
+    PathWork {
+        request: RequestId,
+        tree: bool,
+    },
     Metrics,
     RestRun,
     OAuth {
@@ -147,6 +156,7 @@ enum Context {
     Fold,
     Overlays,
     Search,
+    Word,
     ProjectSearch,
     Completion,
     Navigation,
@@ -155,6 +165,7 @@ enum Context {
     Picker(PickerKind),
 }
 enum ClipboardTarget {
+    Path(super::path_picker::PasteProof),
     HexFind(FocusId, crate::viewers::hex::PasteProof),
     RestForm(crate::panels::rest::editor::form::PasteProof),
     Rest(crate::panels::rest::sidebar::PasteProof),
@@ -433,7 +444,10 @@ impl AppRuntime {
             }
         }
         if let Some((_, picker)) = &self.state.picker {
-            active.push(OwnerId(picker.id.0));
+            active.push(OwnerId(picker.request.id.0));
+        }
+        if let Some(active_picker) = &self.state.path_picker {
+            active.push(OwnerId(active_picker.picker.request.id.0));
         }
         let stale: Vec<_> = self
             .latest
@@ -876,6 +890,7 @@ impl AppRuntime {
                         };
                         let tag = self.state.tag()?;
                         self.state.pending_picker = Some(tag);
+                        self.state.pending_picker_focus = self.state.focus.focused;
                         self.accept(AppWork::Picker { tag, kind })?;
                     }
                     ProjectWork::RemoveSource(path) => {
@@ -958,18 +973,61 @@ impl AppRuntime {
                     ClipboardTarget::None
                 },
             ),
-            AppWork::Picker { tag, kind } => {
-                let root = if kind == PickerKind::Workspace {
-                    self.state
-                        .project
-                        .root
-                        .ancestors()
-                        .last()
-                        .expect("absolute workspace root")
-                        .to_path_buf()
-                } else {
-                    self.state.project.root.clone()
+            AppWork::PathPrepare {
+                tag,
+                base,
+                value,
+                cancel: local,
+            } => self.blocking(
+                tag,
+                self.root_owner,
+                "path-prepare",
+                false,
+                Context::PathPrepare,
+                Box::new(move |cancel| {
+                    if local.is_cancelled() {
+                        return Err(DomainError::Cancelled);
+                    }
+                    let prepared = crate::widgets::file_picker::prepare(
+                        &base,
+                        &value,
+                        tag.workspace,
+                        &cancel,
+                    )?;
+                    if local.is_cancelled() {
+                        return Err(DomainError::Cancelled);
+                    }
+                    Ok(Output::PathPrepared(prepared))
+                }),
+            ),
+            AppWork::PathWork { request, work } => {
+                let (operation, tree) = match &work {
+                    crate::widgets::file_picker::Work::Tree(_) => ("path-tree", true),
+                    crate::widgets::file_picker::Work::Navigate { .. } => ("path-navigate", false),
+                    crate::widgets::file_picker::Work::Validate { .. } => ("path-validate", false),
                 };
+                self.blocking(
+                    work.tag(),
+                    OwnerId(request.0),
+                    operation,
+                    false,
+                    Context::PathWork { request, tree },
+                    Box::new(move |cancel| work.run(&cancel).map(Output::PathReport)),
+                )
+            }
+            AppWork::PathClipboard { tag, job, proof } => self.clipboard_work(
+                tag,
+                job,
+                proof.map_or(ClipboardTarget::None, ClipboardTarget::Path),
+            ),
+            AppWork::Picker { tag, kind } => {
+                let root = self.state.project.root.clone();
+                let value = root
+                    .to_str()
+                    .ok_or_else(|| {
+                        DomainError::Unsupported("Picker directory is not UTF-8".into())
+                    })?
+                    .to_string();
                 let generation = self.state.generation;
                 self.blocking(
                     tag,
@@ -981,7 +1039,8 @@ impl AppRuntime {
                         if cancel.is_cancelled() {
                             return Err(DomainError::Cancelled);
                         }
-                        Project::new(&root, generation).map(Output::Picker)
+                        file_picker::prepare(&root, &value, generation, &cancel)
+                            .map(Output::PathPrepared)
                     }),
                 )
             }
@@ -1164,6 +1223,14 @@ impl AppRuntime {
                     kode_core::editor::search::scan(&snapshot, &query, || cancel.is_cancelled())
                         .map(Output::Search)
                 }),
+            ),
+            EditorWork::Word { tag, job } => self.blocking(
+                tag,
+                owner,
+                "word-selection",
+                false,
+                Context::Word,
+                Box::new(move |cancel| job.run(&cancel).map(Output::Word)),
             ),
             EditorWork::Completion(job) => {
                 self.stamp_query(job.tag)?;
@@ -1358,16 +1425,43 @@ impl AppRuntime {
                     | Context::Fold
                     | Context::Overlays
                     | Context::Search
+                    | Context::Word
                     | Context::ProjectSearch
                     | Context::Completion
                     | Context::Navigation
                     | Context::Clipboard(_)
                     | Context::Picker(_)
+                    | Context::PathPrepare
+                    | Context::PathWork { .. }
             )
         {
             return Ok(());
         }
         match context {
+            Context::PathPrepare => self.state.complete_path_prepare(
+                tag,
+                result.and_then(|output| match output {
+                    Output::PathPrepared(prepared) => Ok(prepared),
+                    _ => Err(DomainError::Unsupported(
+                        "wrong path preparation result".into(),
+                    )),
+                }),
+            )?,
+            Context::PathWork { request, tree } => {
+                let result = result.and_then(|output| match output {
+                    Output::PathReport(report) => Ok(report),
+                    _ => Err(DomainError::Unsupported("wrong path chooser result".into())),
+                });
+                let result = if tree {
+                    match result {
+                        Err(error) => Ok(crate::widgets::file_picker::Report::Tree(Err(error))),
+                        result => result,
+                    }
+                } else {
+                    result
+                };
+                self.state.complete_path_work(request, tag, result)?;
+            }
             Context::Metrics => {
                 if self.metrics_busy == Some(tag) {
                     self.metrics_busy = None;
@@ -1589,7 +1683,7 @@ impl AppRuntime {
                 });
                 if picker {
                     if let Some((_, picker)) = &mut self.state.picker {
-                        picker.complete(tag, result);
+                        picker.browser.complete(tag, result);
                     }
                 } else {
                     self.state.files.complete_refresh(tag, result);
@@ -1793,22 +1887,31 @@ impl AppRuntime {
             Context::Picker(kind) => {
                 if self.state.pending_picker == Some(tag) {
                     self.state.pending_picker = None;
+                    if self.state.pending_picker_focus != self.state.focus.focused
+                        || self.state.path_picker.is_some()
+                        || self.state.rest_response_modal()
+                        || self.state.diagnostic.is_some()
+                        || !self.state.window_focused
+                    {
+                        return Ok(());
+                    }
                     match result {
-                        Ok(Output::Picker(project)) => {
-                            let mut picker = FolderPicker::new(
-                                project,
+                        Ok(Output::PathPrepared(prepared)) => {
+                            let request = file_picker::Request::new(
                                 match kind {
                                     PickerKind::Workspace => "Select workspace folder",
                                     PickerKind::Source => "Select source folder",
                                     PickerKind::Exclusion => "Select scan exclusion",
                                 }
                                 .into(),
-                                kind != PickerKind::Exclusion,
-                                &mut self.state.focus,
+                                if kind == PickerKind::Exclusion {
+                                    file_picker::Mode::AnyExisting
+                                } else {
+                                    file_picker::Mode::Directory
+                                },
+                                prepared.value.clone(),
                             )?;
-                            if kind == PickerKind::Workspace {
-                                picker.focus_path(self.state.project.root.clone())?;
-                            }
+                            let picker = FilePicker::new(request, prepared, &mut self.state.focus)?;
                             self.state.picker = Some((kind, picker));
                         }
                         Err(error) => self.state.notice = error.to_string(),
@@ -1954,6 +2057,7 @@ impl AppRuntime {
         let Some((search, mut view, area)) = self.take_view(owner) else {
             return Ok(());
         };
+        let mut word_changed = false;
         let result = match context {
             Context::Overlays => view
                 .complete_overlays(
@@ -1982,6 +2086,21 @@ impl AppRuntime {
                     area,
                 )
                 .map(|_| ()),
+            Context::Word => view
+                .complete_word(
+                    tag,
+                    result.and_then(|output| {
+                        if let Output::Word(range) = output {
+                            Ok(range)
+                        } else {
+                            Err(DomainError::Unsupported("wrong word result".into()))
+                        }
+                    }),
+                    &self.state.documents,
+                    &self.state.focus,
+                    area,
+                )
+                .map(|accepted| word_changed = accepted),
             Context::Search => view
                 .complete_search(
                     tag,
@@ -2030,6 +2149,9 @@ impl AppRuntime {
         };
         let diff_preview = matches!(search, EditorSlot::Diff);
         self.return_view(search, view);
+        if word_changed {
+            self.state.changed()?;
+        }
         if diff_preview
             && let Err(error @ (DomainError::ReadOnly | DomainError::NoSaveTarget)) = &result
         {
@@ -2054,6 +2176,11 @@ impl AppRuntime {
             }
         });
         match target {
+            ClipboardTarget::Path(proof) => match result {
+                Ok(ClipboardResult::Read(text)) => self.state.paste_path(proof, text),
+                Err(error) => self.state.notice = error.to_string(),
+                _ => {}
+            },
             ClipboardTarget::RestForm(proof) => match result {
                 Ok(ClipboardResult::Read(text)) => {
                     if let Some(form) = &mut self.state.rest.form {
@@ -2199,6 +2326,8 @@ impl AppRuntime {
                 .any(|pending| pending.delivery == Delivery::Critical)
     }
     pub async fn flush_before_leave(&mut self) -> Result<()> {
+        self.state.cancel_editor_pointer_work();
+        self.state.cancel_path_picker();
         for view in self.state.hexes.values_mut() {
             view.detach(&mut self.state.focus);
         }

@@ -1008,6 +1008,7 @@ pub fn help_lines() -> Vec<String> {
     lines.extend([
         "Pointer actions: Ctrl+click follows definitions or opens usages at a definition; Alt+wheel accelerates editor scrolling.".into(),
         "Multiple cursors: Alt+left-click adds or removes a cursor; Alt+drag adds a selection. Escape keeps the primary. Copy/cut joins selected text in source order with newlines; paste repeats the full text at each selection.".into(),
+        "Word selection: double-click selects a Unicode segment; Alt+double-click adds it without losing existing selections. Click pairs use 350 ms; a third click starts a new pair. Whitespace/punctuation are segments, while blank line ends stay carets.".into(),
         "Conflict: Ctrl+Enter means Find all in search, SQL execution in SQL, Send in REST, and Commit in Git. The active owner decides.".into(),
         "Conflict: plain Tab inserts indentation in shared editors; use Ctrl+Tab for Git/REST sections or project-search fields. Settings/About use plain Tab.".into(),
         "Read-only previews allow selection, copy, search and navigation; mutation and ordinary Save stay guarded. Raw REST preview retains its owner's Send action.".into(),

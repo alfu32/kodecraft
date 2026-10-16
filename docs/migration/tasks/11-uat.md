@@ -72,12 +72,12 @@ execution/publication qualification.
 
 ## U04 — Multiple cursors and selections
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** E12, E07, E09. **Owns:** editor selection/mutation core, pointer and
 keyboard reducers, search match commands and all shared editor hosts. **UAT:** B004.
 
-**Continuation:** [core checkpoint and remaining integration](../U04-INTEGRATION.md).
+**Continuation:** [integration contract and qualification](../U04-INTEGRATION.md).
 
 1. Alt+left-click adds a cursor and toggles an existing cursor off, retaining a
    valid primary selection. Alt+mousedown/drag/release adds a selection.
@@ -114,10 +114,12 @@ keyboard reducers, search match commands and all shared editor hosts. **UAT:** B
 
 ## U06 — Word selection with double-click and Alt+double-click
 
-**Status:** todo
+**Status:** done
 
 **Depends:** U04. **Owns:** shared editor click timing, word boundaries and pointer
 selection, including embedded editors. **UAT:** M005.
+
+**Continuation:** [gesture/Unicode integration findings](../U06-INTEGRATION.md).
 
 1. Double-click selects the entire word under the pointer using consistent Unicode
    word boundaries and existing cell-to-document mapping.
@@ -131,11 +133,13 @@ selection, including embedded editors. **UAT:** M005.
 
 ## U07 — File-tree picker buttons for path fields
 
-**Status:** todo
+**Status:** done
 
 **Depends:** W05, D07, R07. **Owns:** shared picker widgets, asynchronous tree jobs
 and path-field integration across file/project, database and REST dialogs.
 **UAT:** M006.
+
+**Continuation:** [completed path-field inventory and qualification](../U07-INVENTORY.md).
 
 1. Inventory every TUI file/directory path input and add an adjacent picker button.
    Cover open/save/export/import, source roots, local driver JARs and REST body/
@@ -172,10 +176,12 @@ and path-field integration across file/project, database and REST dialogs.
 
 ## U09 — Repair language server installations
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** P01, P02, Z02. **Owns:** shipped LSP catalog, download/package install
 adapters and Settings installation diagnostics. **UAT:** B006, images 5–8.
+
+**Continuation:** [catalog/installer audit and qualification plan](../U09-INTEGRATION.md).
 
 1. Repair the broken JDT download and provide functional installation paths for
    TypeScript, VSCode HTML/CSS/JSON and clangd on supported targets, replacing the

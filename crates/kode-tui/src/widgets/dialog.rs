@@ -19,6 +19,7 @@ use ratatui::{
 pub enum DialogAction {
     Submitted(String),
     Dismissed,
+    Browse,
     Field(FieldAction),
 }
 #[derive(Debug, Clone, Copy)]
@@ -27,6 +28,7 @@ pub struct DialogLayout {
     pub field: Rect,
     pub ok: Rect,
     pub cancel: Rect,
+    pub browse: Rect,
 }
 
 pub struct TextDialog {
@@ -35,6 +37,7 @@ pub struct TextDialog {
     pub focus: usize,
     pub action: Option<DialogAction>,
     pub finished: bool,
+    pub path_mode: Option<super::file_picker::Mode>,
     viewport: Rect,
 }
 impl TextDialog {
@@ -45,8 +48,13 @@ impl TextDialog {
             focus: 0,
             action: None,
             finished: false,
+            path_mode: None,
             viewport: Rect::default(),
         }
+    }
+    pub fn with_path(mut self, mode: super::file_picker::Mode) -> Self {
+        self.path_mode = Some(mode);
+        self
     }
     pub fn layout(&self, area: Rect) -> DialogLayout {
         let modal = centered(area, 48, 9);
@@ -56,6 +64,7 @@ impl TextDialog {
                 field: Rect::default(),
                 ok: Rect::default(),
                 cancel: Rect::default(),
+                browse: Rect::default(),
             };
         }
         if modal.height == 1 {
@@ -72,6 +81,11 @@ impl TextDialog {
                     Rect::default()
                 },
                 cancel: if self.focus == 2 {
+                    modal
+                } else {
+                    Rect::default()
+                },
+                browse: if self.path_mode.is_some() && self.focus == 3 {
                     modal
                 } else {
                     Rect::default()
@@ -104,11 +118,27 @@ impl TextDialog {
                 Rect::new(x + ok_width, button_y, cancel_width, 1),
             )
         };
+        let field = Rect::new(x, field_y, width, 1);
+        let (field, browse) = if self.path_mode.is_some() {
+            if width < 18 {
+                if self.focus == 3 {
+                    (Rect::default(), field)
+                } else {
+                    (field, Rect::default())
+                }
+            } else {
+                let browse = Rect::new(field.right() - 14, field.y, 14, 1);
+                (Rect::new(field.x, field.y, field.width - 14, 1), browse)
+            }
+        } else {
+            (field, Rect::default())
+        };
         DialogLayout {
             modal,
-            field: Rect::new(x, field_y, width, 1),
+            field,
             ok,
             cancel,
+            browse,
         }
     }
     fn finish(&mut self, confirm: bool) {
@@ -135,6 +165,16 @@ impl TextDialog {
         let caret = self
             .field
             .render(layout.field, buffer, theme, self.focus == 0);
+        draw_text(
+            layout.browse,
+            buffer,
+            "[Browse Alt+P]",
+            theme.style(if self.focus == 3 {
+                "lsp-button"
+            } else {
+                "project-search-dialog"
+            }),
+        );
         draw_text(
             layout.ok,
             buffer,
@@ -167,29 +207,47 @@ impl TextDialog {
         }
         let layout = self.layout(self.viewport);
         if let InputEvent::Key(input) = event {
+            if self.path_mode.is_some()
+                && input.modifiers.alt
+                && matches!(input.key, Key::Character('p' | 'P'))
+            {
+                self.action = Some(DialogAction::Browse);
+                return;
+            }
+            let count = if self.path_mode.is_some() { 4 } else { 3 };
             match input.key {
                 Key::Escape => {
                     self.finish(false);
                     return;
                 }
                 Key::Tab => {
-                    self.focus = (self.focus + if input.modifiers.shift { 2 } else { 1 }) % 3;
+                    self.focus =
+                        (self.focus + if input.modifiers.shift { count - 1 } else { 1 }) % count;
                     return;
                 }
                 Key::Down => {
-                    self.focus = (self.focus + 1) % 3;
+                    self.focus = (self.focus + 1) % count;
                     return;
                 }
                 Key::Up => {
-                    self.focus = (self.focus + 2) % 3;
+                    self.focus = (self.focus + count - 1) % count;
                     return;
                 }
                 Key::Enter => {
+                    if self.path_mode.is_some() && self.focus == 3 {
+                        self.action = Some(DialogAction::Browse);
+                        return;
+                    }
                     self.finish(self.focus != 2);
                     return;
                 }
                 _ => {}
             }
+        }
+        if self.path_mode.is_some() && button(event, layout.browse, self.focus == 3) {
+            self.focus = 3;
+            self.action = Some(DialogAction::Browse);
+            return;
         }
         if button(event, layout.ok, self.focus == 1) {
             self.focus = 1;

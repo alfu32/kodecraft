@@ -1,4 +1,5 @@
 //! Shared key/value and variable dialog, with complete field/button ownership.
+mod paths;
 use crate::{
     input::terminal::{InputEvent, Key, PointerAction},
     layout::centered,
@@ -11,6 +12,7 @@ use crate::{
 use crossterm::event::MouseButton;
 use kode_core::{RequestId, Result};
 pub use kode_rest::model::editing::EntryValue;
+pub use paths::PathProof;
 use ratatui::{
     buffer::Buffer,
     layout::{Position, Rect},
@@ -30,6 +32,7 @@ pub struct Geometry {
     pub fields: Vec<Rect>,
     pub ok: Rect,
     pub cancel: Rect,
+    pub browse: Rect,
 }
 pub struct EntryDialog {
     pub title: String,
@@ -37,6 +40,8 @@ pub struct EntryDialog {
     pub focus: usize,
     pub finished: bool,
     pub result: Option<EntryValue>,
+    pub file_source: bool,
+    browse_requested: bool,
     labels: Vec<String>,
     variable: bool,
     nonce: RequestId,
@@ -73,6 +78,8 @@ impl EntryDialog {
             focus: 0,
             finished: false,
             result: None,
+            file_source: false,
+            browse_requested: false,
             labels: labels.into_iter().map(str::to_string).collect(),
             variable,
             nonce: RequestId::fresh()?,
@@ -113,6 +120,7 @@ impl EntryDialog {
             fields: vec![Rect::default(); self.fields.len()],
             ok: Rect::default(),
             cancel: Rect::default(),
+            browse: Rect::default(),
         };
         if modal.is_empty() {
             return geometry;
@@ -123,6 +131,10 @@ impl EntryDialog {
             modal
         };
         let count = self.fields.len();
+        if self.file_enabled() && self.focus == count + 2 {
+            geometry.browse = Rect::new(inner.x, inner.y, inner.width, 1);
+            return geometry;
+        }
         if inner.height == 1 {
             if self.focus < count {
                 geometry.fields[self.focus] = inner;
@@ -158,6 +170,13 @@ impl EntryDialog {
                 1,
             );
         }
+        if self.file_enabled() {
+            let field = &mut geometry.fields[1];
+            if field.width >= 20 {
+                geometry.browse = Rect::new(field.right() - 16, field.y, 16, 1);
+                field.width -= 16;
+            }
+        }
         let y = inner.bottom() - 1;
         if inner.width == 1 {
             if self.focus == count + 1 {
@@ -183,6 +202,12 @@ impl EntryDialog {
                 .style(theme.style("project-search-dialog"))
                 .render(geometry.modal, buffer);
         }
+        draw_text(
+            geometry.browse,
+            buffer,
+            "[File Alt+P]",
+            theme.style("lsp-button"),
+        );
         let mut cursor = None;
         for (index, rect) in geometry.fields.iter().enumerate() {
             if rect.is_empty() {
@@ -255,23 +280,36 @@ impl EntryDialog {
         }
         let count = self.fields.len();
         let geometry = self.layout(self.viewport);
+        let targets = count + 2 + usize::from(self.file_enabled());
         if let InputEvent::Key(input) = event {
+            if self.file_enabled()
+                && ((input.modifiers.alt && matches!(input.key, Key::Character('p' | 'P')))
+                    || (input.key == Key::Enter && self.focus == count + 2))
+            {
+                self.browse_requested = true;
+                return true;
+            }
             match input.key {
                 Key::Escape => {
                     self.finish(false);
                     return true;
                 }
                 Key::Tab => {
-                    self.focus = (self.focus + if input.modifiers.shift { count + 1 } else { 1 })
-                        % (count + 2);
+                    self.focus = (self.focus
+                        + if input.modifiers.shift {
+                            targets - 1
+                        } else {
+                            1
+                        })
+                        % targets;
                     return true;
                 }
                 Key::Down => {
-                    self.focus = (self.focus + 1) % (count + 2);
+                    self.focus = (self.focus + 1) % targets;
                     return true;
                 }
                 Key::Up => {
-                    self.focus = (self.focus + count + 1) % (count + 2);
+                    self.focus = (self.focus + targets - 1) % targets;
                     return true;
                 }
                 Key::Left if self.focus == count + 1 => {
@@ -288,6 +326,11 @@ impl EntryDialog {
                 }
                 _ => {}
             }
+        }
+        if self.file_enabled() && button(event, geometry.browse, false) {
+            self.focus = count + 2;
+            self.browse_requested = true;
+            return true;
         }
         if button(event, geometry.ok, self.focus == count) {
             self.focus = count;

@@ -231,6 +231,9 @@ impl AppState {
     pub(super) fn drain_rest(&mut self) -> Result<()> {
         for intent in self.rest.sidebar.take_intents() {
             match intent {
+                Intent::Browse { request, proof } => {
+                    self.start_path_picker(request, super::path_picker::Target::Rest(proof))?
+                }
                 Intent::Open(path) => self.open_rest_node(path)?,
                 Intent::Environment(id) => self.open_rest_environment(&id, None)?,
                 Intent::CopiedEnvironment { source, target } => {
@@ -413,6 +416,7 @@ impl AppState {
             && self.sql.menu.is_none()
             && self.search.is_none()
             && self.picker.is_none()
+            && self.path_picker.is_none()
             && self.rescan.is_none()
             && !self.git.has_modal()
             && self

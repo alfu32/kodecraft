@@ -1,0 +1,204 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "case": "unicode-double-and-alt-double-over-existing-cursor-edit-undo-redo-save",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restart-undo-restores-both-word-selections",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "combining-tab-cjk-emoji-glyph-interiors-whitespace-punctuation",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "word-spans-visual-wrapped-rows",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "word-in-fold-summary-keeps-hidden-source",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "real-resize-breaks-old-click-pair-and-new-word-hits-follow-new-layout",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "resizes": [
+        [
+          60,
+          24
+        ],
+        [
+          100,
+          34
+        ]
+      ]
+    },
+    {
+      "case": "sql-double-alt-double-and-owned-draft",
+      "javaRequired": false,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "rest-body-headers-word-selections-and-raw-readonly",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "unicode-double-and-alt-double-over-existing-cursor-edit-undo-redo-save",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "restart-undo-restores-both-word-selections",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "combining-tab-cjk-emoji-glyph-interiors-whitespace-punctuation",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "word-spans-visual-wrapped-rows",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "word-in-fold-summary-keeps-hidden-source",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "real-resize-breaks-old-click-pair-and-new-word-hits-follow-new-layout",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "resizes": [
+        [
+          100,
+          34
+        ],
+        [
+          60,
+          24
+        ]
+      ]
+    },
+    {
+      "case": "sql-double-alt-double-and-owned-draft",
+      "javaRequired": false,
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "rest-body-headers-word-selections-and-raw-readonly",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 16
+}

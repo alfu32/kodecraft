@@ -2,6 +2,7 @@ pub mod controls;
 pub mod diagnostic;
 pub mod dialog;
 pub mod field;
+pub mod file_picker;
 pub mod folder_picker;
 pub mod standard;
 pub mod tabs;

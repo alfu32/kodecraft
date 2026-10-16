@@ -35,7 +35,13 @@ impl SessionDialog {
             nonce: RequestId::fresh()?,
             console,
             mode,
-            dialog: TextDialog::new(title.into(), initial),
+            dialog: {
+                let mut dialog = TextDialog::new(title.into(), initial);
+                if matches!(mode, Mode::Save) {
+                    dialog.path_mode = Some(crate::widgets::file_picker::Mode::SaveFile);
+                }
+                dialog
+            },
             save,
             previous_focus,
             busy: false,

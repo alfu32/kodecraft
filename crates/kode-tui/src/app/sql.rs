@@ -221,6 +221,20 @@ impl AppState {
         let action = dialog.dialog.action.take();
         match action {
             Some(DialogAction::Dismissed) => self.dismiss_sql_dialog()?,
+            Some(DialogAction::Browse) => {
+                if matches!(dialog.mode, Mode::Save) {
+                    let request = crate::widgets::file_picker::Request::new(
+                        dialog.dialog.title.clone(),
+                        crate::widgets::file_picker::Mode::SaveFile,
+                        dialog.dialog.field.value.clone(),
+                    )?;
+                    let target = super::path_picker::Target::Sql {
+                        proof,
+                        focus: dialog.dialog.focus,
+                    };
+                    self.start_path_picker(request, target)?;
+                }
+            }
             Some(DialogAction::Field(action)) => {
                 let job = match action {
                     FieldAction::Copy(text) => Some(crate::editor::host::ClipboardJob::Publish(
@@ -246,7 +260,7 @@ impl AppState {
                             self.notice = "Enter a SQL file name or path".into();
                             return Ok(true);
                         }
-                        let path = std::path::PathBuf::from(value.trim());
+                        let path = std::path::PathBuf::from(value);
                         let path = if path.is_absolute() {
                             path
                         } else {

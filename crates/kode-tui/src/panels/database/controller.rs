@@ -106,6 +106,10 @@ pub struct PasteProof {
     anchor: Option<usize>,
 }
 pub enum Intent {
+    Browse {
+        request: crate::widgets::file_picker::Request,
+        proof: connection_dialog::PathProof,
+    },
     Details {
         title: String,
         text: String,
@@ -435,6 +439,13 @@ impl DatabasePanel {
             let actions = form.take_actions();
             for action in actions {
                 match action {
+                    connection_dialog::Action::Browse => {
+                        if let Some(form) = &self.form
+                            && let Some((request, proof)) = form.path_request()?
+                        {
+                            self.intents.push(Intent::Browse { request, proof });
+                        }
+                    }
                     connection_dialog::Action::JavaRuntime => {
                         self.java_runtime
                             .get_or_insert_with(JavaRuntimeDialog::default)

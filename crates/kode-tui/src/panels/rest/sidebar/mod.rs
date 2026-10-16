@@ -64,6 +64,10 @@ pub enum Intent {
     EnvironmentRemoved(String),
     Run(NodePath),
     InspectNotices,
+    Browse {
+        request: crate::widgets::file_picker::Request,
+        proof: PathProof,
+    },
     Import {
         nonce: RequestId,
         kind: Kind,
@@ -111,6 +115,17 @@ pub struct PasteProof {
     field: String,
     cursor: usize,
     anchor: Option<usize>,
+}
+#[derive(Clone)]
+pub struct PathProof {
+    nonce: RequestId,
+    epoch: u64,
+    value: String,
+    cursor: usize,
+    anchor: Option<usize>,
+    focus: usize,
+    mode: crate::widgets::file_picker::Mode,
+    expected: Arc<Value>,
 }
 #[derive(Clone)]
 enum Purpose {
@@ -392,6 +407,53 @@ impl Sidebar {
             self.pending_file = None;
             self.message = message;
         }
+    }
+    pub fn accepts_path(&self, proof: &PathProof, model: &Workspace) -> bool {
+        if self.clipboard_epoch != proof.epoch
+            || !Arc::ptr_eq(&proof.expected, &model.export_collection())
+        {
+            return false;
+        }
+        let Some(modal) = &self.modal else {
+            return false;
+        };
+        if !Arc::ptr_eq(&modal.expected, &proof.expected) {
+            return false;
+        }
+        matches!(&modal.dialog, Dialog::Input {nonce, dialog, ..}
+            if *nonce == proof.nonce && !dialog.finished
+                && dialog.path_mode == Some(proof.mode) && dialog.focus == proof.focus
+                && dialog.field.value == proof.value && dialog.field.cursor == proof.cursor
+                && dialog.field.anchor == proof.anchor)
+    }
+    pub fn apply_path(
+        &mut self,
+        proof: &PathProof,
+        model: &Workspace,
+        path: &std::path::Path,
+    ) -> bool {
+        if !self.accepts_path(proof, model) {
+            return false;
+        }
+        let Some(value) = path.to_str() else {
+            return false;
+        };
+        if let Some(Modal {
+            dialog: Dialog::Input { dialog, .. },
+            ..
+        }) = &mut self.modal
+        {
+            if value.chars().count() > dialog.field.max_chars {
+                self.message = "Selected path exceeds the field size limit".into();
+                return false;
+            }
+            dialog.field.value = value.into();
+            dialog.field.cursor = value.len();
+            dialog.field.anchor = None;
+            self.dirty = true;
+            return true;
+        }
+        false
     }
     pub fn paste(&mut self, proof: PasteProof, text: String, focus: &FocusState) {
         if proof.epoch != self.clipboard_epoch || focus.focused != Some(self.id) {

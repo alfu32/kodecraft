@@ -23,6 +23,7 @@ tempfile = "3.27"
 nix = { version = "0.30", default-features = false, features = ["signal", "process", "fs", "user"] }
 sysinfo = { version = "=0.39.6", default-features = false, features = ["system"] }
 unicode-width = "0.2.2"
+unicode-segmentation = "=1.13.3"
 ropey = { version = "=1.6.1", default-features = false, features = ["simd"] }
 sha2 = "=0.10.9"
 hmac = "=0.12.1"

@@ -60,6 +60,34 @@ that distinguish equal filenames. Outside-project files stay absolute. Click
 full paths. Each project remembers this display preference; file identity and
 save targets stay the same.
 
+Shared text editors support multiple cursors: **Alt+left-click** adds a cursor
+or removes one already there, **Alt+drag** adds a selection, and
+**Ctrl+Shift+Up/Down** adds a cursor on the previous/next visual row. **Alt+Enter**
+in file find selects every occurrence and returns to editing. Typing, deletion,
+paste and undo/redo operate on the whole selection set. Copy/cut joins selected
+text in source order with newlines; paste repeats the full clipboard at each
+selection. **Escape** keeps the primary cursor; a plain click starts one cursor.
+File, SQL, REST and environment editors share these controls. Read-only previews
+allow selection and copying while preserving their mutation guard.
+
+**Double-click** selects a Unicode word; **Alt+double-click** adds that word to
+the existing selections, with its cursor at the end. Clicks pair within 350 ms;
+a third click starts a new pair. Whitespace and punctuation follow Unicode word
+segments, and blank space beyond a line keeps a caret. Tabs and escaped Unicode
+glyphs select the source under the pointer. Word analysis runs on a worker;
+navigation, typing or resizing cancels an unfinished selection.
+
+Path fields offer **Browse** (a compact **[...]** button in narrow views) and
+**Alt+P**: REST Postman/OpenAPI import, Postman export, SQL Save, Local JAR(s),
+binary request bodies and multipart file rows. The chooser supports a typed path,
+parent navigation with **F4**, a file tree, and new save filenames. **Tab** cycles
+its controls; **Enter** activates the focused control, and **Escape** cancels.
+Selecting changes the field; submit the owning dialog to import, export or save.
+For Local JAR(s), Browse replaces the entry at the caret and preserves the rest
+of the native classpath. In a multipart file row it replaces a single source or
+adds to an existing JSON source array. Workspace, source-root and exclusion
+selectors use the same chooser and retain their project configuration rules.
+
 The hex viewer offers **8 / 16 / 32** bytes per row in its header; **F8** cycles
 layouts while retaining the byte selection and scroll anchor. **Ctrl+F** opens
 find. **Tab** switches literal UTF-8 text and hex bytes (`00 FF 41` or `00FF41`);

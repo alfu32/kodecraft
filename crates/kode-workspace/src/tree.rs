@@ -151,6 +151,13 @@ impl FileTree {
         }
         Ok(())
     }
+    /// Request an already resolved directory and its ancestors in the next refresh.
+    /// The worker still validates directory kinds and refuses symlink traversal.
+    pub fn open_directory(&mut self, path: &Path) -> Result<()> {
+        self.open_path(path)?;
+        self.expanded.insert(lexical_path(&self.root, path)?);
+        Ok(())
+    }
     pub fn flattened(&self) -> Vec<FlatEntry> {
         let mut entries = vec![];
         let mut stack: Vec<_> = self
@@ -282,14 +289,23 @@ fn read_directory(
         fs::read_dir(&directory).map_err(|error| io("list tree folder", &directory, error))?
     {
         cancelled(token)?;
-        let child = child.map_err(|error| io("list tree entry", &directory, error))?;
+        let child = match child {
+            Ok(child) => child,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => continue,
+            Err(error) => return Err(io("list tree entry", &directory, error)),
+        };
         let name = child.file_name().to_string_lossy().into_owned();
         if tree_metadata(&name) {
             continue;
         }
         let path = child.path();
-        let metadata =
-            fs::symlink_metadata(&path).map_err(|error| io("stat tree entry", &path, error))?;
+        // A concurrently removed sibling is an ordinary directory change. Keep
+        // the rest of this listing, including the user's selected subtree.
+        let metadata = match fs::symlink_metadata(&path) {
+            Ok(metadata) => metadata,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => continue,
+            Err(error) => return Err(io("stat tree entry", &path, error)),
+        };
         let kind = if metadata.file_type().is_symlink() {
             EntryKind::Symlink
         } else if metadata.is_dir() {

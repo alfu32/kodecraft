@@ -187,6 +187,7 @@ impl AppState {
             || self.sql.menu.is_some()
             || self.search.is_some()
             || self.picker.is_some()
+            || self.path_picker.is_some()
             || self.rescan.is_some()
             || self.git.has_modal()
     }

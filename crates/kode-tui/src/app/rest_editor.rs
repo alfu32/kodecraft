@@ -521,6 +521,9 @@ impl AppState {
             .unwrap_or_default();
         for intent in intents {
             match intent {
+                Intent::Browse { request, proof } => {
+                    self.start_path_picker(request, super::path_picker::Target::RestForm(proof))?
+                }
                 Intent::OAuth(op) => self.rest_oauth_action(op)?,
                 Intent::OAuthRedirect { flow, text } => self.rest_oauth_redirect(flow, text),
                 Intent::Send => {

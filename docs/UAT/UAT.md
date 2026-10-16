@@ -98,3 +98,8 @@ redirection url shouldn't point towards postman
 
 my suggestion is to have an internal, efemeral webserver that will intercept the redirect, in which case the redirect
 uri should always be something like https://localhost:free-port/callback kode-rs will intercept the token in this manner
+
+B009 - oracle error
+
+i think the session has a problem refreshing ( a new table was created in another session, the current one doesn't 'see' it)
+there's also some problem with the semicolumns when executing multiple statements or when executing a single one ... but we also selected the terminating semicolon

@@ -2226,3 +2226,84 @@ async fn all_panel_numbers_follow_visual_order_from_editor_focus_and_match_mouse
         );
     }
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn word_worker_selects_through_runtime_and_quit_cancels_unsubmitted_pointer_work() {
+    use crossterm::event::MouseButton;
+    use kode_tui::editor::host::EditorWork;
+    let directory = tempfile::tempdir().unwrap();
+    fs::write(directory.path().join("Words.txt"), "éclair tailword\n").unwrap();
+    let clock = Arc::new(FakeClock::default());
+    let mut app = make(directory.path(), Some("Words.txt"), clock.clone());
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    paint(&mut app);
+    let geometry = app
+        .state
+        .editor
+        .as_ref()
+        .unwrap()
+        .geometry(&app.state.documents, app.state.geometry.viewer)
+        .unwrap();
+    let double = |app: &mut AppRuntime, column: u16, alt: bool| {
+        for _ in 0..2 {
+            for action in [
+                PointerAction::Down(MouseButton::Left),
+                PointerAction::Up(MouseButton::Left),
+            ] {
+                app.state
+                    .dispatch(&InputEvent::Pointer(PointerInput {
+                        x: geometry.text.x + column,
+                        y: geometry.text.y,
+                        action,
+                        modifiers: Modifiers {
+                            alt,
+                            ..Default::default()
+                        },
+                    }))
+                    .unwrap();
+            }
+        }
+    };
+    double(&mut app, 2, false);
+    let before_publication = app.state.sequence;
+    until(&mut app, |app| {
+        let view = app.state.editor.as_ref().unwrap();
+        view.input
+            .state
+            .caret
+            .selected_text(
+                &app.state
+                    .documents
+                    .document(view.document_id())
+                    .unwrap()
+                    .snapshot(),
+            )
+            .unwrap()
+            == "éclair"
+    })
+    .await;
+    assert!(app.state.sequence > before_publication);
+    clock.0.store(500, Ordering::SeqCst);
+    double(&mut app, 9, true);
+    let token = app
+        .state
+        .take_work()
+        .into_iter()
+        .find_map(|work| match work {
+            AppWork::Editor {
+                work: EditorWork::Word { job, .. },
+                ..
+            } => Some(job.cancel),
+            _ => None,
+        })
+        .expect("unsubmitted word work");
+    assert!(!token.is_cancelled());
+    app.state.dispatch(&key(Key::Character('q'), true)).unwrap();
+    assert!(token.is_cancelled());
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    assert_eq!(
+        fs::read_to_string(directory.path().join("Words.txt")).unwrap(),
+        "éclair tailword\n"
+    );
+}

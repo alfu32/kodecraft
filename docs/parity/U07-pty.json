@@ -1,0 +1,183 @@
+{
+  "status": "passed",
+  "binarySha256": "9da7ee18bd4c867823d57cb82171578f2af43a700eb1921ae6c2219760a83051",
+  "passed": 14,
+  "cases": [
+    {
+      "case": "postman-import-export-outside-unicode-mouse-keyboard-error-cancel",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "openapi-file-picker-and-import",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "sql-new-save-name-outside-unicode-single-cell-chooser",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "resizes": [
+        [
+          1,
+          1
+        ],
+        [
+          100,
+          34
+        ]
+      ]
+    },
+    {
+      "case": "local-jar-classpath-preservation-and-datasource-save",
+      "javaRequired": false,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "binary-body-file-and-metadata",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "multipart-source-array-and-metadata",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "source-root-file-exclusion-workspace-switch",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "postman-import-export-outside-unicode-mouse-keyboard-error-cancel",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "openapi-file-picker-and-import",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "sql-new-save-name-outside-unicode-single-cell-chooser",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "resizes": [
+        [
+          1,
+          1
+        ],
+        [
+          60,
+          24
+        ]
+      ]
+    },
+    {
+      "case": "local-jar-classpath-preservation-and-datasource-save",
+      "javaRequired": false,
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "binary-body-file-and-metadata",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "multipart-source-array-and-metadata",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "source-root-file-exclusion-workspace-switch",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ]
+}

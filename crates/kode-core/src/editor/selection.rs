@@ -12,6 +12,13 @@ impl CaretState {
     /// Make an additional selection primary, retaining the others. Duplicate or
     /// overlapping positions are normalized before any edit is applied.
     pub fn add(&mut self, snapshot: &TextSnapshot, selection: Selection) -> Result<()> {
+        let selection = if selection.is_empty() {
+            self.selections()
+                .find(|existing| existing.head == selection.head)
+                .unwrap_or(selection)
+        } else {
+            selection
+        };
         let candidate = Self {
             selection,
             secondary: self.selections().collect(),

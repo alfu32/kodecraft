@@ -4,11 +4,11 @@ Full Kode → Rust migration, including the [finalized UAT batch](docs/migration
 
 | To do | In progress | Done | Blocked | Total |
 |------:|------------:|-----:|--------:|------:|
-|     7 |           1 |   71 |       0 |    79 |
+|     4 |           1 |   74 |       0 |    79 |
 
 ## Ongoing tasks
 
-- **U04** — [Multiple cursors and selections](docs/migration/tasks/11-uat.md#u04--multiple-cursors-and-selections)
+- **U09** — [Repair language server installations](docs/migration/tasks/11-uat.md#u09--repair-language-server-installations)
 
 ## Task status
 
@@ -84,12 +84,12 @@ Full Kode → Rust migration, including the [finalized UAT batch](docs/migration
 | U01  | [Finalized file and project search shortcuts](docs/migration/tasks/11-uat.md)                   | done        | [Report](docs/parity/U01.md) |
 | U02  | [Readable database errors and diagnostics](docs/migration/tasks/11-uat.md)                      | done        | [Report](docs/parity/U02.md) |
 | U03  | [Optional downloadable Java runtime artifact](docs/migration/tasks/11-uat.md)                   | done        | [Report](docs/parity/U03.md) |
-| U04  | [Multiple cursors and selections](docs/migration/tasks/11-uat.md)                               | in-progress | —                            |
+| U04  | [Multiple cursors and selections](docs/migration/tasks/11-uat.md)                               | done        | [Report](docs/parity/U04.md) |
 | U05  | [Hex layouts and text or binary find](docs/migration/tasks/11-uat.md)                           | done        | [Report](docs/parity/U05.md) |
-| U06  | [Word selection with double-click and Alt+double-click](docs/migration/tasks/11-uat.md)         | todo        | —                            |
-| U07  | [File-tree picker buttons for path fields](docs/migration/tasks/11-uat.md)                      | todo        | —                            |
+| U06  | [Word selection with double-click and Alt+double-click](docs/migration/tasks/11-uat.md)         | done        | [Report](docs/parity/U06.md) |
+| U07  | [File-tree picker buttons for path fields](docs/migration/tasks/11-uat.md)                      | done        | [Report](docs/parity/U07.md) |
 | U08  | [Project-relative paths in the open-file list](docs/migration/tasks/11-uat.md)                  | done        | [Report](docs/parity/U08.md) |
-| U09  | [Repair language server installations](docs/migration/tasks/11-uat.md)                          | todo        | —                            |
+| U09  | [Repair language server installations](docs/migration/tasks/11-uat.md)                          | in-progress | —                            |
 | U10  | [Panel shortcuts follow visual tab order](docs/migration/tasks/11-uat.md)                       | done        | [Report](docs/parity/U10.md) |
 | U11  | [Connection-type JDBC URL template dropdown](docs/migration/tasks/11-uat.md)                    | done        | [Report](docs/parity/U11.md) |
 | U12  | [Database package listing and DDL](docs/migration/tasks/11-uat.md)                              | todo        | —                            |

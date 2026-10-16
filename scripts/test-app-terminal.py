@@ -43,6 +43,7 @@ def run_case(target, config, size, actions, expected=(), env_overrides=None, tim
     last_action = time.monotonic()
     deadline = last_action + timeout_seconds
     queried = False
+    resizes = []
     try:
         while time.monotonic() < deadline:
             if select.select([master], [], [], 0.01)[0]:
@@ -61,7 +62,15 @@ def run_case(target, config, size, actions, expected=(), env_overrides=None, tim
                 if (trigger in output or trigger in visible or trigger in screen.text()) and time.monotonic() - last_action >= delay:
                     selected = payload(screen) if callable(payload) else payload
                     if selected is not None:
-                        os.write(master, selected)
+                        if isinstance(selected, dict) and "resize" in selected:
+                            columns, rows = selected["resize"]
+                            assert columns > 0 and rows > 0
+                            fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", rows, columns, 0, 0))
+                            screen = screen_module.Screen(columns, rows)
+                            os.kill(child.pid, signal.SIGWINCH)
+                            resizes.append([columns, rows])
+                        else:
+                            os.write(master, selected)
                         next_action += 1
                         last_action = time.monotonic()
             if child.poll() is not None:
@@ -74,7 +83,10 @@ def run_case(target, config, size, actions, expected=(), env_overrides=None, tim
             assert marker in output, f"missing terminal restoration: {marker!r}"
         for marker in expected:
             assert marker in seen_expected, f"missing rendered output: {marker!r}"
-        return {"size": list(size), "exit": 0, "termios_restored": True, "modes_restored": True, "status": "passed"}
+        result = {"size": list(size), "exit": 0, "termios_restored": True, "modes_restored": True, "status": "passed"}
+        if resizes:
+            result["resizes"] = resizes
+        return result
     finally:
         if child.poll() is None:
             os.killpg(child.pid, signal.SIGKILL)

@@ -962,3 +962,113 @@ fn readonly_hosts_allow_multiple_selection_and_copy_but_reject_all_multi_mutatio
         assert_eq!(ClipboardService::read(&clipboard).unwrap(), "a\nc");
     }
 }
+
+#[test]
+fn word_double_click_and_alt_double_click_share_editing_and_readonly_guards_in_every_host() {
+    let (clipboard, _) = clipboard();
+    let mut documents = EditorDocuments::default();
+    for role in [
+        HostRole::File,
+        HostRole::ProjectSearch,
+        HostRole::Sql,
+        HostRole::RestBody,
+        HostRole::RestHeaders,
+        HostRole::Environment,
+        HostRole::Response,
+        HostRole::RawRequest,
+        HostRole::Historical,
+    ] {
+        let mut view = virtual_view(
+            role,
+            &format!("word-{role:?}"),
+            "éclair tailword",
+            &mut documents,
+            clipboard.clone(),
+        );
+        let mut focus = focus(&view);
+        for (byte, alt) in [(3, false), (10, true)] {
+            let geometry = view.geometry(&documents, AREA).unwrap();
+            let folds = [];
+            let layout = view
+                .input
+                .layout(
+                    documents.document(view.document_id()).unwrap(),
+                    kode_tui::editor::input::InputViewport {
+                        geometry,
+                        folds: &folds,
+                    },
+                )
+                .unwrap();
+            let (row, column) = layout.position_to_cell(ByteOffset(byte)).unwrap();
+            for _ in 0..2 {
+                for action in [
+                    PointerAction::Down(MouseButton::Left),
+                    PointerAction::Up(MouseButton::Left),
+                ] {
+                    view.dispatch(
+                        &InputEvent::Pointer(PointerInput {
+                            x: geometry.text.x + column as u16,
+                            y: geometry.text.y + row as u16,
+                            action,
+                            modifiers: Modifiers {
+                                alt,
+                                ..Default::default()
+                            },
+                        }),
+                        &mut documents,
+                        &mut focus,
+                        AREA,
+                    )
+                    .unwrap();
+                }
+            }
+            let (tag, job) = view
+                .take_work()
+                .into_iter()
+                .find_map(|work| match work {
+                    EditorWork::Word { tag, job } => Some((tag, job)),
+                    _ => None,
+                })
+                .expect("word worker");
+            let result = job.run(&kode_platform::jobs::CancellationToken::new());
+            assert!(
+                view.complete_word(tag, result, &documents, &focus, AREA)
+                    .unwrap()
+            );
+        }
+        assert_eq!(view.input.state.caret.selections().count(), 2);
+        assert_eq!(
+            view.input
+                .state
+                .caret
+                .selected_text(&documents.document(view.document_id()).unwrap().snapshot())
+                .unwrap(),
+            "tailword"
+        );
+        let before = view.input.state.caret.clone();
+        view.command(EditorCommand::Copy, &mut documents, AREA)
+            .unwrap();
+        assert_eq!(clipboard.read().unwrap(), "éclair\ntailword");
+        let result = view.dispatch(
+            &InputEvent::Paste("X".into()),
+            &mut documents,
+            &mut focus,
+            AREA,
+        );
+        if documents
+            .document(view.document_id())
+            .unwrap()
+            .is_read_only()
+        {
+            assert!(matches!(result, Err(DomainError::ReadOnly)));
+            assert_eq!(text(&documents, view.document_id()), "éclair tailword");
+        } else {
+            result.unwrap();
+            assert_eq!(text(&documents, view.document_id()), "X X");
+            view.command(EditorCommand::Undo, &mut documents, AREA)
+                .unwrap();
+            assert_eq!(view.input.state.caret, before);
+            assert_eq!(text(&documents, view.document_id()), "éclair tailword");
+        }
+    }
+}

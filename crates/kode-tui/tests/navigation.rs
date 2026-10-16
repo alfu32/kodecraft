@@ -833,3 +833,39 @@ async fn native_preview_reader_loads_real_source_in_the_worker_and_keeps_file_by
     );
     assert!(scheduler.shutdown().await.is_empty());
 }
+
+#[test]
+fn late_navigation_cannot_publish_after_only_a_secondary_cursor_changes() {
+    let mut h = Harness::new("foo\n");
+    h.input.state.caret.secondary.push(kode_core::Selection {
+        anchor: ByteOffset(4),
+        head: ByteOffset(4),
+    });
+    let geometry = h.geometry();
+    h.send(pointer(
+        geometry.text.x,
+        geometry.text.y,
+        PointerAction::Down(MouseButton::Left),
+        true,
+    ))
+    .unwrap();
+    let job = h.job();
+    let provider = Provider {
+        definitions: vec![target("/project/foo.c", 0)],
+        ..Default::default()
+    };
+    let result = prepare(
+        &job,
+        &provider,
+        &Reader::default(),
+        Some(&Highlighter),
+        || false,
+    );
+    h.input.state.caret.secondary.clear();
+    assert!(
+        !h.nav
+            .complete(job.tag, result, &h.doc.snapshot(), &h.input.state, true)
+    );
+    assert!(h.nav.take_effects().is_empty());
+    assert!(h.nav.definition.is_none());
+}

@@ -374,3 +374,55 @@ fn multiple_ranges_and_carets_paint_empty_lines_and_eof_with_only_primary_termin
         }
     }
 }
+
+#[test]
+fn folded_prefix_end_keeps_its_visual_caret_when_the_next_scalar_is_clipped() {
+    let doc = document("fn target_word() {\n    let x = 1;\n}\n");
+    let snapshot = doc.snapshot();
+    let layout = VisualLayout::build(
+        &snapshot,
+        20,
+        &[CollapsedFold {
+            start: LineIndex(0),
+            end: LineIndex(2),
+        }],
+    )
+    .unwrap();
+    let summary = layout.rows[0].summary.as_ref().unwrap();
+    assert_eq!(summary.marker.start, 14);
+    assert_eq!(layout.position_to_cell(ByteOffset(14)).unwrap(), (0, 14));
+    assert_eq!(
+        layout.cell_source(0, 13).unwrap(),
+        TextRange::new(ByteOffset(13), ByteOffset(14)).unwrap()
+    );
+    assert!(layout.cell_source(0, 14).is_none());
+    let geometry = EditorGeometry::new(Rect::new(0, 0, 23, 5), snapshot.len_lines(), 0);
+    let header = EditorHeader::for_document(&doc, None, String::new());
+    let state = RenderState {
+        selection: Selection {
+            anchor: ByteOffset(3),
+            head: ByteOffset(14),
+        },
+        focused: true,
+        ..Default::default()
+    };
+    let mut buffer = Buffer::empty(Rect::new(0, 0, 23, 5));
+    let caret = render_editor(
+        &layout,
+        &mut buffer,
+        &Theme::compiled(),
+        RenderOptions {
+            geometry,
+            header: &header,
+            state: &state,
+            overlays: &[],
+            warning_lines: &[],
+            fold_starts: &[],
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        caret,
+        ratatui::layout::Position::new(geometry.text.x + 14, geometry.text.y)
+    );
+}

@@ -87,6 +87,9 @@ jobs:
           python3 scripts/test-file-paths-terminal.py --binary target/release/kode
           python3 scripts/test-url-templates-terminal.py --binary target/release/kode
           python3 scripts/test-hex-search-terminal.py --binary target/release/kode
+          python3 scripts/test-multiple-cursors-terminal.py --binary target/release/kode
+          python3 scripts/test-word-selection-terminal.py --binary target/release/kode
+          python3 scripts/test-path-picker-terminal.py --binary target/release/kode
       - name: Actual archive and no-Java Rust build acceptance
         run: |
           distribution_version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')
@@ -119,6 +122,9 @@ jobs:
           path: |
             docs/parity/Z03-*.json
             docs/parity/U05-pty.json
+            docs/parity/U04-pty.json
+            docs/parity/U06-pty.json
+            docs/parity/U07-pty.json
             docs/parity/U08-pty.json
             docs/parity/U11-pty.json
           if-no-files-found: error
