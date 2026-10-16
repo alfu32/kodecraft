@@ -8,6 +8,41 @@
     <project.build.outputTimestamp>2026-10-15T00:00:00Z</project.build.outputTimestamp>
     <jackson.version>2.21.4</jackson.version>
   </properties>
+  <!-- Freeze the complete shaded runtime closure; hashes are verified by distribution_notices.py. -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId><version>2.21</version></dependency>
+      <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-core</artifactId><version>2.21.4</version></dependency>
+      <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>2.21.4</version></dependency>
+      <dependency><groupId>com.google.code.gson</groupId><artifactId>gson</artifactId><version>2.14.0</version></dependency>
+      <dependency><groupId>com.google.errorprone</groupId><artifactId>error_prone_annotations</artifactId><version>2.48.0</version></dependency>
+      <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><version>2.2.224</version></dependency>
+      <dependency><groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>1.22.1</version></dependency>
+      <dependency><groupId>org.apache.httpcomponents</groupId><artifactId>httpclient</artifactId><version>4.5.14</version></dependency>
+      <dependency><groupId>org.apache.httpcomponents</groupId><artifactId>httpcore</artifactId><version>4.4.16</version></dependency>
+      <dependency><groupId>org.apache.maven</groupId><artifactId>maven-artifact</artifactId><version>3.9.16</version></dependency>
+      <dependency><groupId>org.apache.maven</groupId><artifactId>maven-builder-support</artifactId><version>3.9.16</version></dependency>
+      <dependency><groupId>org.apache.maven</groupId><artifactId>maven-model</artifactId><version>3.9.16</version></dependency>
+      <dependency><groupId>org.apache.maven</groupId><artifactId>maven-model-builder</artifactId><version>3.9.16</version></dependency>
+      <dependency><groupId>org.apache.maven</groupId><artifactId>maven-repository-metadata</artifactId><version>3.9.16</version></dependency>
+      <dependency><groupId>org.apache.maven</groupId><artifactId>maven-resolver-provider</artifactId><version>3.9.16</version></dependency>
+      <dependency><groupId>org.apache.maven.resolver</groupId><artifactId>maven-resolver-api</artifactId><version>2.0.23</version></dependency>
+      <dependency><groupId>org.apache.maven.resolver</groupId><artifactId>maven-resolver-connector-basic</artifactId><version>2.0.23</version></dependency>
+      <dependency><groupId>org.apache.maven.resolver</groupId><artifactId>maven-resolver-impl</artifactId><version>2.0.23</version></dependency>
+      <dependency><groupId>org.apache.maven.resolver</groupId><artifactId>maven-resolver-named-locks</artifactId><version>2.0.23</version></dependency>
+      <dependency><groupId>org.apache.maven.resolver</groupId><artifactId>maven-resolver-spi</artifactId><version>2.0.23</version></dependency>
+      <dependency><groupId>org.apache.maven.resolver</groupId><artifactId>maven-resolver-supplier-mvn3</artifactId><version>2.0.23</version></dependency>
+      <dependency><groupId>org.apache.maven.resolver</groupId><artifactId>maven-resolver-transport-apache</artifactId><version>2.0.23</version></dependency>
+      <dependency><groupId>org.apache.maven.resolver</groupId><artifactId>maven-resolver-transport-file</artifactId><version>2.0.23</version></dependency>
+      <dependency><groupId>org.apache.maven.resolver</groupId><artifactId>maven-resolver-util</artifactId><version>2.0.23</version></dependency>
+      <dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-interpolation</artifactId><version>1.29</version></dependency>
+      <dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-utils</artifactId><version>3.6.1</version></dependency>
+      <dependency><groupId>org.ow2.asm</groupId><artifactId>asm</artifactId><version>9.9.1</version></dependency>
+      <dependency><groupId>org.slf4j</groupId><artifactId>jcl-over-slf4j</artifactId><version>2.0.19</version></dependency>
+      <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>2.0.19</version></dependency>
+      <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-nop</artifactId><version>2.0.17</version></dependency>
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
     <!-- Preserve the source's visible/bundled H2 driver and on-disk compatibility.
          Explicit installed classpaths remain isolated and can select other versions. -->
@@ -21,6 +56,13 @@
     <finalName>kode-jdbc-bridge-core</finalName>
     <plugins>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-resources-plugin</artifactId><version>3.3.1</version></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-dependency-plugin</artifactId><version>3.6.1</version>
+        <executions><execution><id>runtime-notice-inputs</id><phase>package</phase><goals><goal>list</goal></goals>
+          <configuration><includeScope>runtime</includeScope><outputAbsoluteArtifactFilename>true</outputAbsoluteArtifactFilename>
+            <outputFile>${project.build.directory}/runtime-dependencies.txt</outputFile><appendOutput>false</appendOutput>
+          </configuration>
+        </execution></executions>
+      </plugin>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.14.1</version></plugin>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.5.4</version>
         <configuration><useModulePath>false</useModulePath><systemPropertyVariables><kode.protocol.fixtures>${project.basedir}/../protocol/jdbc-v1</kode.protocol.fixtures></systemPropertyVariables></configuration>

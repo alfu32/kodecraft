@@ -1,0 +1,20 @@
+{
+  "cases": [
+    {
+      "case": "corrupt-full-license",
+      "status": "passed",
+      "archivePublished": false
+    },
+    {
+      "case": "corrupt-native-library",
+      "status": "passed",
+      "archivePublished": false
+    },
+    {
+      "case": "stale-helper-notices",
+      "status": "passed",
+      "archivePublished": false
+    }
+  ],
+  "passed": 3
+}

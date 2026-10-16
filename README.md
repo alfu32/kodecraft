@@ -23,7 +23,10 @@ mode is `kode serve [--port 11045] [folder] [-- <ttyd arguments>]`. It binds
 place its executable beside `kode`, or set `KODE_TTYD` to its executable path.
 `python3 scripts/build-ttyd.py` builds a pinned standalone ttyd executable and
 records provenance; native development libraries listed by its `--help` are
-required. Native runtime libraries and release bundles are qualified separately.
+required. Linux x86_64 GNU archive builds now include the standalone ttyd, its
+relative native library closure, and full dependency notices. Build and acceptance
+commands are in [the distribution guide](packaging/README.md). AppImage/Snap, final
+release CI and publication remain in progress.
 `--resources DIRECTORY` within `serve` selects the child IDE's resource override.
 Remaining arguments after `--` pass literally to ttyd; an unknown option also
 starts forwarding, matching the original CLI.
@@ -51,6 +54,15 @@ The external JDBC protocol/bootstrap/supervisor is available as a backend. Build
 and test it with `bash scripts/test-jdbc-bridge.sh` using Java 21 and Maven; the
 packaged helper needs only Java at runtime. `KODE_JAVA` selects Java and
 `KODE_JDBC_HELPER` selects the helper JAR. Ordinary editor startup requires neither.
+If Java is missing or too old, **F5 Get Java** in Databases or the connection
+form offers a separate optional runtime download. Download, Cancel, Retry and
+Hide keep the operation explicit; a hidden download continues while you edit.
+After installation, retry Test or Connect explicitly. Configured/local Java takes
+precedence, and startup never fetches runtime metadata. The Linux x86_64 GNU
+runtime is qualified; other platform assets remain unavailable until qualified.
+`KODE_RUNTIME_RELEASE_URL` selects an alternative latest-release metadata endpoint
+for a mirror or local fixture. Downloads verify archive and file checksums before
+atomic installation under the database home's `java-runtime` directory.
 Driver resolution/loading now supports Maven, local multi-JAR and manual vendor
 sources, versioned install manifests and isolated loaders. The backend supports
 temporary connection tests, shared datasource connections, context changes and

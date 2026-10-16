@@ -1,0 +1,55 @@
+{
+  "status": "passed",
+  "archive": "kode-0.1.0-x86_64-unknown-linux-gnu.tar.gz",
+  "sha256": "e16bc9d3668e9de49285b5da05f68a47d1eebd039b7fc173bf38c880b1653f59",
+  "compressedBytes": 32813172,
+  "files": 984,
+  "minimumGlibc": "2.39",
+  "reproducibleAssembly": true,
+  "javaRuntimeBundled": false,
+  "browserTerminalBundled": true,
+  "cases": [
+    {
+      "case": "manifest-notices-source-paths-launchers",
+      "status": "passed",
+      "files": 984,
+      "rustNoticeComponents": 405,
+      "javaNoticeComponents": 30,
+      "windowsCmdQualification": "not run; no Windows artifact claimed"
+    },
+    {
+      "case": "packaged-no-java-core",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "packaged-real-h2-sql",
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "clean-ubuntu-container-browser-save-disconnect",
+      "image": "ubuntu@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55",
+      "network": "host-loopback",
+      "status": "passed",
+      "javaAbsent": true,
+      "caTrustStoreAbsent": true,
+      "packagedLibraries": true,
+      "childReaped": true,
+      "physicalSave": true
+    }
+  ],
+  "passed": 4
+}

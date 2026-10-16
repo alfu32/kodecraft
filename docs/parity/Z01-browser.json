@@ -2,6 +2,21 @@
   "transport": "ssh-forwarded-loopback",
   "cases": [
     {
+      "case": "browser-all-eight-panel-shortcuts-visual-order",
+      "status": "passed",
+      "terminal_sizes": [
+        [
+          137,
+          42
+        ],
+        [
+          87,
+          27
+        ]
+      ],
+      "editor_unchanged": true
+    },
+    {
       "case": "real-browser-auth-mouse-clipboard-edit-save-resize-disconnect",
       "status": "passed",
       "child_reaped": true,
@@ -27,5 +42,5 @@
       "dirty_sql_preserved": true
     }
   ],
-  "passed": 4
+  "passed": 5
 }

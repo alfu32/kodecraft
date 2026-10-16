@@ -1152,6 +1152,25 @@ async fn missing_java_error_preserves_form_and_console_launch_uses_the_shared_ed
     assert_eq!(form.focus, 3);
     assert_eq!(form.fields[0].value, "Fixture");
     assert_eq!(form.fields[1].value, "jdbc:h2:mem:app_fixture");
+    assert!(app.state.database.java_required);
+    app.state.dispatch(&key(Key::Function(5), false)).unwrap();
+    let dialog = app.state.database.java_runtime.as_ref().unwrap();
+    assert!(
+        dialog.tag.is_none(),
+        "opening the offer must not start installation"
+    );
+    assert!(!dialog.hidden);
+    paint(&mut app);
+    app.state.dispatch(&key(Key::Escape, false)).unwrap();
+    assert!(app.state.database.java_runtime.as_ref().unwrap().hidden);
+    let form = app.state.database.form.as_ref().unwrap();
+    assert_eq!(form.focus, 3);
+    assert_eq!(form.fields[0].value, "Fixture");
+    assert_eq!(form.fields[1].value, "jdbc:h2:mem:app_fixture");
+    assert!(
+        !db.join("java-runtime").exists(),
+        "declining must not create installation files"
+    );
     app.state.dispatch(&key(Key::Escape, false)).unwrap();
     assert_eq!(app.state.focus.focused, Some(app.state.database.tree.id));
     app.state

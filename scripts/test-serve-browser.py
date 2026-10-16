@@ -187,22 +187,28 @@ def qualify_stream(pw, args, binary, base, env, cases):
 
 
 def qualify_sql(pw, args, binary, base, environment, cases):
-    helper = ROOT / 'jdbc-bridge/target/kode-jdbc-bridge.jar'
+    helper = binary.parent / 'jdbc/kode-jdbc-bridge.jar' if args.package else ROOT / 'jdbc-bridge/target/kode-jdbc-bridge.jar'
     h2 = Path('/tmp/kode-rs-jdbc-maven-repository/com/h2database/h2/2.2.224/h2-2.2.224.jar')
     java = shutil.which('java')
-    assert helper.is_file() and h2.is_file() and java, 'Build the JDBC/H2 qualification fixture first'
+    assert helper.is_file() and (args.package or h2.is_file()) and java, 'Build the JDBC/H2 qualification fixture first'
     case = base / 'sql'
     project = case / 'workspace'
     project.mkdir(parents=True)
     db = case / 'database'
     db.mkdir()
     definition = {'id': 'fixture', 'name': 'Browser SQL', 'driver': {'id': 'h2', 'driverClass': 'org.h2.Driver', 'jarPath': str(h2), 'artifact': {'repositoryType': 'LOCAL_FILE'}}, 'jdbcUrl': 'jdbc:h2:mem:browser_sql', 'username': 'sa', 'autoCommit': False}
+    if args.package:
+        definition['driver'] = {'id':'h2', 'driverClass':'org.h2.Driver'}
     (db / 'datasources-v1.json').write_text(json.dumps({'version': 1, 'dataSources': [definition]}))
     pid_path = case / 'java.pid'
     wrapper = case / 'java-fixture'
     wrapper.write_text(f'#!{sys.executable}\nimport os,sys\nfrom pathlib import Path\nPath({str(pid_path)!r}).write_text(str(os.getpid()))\nos.execv({java!r},[{java!r},*sys.argv[1:]])\n')
     wrapper.chmod(0o700)
-    env = dict(environment, KODE_JAVA=str(wrapper), KODE_JDBC_HELPER=str(helper), KODE_RS_DATABASE_HOME=str(db), KODE_RS_JDBC_HOME=str(case / 'plugins'))
+    env = dict(environment, KODE_JAVA=str(wrapper), KODE_RS_DATABASE_HOME=str(db), KODE_RS_JDBC_HOME=str(case / 'plugins'))
+    if args.package:
+        env.pop('KODE_JDBC_HELPER', None)
+    else:
+        env['KODE_JDBC_HELPER'] = str(helper)
     with gateway_fixture(binary, project, env, case, args.ssh) as (gateway, url):
         browser = pw.chromium.launch(executable_path=args.chrome, headless=True, args=['--no-sandbox'])
         try:
@@ -251,10 +257,11 @@ def qualify_sql(pw, args, binary, base, environment, cases):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--ttyd', default=os.environ.get('KODE_TTYD'))
+    parser.add_argument('--package', type=Path, help='Qualify a complete extracted Linux package with its adjacent ttyd/helper')
     parser.add_argument('--chrome', default=shutil.which('google-chrome') or shutil.which('chromium'))
     parser.add_argument('--ssh', action='store_true', help='Use isolated local OpenSSH servers and real -L tunnels for browser traffic')
     args = parser.parse_args()
-    assert args.ttyd and args.chrome, 'Provide a real ttyd executable and Chrome'
+    assert (args.ttyd or args.package) and args.chrome, 'Provide a package or real ttyd executable, and Chrome'
     cases = []
     with tempfile.TemporaryDirectory(prefix='kode-serve-browser-') as directory, sync_playwright() as pw:
         base = Path(directory)
@@ -265,20 +272,29 @@ def main():
         bin_dir = base / 'bin with spaces'
         bin_dir.mkdir()
         binary = bin_dir / 'kode'
-        try:
-            os.link(ROOT / 'target/debug/kode', binary)
-        except OSError:
-            shutil.copy2(ROOT / 'target/debug/kode', binary)
+        if args.package:
+            shutil.copytree(args.package, bin_dir, dirs_exist_ok=True)
+        else:
+            try:
+                os.link(ROOT / 'target/debug/kode', binary)
+            except OSError:
+                shutil.copy2(ROOT / 'target/debug/kode', binary)
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
         catalog = base / 'lsp.json'
         catalog.write_text('{"servers":[]}')
-        env = dict(os.environ, KODE_TTYD=str(Path(args.ttyd).resolve()), XDG_CONFIG_HOME=str(base / 'config'),
+        env = dict(os.environ, XDG_CONFIG_HOME=str(base / 'config'),
                    KODE_RS_HOME=str(base / 'resources'), KODE_HOME=str(base / 'legacy-resources'),
                    KODE_LSP_CATALOG=str(catalog), KODE_LSP_HOME=str(base / 'lsp'),
                    KODE_RS_DATABASE_HOME=str(base / 'database'), KODE_RS_JDBC_HOME=str(base / 'plugins'),
                    KODE_JAVA=str(base / 'absent-java'))
+        if args.package:
+            env.pop('KODE_TTYD', None)
+            env.pop('KODE_JDBC_HELPER', None)
+            env.pop('LD_LIBRARY_PATH', None)
+        else:
+            env['KODE_TTYD'] = str(Path(args.ttyd).resolve())
         for key in ['DISPLAY', 'WAYLAND_DISPLAY', 'DBUS_SESSION_BUS_ADDRESS', 'KODE_CODEINTEL_PATH']:
             env.pop(key, None)
         credential = 'fixture:synthetic-password'
@@ -321,13 +337,38 @@ def main():
                 visible(page, 'browser original')
                 page.keyboard.press('Control+s')
                 until(lambda: file.read_text() == 'browser original\n', 'physical browser save')
+                # B007: actual GUI key events traverse ttyd/xterm at both widths.
+                panel_targets=[('Files','code.rs'),('Project','Project Settings'),('Git','[r] [b] [t] [T]'),('Database','Databases'),('REST','REST API'),('About','Kode '),('Settings','LSP Servers'),('Help','Kode shortcuts')]
+                panel_sizes=[]
+                for size in [{'width':1100,'height':650},{'width':640,'height':420}]:
+                    page.set_viewport_size(size)
+                    visible(page,'browser original')
+                    for number,(title,marker) in enumerate(panel_targets,1):
+                        click_text(page,'browser original')
+                        page.keyboard.press(f'Alt+{number}')
+                        page.wait_for_function("data => window.term && term.buffer.active.getLine(term.buffer.active.viewportY).translateToString(true).slice(0,36).includes(data[0]) && Array.from({length:term.rows-2},(_,i)=>term.buffer.active.getLine(i+1+term.buffer.active.viewportY)?.translateToString(true).slice(0,36)||'').join('\\n').includes(data[1])",arg=[title,marker],timeout=10000)
+                    panel_sizes.append(page.evaluate('[term.cols,term.rows]'))
+                assert file.read_text()=='browser original\n'
+                cases.append({'case':'browser-all-eight-panel-shortcuts-visual-order','status':'passed','terminal_sizes':panel_sizes,'editor_unchanged':True})
+                # Restore actual editor focus and the baseline clipboard caret.
+                click_text(page,'browser original')
+                page.keyboard.press('Home')
+                for _ in range(len('browser ')):
+                    page.keyboard.press('ArrowRight')
+                page.wait_for_function("() => { const y=Array.from({length:term.rows},(_,i)=>term.buffer.active.getLine(i+term.buffer.active.viewportY)?.translateToString(true)||'').findIndex(line=>line.includes('browser original')); const line=term.buffer.active.getLine(y+term.buffer.active.viewportY).translateToString(true); return term.buffer.active.cursorY===y && term.buffer.active.cursorX===line.indexOf('browser original')+7; }",timeout=10000)
+                page.set_viewport_size({'width':1100,'height':650})
+                visible(page,'browser original')
                 # xterm selection -> its existing browser copy listener.
                 page.evaluate("navigator.clipboard.writeText('sentinel')")
-                page.evaluate("""() => {
+                # Resize can clear xterm between a visible-text wait and the
+                # selection. Test and select the actual row in one browser task.
+                until(lambda: page.evaluate("""() => {
                     const lines = Array.from({length:term.rows},(_,i)=>term.buffer.active.getLine(i+term.buffer.active.viewportY)?.translateToString(true)||'');
                     const y = lines.findIndex(line=>line.includes('browser original'));
+                    if (y < 0) return false;
                     term.select(lines[y].indexOf('browser original'), y+term.buffer.active.viewportY, 16);
-                }""")
+                    return true;
+                }"""), 'rendered editor row after resize')
                 until(lambda: page.evaluate('navigator.clipboard.readText()') == 'browser original', 'xterm browser copy')
                 page.evaluate('term.clearSelection(); term.focus()')
                 page.set_viewport_size({'width': 640, 'height': 360})
@@ -372,7 +413,12 @@ def main():
             assert base64.b64encode(credential.encode()).decode() not in output, 'ttyd leaked its Basic auth token'
         qualify_stream(pw, args, binary, base, env, cases)
         qualify_sql(pw, args, binary, base, env, cases)
-    (ROOT / 'docs/parity/Z01-browser.json').write_text(json.dumps({'transport': 'ssh-forwarded-loopback' if args.ssh else 'loopback', 'cases': cases, 'passed': len(cases)}, indent=2) + '\n')
+    if args.package:
+        (ROOT / 'docs/parity/Z03-browser.json').write_text(json.dumps({'package_manifest_sha256':__import__('hashlib').sha256((args.package / 'package-manifest.json').read_bytes()).hexdigest(),'transport':'ssh-forwarded-loopback' if args.ssh else 'loopback','packaged':True,'adjacent_ttyd':True,'adjacent_helper':True,'developer_library_path':False,'cases':cases,'passed':len(cases)},indent=2)+'\n')
+    else:
+        (ROOT / 'docs/parity/Z01-browser.json').write_text(json.dumps({'transport': 'ssh-forwarded-loopback' if args.ssh else 'loopback', 'cases': cases, 'passed': len(cases)}, indent=2) + '\n')
+        panel_cases=[case for case in cases if case['case']=='browser-all-eight-panel-shortcuts-visual-order']
+        (ROOT / 'docs/parity/U10-browser.json').write_text(json.dumps({'transport':'ssh-forwarded-loopback' if args.ssh else 'loopback','cases':panel_cases,'passed':len(panel_cases)},indent=2)+'\n')
     print(f'Passed {len(cases)} real ttyd/Chrome browser checks')
 
 

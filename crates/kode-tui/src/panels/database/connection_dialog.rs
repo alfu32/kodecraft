@@ -63,6 +63,7 @@ pub struct Draft {
 }
 pub enum Action {
     Details,
+    JavaRuntime,
     Test(Draft),
     Download(Draft),
     Save(Draft),
@@ -79,6 +80,8 @@ pub struct ConnectionDialog {
     pub fields: Vec<TextField>,
     pub focus: usize,
     pub status: String,
+    pub java_required: bool,
+    java_hit: Rect,
     pub busy: Option<JobTag>,
     pub auto_commit: bool,
     pub read_only: bool,
@@ -159,6 +162,8 @@ impl ConnectionDialog {
             original: existing.clone(),
             id,
             actions: vec![],
+            java_required: false,
+            java_hit: Rect::default(),
             popup: None,
             popup_selected: 0,
             recents: BTreeMap::new(),
@@ -446,6 +451,7 @@ impl ConnectionDialog {
         self.checkboxes = [Rect::default(); 2];
         self.driver_hit = Rect::default();
         self.details_hit = Rect::default();
+        self.java_hit = Rect::default();
         let modal = centered(area.intersection(buffer.area), 86, 34);
         if modal.is_empty() {
             return None;
@@ -627,8 +633,27 @@ impl ConnectionDialog {
             };
             let y = content.bottom() - footer - 1;
             self.details_hit = Rect::new(content.right() - width, y, width, 1);
+            let java_width = if self.java_required {
+                content.width.saturating_sub(width).min(14)
+            } else {
+                0
+            };
+            self.java_hit = Rect::new(content.x, y, java_width, 1);
+            if java_width > 0 {
+                draw_text(
+                    self.java_hit,
+                    buffer,
+                    "[F5 Get Java]",
+                    theme.style("lsp-button"),
+                );
+            }
             draw_text(
-                Rect::new(content.x, y, content.width - width, 1),
+                Rect::new(
+                    content.x + java_width,
+                    y,
+                    content.width - width - java_width,
+                    1,
+                ),
                 buffer,
                 &display_text(&crate::widgets::diagnostic::summary(&self.status)),
                 theme.style("content"),
@@ -699,6 +724,10 @@ impl ConnectionDialog {
 }
 impl EventTarget for ConnectionDialog {
     fn dispatch(&mut self, event: &InputEvent) -> bool {
+        if self.java_required && crate::widgets::controls::button(event, self.java_hit, false) {
+            self.actions.push(Action::JavaRuntime);
+            return true;
+        }
         if crate::widgets::controls::button(event, self.details_hit, false) {
             self.actions.push(Action::Details);
             return true;

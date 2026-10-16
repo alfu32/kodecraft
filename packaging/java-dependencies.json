@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "artifacts": [
+    {
+      "group": "com.fasterxml.jackson.core",
+      "artifact": "jackson-annotations",
+      "version": "2.21",
+      "jarSha256": "53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b",
+      "pomSha256": "71cac5392151e2a528cc9a09179f0a334179f05c52f8e596cf58ddf12bb27f2b"
+    },
+    {
+      "group": "com.fasterxml.jackson.core",
+      "artifact": "jackson-core",
+      "version": "2.21.4",
+      "jarSha256": "4b40a06396f239f8de2da57419adde6e94e5edc18a2171d471ea05eeed4e5c2d",
+      "pomSha256": "e74ac8ef4ae9d5e504ab7fbda5f61a39645b7a3e662246d5d090a9c0b22e7fdf"
+    },
+    {
+      "group": "com.fasterxml.jackson.core",
+      "artifact": "jackson-databind",
+      "version": "2.21.4",
+      "jarSha256": "3888e9e69ab66fbacaacc9aea0e9ffbf15368288e4aca468b024dba11c09fbf9",
+      "pomSha256": "58c9c87c3d46ec8fb57d855fc675185e01147f3a9a415a92a2e464a5c02b9cec"
+    },
+    {
+      "group": "com.google.code.gson",
+      "artifact": "gson",
+      "version": "2.14.0",
+      "jarSha256": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f",
+      "pomSha256": "1fa0122c0e3733192642861c36be4c6f799a795327a23bdd2922691b6e9ba480"
+    },
+    {
+      "group": "com.google.errorprone",
+      "artifact": "error_prone_annotations",
+      "version": "2.48.0",
+      "jarSha256": "b49c5c958316ed67a09c699dda9aa749caf434d51d863dea599ef36a49b9c855",
+      "pomSha256": "189e09ad0489c325e90daaa9d5c8f406330602fa366609bca07cbcdad03ab9da"
+    },
+    {
+      "group": "com.h2database",
+      "artifact": "h2",
+      "version": "2.2.224",
+      "jarSha256": "b9d8f19358ada82a4f6eb5b174c6cfe320a375b5a9cb5a4fe456d623e6e55497",
+      "pomSha256": "0d4503a01a4c7a62f91ae1a6271339cf806f2a462defe0beff5effd5a611e398"
+    },
+    {
+      "group": "commons-codec",
+      "artifact": "commons-codec",
+      "version": "1.22.1",
+      "jarSha256": "78a5d732fbd715e2d10bd7150d2f8030bae57267f8aacc5c88f642cb6c2e5d3f",
+      "pomSha256": "4cfc5aa20112d131c6949f80bb1e8adce39ffea9a5a935b4c9a37b7c9aab1c91"
+    },
+    {
+      "group": "org.apache.httpcomponents",
+      "artifact": "httpclient",
+      "version": "4.5.14",
+      "jarSha256": "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
+      "pomSha256": "f18355af4cf80a8a4ef04ebd742a47e90a7eaf080c725b2095dbc4fc5dbdefb7"
+    },
+    {
+      "group": "org.apache.httpcomponents",
+      "artifact": "httpcore",
+      "version": "4.4.16",
+      "jarSha256": "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
+      "pomSha256": "3cbad849b35dacfe6cec31adada2c623c026c3261141b0d26eec7e399c6cd7fa"
+    },
+    {
+      "group": "org.apache.maven",
+      "artifact": "maven-artifact",
+      "version": "3.9.16",
+      "jarSha256": "54cc1c1ef932e3d4a903352111b42b4d3c3ed8e7a1d0de73b625309d9c3ad3e8",
+      "pomSha256": "85d313bbbdbce67e199aadb4336e100c40a147881142ea4368cdebeafc02baec"
+    },
+    {
+      "group": "org.apache.maven",
+      "artifact": "maven-builder-support",
+      "version": "3.9.16",
+      "jarSha256": "02972384eae3495801565fd27abb84cfd75a8e6d2cbb1ae0c556752ebc2b1cde",
+      "pomSha256": "c8366af883eeec0e2fd13e14cd8245969284b6e66df131f7b7c03d270f72f613"
+    },
+    {
+      "group": "org.apache.maven",
+      "artifact": "maven-model",
+      "version": "3.9.16",
+      "jarSha256": "f59d86a507c241bf17bbf050050d1b8b9c0d34d5010a7e2386c3cab7c83b93de",
+      "pomSha256": "64883ffcfd91ddaadb4181740236a823bfe0880e0c20f5beee74bc32a93914a7"
+    },
+    {
+      "group": "org.apache.maven",
+      "artifact": "maven-model-builder",
+      "version": "3.9.16",
+      "jarSha256": "002be86d1f53b36f559a0786034a17598d71087f1935f205a1f9e51d4dd124b3",
+      "pomSha256": "6e2a59eadd77b244fe60fc60b7ed3a9b2dee704d44a4f5baca4f9d3be6e53e10"
+    },
+    {
+      "group": "org.apache.maven",
+      "artifact": "maven-repository-metadata",
+      "version": "3.9.16",
+      "jarSha256": "bc3dd413b89a16b695f35a5d0496b58ea2787c30b7b6062c130d24d6d764720f",
+      "pomSha256": "1c018bbd6cd513b43df5dd64c82579b14c414d35f99e06a0c3878b05ae070912"
+    },
+    {
+      "group": "org.apache.maven",
+      "artifact": "maven-resolver-provider",
+      "version": "3.9.16",
+      "jarSha256": "72a2d6aad3708e2c708b659b292ae9587a4d170ec88f48466290318730221118",
+      "pomSha256": "33723bba45ff2a1581bc2840836b7d9c9aa262af676f4f61222e179b56ea8818"
+    },
+    {
+      "group": "org.apache.maven.resolver",
+      "artifact": "maven-resolver-api",
+      "version": "2.0.23",
+      "jarSha256": "09936824b41e3e4de07d795b32c61968f52df618ee5fa41f307dcedc52461ce6",
+      "pomSha256": "4d616c4558f454f1a369b4aff95b0a8c457889519e80687936542daa71abb0f8"
+    },
+    {
+      "group": "org.apache.maven.resolver",
+      "artifact": "maven-resolver-connector-basic",
+      "version": "2.0.23",
+      "jarSha256": "bf8a706c2228c2f0f96f38377b85f3171206c52735054e3a8dc7e17e4fc033d4",
+      "pomSha256": "7ad1c601987789214afe17d9de9f29f73f9b1106e3177fd96f86827f4b7ac3af"
+    },
+    {
+      "group": "org.apache.maven.resolver",
+      "artifact": "maven-resolver-impl",
+      "version": "2.0.23",
+      "jarSha256": "54e689a66e69bf2c113054b22e4b54a838b268957db4781f742230cdea4bd9d3",
+      "pomSha256": "df2b1a3d12a6e449a36584b043a8e35d39e0c0ed9ca53cec5b9bfba1f7c122da"
+    },
+    {
+      "group": "org.apache.maven.resolver",
+      "artifact": "maven-resolver-named-locks",
+      "version": "2.0.23",
+      "jarSha256": "6254abd534b8159186f0e5432aad4de346fce7e2588d200356378aebf1e9305f",
+      "pomSha256": "9fafaaa8f23bc9ad65136ed9e07ccab1437b5c0c708f0a0b600a888e03fa22aa"
+    },
+    {
+      "group": "org.apache.maven.resolver",
+      "artifact": "maven-resolver-spi",
+      "version": "2.0.23",
+      "jarSha256": "9f7779351aa9946cbd20568df4a159f87f270b05f2c80c6c7f125a22284ea0a4",
+      "pomSha256": "df77d4fee0df61290c0ce146623669e4d5971512176b1c8c03271e16dd8403d1"
+    },
+    {
+      "group": "org.apache.maven.resolver",
+      "artifact": "maven-resolver-supplier-mvn3",
+      "version": "2.0.23",
+      "jarSha256": "78999d46240ef0027e9a738bb9b1c97abf7ee43f5b1e2f5c6c35e146a29be63a",
+      "pomSha256": "37300aeda82c4258b955eed452527dc14ca8d5bb270d0657b184e68ec2f4d609"
+    },
+    {
+      "group": "org.apache.maven.resolver",
+      "artifact": "maven-resolver-transport-apache",
+      "version": "2.0.23",
+      "jarSha256": "7e4148d1262faac91e248cab6f461f676c7810673a18939b0fff7028d7e00e24",
+      "pomSha256": "20ca99587f6659dd869c0fe1b00269bdc5c8510b992115956a00765b2e83b1fd"
+    },
+    {
+      "group": "org.apache.maven.resolver",
+      "artifact": "maven-resolver-transport-file",
+      "version": "2.0.23",
+      "jarSha256": "1ced7e438ca32e5df21355df6320f290f127c8891c37abf31364c2c8a63942c6",
+      "pomSha256": "a6be830edab2775ef1ed1843007bc13ef99bbd39f34b6a9cc536b72f82d42023"
+    },
+    {
+      "group": "org.apache.maven.resolver",
+      "artifact": "maven-resolver-util",
+      "version": "2.0.23",
+      "jarSha256": "636215370348fc6f895d33ac7f1b40f68385f9262a5bba46019ff9545c161642",
+      "pomSha256": "9aec705adf119672448492286b19955f13d807c3b3604c7e8afd0b22f7e0651e"
+    },
+    {
+      "group": "org.codehaus.plexus",
+      "artifact": "plexus-interpolation",
+      "version": "1.29",
+      "jarSha256": "088d444dbcedfb384630d8686697ece3c401d6f33c8f8b3aa7259ea1c6996878",
+      "pomSha256": "ce0d5634297bb1e065dddfdc8a2a5675717c08e8f4783edcf581543711516938"
+    },
+    {
+      "group": "org.codehaus.plexus",
+      "artifact": "plexus-utils",
+      "version": "3.6.1",
+      "jarSha256": "05a63effd67e2d6b9d610cc82e2bd7473289d34802e57a529b28110f28af5679",
+      "pomSha256": "c8397373781af640a76c5da88f1674293b4fc9a2391d0768ee3fc791883b040d"
+    },
+    {
+      "group": "org.ow2.asm",
+      "artifact": "asm",
+      "version": "9.9.1",
+      "jarSha256": "6f3828a215c920059a5efa2fb55c233d6c54ec5cadca99ce1b1bdd10077c7ddd",
+      "pomSha256": "aca68dee9ba2f6cd90ffde728efdc7e3ebfcf59f3f41fbfe248d2d01d5b866af"
+    },
+    {
+      "group": "org.slf4j",
+      "artifact": "jcl-over-slf4j",
+      "version": "2.0.19",
+      "jarSha256": "efc3848f79638d9fa74ccbae3fd18c8735dcc0127b393ae53dce638827f8a2f3",
+      "pomSha256": "5e27dde680acf7f360edb0d0fae9a810bc79113224e0caf9f52b051b7f5d09ec"
+    },
+    {
+      "group": "org.slf4j",
+      "artifact": "slf4j-api",
+      "version": "2.0.19",
+      "jarSha256": "e91ff6d720609e7a194ffe758c3ed5c84e798617ae07b0a0f6a4fe229741b4bb",
+      "pomSha256": "b04a4843eaa29966807cc9508a9f2513fa563d0d0794cb0edd6a8d2c8f4620d0"
+    },
+    {
+      "group": "org.slf4j",
+      "artifact": "slf4j-nop",
+      "version": "2.0.17",
+      "jarSha256": "3716f83649ec66161a2edefd4f49df34d1dd1c51cdcf941996c6987260f0a829",
+      "pomSha256": "e5e548dce8c1c979138a7e96ca354510fa0ce103f0a6df53a1f5b25e9298b9b2"
+    }
+  ]
+}

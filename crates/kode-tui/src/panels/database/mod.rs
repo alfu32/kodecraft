@@ -2,6 +2,7 @@ pub mod connection_dialog;
 pub mod console;
 pub mod controller;
 pub mod driver_install;
+pub mod java_runtime;
 pub mod object_menu;
 pub mod results;
 pub mod session_dialog;

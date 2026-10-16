@@ -12,6 +12,7 @@ use std::{
     fs::{self, File, OpenOptions},
     io::{Read, Write},
     path::{Path, PathBuf},
+    sync::OnceLock,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 pub const MAX_DOWNLOAD_BYTES: u64 = 256 * 1024 * 1024;
@@ -39,19 +40,33 @@ pub trait PackageFetcher: Send + Sync {
     ) -> Result<()>;
 }
 pub struct HttpFetcher {
-    client: reqwest::Client,
+    client: OnceLock<reqwest::Client>,
     runtime: tokio::runtime::Handle,
 }
 impl HttpFetcher {
+    /// Captures only the scheduler handle. CA/TLS initialization belongs to an
+    /// explicit download worker, so a missing trust store cannot stop the editor.
     pub fn new(runtime: tokio::runtime::Handle) -> Result<Self> {
+        Ok(Self {
+            client: OnceLock::new(),
+            runtime,
+        })
+    }
+    fn client(&self) -> Result<reqwest::Client> {
+        if let Some(client) = self.client.get() {
+            return Ok(client.clone());
+        }
         let client = reqwest::Client::builder()
             .user_agent("kode-rs/0.1 lsp-installer")
             .connect_timeout(Duration::from_secs(15))
             .timeout(Duration::from_secs(180))
             .redirect(reqwest::redirect::Policy::limited(10))
             .build()
-            .map_err(|e| DomainError::HttpTransport(e.to_string()))?;
-        Ok(Self { client, runtime })
+            .map_err(|_| DomainError::HttpTransport("Cannot configure the LSP download client; check system CA certificates and TLS support, then retry".into()))?;
+        // Failed construction is not cached: installing/repairing the trust
+        // store permits an explicit retry in the same workspace.
+        let _ = self.client.set(client.clone());
+        Ok(self.client.get().cloned().unwrap_or(client))
     }
 }
 impl PackageFetcher for HttpFetcher {
@@ -63,12 +78,14 @@ impl PackageFetcher for HttpFetcher {
         cancel: &CancellationToken,
         progress: &mut dyn FnMut(u64, Option<u64>),
     ) -> Result<()> {
+        check(cancel)?;
+        let client = self.client()?;
         self.runtime.block_on(async {
             tokio::select! {
                 biased;
                 _=cancel.cancelled()=>Err(DomainError::Cancelled),
                 result=async {
-                    let mut response=self.client.get(url).send().await.map_err(|e|DomainError::HttpTransport(e.to_string()))?.error_for_status().map_err(|e|DomainError::HttpTransport(e.to_string()))?;
+                    let mut response=client.get(url).send().await.map_err(|e|DomainError::HttpTransport(e.to_string()))?.error_for_status().map_err(|e|DomainError::HttpTransport(e.to_string()))?;
                     let total=response.content_length();
                     if total.is_some_and(|total|total>MAX_DOWNLOAD_BYTES) { return Err(invalid("package exceeds 256 MiB download limit")); }
                     let mut count=0u64;

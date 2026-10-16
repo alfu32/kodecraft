@@ -1,0 +1,10 @@
+{
+  "helperReproducible": true,
+  "sha256": "023cd4bcf21d9ae730aa964a1bf77abe0dffae1485fa9067156b8bbfc30ae4af",
+  "javaTests": {
+    "passed": 64,
+    "failed": 0,
+    "skipped": 0
+  },
+  "runtimeArtifactsPinned": 30
+}

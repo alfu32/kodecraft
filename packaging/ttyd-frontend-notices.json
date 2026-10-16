@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "ttydSourceRevision": "a8ae135643c0ed7164f59f14f537b0b11f7a9788",
+  "yarnLockSha256": "3be568ff9edc887e9ff60c7b2863aa00bace010fd13f6ca7d5d2bcc333b825fc",
+  "packages": [
+    {
+      "name": "@xterm/addon-canvas",
+      "version": "0.7.0",
+      "license": "MIT",
+      "resolution": "@xterm/addon-canvas@npm:0.7.0",
+      "npmTarball": "https://registry.npmjs.org/@xterm/addon-canvas/-/addon-canvas-0.7.0.tgz",
+      "npmIntegrity": "sha512-LF5LYcfvefJuJ7QotNRdRSPc9YASAVDeoT5uyXS/nZshZXjYplGXRECBGiznwvhNL2I8bq1Lf5MzRwstsYQ2Iw==",
+      "npmTarballSha256": "f8004a9c444289c686ac9b58df98505f3e027fcfea411b6845f9279cc281a774",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/@xterm__addon-canvas-0.7.0/LICENSE",
+          "sha256": "689ceb10716bd7a87a804c14951d7c2b818cbd60aab83d540902470ce3b13444"
+        }
+      ]
+    },
+    {
+      "name": "@xterm/addon-clipboard",
+      "version": "0.1.0",
+      "license": "MIT",
+      "resolution": "@xterm/addon-clipboard@npm:0.1.0",
+      "npmTarball": "https://registry.npmjs.org/@xterm/addon-clipboard/-/addon-clipboard-0.1.0.tgz",
+      "npmIntegrity": "sha512-zdoM7p53T5sv/HbRTyp4hY0kKmEQ3MZvAvEtiXqNIHc/JdpqwByCtsTaQF5DX2n4hYdXRPO4P/eOS0QEhX1nPw==",
+      "npmTarballSha256": "6cbc7814658cd5e57763c98dd3e3ce79d2adefe2a9e4f96ff97fd40a45ba39e4",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/@xterm__addon-clipboard-0.1.0/LICENSE",
+          "sha256": "a26afeeba9ab0a19502a73df658d8fb09186d0906c81af6c04d334064971e81f"
+        }
+      ]
+    },
+    {
+      "name": "@xterm/addon-fit",
+      "version": "0.10.0",
+      "license": "MIT",
+      "resolution": "@xterm/addon-fit@npm:0.10.0",
+      "npmTarball": "https://registry.npmjs.org/@xterm/addon-fit/-/addon-fit-0.10.0.tgz",
+      "npmIntegrity": "sha512-UFYkDm4HUahf2lnEyHvio51TNGiLK66mqP2JoATy7hRZeXaGMRDr00JiSF7m63vR5WKATF605yEggJKsw0JpMQ==",
+      "npmTarballSha256": "917ac44972453d5eed52edc1e50260c76398ce48cf2290c2e60671102bba0b33",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/@xterm__addon-fit-0.10.0/LICENSE",
+          "sha256": "e256f01188af527e4d06d21d06fbf785ae9c50d4b328bf03cbe0ba7f0aa4228f"
+        }
+      ]
+    },
+    {
+      "name": "@xterm/addon-image",
+      "version": "0.8.0",
+      "license": "MIT",
+      "resolution": "@xterm/addon-image@npm:0.8.0",
+      "npmTarball": "https://registry.npmjs.org/@xterm/addon-image/-/addon-image-0.8.0.tgz",
+      "npmIntegrity": "sha512-b/dqpFn3jUad2pUP5UpF4scPIh0WdxRQL/1qyiahGfUI85XZTCXo0py9G6AcOR2QYUw8eJ8EowGspT7BQcgw6A==",
+      "npmTarballSha256": "002f7492884300c0ed691bbe7381263d066b6b074d531b131466d8c774565fc0",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/@xterm__addon-image-0.8.0/LICENSE",
+          "sha256": "00994f891153ba5d613e2b838a9ad2f47d4484070cb594b46efc547ebea5ca05"
+        }
+      ]
+    },
+    {
+      "name": "@xterm/addon-unicode11",
+      "version": "0.8.0",
+      "license": "MIT",
+      "resolution": "@xterm/addon-unicode11@npm:0.8.0",
+      "npmTarball": "https://registry.npmjs.org/@xterm/addon-unicode11/-/addon-unicode11-0.8.0.tgz",
+      "npmIntegrity": "sha512-LxinXu8SC4OmVa6FhgwsVCBZbr8WoSGzBl2+vqe8WcQ6hb1r6Gj9P99qTNdPiFPh4Ceiu2pC8xukZ6+2nnh49Q==",
+      "npmTarballSha256": "0202c50aaa686eceb13301875788f6465d35bd0d3304bf26a913a0278e434d0f",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/@xterm__addon-unicode11-0.8.0/LICENSE",
+          "sha256": "e256f01188af527e4d06d21d06fbf785ae9c50d4b328bf03cbe0ba7f0aa4228f"
+        }
+      ]
+    },
+    {
+      "name": "@xterm/addon-web-links",
+      "version": "0.11.0",
+      "license": "MIT",
+      "resolution": "@xterm/addon-web-links@npm:0.11.0",
+      "npmTarball": "https://registry.npmjs.org/@xterm/addon-web-links/-/addon-web-links-0.11.0.tgz",
+      "npmIntegrity": "sha512-nIHQ38pQI+a5kXnRaTgwqSHnX7KE6+4SVoceompgHL26unAxdfP6IPqUTSYPQgSwM56hsElfoNrrW5V7BUED/Q==",
+      "npmTarballSha256": "cad54687a1447f87cd8dd9ce454d4d657d18cc7179e9179908f391b4512f74a0",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/@xterm__addon-web-links-0.11.0/LICENSE",
+          "sha256": "689ceb10716bd7a87a804c14951d7c2b818cbd60aab83d540902470ce3b13444"
+        }
+      ]
+    },
+    {
+      "name": "@xterm/addon-webgl",
+      "version": "0.18.0",
+      "license": "MIT",
+      "resolution": "@xterm/addon-webgl@npm:0.18.0",
+      "npmTarball": "https://registry.npmjs.org/@xterm/addon-webgl/-/addon-webgl-0.18.0.tgz",
+      "npmIntegrity": "sha512-xCnfMBTI+/HKPdRnSOHaJDRqEpq2Ugy8LEj9GiY4J3zJObo3joylIFaMvzBwbYRg8zLtkO0KQaStCeSfoaI2/w==",
+      "npmTarballSha256": "6229e5c0b66a9de0e155602e90586605c53b91d6af657a6cbe2b8377d6019370",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/@xterm__addon-webgl-0.18.0/LICENSE",
+          "sha256": "21b975c39532001d431dc3b2c29fbff691d83f370833a66b54698bda290fde0e"
+        }
+      ]
+    },
+    {
+      "name": "@xterm/xterm",
+      "version": "5.5.0",
+      "license": "MIT",
+      "resolution": "@xterm/xterm@npm:5.5.0",
+      "npmTarball": "https://registry.npmjs.org/@xterm/xterm/-/xterm-5.5.0.tgz",
+      "npmIntegrity": "sha512-hqJHYaQb5OptNunnyAnkHyM8aCjZ1MEIDTQu1iIbbTD/xops91NB5yq1ZK/dC2JDbVWtF23zUtl9JE2NqwT87A==",
+      "npmTarballSha256": "bd954fa721872170188cc5d7e83e88db3c83c9a18a4e8d24c2783d26491f59d2",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/@xterm__xterm-5.5.0/LICENSE",
+          "sha256": "b569f629d00f2626a8100df2a1798210535621e42164dfd426a6fe5aac7b0ccd"
+        }
+      ]
+    },
+    {
+      "name": "crc-32",
+      "version": "1.2.0",
+      "license": "Apache-2.0",
+      "resolution": "crc-32@npm:1.2.0",
+      "npmTarball": "https://registry.npmjs.org/crc-32/-/crc-32-1.2.0.tgz",
+      "npmIntegrity": "sha512-1uBwHxF+Y/4yF5G48fwnKq6QsIXheor3ZLPT80yGBV1oEUwpPojlEhQbWKVw1VwcTQyMGHK1/XMmTjmlsmTTGA==",
+      "npmTarballSha256": "8605eb8945f69f8535fdf5da981858cbb4f65089e4ba4dac505d0d4e0197cd62",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/crc-32-1.2.0/LICENSE",
+          "sha256": "16800fe75918dc12c766d87facdbdbac589a2484a6384f7896d2f731ad2f7a82"
+        }
+      ]
+    },
+    {
+      "name": "decko",
+      "version": "1.2.0",
+      "license": null,
+      "resolution": "decko@npm:1.2.0",
+      "npmTarball": "https://registry.npmjs.org/decko/-/decko-1.2.0.tgz",
+      "npmIntegrity": "sha512-m8FnyHXV1QX+S1cl+KPFDIl6NMkxtKsy6+U/aYyjrOqWMuwAwYWu7ePqrsUHtDR5Y8Yk2pi/KIDSgF+vT4cPOQ==",
+      "npmTarballSha256": "6860e1f3b5c6f5a07d5f073f481c25a3ea7c76522c0ca9fa17c2e4133c66885a",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/decko-1.2.0/LICENSE",
+          "sha256": "d20ef4c192faa3c560bc50bdd780f686804e355957d4146ddf8cbb58eb2e3dba"
+        }
+      ]
+    },
+    {
+      "name": "exit-on-epipe",
+      "version": "1.0.1",
+      "license": "Apache-2.0",
+      "resolution": "exit-on-epipe@npm:1.0.1",
+      "npmTarball": "https://registry.npmjs.org/exit-on-epipe/-/exit-on-epipe-1.0.1.tgz",
+      "npmIntegrity": "sha512-h2z5mrROTxce56S+pnvAV890uu7ls7f1kEvVGJbw1OlFH3/mlJ5bkXu0KRyW94v37zzHPiUd55iLn3DA7TjWpw==",
+      "npmTarballSha256": "03acb9c098be489267fd44e0d649c0bb5ddca8fa96b60f04c92abe247907cb69",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/exit-on-epipe-1.0.1/LICENSE",
+          "sha256": "88bbd88981c68328cd1b955bb3e761fafed29abe14dc41a5c958bd5d99bf2523"
+        }
+      ]
+    },
+    {
+      "name": "file-saver",
+      "version": "2.0.5",
+      "license": "MIT",
+      "resolution": "file-saver@npm:2.0.5",
+      "npmTarball": "https://registry.npmjs.org/file-saver/-/file-saver-2.0.5.tgz",
+      "npmIntegrity": "sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==",
+      "npmTarballSha256": "fe24d9050bb56fad3ba75747f11cc600aa340cfa1c6f07454b6e7b0ba9627cf7",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/file-saver-2.0.5/LICENSE.md",
+          "sha256": "2d1d7a93b46e4274355ac2904428707c4ee47ee8c6029fa394ebf405648d3f63"
+        }
+      ]
+    },
+    {
+      "name": "js-base64",
+      "version": "3.7.7",
+      "license": "BSD-3-Clause",
+      "resolution": "js-base64@npm:3.7.7",
+      "npmTarball": "https://registry.npmjs.org/js-base64/-/js-base64-3.7.7.tgz",
+      "npmIntegrity": "sha512-7rCnleh0z2CkXhH67J8K1Ytz0b2Y+yxTPL+/KOJoa20hfnVQ/3/T6W/KflYI4bRHRagNeXeU2bkNGI3v1oS/lw==",
+      "npmTarballSha256": "097efa419e4ee43214424e0719f29ed8bcb7584c507e48d0f06246efb99342c3",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/js-base64-3.7.7/LICENSE.md",
+          "sha256": "fcf06aacb36ee29237110d6b3a9fbd6296e85ad4324263abf5f8a5cfb5706c81"
+        }
+      ]
+    },
+    {
+      "name": "preact",
+      "version": "10.19.6",
+      "license": "MIT",
+      "resolution": "preact@npm:10.19.6",
+      "npmTarball": "https://registry.npmjs.org/preact/-/preact-10.19.6.tgz",
+      "npmIntegrity": "sha512-gympg+T2Z1fG1unB8NH29yHJwnEaCH37Z32diPDku316OTnRPeMbiRV9kTrfZpocXjdfnWuFUl/Mj4BHaf6gnw==",
+      "npmTarballSha256": "9fe683032a849893464e6b4e25938acd94ce3362567d05c796f81536ec70c20d",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/preact-10.19.6/LICENSE",
+          "sha256": "1fe6958409c8c257a70c587a18b6f7f412b179b456630790d30b2ec9a8e4b7d4"
+        },
+        {
+          "file": "licenses/ttyd-frontend/preact-10.19.6/LICENSE",
+          "sha256": "1fe6958409c8c257a70c587a18b6f7f412b179b456630790d30b2ec9a8e4b7d4"
+        },
+        {
+          "file": "licenses/ttyd-frontend/preact-10.19.6/LICENSE",
+          "sha256": "1fe6958409c8c257a70c587a18b6f7f412b179b456630790d30b2ec9a8e4b7d4"
+        },
+        {
+          "file": "licenses/ttyd-frontend/preact-10.19.6/LICENSE",
+          "sha256": "1fe6958409c8c257a70c587a18b6f7f412b179b456630790d30b2ec9a8e4b7d4"
+        },
+        {
+          "file": "licenses/ttyd-frontend/preact-10.19.6/LICENSE",
+          "sha256": "1fe6958409c8c257a70c587a18b6f7f412b179b456630790d30b2ec9a8e4b7d4"
+        },
+        {
+          "file": "licenses/ttyd-frontend/preact-10.19.6/LICENSE",
+          "sha256": "1fe6958409c8c257a70c587a18b6f7f412b179b456630790d30b2ec9a8e4b7d4"
+        }
+      ]
+    },
+    {
+      "name": "printj",
+      "version": "1.1.2",
+      "license": "Apache-2.0",
+      "resolution": "printj@npm:1.1.2",
+      "npmTarball": "https://registry.npmjs.org/printj/-/printj-1.1.2.tgz",
+      "npmIntegrity": "sha512-zA2SmoLaxZyArQTOPj5LXecR+RagfPSU5Kw1qP+jkWeNlrq+eJZyY2oS68SU1Z/7/myXM4lo9716laOFAVStCQ==",
+      "npmTarballSha256": "0616b32b441a3389288d9d2cd558f5b8acf6ce604a4166fc4d32b840b6cdb030",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/printj-1.1.2/LICENSE",
+          "sha256": "9a8360add020fa3f028770dbc178d4028a20c4d9ea82cd39ffca447382209ef5"
+        },
+        {
+          "file": "licenses/ttyd-frontend/printj-1.1.2/LICENSE",
+          "sha256": "9a8360add020fa3f028770dbc178d4028a20c4d9ea82cd39ffca447382209ef5"
+        }
+      ]
+    },
+    {
+      "name": "trzsz",
+      "version": "1.1.5",
+      "license": "MIT",
+      "resolution": "trzsz@npm:1.1.5",
+      "npmTarball": "https://registry.npmjs.org/trzsz/-/trzsz-1.1.5.tgz",
+      "npmIntegrity": "sha512-yjL25MBVp7TPnUJZ3aqMAmsUo0fECm96BYllLac0CbsgYT/JpKIi9Fv7wJmBfBwYGn2xf7b/YRVrCmkhed3Nmw==",
+      "npmTarballSha256": "a968958895e0919d4f15428f461aecb279c6979bd69b79f525c0b7ef79f17b43",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/trzsz-1.1.5/LICENSE",
+          "sha256": "9fcfcc727eea90aa6a1568c598a8950c761ed811903684443a762e8aaf9e8492"
+        }
+      ]
+    },
+    {
+      "name": "whatwg-fetch",
+      "version": "3.6.20",
+      "license": "MIT",
+      "resolution": "whatwg-fetch@npm:3.6.20",
+      "npmTarball": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-3.6.20.tgz",
+      "npmIntegrity": "sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==",
+      "npmTarballSha256": "a5c77df8df7e140794763c4558954d50f04b5ff7fa80b0a0eec6b95f15b021af",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/whatwg-fetch-3.6.20/LICENSE",
+          "sha256": "c887d1c97797646dbb216925ab44a93c6b3e7f03bbe6ef6e0f92b8b8ade63014"
+        }
+      ]
+    },
+    {
+      "name": "zmodem.js",
+      "version": "0.1.10",
+      "license": "Apache-2.0",
+      "resolution": "zmodem.js@patch:zmodem.js@npm%3A0.1.10#./.yarn/patches/zmodem.js-npm-0.1.10-e5537fa2ed.patch::version=0.1.10&hash=064993&locator=ttyd%40workspace%3A.",
+      "npmTarball": "https://registry.npmjs.org/zmodem.js/-/zmodem.js-0.1.10.tgz",
+      "npmIntegrity": "sha512-Z1DWngunZ/j3BmIzSJpFZVNV73iHkj89rxXX4IciJdU9ga3nZ7rJ5LkfjV/QDsKhc7bazDWTTJCLJ+iRXD82dw==",
+      "npmTarballSha256": "012270a849aa685c93f01c68b9afe73b3d884cb550b76cd8d38fd6a37febc51a",
+      "files": [
+        {
+          "file": "licenses/ttyd-frontend/zmodem.js-0.1.10/LICENSE",
+          "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+        }
+      ]
+    }
+  ],
+  "patches": [
+    {
+      "file": "licenses/ttyd-frontend/zmodem.js-0.1.10/ttyd.patch",
+      "sha256": "5411e786ace86f7cc14db4723f129da1c21d04852f3c32a93f7021bdc64e37aa",
+      "sourcePath": "html/.yarn/patches/zmodem.js-npm-0.1.10-e5537fa2ed.patch"
+    }
+  ]
+}

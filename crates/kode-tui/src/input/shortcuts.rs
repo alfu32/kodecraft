@@ -553,6 +553,14 @@ pub static BINDINGS: &[Binding] = &[
         0,
         0,
         false,
+        [Key::Function(5)],
+        "Offer or show the optional Java runtime download when Java is unavailable"
+    ),
+    chord!(
+        Database,
+        0,
+        0,
+        false,
         [Key::Function(4)],
         "Open wrapped database diagnostic details; Ctrl+C copies; Esc closes"
     ),
@@ -939,7 +947,7 @@ pub fn help_lines() -> Vec<String> {
         "Conflict: plain Tab inserts indentation in shared editors; use Ctrl+Tab for Git/REST sections or project-search fields. Settings/About use plain Tab.".into(),
         "Read-only previews allow selection, copy, search and navigation; mutation and ordinary Save stay guarded. Raw REST preview retains its owner's Send action.".into(),
         "Terminal limits: classic encodings may merge Ctrl+Enter with Enter. Use SQL Execute/REST Send buttons. Browser tabs reserve Ctrl+T/Ctrl+W; Chrome --app mode is the existing workaround.".into(),
-        "Connection dialog: Alt+T tests, Alt+D installs a driver, Ctrl+S saves. URL Down opens Standard/Recents.".into(),
+        "Connection dialog: Alt+T tests, Alt+D installs a driver, Ctrl+S saves. F5 offers Java when unavailable. URL Down opens Standard/Recents.".into(),
         "About: Alt+6, Tab switches credits/languages, and each list scrolls independently. Click a language to select it.".into(),
     ]);
     lines

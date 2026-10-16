@@ -13,14 +13,14 @@ M002 uses a selectable/copyable authorization URL for completing login in a GUI 
 | B002 | Ctrl+F file search; Alt+F project search | **done** | [U01](tasks/11-uat.md) |
 | M002 | Authentication protocols and OAuth browser workflow | **done** | [R09](tasks/08-rest.md), [R10](tasks/08-rest.md) |
 | B003 | Readable multiline database error details | **done** | [U02](tasks/11-uat.md) |
-| M003 | Separate downloadable jlink runtime; retain flexible drivers | **todo** | [U03](tasks/11-uat.md) |
+| M003 | Separate downloadable jlink runtime; retain flexible drivers | **done** | [U03](tasks/11-uat.md) |
 | B004 | Multiple cursors and selections | **todo** | [U04](tasks/11-uat.md) |
 | M004 | 8/16/32-column hex layouts and text/binary find | **todo** | [U05](tasks/11-uat.md) |
 | M005 | Double-click and Alt+double-click word selection | **todo** | [U06](tasks/11-uat.md) |
 | M006 | File-tree picker buttons for path inputs | **todo** | [U07](tasks/11-uat.md) |
 | B005 | Project-relative open-file labels with optional full paths | **todo** | [U08](tasks/11-uat.md) |
 | B006 | Repair missing/failing language server installations | **todo** | [U09](tasks/11-uat.md) |
-| B007 | Alt+1..8 follow the current visual tab order | **in-progress** | [U10](tasks/11-uat.md) |
+| B007 | Alt+1..8 follow the current visual tab order | **done** | [U10](tasks/11-uat.md) |
 | M007 | Connection-type JDBC URL template dropdown | **todo** | [U11](tasks/11-uat.md) |
 | M008 | Applicable database package listing and DDL | **todo** | [U12](tasks/11-uat.md) |
 | B008 | Ephemeral local OAuth callback instead of Postman redirect | **done** | [R10](tasks/08-rest.md) |

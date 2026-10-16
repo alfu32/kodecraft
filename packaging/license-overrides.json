@@ -1,0 +1,220 @@
+{
+  "scope": "Exact upstream license files omitted from published Linux build/runtime crate archives",
+  "packages": [
+    {
+      "name": "base64-simd",
+      "version": "0.8.0",
+      "sourceRevision": "d74c030d9dc4f3cae02146d1f497ff62726ef09a",
+      "files": [
+        {
+          "file": "licenses/base64-simd-0.8.0/LICENSE",
+          "url": "https://raw.githubusercontent.com/Nugine/simd/d74c030d9dc4f3cae02146d1f497ff62726ef09a/LICENSE",
+          "sha256": "71674605ec4c087fe9eb534e3e4f9e26eb2e4aabcd76a29fd156c6a844d44b3d"
+        }
+      ]
+    },
+    {
+      "name": "eventsource-stream",
+      "version": "0.2.3",
+      "sourceRevision": "3d46f1c758f9ee4681e9da0427556d24c53f9c01",
+      "files": [
+        {
+          "file": "licenses/eventsource-stream-0.2.3/LICENSE-2.0.txt",
+          "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ],
+      "selectedLicense": "Apache-2.0"
+    },
+    {
+      "name": "oauth-credentials",
+      "version": "0.3.0",
+      "sourceRevision": "4a397b066140d46be70f094bafbb975d24359f33",
+      "files": [
+        {
+          "file": "licenses/oauth-credentials-0.3.0/LICENSE-MIT",
+          "url": "https://raw.githubusercontent.com/tesaguri/oauth1-request-rs/4a397b066140d46be70f094bafbb975d24359f33/LICENSE-MIT",
+          "sha256": "1384a3bfbea856df1aedbffdf4c14e2d9624dbfa9e0993a507c25a1ae9b1630b"
+        },
+        {
+          "file": "licenses/oauth-credentials-0.3.0/LICENSE-APACHE",
+          "url": "https://raw.githubusercontent.com/tesaguri/oauth1-request-rs/4a397b066140d46be70f094bafbb975d24359f33/LICENSE-APACHE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    },
+    {
+      "name": "oauth1-request",
+      "version": "0.6.1",
+      "sourceRevision": "2dfd70896872b05a1b02dc72cef3285234a30603",
+      "files": [
+        {
+          "file": "licenses/oauth1-request-0.6.1/LICENSE-MIT",
+          "url": "https://raw.githubusercontent.com/tesaguri/oauth1-request-rs/2dfd70896872b05a1b02dc72cef3285234a30603/LICENSE-MIT",
+          "sha256": "1384a3bfbea856df1aedbffdf4c14e2d9624dbfa9e0993a507c25a1ae9b1630b"
+        },
+        {
+          "file": "licenses/oauth1-request-0.6.1/LICENSE-APACHE",
+          "url": "https://raw.githubusercontent.com/tesaguri/oauth1-request-rs/2dfd70896872b05a1b02dc72cef3285234a30603/LICENSE-APACHE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-cpp",
+      "version": "0.23.4",
+      "sourceRevision": "f41e1a044c8a84ea9fa8577fdd2eab92ec96de02",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-cpp-0.23.4/LICENSE",
+          "url": "https://raw.githubusercontent.com/tree-sitter/tree-sitter-cpp/f41e1a044c8a84ea9fa8577fdd2eab92ec96de02/LICENSE",
+          "sha256": "2e0110e07abef7c2548b26ec9d6969775617ca539a0dc8dbeeb14d6452c711d1"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-d",
+      "version": "0.8.2",
+      "sourceRevision": "45e5f1e9d6de2c68591bc8e5ec662cf18e950b4a",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-d-0.8.2/LICENSE.txt",
+          "url": "https://raw.githubusercontent.com/gdamore/tree-sitter-d/45e5f1e9d6de2c68591bc8e5ec662cf18e950b4a/LICENSE.txt",
+          "sha256": "ecf206b1a27e8e4ea07f1e1529cb111b4be5ce8420bd27b8269981d9c0c389f8"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-html",
+      "version": "0.23.2",
+      "sourceRevision": "5a5ca8551a179998360b4a4ca2c0f366a35acc03",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-html-0.23.2/LICENSE",
+          "url": "https://raw.githubusercontent.com/tree-sitter/tree-sitter-html/5a5ca8551a179998360b4a4ca2c0f366a35acc03/LICENSE",
+          "sha256": "2e0110e07abef7c2548b26ec9d6969775617ca539a0dc8dbeeb14d6452c711d1"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-json",
+      "version": "0.24.8",
+      "sourceRevision": "ee35a6ebefcef0c5c416c0d1ccec7370cfca5a24",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-json-0.24.8/LICENSE",
+          "url": "https://raw.githubusercontent.com/tree-sitter/tree-sitter-json/ee35a6ebefcef0c5c416c0d1ccec7370cfca5a24/LICENSE",
+          "sha256": "2e0110e07abef7c2548b26ec9d6969775617ca539a0dc8dbeeb14d6452c711d1"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-lua",
+      "version": "0.5.0",
+      "sourceRevision": "10fe0054734eec83049514ea2e718b2a56acd0c9",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-lua-0.5.0/LICENSE.md",
+          "url": "https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-lua/10fe0054734eec83049514ea2e718b2a56acd0c9/LICENSE.md",
+          "sha256": "9a32b02e4c917b1ce6b5e79d8ea81e25cefd7f27d89c7235f2afb262c06cf32e"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-md",
+      "version": "0.5.3",
+      "sourceRevision": "f969cd3ae3f9fbd4e43205431d0ae286014c05b5",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-md-0.5.3/LICENSE",
+          "url": "https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-markdown/f969cd3ae3f9fbd4e43205431d0ae286014c05b5/LICENSE",
+          "sha256": "52ec8a1bf8256511e2a92613e0bb41ffefba3897f16fa958d7bb28c466dd4804"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-perl",
+      "version": "1.1.2",
+      "sourceRevision": "883ab51150f32583e4f6877a6bf16e9f83b8935f",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-perl-1.1.2/LICENSE",
+          "url": "https://raw.githubusercontent.com/ganezdragon/tree-sitter-perl/883ab51150f32583e4f6877a6bf16e9f83b8935f/LICENSE",
+          "sha256": "02c343f074753716e9c54fe12e6a27d03a041b54be545af8ecb280a7bb0ee703"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-ruby",
+      "version": "0.23.1",
+      "sourceRevision": "71bd32fb7607035768799732addba884a37a6210",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-ruby-0.23.1/LICENSE",
+          "url": "https://raw.githubusercontent.com/tree-sitter/tree-sitter-ruby/71bd32fb7607035768799732addba884a37a6210/LICENSE",
+          "sha256": "ee006f02a3d856df282e409be2a86e24a65bb573a98b9c28343771141351bb6b"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-sequel",
+      "version": "0.3.11",
+      "sourceRevision": "7b51ecda191d36b92f5a90a8d1bc3faef1c7b8b8",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-sequel-0.3.11/LICENSE",
+          "url": "https://raw.githubusercontent.com/derekstride/tree-sitter-sql/7b51ecda191d36b92f5a90a8d1bc3faef1c7b8b8/LICENSE",
+          "sha256": "3b3e4e4252d5d7d1c18e1257005f23242bf0580ad619204fd093c99b8c56748d"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-svelte-ng",
+      "version": "1.0.2",
+      "sourceRevision": "774a65aea563accc35f5d45fafa4d96ec5761f57",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-svelte-ng-1.0.2/LICENSE",
+          "url": "https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-svelte/774a65aea563accc35f5d45fafa4d96ec5761f57/LICENSE",
+          "sha256": "0eea8dc45e89deeb03c7799bbbc7b4688f365fb274562f4540ecfebdea82e727"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-typescript",
+      "version": "0.23.2",
+      "sourceRevision": "f975a621f4e7f532fe322e13c4f79495e0a7b2e7",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-typescript-0.23.2/LICENSE",
+          "url": "https://raw.githubusercontent.com/tree-sitter/tree-sitter-typescript/f975a621f4e7f532fe322e13c4f79495e0a7b2e7/LICENSE",
+          "sha256": "49bf33cf78ef5897e4e161ce1517df7de1ae5042a65b6bcfd44401e0fc606559"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-zig",
+      "version": "1.1.2",
+      "sourceRevision": "b670c8df85a1568f498aa5c8cae42f51a90473c0",
+      "files": [
+        {
+          "file": "licenses/tree-sitter-zig-1.1.2/LICENSE",
+          "url": "https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-zig/b670c8df85a1568f498aa5c8cae42f51a90473c0/LICENSE",
+          "sha256": "0eea8dc45e89deeb03c7799bbbc7b4688f365fb274562f4540ecfebdea82e727"
+        }
+      ]
+    },
+    {
+      "name": "vsimd",
+      "version": "0.8.0",
+      "sourceRevision": "d74c030d9dc4f3cae02146d1f497ff62726ef09a",
+      "files": [
+        {
+          "file": "licenses/vsimd-0.8.0/LICENSE",
+          "url": "https://raw.githubusercontent.com/Nugine/simd/d74c030d9dc4f3cae02146d1f497ff62726ef09a/LICENSE",
+          "sha256": "71674605ec4c087fe9eb534e3e4f9e26eb2e4aabcd76a29fd156c6a844d44b3d"
+        }
+      ]
+    }
+  ]
+}

@@ -16,6 +16,17 @@ def git(root, *args):
     return subprocess.check_output(["git", "-C", str(root), *args])
 
 
+def retained_diff(screen):
+    right="\n".join("".join(row)[37:] for row in screen.cells)
+    return b"\x1b[17~\x1b[200~forbidden\x1b[201~" if "Diff" in right else None
+
+
+def left_for_rest(screen):
+    right="\n".join("".join(row)[37:] for row in screen.cells)
+    left="\n".join("".join(row)[:36] for row in screen.cells)
+    return b"\x11" if "REST API" in left and "Diff" not in right else None
+
+
 def main():
     cases = []
     with tempfile.TemporaryDirectory(prefix="kode-git-diff-pty-") as directory:
@@ -45,13 +56,14 @@ def main():
             result = terminal.run_case(path, base / f"config-{width}", (width, height), [
                 (b"Ready", 0.15, b"\x1b3"),
                 (b"Note.txt", 0.15, b"\r"),
-                (b"Diff", 0.2, b"\x1b[200~forbidden\x1b[201~"),
+                (b"Diff", 0.15, b"\x1b3"),
+                (entered, 0.15, retained_diff),
                 (entered, 0.15, b"c"),
                 (entered, 0.2, b"c"),
                 (entered, 0.2, b"\r"),
                 (b"Restored", 0.2, b"v"),
-                (entered, 0.2, b"\x1b1"),
-                (entered, 0.2, b"\x11"),
+                (entered, 0.2, b"\x1b5"),
+                (entered, 0.2, left_for_rest),
             ], expected=[b"Diff", b"Restored"], env_overrides=environment)
             assert path.read_bytes() == b"first\r\ncontext\r\ncontext2\r\nLAST\r\n", "restore changed an unselected chunk or line endings"
             assert git(root, "rev-parse", "HEAD") == head

@@ -122,7 +122,7 @@ async fn until(app: &mut AppRuntime, condition: impl Fn(&AppRuntime) -> bool) {
     }
 }
 async fn connect(app: &mut AppRuntime) {
-    app.state.dispatch(&alt('6')).unwrap();
+    app.state.dispatch(&alt('4')).unwrap();
     until(app, |app| app.state.database.tree.sources.len() == 1).await;
     app.state.database.tree.selected = 0;
     app.state
@@ -289,7 +289,7 @@ async fn wrong_java_version_is_actionable_redacted_and_native_edit_save_index_re
     app.start_intelligence(Arc::new(IntelligenceResources::compiled().unwrap()))
         .await
         .unwrap();
-    app.state.dispatch(&alt('6')).unwrap();
+    app.state.dispatch(&alt('4')).unwrap();
     until(&mut app, |app| app.state.database.tree.sources.len() == 1).await;
     app.state
         .dispatch(&key(Key::Character('c'), false))
@@ -529,7 +529,7 @@ async fn actual_helper_crash_during_sql_preserves_outcome_and_native_editor_git_
             .any(|symbol| symbol.name == "NativeAfterJdbcCrash")
     })
     .await;
-    app.state.dispatch(&alt('5')).unwrap();
+    app.state.dispatch(&alt('3')).unwrap();
     app.state.git.request_refresh();
     until(&mut app, |app| {
         app.state
@@ -553,7 +553,7 @@ async fn actual_helper_crash_during_sql_preserves_outcome_and_native_editor_git_
     );
     let first = records(root.path())[0]["pid"].as_u64().unwrap();
     assert!(!Path::new(&format!("/proc/{first}")).exists());
-    app.state.dispatch(&alt('6')).unwrap();
+    app.state.dispatch(&alt('4')).unwrap();
     app.state
         .dispatch(&key(Key::Character('R'), false))
         .unwrap();

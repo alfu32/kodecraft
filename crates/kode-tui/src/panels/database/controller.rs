@@ -2,6 +2,7 @@
 use super::{
     connection_dialog::{self, ConnectionDialog, Draft},
     driver_install::{self, DriverInstallDialog},
+    java_runtime::{self, JavaRuntimeDialog},
     object_menu::ObjectMenu,
     tree::{self, DatabaseTree, Load},
 };
@@ -40,6 +41,9 @@ pub enum Operation {
         spec: DriverSpec,
         progress: watch::Sender<Progress>,
     },
+    JavaRuntime {
+        progress: watch::Sender<kode_database::java_runtime::Progress>,
+    },
     Recents(String),
 }
 pub struct Work {
@@ -57,6 +61,7 @@ pub enum Context {
     Test,
     Metadata(Load),
     Resolve,
+    JavaRuntime,
     Recents(String),
 }
 impl Work {
@@ -71,6 +76,7 @@ impl Work {
             Operation::Test(_) => Context::Test,
             Operation::Metadata(load) => Context::Metadata(load.clone()),
             Operation::Resolve { .. } => Context::Resolve,
+            Operation::JavaRuntime { .. } => Context::JavaRuntime,
             Operation::Recents(driver) => Context::Recents(driver.clone()),
         }
     }
@@ -90,6 +96,7 @@ pub enum Report {
     Metadata(Arc<MetadataResult>),
     Installed(BridgeResult<Installed>),
     Recents(Vec<String>),
+    JavaRuntime(String),
 }
 pub struct PasteProof {
     pub dialog: u64,
@@ -119,6 +126,9 @@ pub struct DatabasePanel {
     pub tree: DatabaseTree,
     pub form: Option<ConnectionDialog>,
     pub install: Option<DriverInstallDialog>,
+    pub java_runtime: Option<JavaRuntimeDialog>,
+    pub java_required: bool,
+    java_hit: Rect,
     pub menu: Option<ObjectMenu>,
     pub initialized: bool,
     registry: Arc<DriverRegistry>,
@@ -146,6 +156,9 @@ impl DatabasePanel {
             tree: DatabaseTree::new(generation)?,
             form: None,
             install: None,
+            java_runtime: None,
+            java_required: false,
+            java_hit: Rect::default(),
             menu: None,
             initialized: false,
             registry,
@@ -164,7 +177,13 @@ impl DatabasePanel {
         self.urls = urls;
     }
     pub fn has_modal(&self) -> bool {
-        self.form.is_some() || self.install.is_some() || self.menu.is_some()
+        self.form.is_some()
+            || self.install.is_some()
+            || self.menu.is_some()
+            || self
+                .java_runtime
+                .as_ref()
+                .is_some_and(|dialog| !dialog.hidden)
     }
     pub fn take_intents(&mut self) -> Vec<Intent> {
         std::mem::take(&mut self.intents)
@@ -191,6 +210,7 @@ impl DatabasePanel {
                 format!("Install JDBC driver: {}", spec.display_name)
             }
             Operation::Metadata(load) => format!("Metadata: {}", load.key.source()),
+            Operation::JavaRuntime { .. } => "Install optional Java runtime".into(),
             Operation::Recents(driver) => format!("JDBC URL suggestions: {driver}"),
         };
         self.labels.insert(tag, label);
@@ -292,7 +312,11 @@ impl DatabasePanel {
         }
     }
     fn details(&mut self) {
-        let detail = if let Some(install) = &self.install {
+        let detail = if let Some(dialog) = &self.java_runtime
+            && !dialog.hidden
+        {
+            Some(("Optional Java runtime".into(), dialog.message.clone()))
+        } else if let Some(install) = &self.install {
             Some((
                 format!(
                     "Install JDBC driver: {} / request {}",
@@ -338,7 +362,50 @@ impl DatabasePanel {
             return Ok(());
         }
 
-        if let Some(install) = &mut self.install {
+        let java_visible = self
+            .java_runtime
+            .as_ref()
+            .is_some_and(|dialog| !dialog.hidden);
+        if !java_visible
+            && self.install.is_none()
+            && self.menu.is_none()
+            && (self.java_required || self.java_runtime.is_some())
+            && (matches!(event, InputEvent::Key(input) if input.key == Key::Function(5) && crate::input::shortcuts::command_key(crate::input::shortcuts::Scope::Database, *input).is_some())
+                || crate::widgets::controls::button(event, self.java_hit, false))
+        {
+            self.java_runtime
+                .get_or_insert_with(JavaRuntimeDialog::default)
+                .hidden = false;
+            self.focus_modal(focus);
+            return Ok(());
+        }
+        if java_visible {
+            let dialog = self.java_runtime.as_mut().expect("visible Java dialog");
+            dialog.dispatch(event);
+            match dialog.take_action() {
+                Some(java_runtime::Action::Download) => {
+                    let (send, receive) =
+                        watch::channel(kode_database::java_runtime::Progress::default());
+                    let tag = self.work(Operation::JavaRuntime { progress: send })?;
+                    self.java_runtime
+                        .as_mut()
+                        .expect("Java dialog")
+                        .start(tag, receive);
+                }
+                Some(java_runtime::Action::Cancel) => {
+                    if let Some(tag) = dialog.tag
+                        && let Some(cancel) = self.pending.get(&tag)
+                    {
+                        cancel.cancel();
+                    }
+                }
+                Some(java_runtime::Action::Hide) => {
+                    dialog.hidden = true;
+                }
+                Some(java_runtime::Action::Details) => self.details(),
+                None => {}
+            }
+        } else if let Some(install) = &mut self.install {
             install.dispatch(event);
             let tag = install.tag;
             let action = install.take_action();
@@ -368,6 +435,11 @@ impl DatabasePanel {
             let actions = form.take_actions();
             for action in actions {
                 match action {
+                    connection_dialog::Action::JavaRuntime => {
+                        self.java_runtime
+                            .get_or_insert_with(JavaRuntimeDialog::default)
+                            .hidden = false;
+                    }
                     connection_dialog::Action::Details => self.details(),
                     connection_dialog::Action::Dismiss => {
                         if let Some(tag) = self.form.as_ref().and_then(|form| form.busy)
@@ -517,6 +589,12 @@ impl DatabasePanel {
             return;
         }
         match result {
+            Ok(Report::JavaRuntime(message)) => {
+                if let Some(dialog) = &mut self.java_runtime {
+                    dialog.complete(tag, Ok(message.clone()));
+                }
+                self.tree.notice = message;
+            }
             Ok(Report::Restarted) => {
                 self.tree.notice = "Database service restarted; connect explicitly".into()
             }
@@ -575,6 +653,11 @@ impl DatabasePanel {
             }
             Ok(Report::Metadata(_)) => {}
             Err(error) => {
+                if matches!(context, Context::JavaRuntime)
+                    && let Some(dialog) = &mut self.java_runtime
+                {
+                    dialog.complete(tag, Err(error.clone()));
+                }
                 if matches!(context, Context::Resolve)
                     && let Some(install) = &mut self.install
                 {
@@ -611,6 +694,17 @@ impl DatabasePanel {
     }
     pub fn render(&mut self, area: Rect, buffer: &mut Buffer, theme: &Theme, focused: bool) {
         self.tree.render(area, buffer, theme, focused);
+        self.java_hit = Rect::default();
+        if (self.java_required || self.java_runtime.is_some()) && area.height > 0 {
+            let width = area.width.min(14);
+            self.java_hit = Rect::new(area.right() - width, area.y, width, 1);
+            crate::widgets::controls::draw_text(
+                self.java_hit,
+                buffer,
+                "[F5 Get Java]",
+                theme.style("lsp-button"),
+            );
+        }
     }
     pub fn render_modal(
         &mut self,
@@ -627,6 +721,12 @@ impl DatabasePanel {
         }
         if let Some(install) = &mut self.install {
             install.render(area, buffer, theme);
+            return None;
+        }
+        if let Some(dialog) = &mut self.java_runtime
+            && !dialog.hidden
+        {
+            dialog.render(area, buffer, theme);
             return None;
         }
         cursor

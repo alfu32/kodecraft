@@ -50,6 +50,7 @@ pub struct Services {
     pub installer: Installer,
     pub executor: kode_database::execution::Executor,
     mutations: Arc<Semaphore>,
+    process_factory: Arc<dyn ProcessFactory>,
 }
 pub struct Saved {
     pub sources: Vec<DataSourceDefinition>,
@@ -65,7 +66,12 @@ impl Services {
     ) -> Result<Self> {
         let options = Installer::configure(Options::default(), &config.paths)
             .map_err(|e| DomainError::Unsupported(e.to_string()))?;
-        let installer = Installer::new(Runtime::new(config.installation.clone(), options, factory));
+        let installer = Installer::new(Runtime::new_with_managed_java(
+            config.installation.clone(),
+            options,
+            factory.clone(),
+            kode_database::java_runtime::storage_root(&config.paths.root),
+        ));
         let connections = Connections::new(
             installer.clone(),
             CredentialStore::new(config.paths.root.clone()),
@@ -77,7 +83,41 @@ impl Services {
             connections,
             installer,
             mutations: Arc::new(Semaphore::new(1)),
+            process_factory: factory,
         })
+    }
+    pub async fn install_java_runtime(
+        &self,
+        cancel: &CancellationToken,
+        progress: tokio::sync::watch::Sender<kode_database::java_runtime::Progress>,
+    ) -> Result<String> {
+        // Recheck on explicit acceptance. A newly configured/local JVM wins and
+        // no release metadata is fetched when Java is already usable.
+        match self.connections.runtime().get(cancel).await {
+            Ok(_) => {
+                return Ok("Java is already available. Retry Test or Connect explicitly.".into());
+            }
+            Err(error) if error.requires_java_runtime() => {}
+            Err(error) => return Err(DomainError::Unsupported(error.to_string())),
+        }
+        let root = kode_database::java_runtime::storage_root(&self.config.paths.root);
+        let factory = self.process_factory.clone();
+        let handle = tokio::runtime::Handle::current();
+        let worker_cancel = cancel.clone();
+        let _cancel_on_drop = cancel.clone().drop_guard();
+        tokio::task::spawn_blocking(move || {
+            let options = kode_database::java_runtime::Options::from_environment(root)?;
+            kode_database::java_runtime::Installer::new(options, handle, factory)?
+                .run(&worker_cancel, &progress)
+        })
+        .await
+        .map_err(|_| {
+            DomainError::Unsupported("Java runtime installation worker failed".into())
+        })??;
+        self.connections
+            .runtime()
+            .acknowledge_java_runtime_install();
+        Ok("Java runtime installed. Retry Test or Connect explicitly.".into())
     }
     pub async fn sources(&self) -> Result<Vec<DataSourceDefinition>> {
         let repository = DataSourceRepository::new(self.config.paths.root.clone());
@@ -280,7 +320,24 @@ impl super::AppRuntime {
         if self.state.closing {
             return Ok(());
         }
+        if let Some(dialog) = &mut self.state.database.java_runtime
+            && dialog.poll()
+        {
+            self.notifications.repaint();
+        }
         if let Some(database) = &self.database {
+            let required = database
+                .connections
+                .runtime()
+                .last_error()
+                .is_some_and(|error| error.requires_java_runtime());
+            if self.state.database.java_required != required {
+                self.notifications.repaint();
+            }
+            self.state.database.java_required = required;
+            if let Some(form) = &mut self.state.database.form {
+                form.java_required = required;
+            }
             let sources: Vec<_> = self
                 .state
                 .database
@@ -390,6 +447,7 @@ impl super::AppRuntime {
                     Operation::Test(draft)=>{let(result,warning)=database.test(draft,&cancel).await?;Report::Test{result,warning}},
                     Operation::Metadata(load)=>{if load.refresh{database.metadata.refresh_all(load.key.source());}Report::Metadata(database.metadata.introspect(load.key.source(),load.request,load.refresh,&cancel).await.map_err(|error|connection_error(error.into()))?)},
                     Operation::Resolve{spec,progress}=>Report::Installed(database.installer.resolve(&spec,progress,&cancel).await),
+                    Operation::JavaRuntime{progress}=>Report::JavaRuntime(database.install_java_runtime(&cancel,progress).await?),
                     Operation::Recents(driver)=>Report::Recents(database.recents(&driver).await?),
                 }))
             };

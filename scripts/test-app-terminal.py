@@ -22,7 +22,7 @@ screen_module = importlib.util.module_from_spec(screen_spec)
 screen_spec.loader.exec_module(screen_module)
 
 
-def run_case(target, config, size, actions, expected=(), env_overrides=None):
+def run_case(target, config, size, actions, expected=(), env_overrides=None, timeout_seconds=12):
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", size[1], size[0], 0, 0))
     before = termios.tcgetattr(slave)
@@ -41,7 +41,7 @@ def run_case(target, config, size, actions, expected=(), env_overrides=None):
     seen_expected = set()
     next_action = 0
     last_action = time.monotonic()
-    deadline = last_action + 12
+    deadline = last_action + timeout_seconds
     queried = False
     try:
         while time.monotonic() < deadline:

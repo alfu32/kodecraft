@@ -1,0 +1,21 @@
+{
+  "transport": "ssh-forwarded-loopback",
+  "cases": [
+    {
+      "case": "browser-all-eight-panel-shortcuts-visual-order",
+      "status": "passed",
+      "terminal_sizes": [
+        [
+          137,
+          42
+        ],
+        [
+          87,
+          27
+        ]
+      ],
+      "editor_unchanged": true
+    }
+  ],
+  "passed": 1
+}

@@ -41,6 +41,7 @@ pub struct BridgeError {
     pub remote_code: Option<i64>,
     pub message: &'static str,
     remote_data: Option<Value>,
+    java_unavailable: bool,
 }
 impl fmt::Debug for BridgeError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -68,6 +69,14 @@ impl fmt::Display for BridgeError {
 }
 impl std::error::Error for BridgeError {}
 impl BridgeError {
+    pub fn requires_java_runtime(&self) -> bool {
+        self.java_unavailable
+    }
+    pub(super) fn requiring_java(mut self) -> Self {
+        self.java_unavailable = true;
+        self
+    }
+
     pub fn new(kind: Failure, message: &'static str) -> Self {
         Self {
             kind,
@@ -75,6 +84,7 @@ impl BridgeError {
             remote_code: None,
             message,
             remote_data: None,
+            java_unavailable: false,
         }
     }
     /// Explicit access for typed feature decoding/redaction. Remote data is

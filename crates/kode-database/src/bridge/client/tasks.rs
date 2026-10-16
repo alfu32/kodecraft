@@ -95,6 +95,7 @@ async fn read_loop(shared: Arc<Shared>, input: ChildStdout) -> Result<()> {
                         remote_code: code,
                         message: "JDBC helper rejected the operation",
                         remote_data: error.get("data").cloned(),
+                        java_unavailable: false,
                     })
                 } else {
                     Ok(value["result"].clone())

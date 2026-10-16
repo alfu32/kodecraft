@@ -45,10 +45,15 @@ TtydAdapterTest, native resource layout and source README remote-mode instructio
 
 ## Z03 — Reproducible build and distribution
 
-**Status:** todo
+**Status:** in-progress
 
 **Depends:** Z01, Z02, D02, U03. **Owns:** `scripts/`, `.github/workflows/`, packaging
 metadata, notices, install/run documentation.
+**Continuation:** [qualified archive inputs and remaining gates](../Z03-INTEGRATION.md).
+**Progress:** locked helper/runtime notices, relocated standalone ttyd, Linux
+archive/reproducible assembly, clean-image/browser/SSH acceptance and startup
+without CA certificates are qualified. AppImage/Snap and full release CI/
+publication remain required; [evidence](../../parity/Z03.md).
 **Read:** source build.gradle.kts distribution tasks, snapcraft.yaml, scripts,
 LICENSE.md, native library licenses and source launcher behavior.
 

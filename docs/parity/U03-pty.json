@@ -1,0 +1,237 @@
+{
+  "cases": [
+    {
+      "case": "accept",
+      "actual_artifact": true,
+      "release_requests": [
+        "/latest",
+        "/checksum",
+        "/runtime.zip"
+      ],
+      "installed": true,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "accept",
+      "actual_artifact": true,
+      "release_requests": [
+        "/latest",
+        "/checksum",
+        "/runtime.zip"
+      ],
+      "installed": true,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        60,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "decline",
+      "actual_artifact": false,
+      "release_requests": [],
+      "installed": false,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        60,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "corrupt-retry",
+      "actual_artifact": true,
+      "release_requests": [
+        "/latest",
+        "/checksum",
+        "/runtime.zip",
+        "/latest",
+        "/checksum",
+        "/runtime.zip"
+      ],
+      "installed": true,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "missing",
+      "actual_artifact": false,
+      "release_requests": [
+        "/latest"
+      ],
+      "installed": false,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        60,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "offline",
+      "actual_artifact": false,
+      "release_requests": [
+        "/latest"
+      ],
+      "installed": false,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "cancel-retry",
+      "actual_artifact": true,
+      "release_requests": [
+        "/latest",
+        "/checksum",
+        "/runtime.zip",
+        "/latest",
+        "/checksum",
+        "/runtime.zip"
+      ],
+      "installed": true,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        60,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "close-active",
+      "actual_artifact": false,
+      "release_requests": [
+        "/latest",
+        "/checksum",
+        "/runtime.zip"
+      ],
+      "installed": false,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "hide-edit",
+      "actual_artifact": true,
+      "release_requests": [
+        "/latest",
+        "/checksum",
+        "/runtime.zip"
+      ],
+      "installed": true,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "local-java",
+      "actual_artifact": false,
+      "release_requests": [],
+      "installed": false,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        60,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "late-java",
+      "actual_artifact": false,
+      "release_requests": [],
+      "installed": false,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "form",
+      "actual_artifact": true,
+      "release_requests": [
+        "/latest",
+        "/checksum",
+        "/runtime.zip"
+      ],
+      "installed": true,
+      "core_preserved": true,
+      "owned_helpers_absent_after_exit": true,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 12,
+  "artifact_sha256": "cc3fa68d913e91107ff72a69cbc5dee41822eb484de71b840cd17cb29901d386",
+  "application_binary_sha256": "dda2d55fcfa274e4c352761f272ed82436eb3150be8316820ae30c4b4d560c42"
+}

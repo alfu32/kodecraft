@@ -42,10 +42,15 @@ routing, Help/README and real terminal binding fixtures. **UAT:** B002.
 
 ## U03 — Optional downloadable Java runtime artifact
 
-**Status:** todo
+**Status:** done
 
 **Depends:** D09. **Owns:** Java discovery/bootstrap, CI jlink artifact generation,
 optional runtime installation UI and release metadata. **UAT:** M003.
+
+**Read:** [integration checkpoint](../U03-INTEGRATION.md) and
+[acceptance evidence](../../parity/U03.md). Production download/progress/cancel/
+retry and actual no-Java H2 terminal/package separation are qualified on Linux
+x86_64 GNU. Z03 retains full distribution/publication qualification.
 
 1. Build a separate, platform-specific Java 21+ jlink runtime artifact in CI and
    publish it with checksums alongside releases. Keep it out of the main app
@@ -184,7 +189,7 @@ adapters and Settings installation diagnostics. **UAT:** B006, images 5–8.
 
 ## U10 — Panel shortcuts follow visual tab order
 
-**Status:** in-progress
+**Status:** done
 
 **Depends:** Z02. **Owns:** global panel shortcuts, shared Help and terminal cases.
 **UAT:** B007. This supersedes preserving the earlier semantic Alt+number mapping.

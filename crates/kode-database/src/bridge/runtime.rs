@@ -98,17 +98,17 @@ impl Installation {
             Some(Err(_)) => {
                 _guard.0.cancel();
                 let _ = probe_task.await;
-                return Err(BridgeError::new(
-                    Failure::Timeout,
-                    "Java version check timed out",
-                ));
+                return Err(
+                    BridgeError::new(Failure::Timeout, "Java version check timed out")
+                        .requiring_java(),
+                );
             }
             Some(Ok(Ok(Ok(output)))) => output,
             _ => {
                 return Err(BridgeError::new(
                     Failure::Unavailable,
                     "Java is unavailable; configure KODE_JAVA, JAVA_HOME, or install Java 21 or newer on PATH",
-                ));
+                ).requiring_java());
             }
         };
         // Do not surface raw launcher diagnostics: JAVA_TOOL_OPTIONS or a
@@ -123,7 +123,8 @@ impl Installation {
             return Err(BridgeError::new(
                 Failure::Unavailable,
                 "Java 21 or newer is required; update KODE_JAVA or JAVA_HOME",
-            ));
+            )
+            .requiring_java());
         }
         let mut helper = None;
         for path in &self.helper_candidates {
@@ -175,6 +176,7 @@ pub fn java_major(text: &str) -> Option<u32> {
 }
 struct Inner {
     installation: Installation,
+    managed_java: Option<PathBuf>,
     options: Options,
     factory: Arc<dyn ProcessFactory>,
     client: tokio::sync::Mutex<Option<Client>>,
@@ -203,9 +205,26 @@ impl Runtime {
         options: Options,
         factory: Arc<dyn ProcessFactory>,
     ) -> Self {
+        Self::configured(installation, options, factory, None)
+    }
+    pub fn new_with_managed_java(
+        installation: Installation,
+        options: Options,
+        factory: Arc<dyn ProcessFactory>,
+        root: PathBuf,
+    ) -> Self {
+        Self::configured(installation, options, factory, Some(root))
+    }
+    fn configured(
+        installation: Installation,
+        options: Options,
+        factory: Arc<dyn ProcessFactory>,
+        managed_java: Option<PathBuf>,
+    ) -> Self {
         Self {
             inner: Arc::new(Inner {
                 installation,
+                managed_java,
                 options,
                 factory,
                 client: tokio::sync::Mutex::new(None),
@@ -213,6 +232,17 @@ impl Runtime {
                 last_error: Mutex::new(None),
                 startup_tasks: TaskTracker::new(),
             }),
+        }
+    }
+    /// A completed explicit runtime install resolves only the missing-Java hint;
+    /// it does not start a helper or retry any database operation.
+    pub fn acknowledge_java_runtime_install(&self) {
+        let mut error = self.inner.last_error.lock().expect("JDBC runtime error");
+        if error
+            .as_ref()
+            .is_some_and(BridgeError::requires_java_runtime)
+        {
+            *error = None;
         }
     }
     pub fn last_error(&self) -> Option<BridgeError> {
@@ -250,9 +280,21 @@ impl Runtime {
             struct Startup(CancellationToken);impl Drop for Startup {fn drop(&mut self){self.0.cancel();}}
             let _startup=Startup(token.clone());
             let installation=self.inner.installation.clone();let options=self.inner.options.clone();let factory=self.inner.factory.clone();
+            let managed_java=self.inner.managed_java.clone();
             let lifetime=self.inner.startup_tasks.clone();
             let mut task=self.inner.startup_tasks.spawn(async move {
-                let mut spec=installation.spec(factory.clone(),&token,options.startup_timeout).await?;
+                let initial=installation.spec(factory.clone(),&token,options.startup_timeout).await;
+                let mut spec=match initial {
+                    Err(error) if error.requires_java_runtime() && managed_java.is_some()=>{
+                        let root=managed_java.expect("configured managed root");
+                        let target=crate::java_runtime::native_target();
+                        let java=tokio::task::spawn_blocking(move||target.map(|target|crate::java_runtime::current_java(&root,target)).transpose()).await
+                            .map_err(|_|BridgeError::new(Failure::Unavailable,"Managed Java discovery failed").requiring_java())?
+                            .map_err(|_|BridgeError::new(Failure::Unavailable,"Installed Java runtime is incomplete; download it again or configure local Java").requiring_java())?.flatten();
+                        if let Some(java)=java {Installation{java,helper_candidates:installation.helper_candidates.clone()}.spec(factory.clone(),&token,options.startup_timeout).await?}else{return Err(error)}
+                    },
+                    result=>result?,
+                };
                 spec.env.extend(options.helper_environment.clone());
                 let client=Client::start(spec,options,factory,&token).await?;
                 // Startup can finish just as its caller drops the result. Track
@@ -272,9 +314,7 @@ impl Runtime {
             *slot = Some(client.clone());
             Ok(client)
         }.await;
-        if let Err(error) = &result {
-            *self.inner.last_error.lock().expect("JDBC runtime error") = Some(error.clone());
-        }
+        *self.inner.last_error.lock().expect("JDBC runtime error") = result.as_ref().err().cloned();
         result
     }
     pub async fn restart(&self, cancel: &CancellationToken) -> Result<Client> {

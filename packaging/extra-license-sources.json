@@ -1,0 +1,41 @@
+{
+  "files": [
+    {
+      "component": "h2-2.2.224",
+      "file": "licenses/h2-2.2.224/LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/h2database/h2database/version-2.2.224/LICENSE.txt",
+      "sha256": "827b84bb8f84dbd60d1a8955cefab142d65cc17d267e32996db400138a1e0fcf"
+    },
+    {
+      "component": "gson-2.14.0",
+      "file": "licenses/gson-2.14.0/LICENSE",
+      "url": "https://raw.githubusercontent.com/google/gson/gson-parent-2.14.0/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "component": "error_prone_annotations-2.48.0",
+      "file": "licenses/error_prone_annotations-2.48.0/COPYING",
+      "url": "https://raw.githubusercontent.com/google/error-prone/v2.48.0/COPYING",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "component": "plexus-interpolation-1.29",
+      "file": "licenses/plexus-interpolation-1.29/LICENSE-2.0.txt",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "basis": "Declared Apache-2.0 in inherited org.codehaus.plexus:plexus:24 POM; original artifact and parent POM are also retained"
+    },
+    {
+      "component": "asm-9.9.1",
+      "file": "licenses/asm-9.9.1/LICENSE.txt",
+      "url": "https://gitlab.ow2.org/asm/asm/-/raw/ASM_9_9_1/LICENSE.txt",
+      "sha256": "293b6af371eee28b0ff16f0334ea19e20a3d5522143faa4b95b346855507879a"
+    },
+    {
+      "component": "eventsource-stream-0.2.3",
+      "file": "licenses/eventsource-stream-0.2.3/LICENSE-2.0.txt",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    }
+  ]
+}

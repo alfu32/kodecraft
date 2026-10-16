@@ -1,0 +1,50 @@
+{
+  "status": "passed",
+  "target": "x86_64-unknown-linux-gnu",
+  "archive": "kode-0.1.0-x86_64-unknown-linux-gnu.tar.gz",
+  "sha256": "51a5188e0e020e722fe025c0bc92f5309bb36a446a492644cefcb2a340e1d55d",
+  "compressedBytes": 29185437,
+  "javaRuntimeBundled": false,
+  "files": 17,
+  "reproducibleAssembly": true,
+  "terminalBinaryMatchesPackage": true,
+  "nativeDependencies": [
+    "ld-linux-x86-64.so.2",
+    "libc.so.6",
+    "libgcc_s.so.1",
+    "libm.so.6",
+    "libz.so.1"
+  ],
+  "cases": [
+    {
+      "case": "no-java-core-and-explicit-offer",
+      "unrelated_cwd": true,
+      "installation_path_with_spaces": true,
+      "release_requests": 0,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
+      "case": "adjacent-helper-real-h2-sql",
+      "unrelated_cwd": true,
+      "installation_path_with_spaces": true,
+      "release_requests": 0,
+      "size": [
+        100,
+        34
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    }
+  ],
+  "passed": 2,
+  "scope": "Linux archive assembly and U03 runtime separation; full Z03 installers, publication, native distribution and notice qualification remain pending"
+}

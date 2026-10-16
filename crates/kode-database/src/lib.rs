@@ -8,6 +8,7 @@ pub mod console;
 pub mod credentials;
 pub mod drivers;
 pub mod execution;
+pub mod java_runtime;
 pub mod metadata;
 pub mod model;
 pub mod security;

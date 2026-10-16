@@ -31,6 +31,8 @@ def main():
     parser.add_argument('--build-dir', type=Path, default=ROOT / 'target/ttyd-native')
     parser.add_argument('--output', type=Path, default=ROOT / 'target/ttyd-bundle')
     parser.add_argument('--cmake-prefix', type=Path, help='Optional native dependency installation prefix')
+    parser.add_argument('--extra-cmake-prefix', type=Path, action='append', default=[])
+    parser.add_argument('--builtin-libuv', action='store_true', help='Require libwebsockets with its event loop built in')
     parser.add_argument('--jobs', type=int, default=min(os.cpu_count() or 1, 8))
     args = parser.parse_args()
     build = args.build_dir.resolve()
@@ -49,7 +51,14 @@ def main():
     configure = ['cmake', '-S', source, '-B', build / 'cmake', '-DCMAKE_BUILD_TYPE=Release',
                  '-DTTYD_BUILD_SHARED=OFF', '-DTTYD_BUILD_JNI=OFF', '-DCMAKE_INSTALL_PREFIX=' + str(output)]
     if args.cmake_prefix:
-        configure.append('-DCMAKE_PREFIX_PATH=' + str(args.cmake_prefix.resolve()))
+        configure.append('-DCMAKE_PREFIX_PATH=' + ';'.join(str(path.resolve()) for path in [args.cmake_prefix, *args.extra_cmake_prefix]))
+    if args.builtin_libuv:
+        configure.append('-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON')
+        header = (args.cmake_prefix / 'include/lws_config.h').read_text()
+        import re
+        if re.search(r'^#define LWS_WITH_EVLIB_PLUGINS\b', header, re.MULTILINE) or not re.search(r'^#define LWS_WITH_LIBUV\b', header, re.MULTILINE):
+            raise SystemExit('The release dependency must have built-in libuv and no event-loop plugins')
+    configure.append('-DCMAKE_C_FLAGS=-ffile-prefix-map=' + str(source) + '=/src/ttyd')
     # An extracted source below target/ must not borrow Kode's ancestor Git tag.
     run(*configure, env=dict(os.environ, GIT_CEILING_DIRECTORIES=str(source.parent)))
     run('cmake', '--build', build / 'cmake', '--parallel', args.jobs)
@@ -64,7 +73,7 @@ def main():
         'source_revision': REVISION, 'source_sha256': SHA256,
         'executable_sha256': hashlib.sha256(executable.read_bytes()).hexdigest(),
         'host': {'os': platform.system(), 'architecture': platform.machine()},
-        'kind': 'standalone-executable', 'jni': False, 'shared_launcher': False,
+        'kind': 'standalone-executable', 'event_loop': 'built-in-libuv' if args.builtin_libuv else 'system-configured', 'jni': False, 'shared_launcher': False,
         'runtime_dependencies': 'Native libwebsockets event library, json-c, zlib, OpenSSL and C runtime as linked; qualify release bundle separately.',
     }
     (output / 'ttyd-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')

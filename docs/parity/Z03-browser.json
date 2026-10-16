@@ -1,0 +1,51 @@
+{
+  "package_manifest_sha256": "edc8d47dadf81929faef24f58788fade03ed18d7a6e51e3bb2e80490ece29929",
+  "transport": "ssh-forwarded-loopback",
+  "packaged": true,
+  "adjacent_ttyd": true,
+  "adjacent_helper": true,
+  "developer_library_path": false,
+  "cases": [
+    {
+      "case": "browser-all-eight-panel-shortcuts-visual-order",
+      "status": "passed",
+      "terminal_sizes": [
+        [
+          137,
+          42
+        ],
+        [
+          87,
+          27
+        ]
+      ],
+      "editor_unchanged": true
+    },
+    {
+      "case": "real-browser-auth-mouse-clipboard-edit-save-resize-disconnect",
+      "status": "passed",
+      "child_reaped": true,
+      "dirty_session_persisted": true,
+      "core_without_java": true,
+      "chrome": "155.0.8059.39"
+    },
+    {
+      "case": "browser-reconnect-restores-dirty-editor",
+      "status": "passed"
+    },
+    {
+      "case": "browser-sse-responsive-file-edit-and-disconnect-cancellation",
+      "status": "passed",
+      "child_reaped": true,
+      "stream_closed": true
+    },
+    {
+      "case": "browser-actual-h2-sql-and-dirty-disconnect",
+      "status": "passed",
+      "child_reaped": true,
+      "java_reaped": true,
+      "dirty_sql_preserved": true
+    }
+  ],
+  "passed": 5
+}

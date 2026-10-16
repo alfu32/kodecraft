@@ -1961,10 +1961,25 @@ async fn all_panel_numbers_follow_visual_order_from_editor_focus_and_match_mouse
         );
         until(&mut app, |app| app.state.editor.is_some()).await;
         let document = app.state.editor.as_ref().unwrap().document_id();
-        // Ascending and descending passes start from different panels and overflow positions.
-        for number in (1..=8).chain((1..=8).rev()) {
+        // Every source panel, destination and horizontal overflow position.
+        for (prior, number) in (1..=8).flat_map(|prior| (1..=8).map(move |number| (prior, number)))
+        {
             let area = Rect::new(0, 0, width, 28);
             let mut buffer = Buffer::empty(area);
+            app.state
+                .dispatch(&InputEvent::Key(KeyInput {
+                    key: Key::Character(char::from(b'0' + prior)),
+                    modifiers: Modifiers {
+                        alt: true,
+                        ..Default::default()
+                    },
+                    repeat: false,
+                }))
+                .unwrap();
+            assert_eq!(app.state.tabs.selected, usize::from(prior - 1));
+            app.state
+                .render(area, &mut buffer, &Theme::compiled())
+                .unwrap();
             app.state.focus.focused = Some(app.state.editor.as_ref().unwrap().input.id);
             app.state
                 .dispatch(&InputEvent::Key(KeyInput {
