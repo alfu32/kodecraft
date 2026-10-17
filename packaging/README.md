@@ -153,13 +153,23 @@ then installs only inside an owned temporary VM. Canonical's signed assertions
 are verified inside the guest. No host Snap installation or existing `kode`
 installation is changed. The VM, SSH keys, ports and overlay are cleaned up.
 
-## Release review and CI
+## Manual release workflow
 
-`.github/workflows/distribution.yaml` runs stable/locked checks, the Java helper
-suite, real JDBC checks, native builds/notices, all installer formats, actual
-AppImage/Snap acceptance and no-Java compilation. GitHub-hosted Linux runners
-must expose KVM; the job fails if it is unavailable. Action references are pinned.
-The reusable optional-runtime workflow builds the JVM artifact separately.
+The single [Release workflow](../.github/workflows/distribution.yaml) runs only
+through GitHub Actions **Run workflow**. Select the branch in GitHub, or enter a
+branch/tag as `source_ref`; the CLI equivalent is `gh workflow run distribution.yaml
+--ref work -f source_ref=v0.1.1`. The chosen source must have the same version in
+`Cargo.toml` and `jdbc-bridge/pom.xml`. An existing matching `v<version>` tag must
+identify that source commit. If the branch has no matching tag, the workflow
+creates one only after the full matrix passes.
+
+The workflow runs locked Rust tests, Clippy, Maven tests, six native builds, two
+portable archives per target, Linux AppImage/Snap on both architectures,
+Windows MSI/MSIX, macOS DMG, a separately downloadable JDBC adapter JAR and
+optional Java runtimes for all six targets. It verifies every asset and checksum,
+then publishes a GitHub Release only if all jobs succeed. About and the package
+manifests use the Cargo version, and release builds embed the source revision.
+Windows installers and DMGs are currently unsigned; the release notes state this.
 
 `build-provenance.py --output /path/to/assets/build-source.json` records exact
 source/dirty state, compilers, native package versions/hashes and static libuv.
@@ -176,12 +186,6 @@ The review rejects dirty/stale source, a mismatched version, altered assets,
 missing runtime, duplicate names and nonempty output. It emits an exact review
 manifest, checksums and release notes without accessing GitHub.
 
-Only a tag push or explicit workflow dispatch with an existing tag can invoke the
-CI draft adapter. It verifies that the remote tag identifies the built commit,
-requires no release already exists and creates a new draft with the full set of
-assets. It never creates tags, overwrites drafts, publishes automatically or
-appends runtime assets to an already published release. Release publication and
-remote Actions execution have not been performed in the local qualification.
-
-macOS, Windows and other architectures remain unqualified. The full migration
-and final integration matrix are tracked in `DASHBOARD.md` and Z04.
+The older Linux-only draft review scripts remain for reproducing the recorded
+Z03 foundation. The new workflow's release gate is `scripts/verify-release.py`.
+Current status and acceptance evidence are tracked in `DASHBOARD.md` and Z03.

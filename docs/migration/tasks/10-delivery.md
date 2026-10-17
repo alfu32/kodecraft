@@ -45,19 +45,19 @@ TtydAdapterTest, native resource layout and source README remote-mode instructio
 
 ## Z03 — Reproducible build and distribution
 
-**Status:** suspend
+**Status:** in-progress
 
-**Depends:** Z01, Z02, D02, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12, U13. **Owns:** `scripts/`, `.github/workflows/`, packaging
+**Depends:** Z01, Z02, D02, U01, U02, U03, U04, U05, U06, U07, U08, U10, U11, U13. **Owns:** `scripts/`, `.github/workflows/`, packaging
 metadata, notices, install/run documentation.
 **Continuation:** [qualified foundation](../Z03-INTEGRATION.md) and
 [requested full artifact matrix / Windows test host](../Z03-ARTIFACT-MATRIX.md).
-**Sequence:** finish the Uxx series before resuming this task, as requested.
+**Sequence:** the user accepted the MVP and restarted release work independently of the suspended U09 and U12 follow-ups.
 **Progress:** archive, actual AppImage and strict Snap, relocated ttyd/helper,
 full notices/provenance, clean Rust/native rebuilds, no-Java compilation and
-terminal/browser/SSH acceptance are qualified on Linux x86_64 GNU. CI and guarded
-draft orchestration are implemented and locally validated. Remote CI execution
-and final publication remain unperformed under Z04. Reopened for the user's full
-six-target artifact matrix; [foundation evidence](../../parity/Z03.md).
+terminal/browser/SSH acceptance are qualified on Linux x86_64 GNU. The manual
+six-target release workflow and exact asset gate are being qualified remotely.
+The user accepted the MVP; suspended LSP/database follow-ups are outside this
+release gate. [Foundation evidence](../../parity/Z03.md).
 **Read:** source build.gradle.kts distribution tasks, snapcraft.yaml, scripts,
 LICENSE.md, native library licenses and source launcher behavior.
 

@@ -73,7 +73,7 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | D09 | [End-to-end external JDBC qualification](tasks/09-database.md) | D08, W03, W05 | [done](../parity/D09.md) |
 | Z01 | [Shell suspension and browser terminal serve mode](tasks/10-delivery.md) | W05, F04, F03 | [done](../parity/Z01.md) |
 | Z02 | [Settings, help, about and operational status](tasks/10-delivery.md) | W05, L09, P01, D07, F05 | [done](../parity/Z02.md) |
-| Z03 | [Reproducible build and distribution](tasks/10-delivery.md) | Z01, Z02, D02, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12, U13 | [suspend](../parity/Z03.md) |
+| Z03 | [Reproducible build and distribution](tasks/10-delivery.md) | Z01, Z02, D02, U01, U02, U03, U04, U05, U06, U07, U08, U10, U11, U13 | [in-progress](../parity/Z03.md) |
 | Z04 | [Full functional parity and release qualification](tasks/10-delivery.md) | E13, L12, W05, V02, V03, G03, D09, R08, R10, Z03, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12, U13 | suspend |
 | U01 | [Finalized file and project search shortcuts](tasks/11-uat.md) | Z02, E07, W04 | [done](../parity/U01.md) |
 | U02 | [Readable database errors and diagnostics](tasks/11-uat.md) | D09, Z02 | [done](../parity/U02.md) |

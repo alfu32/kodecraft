@@ -34,12 +34,12 @@ place its executable beside `kode`, or set `KODE_TTYD` to its executable path.
 records provenance; native development libraries listed by its `--help` are
 required. Linux x86_64 GNU archive builds now include the standalone ttyd, its
 relative native library closure, and full dependency notices. Build and acceptance
-commands are in [the distribution guide](packaging/README.md). Linux AppImage and
-strict core24 Snap builds are also qualified locally. CI and draft orchestration
-are implemented; remote execution and final publication remain unperformed.
-Z03 is [reopened for the full artifact matrix](docs/migration/Z03-ARTIFACT-MATRIX.md):
-portable Linux, Windows and macOS on x86_64 and arm64, architecture-specific
-AppImages and Snaps, Windows MSI/MSIX and macOS DMG. Work resumes after U01–U12.
+commands are in [the distribution guide](packaging/README.md). The manual
+[release workflow](.github/workflows/distribution.yaml) builds portable Linux,
+Windows and macOS archives on x86_64 and arm64, architecture-specific Linux
+AppImages and Snaps, Windows MSI/MSIX, macOS DMGs, the standalone JDBC adapter
+JAR, and optional Java runtimes. A release is published only after the complete
+matrix succeeds. [Z03 tracks qualification](docs/migration/Z03-ARTIFACT-MATRIX.md).
 `--resources DIRECTORY` within `serve` selects the child IDE's resource override.
 Remaining arguments after `--` pass literally to ttyd; an unknown option also
 starts forwarding, matching the original CLI.

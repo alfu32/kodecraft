@@ -95,6 +95,7 @@ fn remaining_fields_and_button_families_are_mouse_reachable_and_apply_their_owne
         ("Akamai EdgeGrid", "edgegrid"),
         ("No auth", "noauth"),
     ] {
+        press_label(&mut form, &mut model, &mut focus, "Auth type:");
         press_label(&mut form, &mut model, &mut focus, label);
         assert_eq!(
             model
@@ -109,6 +110,7 @@ fn remaining_fields_and_button_families_are_mouse_reachable_and_apply_their_owne
     assert!(form.reveal);
     press_label(&mut form, &mut model, &mut focus, "Hide secrets");
     assert!(!form.reveal);
+    press_label(&mut form, &mut model, &mut focus, "Auth type:");
     press_label(&mut form, &mut model, &mut focus, "Inherit");
     assert!(
         model
@@ -206,7 +208,8 @@ fn remaining_fields_and_button_families_are_mouse_reachable_and_apply_their_owne
         model.node(&form.path).unwrap()["variable"][0]["disabled"],
         true
     );
-    press_label(&mut form, &mut model, &mut focus, "secret =");
+    form.perform(Action::Edit(Rows::Variable, 0), &mut model, &mut focus)
+        .unwrap();
     assert!(form.has_modal());
     form.dispatch(&key(Key::Escape), &mut model, &mut focus)
         .unwrap();
@@ -269,6 +272,101 @@ fn remaining_fields_and_button_families_are_mouse_reachable_and_apply_their_owne
         model.collection()["info"]["description"],
         "Retained description"
     );
+}
+
+#[test]
+fn variable_value_edits_in_place_and_keeps_the_row_metadata() {
+    let (mut model, mut form, mut focus) = setup();
+    form.perform(Action::Tab(Tab::Variables), &mut model, &mut focus)
+        .unwrap();
+    let before = model.node(&form.path).unwrap()["variable"][0].clone();
+    form.perform(
+        Action::InlineValue(Rows::Variable, 0),
+        &mut model,
+        &mut focus,
+    )
+    .unwrap();
+    form.dispatch(&ctrl('a'), &mut model, &mut focus).unwrap();
+    form.dispatch(
+        &InputEvent::Paste("new-value".into()),
+        &mut model,
+        &mut focus,
+    )
+    .unwrap();
+    assert_eq!(
+        model.node(&form.path).unwrap()["variable"][0]["value"],
+        "new-value"
+    );
+    assert_eq!(
+        model.node(&form.path).unwrap()["variable"][0]["x-row"],
+        before["x-row"]
+    );
+    assert!(!text(&draw(&mut form, &model, 80, 24)).contains("new-value"));
+}
+
+#[test]
+fn collection_authenticate_opens_copyable_url_and_token_dialog() {
+    use kode_tui::panels::rest::oauth::{Action as OAuthAction, View};
+    let mut model = Workspace::default();
+    model
+        .replace_collection(
+            json!({"info":{"name":"API"},"auth":{"type":"oauth2","oauth2":[]},"item":[]}),
+        )
+        .unwrap();
+    let path = NodePath::default();
+    let prepared = Prepared::from_model(&model, &path).unwrap();
+    let mut form = Form::new(path, "collection".into(), prepared).unwrap();
+    let mut focus = FocusState {
+        focused: Some(form.id),
+        ..Default::default()
+    };
+    form.perform(Action::Tab(Tab::Auth), &mut model, &mut focus)
+        .unwrap();
+    assert!(text(&draw(&mut form, &model, 80, 24)).contains("Authenticate"));
+    form.perform(Action::Authenticate, &mut model, &mut focus)
+        .unwrap();
+    assert!(
+        form.take_intents()
+            .into_iter()
+            .any(|intent| matches!(intent, Intent::OAuth(OAuthAction::Acquire)))
+    );
+    let flow = kode_core::JobTag {
+        workspace: kode_core::WorkspaceGeneration(1),
+        request: kode_core::RequestId::fresh().unwrap(),
+        document: None,
+    };
+    let url = "https://identity.example.test/authorize?state=sample".to_string();
+    form.set_oauth(
+        View {
+            flow: Some(flow),
+            pending: true,
+            url: Some(url.clone()),
+            ..Default::default()
+        },
+        model.export_collection(),
+        &mut focus,
+    );
+    assert!(form.has_modal());
+    let mut buffer = Buffer::empty(Rect::new(0, 0, 80, 24));
+    form.render_modal(Rect::new(0, 0, 80, 24), &mut buffer, &Theme::compiled());
+    let row = (0..24)
+        .find_map(|y| {
+            let line: String = (0..80).map(|x| buffer[(x, y)].symbol()).collect();
+            line.find("[Copy URL]").map(|x| (x as u16, y))
+        })
+        .unwrap();
+    form.dispatch(&click(row.0, row.1), &mut model, &mut focus)
+        .unwrap();
+    assert!(form.take_intents().into_iter().any(|intent| matches!(intent, Intent::Clipboard { action: kode_tui::widgets::field::FieldAction::Copy(text), .. } if text == url)));
+    form.dispatch(
+        &InputEvent::Paste("token-from-browser".into()),
+        &mut model,
+        &mut focus,
+    )
+    .unwrap();
+    form.dispatch(&key(Key::Enter), &mut model, &mut focus)
+        .unwrap();
+    assert!(form.take_intents().into_iter().any(|intent| matches!(intent, Intent::OAuthAccessToken { flow: Some(tag), text } if tag == flow && text == "token-from-browser")));
 }
 #[test]
 fn inherited_rows_scroll_independently_and_never_push_local_headers_out_of_the_view() {
@@ -642,13 +740,17 @@ fn oauth_url_copy_and_redirect_dialog_keep_flow_identity_without_editing_collect
         "https://identity.example.test/authorize?state={}&client_id=synthetic&scope=read",
         "A".repeat(180)
     );
-    form.set_oauth(View {
-        flow: Some(flow),
-        pending: true,
-        url: Some(url.clone()),
-        message: "Complete login in your browser".into(),
-        ..Default::default()
-    });
+    form.set_oauth(
+        View {
+            flow: Some(flow),
+            pending: true,
+            url: Some(url.clone()),
+            message: "Complete login in your browser".into(),
+            ..Default::default()
+        },
+        model.export_collection(),
+        &mut focus,
+    );
     form.take_intents();
     form.perform(Action::OAuth(OAuthAction::CopyUrl), &mut model, &mut focus)
         .unwrap();
@@ -673,11 +775,15 @@ fn oauth_url_copy_and_redirect_dialog_keep_flow_identity_without_editing_collect
         request: kode_core::RequestId::fresh().unwrap(),
         ..flow
     };
-    form.set_oauth(View {
-        flow: Some(next),
-        pending: true,
-        ..Default::default()
-    });
+    form.set_oauth(
+        View {
+            flow: Some(next),
+            pending: true,
+            ..Default::default()
+        },
+        model.export_collection(),
+        &mut focus,
+    );
     form.dispatch(&key(Key::Enter), &mut model, &mut focus)
         .unwrap();
     assert!(form.take_intents().into_iter().any(|intent|matches!(intent,Intent::OAuthRedirect{flow:captured,text} if captured==flow && text==redirect)));
@@ -699,14 +805,18 @@ fn oauth_login_link_and_masked_token_entry_are_visible_and_flow_bound() {
         request: kode_core::RequestId::fresh().unwrap(),
         document: None,
     };
-    form.set_oauth(View {
-        flow: Some(flow),
-        pending: true,
-        url: Some("https://identity.example.test/authorize?state=sample".into()),
-        callback: Some("https://localhost:12345/callback".into()),
-        message: "Waiting for browser login".into(),
-        ..Default::default()
-    });
+    form.set_oauth(
+        View {
+            flow: Some(flow),
+            pending: true,
+            url: Some("https://identity.example.test/authorize?state=sample".into()),
+            callback: Some("https://localhost:12345/callback".into()),
+            message: "Waiting for browser login".into(),
+            ..Default::default()
+        },
+        model.export_collection(),
+        &mut focus,
+    );
     let visible = text(&draw(&mut form, &model, 80, 24));
     assert!(visible.contains("Copy login URL"));
     assert!(visible.contains("Paste access token"));

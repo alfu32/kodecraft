@@ -112,10 +112,13 @@ impl About {
     }
     pub fn render(&mut self, area: Rect, buffer: &mut Buffer, theme: &Theme) {
         let header = Rect::new(area.x, area.y, area.width, area.height.min(1));
+        let revision = option_env!("KODE_BUILD_SHA")
+            .map(|sha| format!(" ({})", &sha[..sha.len().min(8)]))
+            .unwrap_or_default();
         draw_text(
             header,
             buffer,
-            &format!("Kode {} | MIT", env!("CARGO_PKG_VERSION")),
+            &format!("Kode v{}{} | MIT", env!("CARGO_PKG_VERSION"), revision),
             theme.style("content"),
         );
         let body = Rect::new(

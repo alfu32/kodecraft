@@ -53,8 +53,8 @@ def payload(archive, directory):
         source.extractall(directory,filter="data")
     package = Path(directory) / roots.pop()
     manifest = json.loads((package / "package-manifest.json").read_text())
-    if manifest["target"]!="x86_64-unknown-linux-gnu" or not manifest["browserTerminalBundled"]:
-        raise ValueError("Only the qualified complete Linux x86_64 payload can become an installer")
+    if manifest["target"] not in ("x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"):
+        raise ValueError("Installers require a native Linux GNU payload")
     actual = {path.relative_to(package).as_posix() for path in package.rglob("*") if path.is_file()}
     if actual != set(manifest["files"]) | {"package-manifest.json"}:
         raise ValueError("Installer payload file inventory differs from its manifest")

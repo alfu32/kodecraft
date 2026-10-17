@@ -21,6 +21,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="kode-snap-stage-") as directory:
         stage = Path(directory)
         package, manifest = payload(args.archive,stage / "input")
+        snap_arch = "arm64" if manifest["target"].startswith("aarch64") else "amd64"
         root = stage / "snap"
         (root / "opt").mkdir(parents=True)
         shutil.copytree(package,root / "opt/kode")
@@ -39,7 +40,7 @@ description: |
   Native Kode editor with Git, REST and external-Java JDBC.
   Java is downloaded separately when explicitly requested.
 base: core24
-architectures: [amd64]
+architectures: [{snap_arch}]
 confinement: strict
 grade: devel
 license: MIT
@@ -61,7 +62,7 @@ apps:
         os.utime(root,(epoch,epoch))
         command = ["snapcraft","pack",str(root),"--output",str(args.output.resolve())] if args.packer=="snapcraft" else ["snap","pack",str(root),str(args.output.resolve()),"--compression=xz"]
         result = subprocess.run(command,check=True,cwd=stage,capture_output=True,text=True,env=dict(os.environ,SOURCE_DATE_EPOCH=str(epoch)))
-        artifact = args.output / f"kode-rs_{version}_amd64.snap"
+        artifact = args.output / f"kode-rs_{version}_{snap_arch}.snap"
         if not artifact.is_file():
             raise ValueError("Snapcraft did not produce the expected artifact: " + result.stdout[-1000:])
         publish(artifact,{"format":"snap","target":manifest["target"],"base":"core24","confinement":"strict","grade":"devel","javaRuntimeBundled":False,"payloadArchiveSha256":sha(args.archive.read_bytes()),"payloadManifestSha256":sha((package / "package-manifest.json").read_bytes()),"packer":args.packer,"packerVersion":subprocess.check_output([args.packer,"--version"],text=True).strip()})

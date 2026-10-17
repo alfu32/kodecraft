@@ -2,6 +2,42 @@ use super::*;
 use crate::input::terminal::{Key, PointerAction};
 use crossterm::event::MouseButton;
 impl Form {
+    pub(super) fn open_authenticate_dialog(
+        &mut self,
+        view: &OAuthView,
+        collection: Arc<Value>,
+        focus: &mut FocusState,
+    ) -> Result<()> {
+        let Some(url) = &view.url else {
+            return Ok(());
+        };
+        let mut dialog = EntryDialog::new(
+            "Authenticate OAuth 2.0".into(),
+            editing::EntryValue {
+                key: "Access token".into(),
+                value: String::new(),
+                description: url.clone(),
+                kind: "secret".into(),
+                enabled: true,
+            },
+            false,
+            "Login URL",
+        )?;
+        dialog.fields[0].read_only = true;
+        dialog.fields[1].masked = true;
+        dialog.fields[2].read_only = true;
+        dialog.copy_field = Some(2);
+        dialog.focus = 1;
+        self.epoch = self.epoch.saturating_add(1);
+        self.modal = Some(Modal {
+            dialog,
+            purpose: ModalPurpose::AccessToken(view.flow),
+            expected: collection,
+            previous: focus.focused,
+        });
+        focus.focused = Some(self.id);
+        Ok(())
+    }
     fn buffer_for_tab(&self, model: &Workspace) -> Option<BufferKind> {
         match self.tab {
             Tab::Headers => Some(BufferKind::Headers),
@@ -35,6 +71,9 @@ impl Form {
         }
         if model.node(&self.path).is_none() {
             return Err(invalid("REST item no longer exists"));
+        }
+        if !matches!(action, Action::InlineValue(_, _)) {
+            self.inline = None;
         }
         match action {
             Action::Browse => {
@@ -165,8 +204,52 @@ impl Form {
                 self.intents.push(Intent::Buffer(kind));
             }
             Action::Reveal => self.reveal = !self.reveal,
+            Action::InlineValue(kind, index) => {
+                if kind == Rows::FormData {
+                    return self.activate(Action::Edit(kind, index), model, focus);
+                }
+                if self
+                    .inline
+                    .as_ref()
+                    .is_none_or(|inline| inline.kind != kind || inline.index != index)
+                {
+                    let entries = editing::rows(
+                        model.node(&self.path).expect("checked node"),
+                        &self.path,
+                        kind,
+                    )?;
+                    let entry = entries
+                        .get(index)
+                        .ok_or_else(|| invalid("Selected row is no longer editable"))?;
+                    let value = editing::entry_value(entry, kind);
+                    let secret = entry.get("secret") == Some(&Value::Bool(true))
+                        || value.kind == "secret"
+                        || kind == Rows::Auth && kode_rest::auth::secret_field(&value.key);
+                    let mut field = TextField::new(value.value);
+                    field.framed = false;
+                    field.masked = secret && !self.reveal;
+                    self.inline = Some(InlineEdit { kind, index, field });
+                }
+                self.focused = None;
+                focus.focused = Some(self.id);
+            }
+            Action::AuthTypeMenu => {
+                self.auth_menu_open = !self.auth_menu_open;
+                self.row_cache = None;
+            }
+            Action::Authenticate => {
+                if self.oauth.url.is_some() {
+                    let view = self.oauth.clone();
+                    self.open_authenticate_dialog(&view, model.export_collection(), focus)?;
+                } else {
+                    self.oauth_dialog_pending = true;
+                    self.intents.push(Intent::OAuth(OAuthAction::Acquire));
+                }
+            }
             Action::Auth(kind) => {
                 editing::auth(model, &self.path, kind)?;
+                self.auth_menu_open = false;
+                self.row_cache = None;
                 self.intents.push(Intent::Changed);
             }
             Action::Body(mode) => {
@@ -277,6 +360,29 @@ impl Form {
             },
         })
     }
+    fn write_inline_value(
+        &mut self,
+        model: &mut Workspace,
+        kind: Rows,
+        index: usize,
+        value: &str,
+    ) -> Result<()> {
+        let entries = editing::rows(
+            model
+                .node(&self.path)
+                .ok_or_else(|| invalid("REST item no longer exists"))?,
+            &self.path,
+            kind,
+        )?;
+        let entry = entries
+            .get(index)
+            .ok_or_else(|| invalid("Selected row is no longer editable"))?;
+        let mut next = editing::entry_value(entry, kind);
+        next.value = value.into();
+        editing::edit_row(model, &self.path, kind, index, &next)?;
+        self.intents.push(Intent::Changed);
+        Ok(())
+    }
     pub fn paste(
         &mut self,
         proof: PasteProof,
@@ -292,6 +398,32 @@ impl Form {
             return Ok(false);
         }
         match proof.target {
+            PasteTarget::Inline {
+                kind,
+                index,
+                value,
+                cursor,
+                anchor,
+            } => {
+                let Some(inline) = self.inline.as_mut().filter(|inline| {
+                    inline.kind == kind
+                        && inline.index == index
+                        && inline.field.value == value
+                        && inline.field.cursor == cursor
+                        && inline.field.anchor == anchor
+                }) else {
+                    return Ok(false);
+                };
+                let before = inline.field.value.clone();
+                let action = inline.field.handle(&InputEvent::Paste(text));
+                let next = inline.field.value.clone();
+                if next != before {
+                    self.write_inline_value(model, kind, index, &next)?;
+                }
+                if let Some(action) = action {
+                    self.field_action(action, None);
+                }
+            }
             PasteTarget::Entry(proof) => {
                 let Some(modal) = &mut self.modal else {
                     return Ok(false);
@@ -412,6 +544,14 @@ impl Form {
                         {
                             value.pointer(event, hit.area);
                         }
+                        if let Action::InlineValue(kind, index) = hit.action
+                            && let Some(inline) = self
+                                .inline
+                                .as_mut()
+                                .filter(|inline| inline.kind == kind && inline.index == index)
+                        {
+                            inline.field.pointer(event, hit.area);
+                        }
                     }
                     return Ok(true);
                 }
@@ -485,7 +625,7 @@ impl Form {
                         self.follow = true;
                         return Ok(true);
                     }
-                    Key::Enter if self.focused.is_none() => {
+                    Key::Enter if self.focused.is_none() && self.inline.is_none() => {
                         if let Some((_, action)) = self.controls.get(self.selection).cloned() {
                             self.activate(action, model, focus)?;
                         }
@@ -494,6 +634,35 @@ impl Form {
                     _ => {}
                 }
             }
+        }
+        if let Some(inline) = self.inline.as_mut() {
+            if matches!(event, InputEvent::Key(input) if input.key == Key::Enter) {
+                self.inline = None;
+                return Ok(true);
+            }
+            let proof = PasteProof {
+                key: self.key.clone(),
+                epoch: self.epoch,
+                target: PasteTarget::Inline {
+                    kind: inline.kind,
+                    index: inline.index,
+                    value: inline.field.value.clone(),
+                    cursor: inline.field.cursor,
+                    anchor: inline.field.anchor,
+                },
+            };
+            let before = inline.field.value.clone();
+            let action = inline.field.handle(event);
+            let kind = inline.kind;
+            let index = inline.index;
+            let next = inline.field.value.clone();
+            if next != before {
+                self.write_inline_value(model, kind, index, &next)?;
+            }
+            if let Some(action) = action {
+                self.field_action(action, Some(proof));
+            }
+            return Ok(true);
         }
         if let Some(field) = self.focused {
             let proof = self.field_proof(field);

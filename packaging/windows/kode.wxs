@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="Kode" Manufacturer="Kode" Version="$(var.Version)"
+           UpgradeCode="23E05B79-9875-461A-A391-20174BACD03B"
+           Scope="perMachine" Compressed="yes" Language="1033">
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Kode is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="Kode" />
+    </StandardDirectory>
+    <Feature Id="Main" Title="Kode" Level="1">
+      <ComponentGroupRef Id="KodeFiles" />
+    </Feature>
+  </Package>
+  <Fragment>
+    <ComponentGroup Id="KodeFiles" Directory="INSTALLFOLDER">
+      <Files Include="$(var.Stage)\**" />
+    </ComponentGroup>
+  </Fragment>
+</Wix>

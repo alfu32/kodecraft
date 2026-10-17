@@ -19,7 +19,7 @@ MODULES=sorted(['java.sql','java.sql.rowset','java.naming','java.logging','java.
 
 
 def target():
-    arch={'x86_64':'x86_64','AMD64':'x86_64','aarch64':'aarch64','arm64':'aarch64'}.get(platform.machine())
+    arch={'x86_64':'x86_64','AMD64':'x86_64','aarch64':'aarch64','arm64':'aarch64','ARM64':'aarch64'}.get(platform.machine())
     suffix={'Linux':'unknown-linux-gnu','Darwin':'apple-darwin','Windows':'pc-windows-msvc'}.get(platform.system())
     if not arch or not suffix:raise SystemExit('Unsupported native JVM artifact target')
     return arch+'-'+suffix

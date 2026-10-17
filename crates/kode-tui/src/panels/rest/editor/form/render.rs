@@ -131,6 +131,10 @@ impl Form {
                                 .push((virtual_y, Action::Toggle(*kind, *index)));
                         }
                         self.controls.push((virtual_y, Action::Edit(*kind, *index)));
+                        if *kind != Rows::FormData {
+                            self.controls
+                                .push((virtual_y, Action::InlineValue(*kind, *index)));
+                        }
                         if *kind != Rows::Auth {
                             self.controls
                                 .push((virtual_y, Action::Remove(*kind, *index)));
@@ -449,22 +453,28 @@ impl Form {
                 Row::Entry {
                     kind,
                     index,
-                    label,
+                    key,
+                    value,
+                    meta,
+                    secret,
                     enabled,
                 } => {
                     if let Some(y) = visible(offset) {
-                        if *kind == Rows::Auth {
-                            self.button(
-                                Rect::new(content.x, y, content.width, 1),
-                                label,
-                                Action::Edit(*kind, *index),
-                                buffer,
-                                theme,
-                            );
+                        let toggle = if *kind == Rows::Auth {
+                            0
                         } else {
-                            let toggle = 4.min(content.width);
-                            let remove = 7.min(content.width.saturating_sub(toggle) / 2);
-                            let edit = content.width - toggle - remove;
+                            4.min(content.width)
+                        };
+                        let remove = if *kind == Rows::Auth {
+                            0
+                        } else {
+                            7.min(content.width.saturating_sub(toggle) / 2)
+                        };
+                        let available = content.width.saturating_sub(toggle + remove);
+                        let key_width = (available / 3).max(1);
+                        let meta_width = if available >= 54 { available / 4 } else { 0 };
+                        let value_width = available.saturating_sub(key_width + meta_width);
+                        if toggle > 0 {
                             self.button(
                                 Rect::new(content.x, y, toggle, 1),
                                 if *enabled { "[x]" } else { "[ ]" },
@@ -472,13 +482,38 @@ impl Form {
                                 buffer,
                                 theme,
                             );
-                            self.button(
-                                Rect::new(content.x + toggle, y, edit, 1),
-                                label,
-                                Action::Edit(*kind, *index),
+                        }
+                        let key_area = Rect::new(content.x + toggle, y, key_width, 1);
+                        draw_text(key_area, buffer, &display_text(key), theme.style("content"));
+                        self.add_hit(key_area, Action::Edit(*kind, *index));
+                        let value_area = Rect::new(key_area.right(), y, value_width, 1);
+                        if let Some(inline) = self
+                            .inline
+                            .as_mut()
+                            .filter(|inline| inline.kind == *kind && inline.index == *index)
+                        {
+                            cursor = inline
+                                .field
+                                .render(value_area, buffer, theme, focused)
+                                .or(cursor);
+                        } else {
+                            draw_text(
+                                value_area,
                                 buffer,
-                                theme,
+                                &display_text(&self.mask(key, value, *secret)),
+                                theme.style("content"),
                             );
+                        }
+                        self.add_hit(value_area, Action::InlineValue(*kind, *index));
+                        if meta_width > 0 {
+                            draw_text(
+                                Rect::new(value_area.right(), y, meta_width, 1),
+                                buffer,
+                                &display_text(meta),
+                                theme.style("content"),
+                            );
+                        }
+                        if remove > 0 {
                             self.button(
                                 Rect::new(content.right() - remove, y, remove, 1),
                                 "Remove",

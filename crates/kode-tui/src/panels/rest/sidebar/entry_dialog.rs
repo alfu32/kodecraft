@@ -33,6 +33,7 @@ pub struct Geometry {
     pub ok: Rect,
     pub cancel: Rect,
     pub browse: Rect,
+    pub copy: Rect,
 }
 pub struct EntryDialog {
     pub title: String,
@@ -41,6 +42,7 @@ pub struct EntryDialog {
     pub finished: bool,
     pub result: Option<EntryValue>,
     pub file_source: bool,
+    pub copy_field: Option<usize>,
     browse_requested: bool,
     labels: Vec<String>,
     variable: bool,
@@ -79,6 +81,7 @@ impl EntryDialog {
             finished: false,
             result: None,
             file_source: false,
+            copy_field: None,
             browse_requested: false,
             labels: labels.into_iter().map(str::to_string).collect(),
             variable,
@@ -121,6 +124,7 @@ impl EntryDialog {
             ok: Rect::default(),
             cancel: Rect::default(),
             browse: Rect::default(),
+            copy: Rect::default(),
         };
         if modal.is_empty() {
             return geometry;
@@ -170,6 +174,13 @@ impl EntryDialog {
                 1,
             );
         }
+        if let Some(index) = self.copy_field
+            && let Some(field) = geometry.fields.get_mut(index)
+            && field.width >= 20
+        {
+            geometry.copy = Rect::new(field.right() - 11, field.y, 11, 1);
+            field.width -= 11;
+        }
         if self.file_enabled() {
             let field = &mut geometry.fields[1];
             if field.width >= 20 {
@@ -206,6 +217,12 @@ impl EntryDialog {
             geometry.browse,
             buffer,
             "[File Alt+P]",
+            theme.style("lsp-button"),
+        );
+        draw_text(
+            geometry.copy,
+            buffer,
+            "[Copy URL]",
             theme.style("lsp-button"),
         );
         let mut cursor = None;
@@ -330,6 +347,13 @@ impl EntryDialog {
         if self.file_enabled() && button(event, geometry.browse, false) {
             self.focus = count + 2;
             self.browse_requested = true;
+            return true;
+        }
+        if button(event, geometry.copy, false) {
+            if let Some(index) = self.copy_field {
+                self.actions
+                    .push(FieldAction::Copy(self.fields[index].value.clone()));
+            }
             return true;
         }
         if button(event, geometry.ok, self.focus == count) {

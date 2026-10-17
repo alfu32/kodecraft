@@ -123,10 +123,27 @@ impl Prepare {
                 name: node.name,
             });
         }
+        let mut runtime_tokens = self.runtime_tokens;
+        for item in &items {
+            if runtime_tokens.contains_key(&item.id) {
+                continue;
+            }
+            for depth in (0..item.path.0.len()).rev() {
+                let ancestor = NodePath(item.path.0[..depth].to_vec());
+                if let Some(token) = keys
+                    .get(&ancestor)
+                    .and_then(|key| runtime_tokens.get(key))
+                    .cloned()
+                {
+                    runtime_tokens.insert(item.id.clone(), token);
+                    break;
+                }
+            }
+        }
         Ok(Prepared {
             keys: Arc::new(keys),
             definition: Definition {
-                runtime_tokens: self.runtime_tokens,
+                runtime_tokens,
                 collection,
                 root: self.root,
                 environment,

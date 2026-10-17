@@ -12,7 +12,7 @@ impl AppState {
     pub(super) fn sync_rest_oauth(&mut self) {
         if let Some(form) = &mut self.rest.form {
             let view = self.rest.oauth.view(&form.key);
-            form.set_oauth(view);
+            form.set_oauth(view, self.rest.model.export_collection(), &mut self.focus);
         }
     }
     pub(super) fn rest_oauth_action(&mut self, action: Action) -> Result<()> {

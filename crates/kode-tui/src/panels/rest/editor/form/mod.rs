@@ -60,6 +60,9 @@ pub enum Action {
     Tab(Tab),
     Send,
     Reveal,
+    AuthTypeMenu,
+    Authenticate,
+    InlineValue(Rows, usize),
     Auth(Option<&'static str>),
     Body(&'static str),
     Setting(&'static str),
@@ -102,6 +105,13 @@ pub enum Intent {
 }
 #[derive(Clone)]
 pub enum PasteTarget {
+    Inline {
+        kind: Rows,
+        index: usize,
+        value: String,
+        cursor: usize,
+        anchor: Option<usize>,
+    },
     Field {
         field: Field,
         value: String,
@@ -193,7 +203,10 @@ enum Row {
     Entry {
         kind: Rows,
         index: usize,
-        label: String,
+        key: String,
+        value: String,
+        meta: String,
+        secret: bool,
         enabled: bool,
     },
     Embed(&'static str, BufferKind),
@@ -221,6 +234,11 @@ struct Modal {
     expected: Arc<Value>,
     previous: Option<FocusId>,
 }
+struct InlineEdit {
+    kind: Rows,
+    index: usize,
+    field: TextField,
+}
 #[derive(Clone, Default)]
 pub struct Geometry {
     pub area: Rect,
@@ -241,9 +259,12 @@ pub struct Form {
     pub oauth: OAuthView,
     pub running: bool,
     pub reveal: bool,
+    auth_menu_open: bool,
+    oauth_dialog_pending: bool,
     pub selected_buffer: Option<BufferKind>,
     request: bool,
     focused: Option<Field>,
+    inline: Option<InlineEdit>,
     selection: usize,
     scroll: usize,
     follow: bool,
@@ -259,7 +280,15 @@ pub struct Form {
     virtual_height: usize,
 }
 impl Form {
-    pub fn set_oauth(&mut self, view: OAuthView) {
+    pub fn set_oauth(&mut self, view: OAuthView, collection: Arc<Value>, focus: &mut FocusState) {
+        if self.oauth_dialog_pending && view.url.is_some() && self.modal.is_none() {
+            if self
+                .open_authenticate_dialog(&view, collection, focus)
+                .is_ok()
+            {
+                self.oauth_dialog_pending = false;
+            }
+        }
         if self.oauth != view {
             self.oauth = view;
             self.row_cache = None;
@@ -287,9 +316,12 @@ impl Form {
             oauth: OAuthView::default(),
             running: false,
             reveal: false,
+            auth_menu_open: false,
+            oauth_dialog_pending: false,
             selected_buffer: None,
             request: prepared.request,
             focused: None,
+            inline: None,
             selection: 0,
             scroll: 0,
             follow: true,
@@ -478,9 +510,7 @@ impl Form {
                     .and_then(|a| a.get("type"))
                     .and_then(Value::as_str)
                     .or_else(|| self.derived.auth.as_ref().map(|a| a.kind.as_str()));
-                if self.request
-                    && effective_kind.is_some_and(|kind| matches!(kind, "oauth1" | "oauth2"))
-                {
+                if effective_kind.is_some_and(|kind| matches!(kind, "oauth1" | "oauth2")) {
                     let kind = if effective_kind == Some("oauth1") {
                         "oauth1"
                     } else {
@@ -496,6 +526,9 @@ impl Form {
                         Action::Auth(Some(kind)),
                     )]));
                     let mut controls = vec![];
+                    if kind == "oauth2" {
+                        controls.push(("Authenticate".into(), Action::Authenticate));
+                    }
                     if self.oauth.pending {
                         controls.push(("Cancel OAuth".into(), Action::OAuth(OAuthAction::Cancel)));
                     } else {
@@ -544,14 +577,18 @@ impl Form {
                         }
                     }
                 }
-                let mut choices = vec![("Inherit".into(), Action::Auth(None))];
-                choices.extend(
-                    kode_rest::auth::SCHEMES
-                        .iter()
-                        .map(|scheme| (scheme.label.into(), Action::Auth(Some(scheme.kind)))),
-                );
-                for group in choices.chunks(3) {
-                    rows.push(Row::Buttons(group.to_vec()));
+                rows.push(Row::Buttons(vec![(
+                    format!("Auth type: {} ▾", effective_kind.unwrap_or("inherit")),
+                    Action::AuthTypeMenu,
+                )]));
+                if self.auth_menu_open {
+                    rows.push(Row::Buttons(vec![("  Inherit".into(), Action::Auth(None))]));
+                    for scheme in kode_rest::auth::SCHEMES {
+                        rows.push(Row::Buttons(vec![(
+                            format!("  {}", scheme.label),
+                            Action::Auth(Some(scheme.kind)),
+                        )]));
+                    }
                 }
                 if effective_kind.is_some_and(|kind| {
                     matches!(
@@ -733,18 +770,14 @@ impl Form {
             rows.push(Row::Entry {
                 kind,
                 index,
-                label: format!(
-                    "{} = {}{}",
-                    value.key,
-                    self.mask(&value.key, &value.value, secret),
-                    if kind == Rows::Variable {
-                        format!(" ({})", value.kind)
-                    } else if kind == Rows::FormData {
-                        format!(" [{}]", value.description)
-                    } else {
-                        String::new()
-                    }
-                ),
+                key: value.key,
+                value: value.value,
+                meta: if kind == Rows::Variable {
+                    value.kind
+                } else {
+                    value.description
+                },
+                secret,
                 enabled: value.enabled,
             });
         }
