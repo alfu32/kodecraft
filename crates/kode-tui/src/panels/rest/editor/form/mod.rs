@@ -279,13 +279,14 @@ pub struct Form {
 }
 impl Form {
     pub fn set_oauth(&mut self, view: OAuthView, collection: Arc<Value>, focus: &mut FocusState) {
-        if self.oauth_dialog_pending && view.url.is_some() && self.modal.is_none() {
-            if self
+        if self.oauth_dialog_pending
+            && view.url.is_some()
+            && self.modal.is_none()
+            && self
                 .open_authenticate_dialog(&view, collection, focus)
                 .is_ok()
-            {
-                self.oauth_dialog_pending = false;
-            }
+        {
+            self.oauth_dialog_pending = false;
         }
         if self.oauth != view {
             self.oauth = view;
