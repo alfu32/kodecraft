@@ -126,10 +126,6 @@ impl Form {
                         }
                     }
                     Row::Entry { kind, index, .. } => {
-                        if *kind != Rows::Auth {
-                            self.controls
-                                .push((virtual_y, Action::Toggle(*kind, *index)));
-                        }
                         self.controls.push((virtual_y, Action::Edit(*kind, *index)));
                         if *kind != Rows::FormData {
                             self.controls
@@ -175,7 +171,6 @@ impl Form {
                             }
                             Action::Tab(_) => "Tab",
                             Action::Edit(_, _) => "Edit",
-                            Action::Toggle(_, _) => "Toggle",
                             Action::Remove(_, _) => "Remove",
                             Action::Add(_) => "Add",
                             _ => "Action",
@@ -457,33 +452,18 @@ impl Form {
                     value,
                     meta,
                     secret,
-                    enabled,
                 } => {
                     if let Some(y) = visible(offset) {
-                        let toggle = if *kind == Rows::Auth {
-                            0
-                        } else {
-                            4.min(content.width)
-                        };
                         let remove = if *kind == Rows::Auth {
                             0
                         } else {
-                            7.min(content.width.saturating_sub(toggle) / 2)
+                            7.min(content.width)
                         };
-                        let available = content.width.saturating_sub(toggle + remove);
+                        let available = content.width.saturating_sub(remove);
                         let key_width = (available / 3).max(1);
                         let meta_width = if available >= 54 { available / 4 } else { 0 };
                         let value_width = available.saturating_sub(key_width + meta_width);
-                        if toggle > 0 {
-                            self.button(
-                                Rect::new(content.x, y, toggle, 1),
-                                if *enabled { "[x]" } else { "[ ]" },
-                                Action::Toggle(*kind, *index),
-                                buffer,
-                                theme,
-                            );
-                        }
-                        let key_area = Rect::new(content.x + toggle, y, key_width, 1);
+                        let key_area = Rect::new(content.x, y, key_width, 1);
                         draw_text(key_area, buffer, &display_text(key), theme.style("content"));
                         self.add_hit(key_area, Action::Edit(*kind, *index));
                         let value_area = Rect::new(key_area.right(), y, value_width, 1);

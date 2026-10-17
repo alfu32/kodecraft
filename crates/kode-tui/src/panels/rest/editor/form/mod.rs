@@ -74,7 +74,6 @@ pub enum Action {
     Buffer(BufferKind),
     Add(Rows),
     Edit(Rows, usize),
-    Toggle(Rows, usize),
     Remove(Rows, usize),
 }
 pub enum Intent {
@@ -207,7 +206,6 @@ enum Row {
         value: String,
         meta: String,
         secret: bool,
-        enabled: bool,
     },
     Embed(&'static str, BufferKind),
 }
@@ -778,7 +776,6 @@ impl Form {
                     value.description
                 },
                 secret,
-                enabled: value.enabled,
             });
         }
         Ok(())

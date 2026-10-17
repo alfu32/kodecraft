@@ -203,11 +203,7 @@ fn remaining_fields_and_button_families_are_mouse_reachable_and_apply_their_owne
     }
     form.perform(Action::Tab(Tab::Variables), &mut model, &mut focus)
         .unwrap();
-    press_label(&mut form, &mut model, &mut focus, "[x]");
-    assert_eq!(
-        model.node(&form.path).unwrap()["variable"][0]["disabled"],
-        true
-    );
+    assert!(!text(&draw(&mut form, &model, 80, 40)).contains("[x]"));
     form.perform(Action::Edit(Rows::Variable, 0), &mut model, &mut focus)
         .unwrap();
     assert!(form.has_modal());

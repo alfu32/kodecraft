@@ -479,18 +479,26 @@ async fn cancelling_version_probe_reaps_the_owned_process_group() {
     assert!(matches!(worker.await.unwrap(), Err(DomainError::Cancelled)));
     #[cfg(target_os = "linux")]
     {
-        // A killed grandchild may briefly be a zombie until its new parent reaps it.
-        let status = fs::read_to_string(format!("/proc/{pid}/stat"));
-        assert!(
-            status.is_err()
-                || status
-                    .unwrap()
-                    .split(')')
-                    .nth(1)
-                    .unwrap()
-                    .trim_start()
-                    .starts_with('Z')
-        );
+        // SIGKILL delivery is asynchronous. Wait briefly for the grandchild to
+        // disappear or become a zombie adopted by init before asserting cleanup.
+        let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(2);
+        loop {
+            match fs::read_to_string(format!("/proc/{pid}/stat")) {
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => break,
+                Ok(status)
+                    if status
+                        .split(')')
+                        .nth(1)
+                        .is_some_and(|state| state.trim_start().starts_with('Z')) =>
+                {
+                    break;
+                }
+                _ if tokio::time::Instant::now() < deadline => {
+                    tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+                }
+                _ => panic!("cancelled process-group grandchild {pid} remained alive"),
+            }
+        }
     }
 }
 #[tokio::test]

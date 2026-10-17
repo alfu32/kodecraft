@@ -279,10 +279,6 @@ impl Form {
                 self.intents.push(Intent::Changed);
                 self.activate(Action::Edit(kind, index), model, focus)?;
             }
-            Action::Toggle(kind, index) => {
-                editing::toggle_row(model, &self.path, kind, index)?;
-                self.intents.push(Intent::Changed);
-            }
             Action::Remove(kind, index) => {
                 editing::remove_row(model, &self.path, kind, index)?;
                 self.intents.push(Intent::Changed);
