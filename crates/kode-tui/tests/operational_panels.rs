@@ -209,7 +209,7 @@ fn about_uses_loaded_languages_and_keeps_independent_lists_usable_when_tiny() {
             .iter()
             .map(|cell| cell.symbol())
             .collect::<String>()
-            .contains(&format!("Kode {} | MIT", env!("CARGO_PKG_VERSION")))
+            .contains(&format!("Kode v{} | MIT", env!("CARGO_PKG_VERSION")))
     );
     about.dispatch(&key(Key::End), &mut focus);
     let credits_scroll = about.credits.scroll;
