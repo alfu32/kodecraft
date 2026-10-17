@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "mode": "native-h2-tui",
+  "databaseFamily": "H2",
+  "driverVersion": "2.2.224",
+  "helperSha256": "35328cbed66ea0aeb33ecabc3afd1f84e175b757a6d9dd96ffd09b14563c4cc6",
+  "test": "actual_java_h2_panel_download_test_connect_metadata_typing_sessions_disconnect_and_shutdown",
+  "metadataCapabilities": {
+    "packages": false,
+    "packageMembers": false,
+    "packageSource": false,
+    "packageDdl": false
+  },
+  "packageCategoryAbsentFromMetadata": true,
+  "packageCategoryAbsentFromExplorer": true,
+  "qualificationDate": "2026-10-17"
+}

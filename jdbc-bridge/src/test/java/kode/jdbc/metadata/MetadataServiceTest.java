@@ -1,6 +1,7 @@
 package kode.jdbc.metadata;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import kode.jdbc.connections.ConnectionService;
 import kode.jdbc.drivers.LoaderCatalog;
 import kode.jdbc.drivers.TransferControl;
@@ -16,7 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Timeout(15)
 class MetadataServiceTest {
-    static MetadataService.Request request(String kind,String catalog,String schema,String category,String name,String type){return new MetadataService.Request(kind,catalog,schema,category,name,type);}
+    private static final ThreadPoolExecutor CANCEL_EXECUTOR=new ThreadPoolExecutor(1,1,0,TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(8),Thread.ofPlatform().daemon(true).name("metadata-test-cancel").factory(),new ThreadPoolExecutor.AbortPolicy());
+    static MetadataService.Request request(String kind,String catalog,String schema,String category,String name,String type){return new MetadataService.Request(kind,catalog,schema,category,name,type,null);}
     static JsonNode load(DatabaseMetaData meta,MetadataService.Request request) throws Exception {return new MetadataService.Load(meta,request,()->false).run();}
     static List<JsonNode> nodes(JsonNode result,String type){List<JsonNode> out=new ArrayList<>();for(JsonNode node:result.path("objects"))if(node.path("objectType").asText().equals(type))out.add(node);return out;}
     static JsonNode named(JsonNode result,String type,String name){return nodes(result,type).stream().filter(n->n.path("name").asText().equals(name)).findFirst().orElseThrow();}
@@ -39,6 +41,28 @@ class MetadataServiceTest {
             s.execute("create schema \"A_B\"");s.execute("create schema \"AXB\"");s.execute("create table \"A_B\".\"x_y\"(exact int)");s.execute("create table \"A_B\".\"xzy\"(wrong int)");s.execute("create table \"AXB\".\"x_y\"(wrong int)");
             JsonNode tables=load(c.getMetaData(),request("CATEGORY",null,"A_B","TABLE",null,null));assertEquals(2,nodes(tables,"TABLE").size());
             JsonNode columns=load(c.getMetaData(),request("OBJECT",null,"A_B",null,"x_y","TABLE"));assertEquals(1,nodes(columns,"COLUMN").size());assertEquals("EXACT",nodes(columns,"COLUMN").getFirst().path("name").asText());
+        }
+    }
+    @Test void listResultSetStatementIsCancelledBeforeTheOwnerReleasesIt() throws Exception {
+        try(Connection c=h2()){
+            CountDownLatch entered=new CountDownLatch(1),cancelled=new CountDownLatch(1),closed=new CountDownLatch(1);
+            Statement statement=(Statement)Proxy.newProxyInstance(getClass().getClassLoader(),new Class<?>[]{Statement.class},(p,m,a)->{if(m.getName().equals("cancel")){cancelled.countDown();return null;}return m.getReturnType().isPrimitive()?false:null;});
+            ResultSet result=(ResultSet)Proxy.newProxyInstance(getClass().getClassLoader(),new Class<?>[]{ResultSet.class},(p,m,a)->switch(m.getName()){
+                case "getStatement"->statement;
+                case "next"->{entered.countDown();if(!cancelled.await(3,TimeUnit.SECONDS))throw new SQLException("cancel was not delivered");throw new SQLException("Vendor cancellation error","72000");}
+                case "close"->{closed.countDown();yield null;}
+                default->m.getReturnType().isPrimitive()?false:null;
+            });
+            DatabaseMetaData meta=proxy(c.getMetaData(),(method,args)->method.getName().equals("getCatalogs")?result:PASS);
+            MetadataService.Job job=new MetadataService.Job(UUID.randomUUID().toString(),CANCEL_EXECUTOR);
+            ExecutorService owner=Executors.newSingleThreadExecutor();
+            try{
+                Future<?> work=owner.submit(()->{try{return new MetadataService.Load(meta,request("ROOT",null,null,null,null,null),()->false,job).run();}catch(SQLException failure){throw new CompletionException(failure);}});
+                assertTrue(entered.await(3,TimeUnit.SECONDS));assertTrue(job.cancel());
+                ExecutionException failure=assertThrows(ExecutionException.class,()->work.get(4,TimeUnit.SECONDS));
+                assertEquals("57014",((SQLException)failure.getCause().getCause()).getSQLState());
+                assertTrue(cancelled.await(1,TimeUnit.SECONDS));assertTrue(closed.await(1,TimeUnit.SECONDS));
+            }finally{owner.shutdownNow();}
         }
     }
     interface Intercept {Object call(Method method,Object[] args) throws Throwable;}
@@ -97,8 +121,20 @@ class MetadataServiceTest {
         try(LoaderCatalog loaders=new LoaderCatalog();ConnectionService connections=new ConnectionService(loaders)){
             MetadataService service=new MetadataService(connections);String loader=loaders.inspect("metadata-fixture",List.of(),"org.h2.Driver",new TransferControl("fixture",()->false,null)).path("loaderId").asText();
             var open=MetadataService.object().put("dataSourceId","metadata").put("loaderId",loader).put("driverClass","org.h2.Driver").put("jdbcUrl","jdbc:h2:mem:"+UUID.randomUUID());open.putObject("properties");String id=connections.open(open).toCompletableFuture().get(3,TimeUnit.SECONDS).path("connectionId").asText();
-            var params=MetadataService.object().put("connectionId",id);params.putObject("request").put("kind","ROOT");JsonNode root=service.list(params).toCompletableFuture().get(3,TimeUnit.SECONDS);assertFalse(root.path("objects").isEmpty());assertTrue(root.has("contextRevision"));
+            var params=MetadataService.object().put("connectionId",id).put("metadataJobId",UUID.randomUUID().toString());params.putObject("request").put("kind","ROOT");JsonNode root=service.list(params).toCompletableFuture().get(3,TimeUnit.SECONDS);assertFalse(root.path("objects").isEmpty());assertTrue(root.has("contextRevision"));
             params.withObject("request").put("kind","INVALID");assertThrows(kode.jdbc.protocol.RpcException.class,()->service.list(params));
+        }
+    }
+    @Test void earlyCancelOnlyCancelsTheMatchingMetadataListBeforeDispatch() throws Exception {
+        try(LoaderCatalog loaders=new LoaderCatalog();ConnectionService connections=new ConnectionService(loaders)){
+            MetadataService service=new MetadataService(connections);String loader=loaders.inspect("metadata-early-cancel",List.of(),"org.h2.Driver",new TransferControl("fixture",()->false,null)).path("loaderId").asText();
+            var open=MetadataService.object().put("dataSourceId","metadata").put("loaderId",loader).put("driverClass","org.h2.Driver").put("jdbcUrl","jdbc:h2:mem:"+UUID.randomUUID());open.putObject("properties");String connection=connections.open(open).toCompletableFuture().get(3,TimeUnit.SECONDS).path("connectionId").asText();
+            String cancelledId=UUID.randomUUID().toString();JsonNode cancel=service.cancel(MetadataService.object().put("metadataJobId",cancelledId)).toCompletableFuture().get(3,TimeUnit.SECONDS);assertEquals("requested",cancel.path("status").asText());assertFalse(cancel.path("statementAttached").asBoolean());
+            ObjectNode cancelled=MetadataService.object().put("connectionId",connection).put("metadataJobId",cancelledId);cancelled.putObject("request").put("kind","ROOT");
+            ExecutionException failure=assertThrows(ExecutionException.class,()->service.list(cancelled).toCompletableFuture().get(3,TimeUnit.SECONDS));
+            Throwable cause=failure;while(cause!=null&&!(cause instanceof kode.jdbc.protocol.RpcException))cause=cause.getCause();assertNotNull(cause);var rpc=(kode.jdbc.protocol.RpcException)cause;assertEquals("Metadata request cancelled",rpc.data.path("sqlError").path("message").asText());assertEquals("57014",rpc.data.path("sqlError").path("sqlState").asText());
+            ObjectNode neighbor=MetadataService.object().put("connectionId",connection).put("metadataJobId",UUID.randomUUID().toString());neighbor.putObject("request").put("kind","ROOT");
+            JsonNode root=service.list(neighbor).toCompletableFuture().get(3,TimeUnit.SECONDS);assertFalse(root.path("objects").isEmpty());
         }
     }
 }

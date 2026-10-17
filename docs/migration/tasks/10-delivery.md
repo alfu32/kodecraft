@@ -45,9 +45,9 @@ TtydAdapterTest, native resource layout and source README remote-mode instructio
 
 ## Z03 — Reproducible build and distribution
 
-**Status:** todo
+**Status:** suspend
 
-**Depends:** Z01, Z02, D02, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12. **Owns:** `scripts/`, `.github/workflows/`, packaging
+**Depends:** Z01, Z02, D02, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12, U13. **Owns:** `scripts/`, `.github/workflows/`, packaging
 metadata, notices, install/run documentation.
 **Continuation:** [qualified foundation](../Z03-INTEGRATION.md) and
 [requested full artifact matrix / Windows test host](../Z03-ARTIFACT-MATRIX.md).
@@ -81,9 +81,9 @@ LICENSE.md, native library licenses and source launcher behavior.
 
 ## Z04 — Full functional parity and release qualification
 
-**Status:** todo
+**Status:** suspend
 
-**Depends:** E13, L12, W05, V02, V03, G03, D09, R08, R10, Z03, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12.
+**Depends:** E13, L12, W05, V02, V03, G03, D09, R08, R10, Z03, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12, U13.
 **Owns:** `docs/parity/release.md`, full integration test orchestration.
 **Read:** all ledgers, EDITOR-UX.md, COMPATIBILITY.md and original feature screenshots.
 

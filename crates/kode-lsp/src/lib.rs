@@ -3,6 +3,7 @@ pub mod catalog;
 pub mod client;
 pub mod discovery;
 pub mod documents;
+mod gnuelf;
 pub mod install;
 mod jdtls;
 pub mod package;

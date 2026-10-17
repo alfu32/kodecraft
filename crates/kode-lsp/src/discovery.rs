@@ -4,7 +4,11 @@ use crate::catalog::{
     validate_command, validate_id,
 };
 use kode_core::{DomainError, Result};
-use kode_platform::{files::open_regular_file, paths::ResourcePaths, process::ProcessSpec};
+use kode_platform::{
+    files::open_regular_file,
+    paths::ResourcePaths,
+    process::{ProcessFactory, ProcessSpec, SystemProcessFactory},
+};
 use serde::{Deserialize, Serialize};
 use std::{
     collections::BTreeMap,
@@ -165,6 +169,23 @@ impl DiscoveryOptions {
         workspace: &Path,
         cancel: &kode_platform::jobs::CancellationToken,
     ) -> Result<ResolvedCommand> {
+        self.resolve_for_launch_with_process_factory(
+            entry,
+            manifest,
+            workspace,
+            cancel,
+            &SystemProcessFactory,
+        )
+    }
+    /// Native qualification may prefix an emulator while retaining production preparation.
+    pub fn resolve_for_launch_with_process_factory(
+        &self,
+        entry: &ServerEntry,
+        manifest: Option<&InstallManifest>,
+        workspace: &Path,
+        cancel: &kode_platform::jobs::CancellationToken,
+        factory: &dyn ProcessFactory,
+    ) -> Result<ResolvedCommand> {
         let command = self.resolve_command(entry, manifest)?;
         if !self.configured_commands.contains_key(&entry.id)
             && let Some(manifest) = manifest
@@ -175,7 +196,16 @@ impl DiscoveryOptions {
             && let Some(plan) = crate::package::plan(&manifest.extra)?
         {
             if let Some(requirement) = plan.runtime {
-                crate::runtime::verify(Path::new(&command.args[0]), &requirement, cancel)?;
+                crate::runtime::verify_with_factory(
+                    Path::new(&command.args[0]),
+                    &requirement,
+                    cancel,
+                    factory,
+                )?;
+            }
+            if plan.launcher == Some(crate::package::Launcher::Gnuelf) {
+                crate::gnuelf::verify(&command, cancel, factory)?;
+                return crate::gnuelf::prepare(command);
             }
             if plan.launcher == Some(crate::package::Launcher::Jdtls) {
                 return crate::jdtls::workspace_command(

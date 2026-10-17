@@ -9,6 +9,7 @@ const PREVIEW_BYTES: usize = 32 * 1024 * 1024;
 #[derive(Default)]
 struct Retention {
     permits: Mutex<Vec<OwnedSemaphorePermit>>,
+    _parents: Vec<Arc<Retention>>,
 }
 impl std::fmt::Debug for Retention {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -36,6 +37,22 @@ pub struct Preview {
     pub retention_limited: bool,
     pub retained_bytes: usize,
     retention: Arc<Retention>,
+}
+impl Preview {
+    /// Retains every statement result in a script while keeping all of their
+    /// preview-budget permits alive until the combined result is released.
+    pub fn append(&mut self, other: &Self) {
+        self.result_sets.extend(other.result_sets.iter().cloned());
+        self.update_counts.extend_from_slice(&other.update_counts);
+        self.warnings.extend(other.warnings.iter().cloned());
+        self.incomplete |= other.incomplete;
+        self.retention_limited |= other.retention_limited;
+        self.retained_bytes = self.retained_bytes.saturating_add(other.retained_bytes);
+        self.retention = Arc::new(Retention {
+            permits: Mutex::new(Vec::new()),
+            _parents: vec![self.retention.clone(), other.retention.clone()],
+        });
+    }
 }
 pub(super) struct Accumulator {
     pub snapshot: Snapshot,

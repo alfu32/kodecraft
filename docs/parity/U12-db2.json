@@ -1,0 +1,23 @@
+{
+  "status": "not_qualified",
+  "providerFixture": "passed",
+  "nativeQualified": false,
+  "tuiQualified": false,
+  "databaseFamily": "Db2 LUW",
+  "helperSha256": "35328cbed66ea0aeb33ecabc3afd1f84e175b757a6d9dd96ffd09b14563c4cc6",
+  "fixture": "PackageProviderTest.db2KeepsBoundPackageVersionIdentityAndReturnsStoredSqlWithoutInventingDdl",
+  "tuiRouteFixture": "source_actions_and_object_sql_actions_preserve_source_behavior",
+  "checks": {
+    "exactSchemaNameBinding": true,
+    "multipleVersionsAndUniqueIds": true,
+    "emptyCatalogVersionAndNullableStatementVersion": true,
+    "statementSourceBoundToPackageIdentity": true,
+    "returnsSqlSourceWithoutPackageDdl": true,
+    "packageMembersUnsupported": true,
+    "unversionedStatementTitle": true,
+    "opaqueDb2IdPreservedInTreeSourceRequest": true,
+    "sourceMenuWithoutFabricatedDdl": true
+  },
+  "reason": "No native Db2 LUW server, JDBC endpoint configuration, or DB2-specific environment was present; the mock-provider fixture is not native evidence.",
+  "qualificationDate": "2026-10-17"
+}

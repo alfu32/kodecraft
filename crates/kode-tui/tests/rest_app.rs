@@ -1139,6 +1139,255 @@ async fn incremental_response_is_visible_before_completion_and_stays_with_origin
 }
 
 #[tokio::test]
+async fn http_completion_preserves_request_editor_focus_text_and_selection() {
+    use kode_tui::panels::rest::editor::form::Tab;
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let url = format!("http://{}/pending", listener.local_addr().unwrap());
+    let (release, gate) = tokio::sync::oneshot::channel();
+    let (accepted_tx, accepted_rx) = tokio::sync::oneshot::channel();
+    let (request_tx, request_rx) = tokio::sync::oneshot::channel();
+    let worker = tokio::spawn(async move {
+        let (mut socket, _) = listener.accept().await.unwrap();
+        let mut headers = Vec::new();
+        while !headers.ends_with(b"\r\n\r\n") {
+            let mut byte = [0];
+            socket.read_exact(&mut byte).await.unwrap();
+            headers.push(byte[0]);
+        }
+        let headers_text = String::from_utf8(headers).unwrap();
+        let length: usize = headers_text
+            .lines()
+            .find_map(|line| {
+                line.to_ascii_lowercase()
+                    .strip_prefix("content-length: ")
+                    .map(str::to_string)
+            })
+            .unwrap()
+            .parse()
+            .unwrap();
+        let mut body = vec![0; length];
+        socket.read_exact(&mut body).await.unwrap();
+        request_tx.send(body).unwrap();
+        accepted_tx.send(()).unwrap();
+        gate.await.unwrap();
+        socket
+            .write_all(b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok")
+            .await
+            .unwrap();
+    });
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state
+        .rest
+        .model
+        .replace_collection(json!({"info":{},"item":[{"name":"Pending","request":{"method":"POST","url":url,"body":{"mode":"raw","raw":"captured body"}}}]}))
+        .unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    select_request_tab(&mut app, Tab::Body).await;
+    app.state.run_rest_selection(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.run.running.is_some()).await;
+    tokio::time::timeout(Duration::from_secs(3), accepted_rx)
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(request_rx.await.unwrap(), b"captured body");
+    select_request_tab(&mut app, Tab::Body).await;
+
+    let editor = app.state.editor.as_ref().unwrap();
+    let document = editor.document_id();
+    let focus = app.state.focus.focused;
+    assert_eq!(focus, Some(editor.input.id));
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("edited during HTTP".into()))
+        .unwrap();
+    let edited = app
+        .state
+        .documents
+        .document(document)
+        .unwrap()
+        .snapshot()
+        .text()
+        .to_string();
+    assert_eq!(edited, "edited during HTTP");
+    let selection = kode_core::Selection {
+        anchor: kode_core::ByteOffset(0),
+        head: kode_core::ByteOffset(edited.len()),
+    };
+    app.state
+        .editor
+        .as_mut()
+        .unwrap()
+        .input
+        .state
+        .caret
+        .selection = selection;
+    release.send(()).unwrap();
+    until(&mut app, |app| app.state.rest.run.running.is_none()).await;
+    assert_eq!(app.state.focus.focused, focus);
+    assert_eq!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .input
+            .state
+            .caret
+            .selection,
+        selection
+    );
+    assert_eq!(
+        app.state
+            .documents
+            .document(document)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        edited
+    );
+    assert_eq!(app.state.rest.run.responses[0].body.as_ref(), b"ok");
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    worker.await.unwrap();
+}
+
+#[tokio::test]
+async fn http_completion_after_request_switch_keeps_response_owner_and_new_editor_state() {
+    use kode_tui::panels::rest::editor::form::Tab;
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let url = format!("http://{}/pending", listener.local_addr().unwrap());
+    let (release, gate) = tokio::sync::oneshot::channel();
+    let (accepted_tx, accepted_rx) = tokio::sync::oneshot::channel();
+    let worker = tokio::spawn(async move {
+        let (mut socket, _) = listener.accept().await.unwrap();
+        let mut headers = Vec::new();
+        while !headers.ends_with(b"\r\n\r\n") {
+            let mut byte = [0];
+            socket.read_exact(&mut byte).await.unwrap();
+            headers.push(byte[0]);
+        }
+        let headers_text = String::from_utf8(headers).unwrap();
+        let length: usize = headers_text
+            .lines()
+            .find_map(|line| {
+                line.to_ascii_lowercase()
+                    .strip_prefix("content-length: ")
+                    .map(str::to_string)
+            })
+            .unwrap()
+            .parse()
+            .unwrap();
+        let mut body = vec![0; length];
+        socket.read_exact(&mut body).await.unwrap();
+        assert_eq!(body, b"first request body");
+        accepted_tx.send(()).unwrap();
+        gate.await.unwrap();
+        socket
+            .write_all(
+                b"HTTP/1.1 200 OK\r\nContent-Length: 12\r\nConnection: close\r\n\r\nfirst result",
+            )
+            .await
+            .unwrap();
+    });
+    let root = tempfile::tempdir().unwrap();
+    let (mut app, _) = make(root.path(), 1);
+    app.state
+        .rest
+        .model
+        .replace_collection(json!({"info":{},"item":[
+            {"name":"First","request":{"method":"POST","url":url,"body":{"mode":"raw","raw":"first request body"}}},
+            {"name":"Second","request":{"method":"POST","url":"https://example.test/second","body":{"mode":"raw","raw":"second draft"}}}
+        ]}))
+        .unwrap();
+    app.state.open_rest_node(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.form.is_some()).await;
+    let first_request_key = app.state.rest.form.as_ref().unwrap().key.clone();
+    select_request_tab(&mut app, Tab::Body).await;
+    app.state.run_rest_selection(NodePath(vec![0])).unwrap();
+    until(&mut app, |app| app.state.rest.run.running.is_some()).await;
+    tokio::time::timeout(Duration::from_secs(3), accepted_rx)
+        .await
+        .unwrap()
+        .unwrap();
+
+    app.state.open_rest_node(NodePath(vec![1])).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .rest
+            .form
+            .as_ref()
+            .is_some_and(|form| form.path == NodePath(vec![1]))
+    })
+    .await;
+    select_request_tab(&mut app, Tab::Body).await;
+    let editor_id = app.state.editor.as_ref().unwrap().document_id();
+    let focus = app.state.focus.focused;
+    assert_eq!(focus, Some(app.state.editor.as_ref().unwrap().input.id));
+    app.state.dispatch(&ctrl('a')).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("second draft edited".into()))
+        .unwrap();
+    let selection = kode_core::Selection {
+        anchor: kode_core::ByteOffset(0),
+        head: kode_core::ByteOffset("second draft edited".len()),
+    };
+    app.state
+        .editor
+        .as_mut()
+        .unwrap()
+        .input
+        .state
+        .caret
+        .selection = selection;
+
+    release.send(()).unwrap();
+    until(&mut app, |app| app.state.rest.run.running.is_none()).await;
+    assert_eq!(app.state.rest.run.responses.len(), 1);
+    assert_eq!(
+        app.state.rest.run.responses[0].key.item_id,
+        first_request_key
+    );
+    assert_eq!(
+        app.state.rest.run.responses[0].body.as_ref(),
+        b"first result"
+    );
+    assert_eq!(
+        app.state.rest.form.as_ref().unwrap().path,
+        NodePath(vec![1])
+    );
+    assert_eq!(app.state.editor.as_ref().unwrap().document_id(), editor_id);
+    assert_eq!(app.state.focus.focused, focus);
+    assert_eq!(
+        app.state
+            .documents
+            .document(editor_id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "second draft edited"
+    );
+    assert_eq!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .input
+            .state
+            .caret
+            .selection,
+        selection
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    worker.await.unwrap();
+}
+
+#[tokio::test]
 async fn native_request_buffers_keep_identity_history_search_and_caret_across_request_switches() {
     use kode_tui::panels::rest::editor::form::{BufferKind, Tab};
     let root = tempfile::tempdir().unwrap();
@@ -1231,7 +1480,7 @@ async fn native_request_buffers_keep_identity_history_search_and_caret_across_re
     let body = app.state.editor.as_ref().unwrap().document_id();
     app.state.dispatch(&ctrl('a')).unwrap();
     app.state
-        .dispatch(&InputEvent::Paste("raw bytes\n".into()))
+        .dispatch(&InputEvent::Paste("raw bytes raw\n".into()))
         .unwrap();
     select_request_tab(&mut app, Tab::Headers).await;
     app.state.dispatch(&ctrl('a')).unwrap();
@@ -1259,7 +1508,7 @@ async fn native_request_buffers_keep_identity_history_search_and_caret_across_re
             .snapshot()
             .text()
             .as_ref(),
-        "raw bytes\n"
+        "raw bytes raw\n"
     );
     // Search owns Ctrl+Enter; it must never trigger REST execution.
     app.state.dispatch(&ctrl('f')).unwrap();
@@ -1276,6 +1525,14 @@ async fn native_request_buffers_keep_identity_history_search_and_caret_across_re
             repeat: false,
         }))
         .unwrap();
+    until(&mut app, |app| {
+        app.state
+            .editor
+            .as_ref()
+            .and_then(|view| view.search.results.report.as_ref())
+            .is_some_and(|report| report.matches.len() == 2)
+    })
+    .await;
     assert!(app.state.rest.run.pending.is_none());
     assert_eq!(
         app.state
@@ -1285,7 +1542,7 @@ async fn native_request_buffers_keep_identity_history_search_and_caret_across_re
             .snapshot()
             .text()
             .as_ref(),
-        "raw bytes\n"
+        "raw bytes raw\n"
     );
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();

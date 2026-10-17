@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "vendor": "oracle",
+  "mode": "native-active-package-source-cancel",
+  "product": "Oracle",
+  "productVersion": "Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free\nVersion 23.26.3.0.0",
+  "helperSha256": "e00ac600e95bf4b098dd7c0eb6db7f65eea20e37400d1b82f8295b96ddce8391",
+  "packageBytes": 1437911,
+  "activeStatementCancellation": {
+    "attempt": 1,
+    "statementAttached": true,
+    "status": "requested"
+  },
+  "resultSqlState": "57014",
+  "ownedPackageRemoved": true,
+  "helperReaped": true,
+  "durationSeconds": 5.78,
+  "verifiedOn": "2026-10-17"
+}

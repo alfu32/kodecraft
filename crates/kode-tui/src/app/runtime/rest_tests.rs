@@ -81,6 +81,107 @@ async fn pump_until(app: &mut AppRuntime, ready: impl Fn(&AppRuntime) -> bool) {
 }
 
 #[tokio::test]
+async fn pasted_oauth_token_binds_to_active_request_and_cancels_browser_flow() {
+    use crate::panels::rest::oauth::Action;
+    use kode_rest::model::NodePath;
+    let directory = tempfile::tempdir().unwrap();
+    let prepared = crate::app::workspace::prepare_workspace(
+        directory.path(),
+        kode_core::WorkspaceGeneration(1),
+        None,
+        &CancellationToken::new(),
+    )
+    .unwrap();
+    let mut app = AppRuntime::with_services(
+        prepared,
+        Arc::new(kode_platform::clipboard::ClipboardService::internal()),
+        Arc::new(MonotonicClock::default()),
+    )
+    .unwrap();
+    app.state
+        .rest
+        .model
+        .replace_collection(serde_json::json!({
+            "info": {},
+            "auth": {"type": "oauth2", "oauth2": [
+                {"key": "clientId", "value": "synthetic-client"},
+                {"key": "authUrl", "value": "https://identity.example.test/authorize"},
+                {"key": "accessTokenUrl", "value": "https://identity.example.test/token"}
+            ]},
+            "item": [{"name": "A", "request": {"url": "https://service.example.test/a"}}]
+        }))
+        .unwrap();
+    app.state.begin_rest_form(NodePath(vec![0])).unwrap();
+    pump_until(&mut app, |app| app.state.rest.form.is_some()).await;
+    let key = app.state.rest.form.as_ref().unwrap().key.clone();
+    app.state.rest_oauth_action(Action::Acquire).unwrap();
+    pump_until(&mut app, |app| {
+        app.state
+            .rest
+            .oauth
+            .running
+            .as_ref()
+            .is_some_and(|running| running.progress.borrow().authorization_url.is_some())
+    })
+    .await;
+    let flow = app.state.rest.oauth.running.as_ref().unwrap().tag;
+    let stale = kode_core::JobTag {
+        request: kode_core::RequestId::fresh().unwrap(),
+        ..flow
+    };
+    app.state
+        .rest_oauth_access_token(Some(stale), "stale-token".into());
+    assert!(!app.state.rest.oauth.view(&key).has_token);
+    app.state
+        .rest_oauth_access_token(Some(flow), "two words".into());
+    assert!(app.state.rest.oauth.running.is_some());
+    assert!(
+        app.state
+            .rest
+            .oauth
+            .view(&key)
+            .message
+            .contains("non-empty")
+    );
+    app.state
+        .rest_oauth_access_token(Some(flow), "runtime-pasted-token".into());
+    assert!(app.state.rest.oauth.running.is_none());
+    let bound = app.state.rest.oauth.tokens.get(&key).unwrap();
+    assert_eq!(
+        bound.tokens.execution_auth().unwrap().fields["accessToken"],
+        "runtime-pasted-token"
+    );
+    assert!(
+        !serde_json::to_string(&app.state.rest.model.project_state())
+            .unwrap()
+            .contains("runtime-pasted-token")
+    );
+    app.state
+        .rest_oauth_access_token(Some(flow), "late-token".into());
+    assert_eq!(
+        app.state.rest.oauth.tokens[&key]
+            .tokens
+            .execution_auth()
+            .unwrap()
+            .fields["accessToken"],
+        "runtime-pasted-token"
+    );
+    app.state.rest_oauth_action(Action::Clear).unwrap();
+    app.state
+        .rest_oauth_access_token(None, "direct-pasted-token".into());
+    assert_eq!(
+        app.state.rest.oauth.tokens[&key]
+            .tokens
+            .execution_auth()
+            .unwrap()
+            .fields["accessToken"],
+        "direct-pasted-token"
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
 async fn oauth_switch_removal_and_shutdown_preserve_runtime_item_ownership() {
     use crate::panels::rest::{oauth::Action, sidebar::TreeChange};
     use kode_rest::model::NodePath;

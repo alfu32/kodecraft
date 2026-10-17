@@ -18,10 +18,12 @@
   },
   "ordinaryTests": {
     "command": "cargo +stable test --locked -p kode-lsp",
-    "passed": 26,
-    "ignored": 1,
-    "logSha256": "6e59e0a99e2513d9418e2061383f08028c333e830325f8738e4631c159e0f638",
-    "nativeExitCheck": "OpenProcess(SYNCHRONIZE) / WaitForSingleObject with managed handle cleanup through the Python fixture probe"
+    "passed": 33,
+    "ignored": 2,
+    "logSha256": "9bf28690ed48cb69c8529435683436f847db9c0af3d1c497cae464535468d6d9",
+    "nativeExitCheck": "OpenProcess(SYNCHRONIZE) / WaitForSingleObject with managed handle cleanup through the Python fixture probe",
+    "log": ".qualification/lsp-tests-20261017-01.log",
+    "sourceSnapshot": "windows-overlay-20261017-01"
   },
   "freshUpstream02": {
     "durationSeconds": 70.46,
@@ -35,7 +37,8 @@
     "failure": {
       "id": "jdtls",
       "phase": "initialize",
-      "detail": "Equinox Windows configuration/cache path fails with InvalidPathException: trailing space after path containing Unicode; encoded file URL candidate pending native replay"
+      "detail": "Equinox Windows configuration/cache path fails with InvalidPathException: trailing space after path containing Unicode",
+      "resolvedBy": "Encoded file URLs; native installed JDT replay and separate fresh upstream-03 both pass"
     },
     "notRun": [
       "clangd"
@@ -52,10 +55,7 @@
     "cause": "not established; retained as a prior observation"
   },
   "pending": [
-    "Native JDT file URL repair qualification on the existing install",
-    "Native clangd install/lifecycle",
-    "Native Windows Clippy",
-    "Remaining platform/CPU coverage and ARM64 clangd adapters"
+    "Remaining native platform/CPU coverage and ARM64 catalog integration"
   ],
   "sourceSnapshots": [
     {
@@ -77,6 +77,199 @@
     {
       "name": "windows-update-05",
       "sha256": "f04d08eb69f5d1006a3e67713ec836988900dedccd3e5ec330a70cebc3a30dba"
+    },
+    {
+      "name": "windows-overlay-20261017-01",
+      "sha256": "b09a81ceb363c0db988f168d97310f7a5de846ef43b236cb5eb6e337c6216377",
+      "changedFiles": 21,
+      "baselineHashesChecked": true,
+      "appliedHashesChecked": true,
+      "backupRetained": true
+    },
+    {
+      "name": "windows-overlay-20261017-02",
+      "sha256": "bbabe4321c5bed8c84b28e935c3a5b23a28572ef07bf65596abd89756d5adcdf",
+      "changedFiles": 1,
+      "baselineHashesChecked": true,
+      "appliedHashesChecked": true,
+      "backupRetained": true
     }
-  ]
+  ],
+  "installedJdtRepairReplay": {
+    "status": "passed",
+    "mode": "installed-replay",
+    "cases": [
+      {
+        "id": "jdtls",
+        "version": "1.62.0",
+        "platform": "windows",
+        "arch": "x86_64",
+        "commandProgram": "java.exe",
+        "serverName": "JDT Language Server (Standard)",
+        "serverVersion": "1.62.0-SNAPSHOT",
+        "installed": false,
+        "startupMillis": 3665,
+        "clientOptions": "production LspService defaults",
+        "initialize": true,
+        "didOpen": true,
+        "shutdown": true,
+        "reaped": true,
+        "archiveSha256": "f587dafd8410633c2c2bf005e853a2bbb03cddee88933d49bfe6d9cb1cf09342"
+      }
+    ],
+    "log": ".qualification/jdt-replay-20261017-02.log"
+  },
+  "initialJdtAfterRepairTimeout": {
+    "log": ".qualification/jdt-replay-20261017-01.log",
+    "result": "initialize timed out at original 10000 ms; previous Unicode InvalidPathException absent",
+    "subsequentNativeInstalledReplayMillis": 3665,
+    "deadlineChanged": false,
+    "cause": "not established; retained as a prior observation",
+    "freshInstallQualification": "Fresh upstream-03 passes all six servers; JDT initializes in 3447 ms with unchanged deadline"
+  },
+  "previousConnectionRetry": {
+    "date": "2026-10-16",
+    "target": "alfu64@192.168.234.128:22",
+    "result": "Repeated SSH TCP connection timeouts after the user restarted the host",
+    "remoteCommandsExecuted": false,
+    "route": "VPN interface nm-xfrm-1666027, source 10.135.70.249",
+    "sourceBaseline": "Initial source plus confirmed updates 02 through 05; update 06 and later overlays have not been applied"
+  },
+  "latestConnectionRetry": {
+    "date": "2026-10-17",
+    "target": "alfu64@192.168.234.128:22",
+    "result": "Connected",
+    "hostname": "DESKTOP-03BMQ37",
+    "remoteCommandsExecuted": true,
+    "route": "vmnet8, source 192.168.234.1",
+    "sourceBaseline": "Initial source and updates 02..05, then guarded overlays 20261017-01 and 20261017-02; backups retained"
+  },
+  "freshUpstream03": {
+    "status": "passed",
+    "mode": "fresh-upstream-install",
+    "cases": [
+      {
+        "id": "typescript-language-server",
+        "version": "6.0.2",
+        "platform": "windows",
+        "arch": "x86_64",
+        "commandProgram": "node.exe",
+        "serverName": null,
+        "serverVersion": null,
+        "installed": true,
+        "startupMillis": 210,
+        "clientOptions": "production LspService defaults",
+        "initialize": true,
+        "didOpen": true,
+        "shutdown": true,
+        "reaped": true,
+        "archiveSha256": "d225b223a8a4764ecbd94bdba85d2ef185eaa7b9842a1a31c38c2bbe7f2fe9b9"
+      },
+      {
+        "id": "vscode-langservers-extracted",
+        "version": "4.10.0",
+        "platform": "windows",
+        "arch": "x86_64",
+        "commandProgram": "node.exe",
+        "serverName": null,
+        "serverVersion": null,
+        "installed": true,
+        "startupMillis": 724,
+        "clientOptions": "production LspService defaults",
+        "initialize": true,
+        "didOpen": true,
+        "shutdown": true,
+        "reaped": true,
+        "archiveSha256": "d6e2d090d09c4b91daa74e9e7462a3d3f244efb96aa5111004cfffa49d6dc9ef"
+      },
+      {
+        "id": "vscode-css-language-server",
+        "version": "4.10.0",
+        "platform": "windows",
+        "arch": "x86_64",
+        "commandProgram": "node.exe",
+        "serverName": null,
+        "serverVersion": null,
+        "installed": true,
+        "startupMillis": 266,
+        "clientOptions": "production LspService defaults",
+        "initialize": true,
+        "didOpen": true,
+        "shutdown": true,
+        "reaped": true,
+        "archiveSha256": "d6e2d090d09c4b91daa74e9e7462a3d3f244efb96aa5111004cfffa49d6dc9ef"
+      },
+      {
+        "id": "vscode-json-language-server",
+        "version": "4.10.0",
+        "platform": "windows",
+        "arch": "x86_64",
+        "commandProgram": "node.exe",
+        "serverName": null,
+        "serverVersion": null,
+        "installed": true,
+        "startupMillis": 261,
+        "clientOptions": "production LspService defaults",
+        "initialize": true,
+        "didOpen": true,
+        "shutdown": true,
+        "reaped": true,
+        "archiveSha256": "d6e2d090d09c4b91daa74e9e7462a3d3f244efb96aa5111004cfffa49d6dc9ef"
+      },
+      {
+        "id": "jdtls",
+        "version": "1.62.0",
+        "platform": "windows",
+        "arch": "x86_64",
+        "commandProgram": "java.exe",
+        "serverName": "JDT Language Server (Standard)",
+        "serverVersion": "1.62.0-SNAPSHOT",
+        "installed": true,
+        "startupMillis": 3447,
+        "clientOptions": "production LspService defaults",
+        "initialize": true,
+        "didOpen": true,
+        "shutdown": true,
+        "reaped": true,
+        "archiveSha256": "f587dafd8410633c2c2bf005e853a2bbb03cddee88933d49bfe6d9cb1cf09342"
+      },
+      {
+        "id": "clangd",
+        "version": "23.1.0",
+        "platform": "windows",
+        "arch": "x86_64",
+        "commandProgram": "clangd.exe",
+        "serverName": "clangd",
+        "serverVersion": "clangd version 23.1.0 (https://github.com/llvm/llvm-project ea7d852a70e8bdfaf601d6626a760f9771b2c4b4) windows+grpc x86_64-pc-windows-msvc",
+        "installed": true,
+        "startupMillis": 98,
+        "clientOptions": "production LspService defaults",
+        "initialize": true,
+        "didOpen": true,
+        "shutdown": true,
+        "reaped": true,
+        "archiveSha256": "23412a240756a162e7b98a282f36aa2a23a88db5ce16a0cbc4fef7253768c810"
+      }
+    ],
+    "durationSeconds": 62.07,
+    "root": ".qualification/upstream-03",
+    "log": ".qualification/lsp-upstream-20261017-03.log",
+    "productionDeadlinesUnchanged": true,
+    "logSha256": "ef9b081039021d1e9975faa8221d6c95b71fab9b08237680657920703814a35e",
+    "reportSha256": "a5507b7f26c70bfff0b0aa583cf1d4400889afbe9915b31f928e22e1fe6e5c81"
+  },
+  "clippy": {
+    "status": "passed",
+    "exit": 0,
+    "durationSeconds": 25.02,
+    "logSha256": "c88bfc5875eccc80c05895374b47858ddaddb8eb455f19aa22b7ea485b921722",
+    "command": "cargo +stable clippy --locked -p kode-lsp --all-targets -- -D warnings",
+    "version": "clippy 0.1.99 (58cf8f9c35 2026-10-13)",
+    "log": ".qualification/lsp-clippy-20261017-02.log"
+  },
+  "initialClippyInterruption": {
+    "log": ".qualification/lsp-clippy-20261017.log",
+    "result": "SSH connection broke; compiler reported compilation was interrupted; subsequent observation found no compiler processes",
+    "rerun": "Passed on unchanged source after reconnecting, with SSH heartbeat during compilation"
+  }
 }

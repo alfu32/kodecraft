@@ -510,6 +510,14 @@ pub static BINDINGS: &[Binding] = &[
         Database,
         0,
         SHIFT,
+        true,
+        [Key::Character('m')],
+        "Open selected database object actions, including package source"
+    ),
+    chord!(
+        Database,
+        0,
+        SHIFT,
         false,
         [Key::Character('n'), Key::Function(2), Key::Delete],
         "New / edit / delete datasource or selected SQL session"

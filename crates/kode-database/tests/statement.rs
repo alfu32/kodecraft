@@ -111,3 +111,60 @@ fn mysql_default_quotes_hash_comments_dash_arithmetic_and_version_comments_keep_
     assert!(statement::script("# comment;", Dialect::MySql).is_none());
     assert!(statement::script("/*!40101 SET @a=1 */;", Dialect::MySql).is_some());
 }
+
+#[test]
+fn oracle_driver_payload_drops_only_sql_terminators_and_preserves_plsql() {
+    let dialect = Dialect::Oracle;
+    assert_eq!(
+        statement::for_driver("SELECT 'semi;colon' FROM dual;", dialect),
+        "SELECT 'semi;colon' FROM dual"
+    );
+    assert_eq!(
+        statement::for_driver(
+            "-- leading\nUPDATE items SET value = 2; -- trailing\n",
+            dialect
+        ),
+        "-- leading\nUPDATE items SET value = 2 -- trailing\n"
+    );
+    let block = "BEGIN\n  INSERT INTO items VALUES (1);\n  COMMIT;\nEND;";
+    assert_eq!(statement::for_driver(block, dialect), block);
+    let declared = "DECLARE n NUMBER := 1; BEGIN n := n + 1; END;";
+    assert_eq!(statement::for_driver(declared, dialect), declared);
+    let package = "CREATE OR REPLACE PACKAGE BODY p AS PROCEDURE go IS BEGIN NULL; END; END;";
+    assert_eq!(statement::for_driver(package, dialect), package);
+    assert_eq!(
+        statement::for_driver("SELECT 1;", Dialect::Standard),
+        "SELECT 1;"
+    );
+    assert_eq!(Dialect::from_driver_id("oracle"), Dialect::Oracle);
+    assert_eq!(Dialect::from_driver_id("mariadb"), Dialect::MySql);
+}
+
+#[test]
+fn oracle_script_statements_split_sql_but_keep_plsql_units_and_slash_delimiters() {
+    let text = "SELECT 1 FROM dual;\nBEGIN\n  INSERT INTO t VALUES ('a;b');\n  IF 1 = 1 THEN\n    UPDATE t SET value = 2;\n  END IF;\nEND;\n/\nSELECT 2 FROM dual;";
+    let scripts = statement::script_statements(text, Dialect::Oracle);
+    assert_eq!(scripts.len(), 3);
+    assert_eq!(scripts[0].sql, "SELECT 1 FROM dual");
+    assert_eq!(
+        scripts[1].sql,
+        "BEGIN\n  INSERT INTO t VALUES ('a;b');\n  IF 1 = 1 THEN\n    UPDATE t SET value = 2;\n  END IF;\nEND;"
+    );
+    assert_eq!(scripts[2].sql, "SELECT 2 FROM dual");
+    assert_eq!(
+        statement::for_driver(scripts[1].sql, Dialect::Oracle),
+        scripts[1].sql
+    );
+}
+
+#[test]
+fn oracle_package_bodies_are_not_split_at_member_or_internal_block_ends() {
+    let text = "CREATE OR REPLACE PACKAGE BODY p AS FUNCTION f RETURN NUMBER IS BEGIN IF 1 = 1 THEN RETURN 1; END IF; END; PROCEDURE q IS BEGIN NULL; END; END; /\nSELECT 3 FROM dual;";
+    let scripts = statement::script_statements(text, Dialect::Oracle);
+    assert_eq!(scripts.len(), 2);
+    assert_eq!(
+        scripts[0].sql,
+        "CREATE OR REPLACE PACKAGE BODY p AS FUNCTION f RETURN NUMBER IS BEGIN IF 1 = 1 THEN RETURN 1; END IF; END; PROCEDURE q IS BEGIN NULL; END; END;"
+    );
+    assert_eq!(scripts[1].sql, "SELECT 3 FROM dual");
+}

@@ -121,6 +121,28 @@ impl std::fmt::Debug for TokenSet {
     }
 }
 impl TokenSet {
+    /// Accept an access token supplied by the user after browser authorization.
+    /// The token is kept only in the runtime owner and never serialized.
+    pub fn pasted_oauth2(value: String) -> Result<Self> {
+        let token = value.trim();
+        if token.is_empty()
+            || token.len() > 64 * 1024
+            || !token.bytes().all(|byte| byte.is_ascii_graphic())
+        {
+            return Err(invalid(
+                "Paste one non-empty OAuth 2.0 access token without spaces or control characters",
+            ));
+        }
+        Ok(Self {
+            kind: "oauth2".into(),
+            access_token: token.into(),
+            refresh_token: None,
+            token_secret: None,
+            prefix: "Bearer".into(),
+            expires_at: None,
+            scopes: vec![],
+        })
+    }
     pub fn expired(&self) -> bool {
         self.expires_at.is_some_and(|at| Instant::now() >= at)
     }

@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "docs/migration/TASKS.md"
 CARD_RE = re.compile(r"^## ([A-Z]\d{2}) — (.+)$", re.M)
 ROW_RE = re.compile(r"^\| ([A-Z]\d{2}) \| (.+?) \| (.+?) \| (.+?) \|$", re.M)
-STATES = ("todo", "in-progress", "done", "blocked")
+STATES = ("todo", "in-progress", "done", "blocked", "suspend")
 UAT_REQUESTS = [
     ("M001", "Horizontal sidebar tabs in source order", ("Z02",)),
     ("B001", "Ctrl+T shell suspension and return", ("Z01",)),
@@ -26,6 +26,7 @@ UAT_REQUESTS = [
     ("M007", "Connection-type JDBC URL template dropdown", ("U11",)),
     ("M008", "Applicable database package listing and DDL", ("U12",)),
     ("B008", "Ephemeral local OAuth callback instead of Postman redirect", ("R10",)),
+    ("B009", "Oracle explorer refresh and selected/script statement terminators", ("U13",)),
 ]
 
 
@@ -95,15 +96,21 @@ def synchronize(task=None, status=None, check=False):
     counts = {state: sum(item[2] == state for item in entries.values()) for state in STATES}
     dashboard = ["# Implementation dashboard", "",
                  "Full Kode → Rust migration, including the [finalized UAT batch](docs/migration/UAT.md). Counts are derived from the status in every task definition.", "",
-                 "| To do | In progress | Done | Blocked | Total |",
-                 "|------:|------------:|-----:|--------:|------:|",
-                 f"| {counts['todo']:>5} | {counts['in-progress']:>11} | {counts['done']:>4} | {counts['blocked']:>7} | {len(entries):>5} |", "",
+                 "| To do | In progress | Done | Blocked | Suspend | Total |",
+                 "|------:|------------:|-----:|--------:|--------:|------:|",
+                 f"| {counts['todo']:>5} | {counts['in-progress']:>11} | {counts['done']:>4} | {counts['blocked']:>7} | {counts['suspend']:>7} | {len(entries):>5} |", "",
+                 "Suspend means work is paused at the user's request; these tasks have not passed their remaining acceptance gates.", "",
                  "## Ongoing tasks", ""]
     active = [(k, v) for k, v in entries.items() if v[2] == "in-progress"]
     for task_id, (path, title, _, _) in active:
         dashboard.append(f"- **{task_id}** — [{title}]({path.relative_to(ROOT).as_posix()}#{task_id.lower()}--{re.sub(r'[^a-z0-9 -]', '', title.lower()).replace(' ', '-')})")
     if not active:
         dashboard.append("No task currently in progress.")
+    suspended = [(k, v) for k, v in entries.items() if v[2] == "suspend"]
+    if suspended:
+        dashboard += ["", "## Suspended tasks", ""]
+        for task_id, (path, title, _, _) in suspended:
+            dashboard.append(f"- **{task_id}** — [{title}]({path.relative_to(ROOT).as_posix()}#{task_id.lower()}--{re.sub(r'[^a-z0-9 -]', '', title.lower()).replace(' ', '-')})")
     task_rows = []
     for task_id in [row[1] for row in rows]:
         path, title, state, _ = entries[task_id]
@@ -134,7 +141,7 @@ def synchronize(task=None, status=None, check=False):
            "|---------|-------------|--------|----------------|"]
     for request_id, title, owners in UAT_REQUESTS:
         states = [entries[owner][2] for owner in owners]
-        state = "done" if all(s == "done" for s in states) else next((s for s in ("in-progress", "blocked") if s in states), "todo")
+        state = "done" if all(s == "done" for s in states) else next((s for s in ("in-progress", "blocked", "suspend") if s in states), "todo")
         links = ", ".join(f"[{owner}]({entries[owner][0].relative_to(ROOT / 'docs/migration').as_posix()})" for owner in owners)
         uat.append(f"| {request_id} | {title} | **{state}** | {links} |")
     uat += ["", "E13 includes the new shared-editor interactions, Z03 includes the separate runtime artifact, and Z04 requires all UAT implementation tasks and OAuth acquisition. Completed earlier work retains its acceptance evidence; a new request does not imply reopening unrelated finished tasks.", "",
@@ -147,7 +154,7 @@ def synchronize(task=None, status=None, check=False):
             target.write_text(rendered)
     if check and changed:
         raise SystemExit("Out of date: " + ", ".join(str(p.relative_to(ROOT)) for p in changed))
-    print(f"Tasks: {counts['todo']} to do / {counts['in-progress']} in progress / {counts['done']} done / {counts['blocked']} blocked / {len(entries)} total")
+    print(f"Tasks: {counts['todo']} to do / {counts['in-progress']} in progress / {counts['done']} done / {counts['blocked']} blocked / {counts['suspend']} suspend / {len(entries)} total")
 
 
 if __name__ == "__main__":

@@ -683,3 +683,59 @@ fn oauth_url_copy_and_redirect_dialog_keep_flow_identity_without_editing_collect
     assert!(form.take_intents().into_iter().any(|intent|matches!(intent,Intent::OAuthRedirect{flow:captured,text} if captured==flow && text==redirect)));
     assert_eq!(model.export_collection(), before);
 }
+
+#[test]
+fn oauth_login_link_and_masked_token_entry_are_visible_and_flow_bound() {
+    use kode_tui::panels::rest::oauth::{Action as OAuthAction, View};
+    let (mut model, mut form, mut focus) = setup();
+    form.perform(Action::Auth(Some("oauth2")), &mut model, &mut focus)
+        .unwrap();
+    form.perform(Action::Tab(Tab::Auth), &mut model, &mut focus)
+        .unwrap();
+    let before = model.export_collection();
+    assert!(text(&draw(&mut form, &model, 80, 24)).contains("Paste access token"));
+    let flow = kode_core::JobTag {
+        workspace: kode_core::WorkspaceGeneration(1),
+        request: kode_core::RequestId::fresh().unwrap(),
+        document: None,
+    };
+    form.set_oauth(View {
+        flow: Some(flow),
+        pending: true,
+        url: Some("https://identity.example.test/authorize?state=sample".into()),
+        callback: Some("https://localhost:12345/callback".into()),
+        message: "Waiting for browser login".into(),
+        ..Default::default()
+    });
+    let visible = text(&draw(&mut form, &model, 80, 24));
+    assert!(visible.contains("Copy login URL"));
+    assert!(visible.contains("Paste access token"));
+    assert!(visible.contains("Login URL:"));
+    form.perform(
+        Action::OAuth(OAuthAction::PasteToken),
+        &mut model,
+        &mut focus,
+    )
+    .unwrap();
+    form.dispatch(
+        &InputEvent::Paste("synthetic-pasted-token".into()),
+        &mut model,
+        &mut focus,
+    )
+    .unwrap();
+    let mut modal_buffer = Buffer::empty(Rect::new(0, 0, 80, 24));
+    form.render_modal(
+        Rect::new(0, 0, 80, 24),
+        &mut modal_buffer,
+        &Theme::compiled(),
+    );
+    assert!(!text(&modal_buffer).contains("synthetic-pasted-token"));
+    form.dispatch(&key(Key::Enter), &mut model, &mut focus)
+        .unwrap();
+    assert!(form.take_intents().into_iter().any(|intent| matches!(
+        intent,
+        Intent::OAuthAccessToken { flow: captured, text }
+            if captured == Some(flow) && text == "synthetic-pasted-token"
+    )));
+    assert_eq!(model.export_collection(), before);
+}

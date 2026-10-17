@@ -94,6 +94,33 @@ impl Form {
                     });
                     focus.focused = Some(self.id);
                 }
+                OAuthAction::PasteToken => {
+                    let flow = self.oauth.flow.filter(|_| self.oauth.url.is_some());
+                    let mut dialog = EntryDialog::new(
+                        "Paste OAuth 2.0 access token".into(),
+                        editing::EntryValue {
+                            key: "Access token".into(),
+                            value: String::new(),
+                            description: "Used as Bearer; kept only in memory".into(),
+                            kind: "secret".into(),
+                            enabled: true,
+                        },
+                        false,
+                        "Hint",
+                    )?;
+                    dialog.fields[0].read_only = true;
+                    dialog.fields[1].masked = true;
+                    dialog.fields[2].read_only = true;
+                    dialog.focus = 1;
+                    self.epoch = self.epoch.saturating_add(1);
+                    self.modal = Some(Modal {
+                        dialog,
+                        purpose: ModalPurpose::AccessToken(flow),
+                        expected: model.export_collection(),
+                        previous: focus.focused,
+                    });
+                    focus.focused = Some(self.id);
+                }
                 _ => self.intents.push(Intent::OAuth(op)),
             },
             Action::Focus(field) => {
@@ -343,6 +370,12 @@ impl Form {
                             }
                             ModalPurpose::Redirect(flow) => {
                                 self.intents.push(Intent::OAuthRedirect {
+                                    flow,
+                                    text: value.value,
+                                })
+                            }
+                            ModalPurpose::AccessToken(flow) => {
+                                self.intents.push(Intent::OAuthAccessToken {
                                     flow,
                                     text: value.value,
                                 })

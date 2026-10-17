@@ -4,6 +4,7 @@ use kode_database::{
     catalog::{DriverRegistry, UrlCatalog},
     config::{DataSourceRepository, DatabasePaths},
     model::DataSourceDefinition,
+    model::{MetadataSourceDocument, MetadataSourceKind},
 };
 use kode_platform::{
     clipboard::ClipboardService,
@@ -11,9 +12,12 @@ use kode_platform::{
 };
 use kode_tui::{
     app::{
+        panel::DATABASE,
         runtime::{AppRuntime, database::DatabaseConfiguration},
+        state::AppWork,
         workspace::prepare_workspace,
     },
+    editor::host::{ExecutionAction, HostRole, SaveTarget},
     input::terminal::*,
     theme::Theme,
 };
@@ -101,7 +105,7 @@ async fn actual_java_h2_panel_download_test_connect_metadata_typing_sessions_dis
  {
     use kode_database::{
         execution::{Executor, Options, Snapshot},
-        model::DatabaseObjectType,
+        model::{DatabaseObjectType, MetadataRequest, MetadataRequestKind},
     };
     let root = tempfile::tempdir().unwrap();
     let workspace = root.path().join("workspace");
@@ -205,6 +209,45 @@ async fn actual_java_h2_panel_download_test_connect_metadata_typing_sessions_dis
         services.connections.session("fixture").is_ok()
     })
     .await;
+    until(&mut app, |app| {
+        !app.state
+            .database
+            .tree
+            .lines
+            .iter()
+            .any(|line| line.label == "Loading metadata…")
+    })
+    .await;
+    let session = services.connections.session("fixture").unwrap();
+    let unsupported_packages = services
+        .metadata
+        .introspect(
+            "fixture",
+            MetadataRequest {
+                kind: MetadataRequestKind::Schema,
+                catalog: session.catalog.clone(),
+                schema: session.schema.clone(),
+                category: None,
+                object_name: None,
+                object_type: None,
+                object_id: None,
+            },
+            true,
+            &CancellationToken::new(),
+        )
+        .await
+        .expect("read H2 package capabilities through the Rust metadata client");
+    let capabilities = unsupported_packages
+        .capabilities
+        .as_ref()
+        .expect("H2 metadata must return provider capabilities");
+    assert!(!capabilities.packages);
+    assert!(!capabilities.package_members);
+    assert!(!capabilities.package_source);
+    assert!(!capabilities.package_ddl);
+    assert!(unsupported_packages.objects.iter().all(|object| {
+        object.object_type != DatabaseObjectType::Package && object.name != "Packages"
+    }));
     let executor = Executor::new(services.connections.clone());
     let (send, _) = tokio::sync::watch::channel(Snapshot::default());
     let result = executor
@@ -252,6 +295,19 @@ async fn actual_java_h2_panel_download_test_connect_metadata_typing_sessions_dis
     }
     select(&mut app, DatabaseObjectType::Catalog, None).await;
     select(&mut app, DatabaseObjectType::Schema, Some("PUBLIC")).await;
+    until(&mut app, |app| {
+        app.state.database.tree.lines.iter().any(|line| {
+            line.object
+                .as_ref()
+                .is_some_and(|object| object.object_type == DatabaseObjectType::Category)
+        })
+    })
+    .await;
+    assert!(app.state.database.tree.lines.iter().all(|line| {
+        line.object.as_ref().is_none_or(|object| {
+            object.object_type != DatabaseObjectType::Package && object.name != "Packages"
+        })
+    }));
     select(&mut app, DatabaseObjectType::Category, Some("Tables")).await;
     select(&mut app, DatabaseObjectType::Table, Some("CUSTOMER")).await;
     app.state
@@ -385,6 +441,247 @@ async fn sql_control(app: &mut AppRuntime, ch: char) {
         "{}",
         app.state.notice
     );
+}
+#[tokio::test]
+#[ignore = "requires built Java helper and H2 JAR; scripts/test-jdbc-bridge.sh supplies them"]
+async fn oracle_adapter_strips_selected_sql_terminator_only_from_driver_payload() {
+    use kode_core::{ByteOffset, Selection};
+    use kode_database::bridge::wire::{Cell, Outcome};
+
+    let root = tempfile::tempdir().unwrap();
+    let workspace = root.path().join("workspace");
+    std::fs::create_dir(&workspace).unwrap();
+    let db = root.path().join("db");
+    let helper =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("../../jdbc-bridge/target/kode-jdbc-bridge.jar");
+    let h2 =
+        Path::new("/tmp/kode-rs-jdbc-maven-repository/com/h2database/h2/2.2.224/h2-2.2.224.jar");
+    assert!(helper.is_file() && h2.is_file());
+    let mut ds = definition();
+    ds.driver.id = "oracle".into();
+    ds.driver.jar_path = Some(h2.to_string_lossy().into_owned());
+    ds.driver.artifact = Some(kode_database::model::JdbcDriverArtifact {
+        repository_type: kode_database::model::JdbcRepositoryType::LocalFile,
+        ..Default::default()
+    });
+    DataSourceRepository::new(db.clone()).upsert(ds).unwrap();
+    let (mut app, _) = make_installation(
+        &workspace,
+        &db,
+        Installation {
+            java: "java".into(),
+            helper_candidates: vec![helper],
+        },
+    );
+    app.state.dispatch(&alt4()).unwrap();
+    until(&mut app, |app| app.state.database.tree.sources.len() == 1).await;
+    app.state
+        .dispatch(&key(Key::Character('c'), false))
+        .unwrap();
+    let services = app.database_services().unwrap();
+    until(&mut app, |_| {
+        services.connections.session("fixture").is_ok()
+    })
+    .await;
+    app.state
+        .open_database_console("fixture".into(), String::new())
+        .unwrap();
+    let sql = "SELECT 1;";
+    app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+    app.state.dispatch(&InputEvent::Paste(sql.into())).unwrap();
+    app.state
+        .editor
+        .as_mut()
+        .unwrap()
+        .input
+        .state
+        .caret
+        .selection = Selection {
+        anchor: ByteOffset(0),
+        head: ByteOffset(sql.len()),
+    };
+    let console = app.state.active_sql().unwrap().to_string();
+    let previous = app.state.sql.manager.get(&console).unwrap().history.len();
+    app.state.dispatch(&key(Key::Enter, true)).unwrap();
+    until(&mut app, |app| {
+        app.state.sql.manager.get(&console).unwrap().history.len() == previous + 1
+    })
+    .await;
+    let query = app
+        .state
+        .sql
+        .manager
+        .get(&console)
+        .unwrap()
+        .history
+        .back()
+        .unwrap();
+    assert_eq!(query.sql, "SELECT 1");
+    assert_eq!(
+        app.state
+            .sql
+            .manager
+            .get(&console)
+            .unwrap()
+            .result
+            .as_ref()
+            .unwrap()
+            .completion
+            .as_ref()
+            .unwrap()
+            .outcome,
+        Outcome::Completed
+    );
+    assert_eq!(
+        app.state
+            .documents
+            .document(app.state.editor.as_ref().unwrap().document_id())
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        sql
+    );
+    let script = "CREATE TABLE oracle_script (payload INT);\nINSERT INTO oracle_script VALUES (1);\nSELECT payload FROM oracle_script;";
+    app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste(script.into()))
+        .unwrap();
+    let previous = app.state.sql.manager.get(&console).unwrap().history.len();
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Enter,
+            modifiers: Modifiers {
+                ctrl: true,
+                shift: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.sql.manager.get(&console).unwrap().history.len() == previous + 1
+    })
+    .await;
+    let manager = app.state.sql.manager.get(&console).unwrap();
+    assert_eq!(manager.history.back().unwrap().sql, script);
+    assert_eq!(
+        manager
+            .result
+            .as_ref()
+            .unwrap()
+            .completion
+            .as_ref()
+            .unwrap()
+            .outcome,
+        Outcome::Completed
+    );
+    assert!(matches!(
+        &manager.result.as_ref().unwrap().preview.result_sets[0].chunks[0][0][0],
+        Cell::Text { text, .. } if text == "1"
+    ));
+    assert_eq!(
+        app.state
+            .documents
+            .document(app.state.editor.as_ref().unwrap().document_id())
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        script,
+        "script execution must leave the editor text untouched"
+    );
+    let multi_result_script = "SELECT 11 AS first_value; SELECT 12 AS second_value;";
+    app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste(multi_result_script.into()))
+        .unwrap();
+    let previous = app.state.sql.manager.get(&console).unwrap().history.len();
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Enter,
+            modifiers: Modifiers {
+                ctrl: true,
+                shift: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.sql.manager.get(&console).unwrap().history.len() == previous + 1
+    })
+    .await;
+    let multi_result = app.state.sql.manager.get(&console).unwrap();
+    assert_eq!(
+        multi_result.history.back().unwrap().sql,
+        multi_result_script
+    );
+    let preview = &multi_result.result.as_ref().unwrap().preview;
+    assert_eq!(preview.result_sets.len(), 2);
+    assert!(matches!(
+        &preview.result_sets[0].chunks[0][0][0],
+        Cell::Text { text, .. } if text == "11"
+    ));
+    assert!(matches!(
+        &preview.result_sets[1].chunks[0][0][0],
+        Cell::Text { text, .. } if text == "12"
+    ));
+    let failing_script = "INSERT INTO oracle_script VALUES (3); INSERT INTO missing_script_table VALUES (9); INSERT INTO oracle_script VALUES (4);";
+    app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste(failing_script.into()))
+        .unwrap();
+    let previous = app.state.sql.manager.get(&console).unwrap().history.len();
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Enter,
+            modifiers: Modifiers {
+                ctrl: true,
+                shift: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.sql.manager.get(&console).unwrap().history.len() == previous + 1
+    })
+    .await;
+    let failure = app.state.sql.manager.get(&console).unwrap();
+    assert_eq!(failure.history.back().unwrap().sql, failing_script);
+    let failure_result = failure.result.as_ref().unwrap();
+    assert!(
+        failure_result.error.is_some()
+            || failure_result
+                .completion
+                .as_ref()
+                .and_then(|completion| completion.error.as_ref())
+                .is_some(),
+        "failed script must retain its SQL error"
+    );
+    let count_sql = "SELECT COUNT(*) FROM oracle_script;";
+    app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste(count_sql.into()))
+        .unwrap();
+    let previous = app.state.sql.manager.get(&console).unwrap().history.len();
+    app.state.dispatch(&key(Key::Enter, true)).unwrap();
+    until(&mut app, |app| {
+        app.state.sql.manager.get(&console).unwrap().history.len() == previous + 1
+    })
+    .await;
+    let count = app.state.sql.manager.get(&console).unwrap();
+    assert!(count.history.back().unwrap().success);
+    assert!(
+        matches!(
+            &count.result.as_ref().unwrap().preview.result_sets[0].chunks[0][0][0],
+            Cell::Text { text, .. } if text == "2"
+        ),
+        "statements after the failing statement must not execute"
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
 }
 #[tokio::test]
 #[ignore = "requires built Java helper and H2 JAR; scripts/test-jdbc-bridge.sh supplies them"]
@@ -649,6 +946,18 @@ async fn actual_java_h2_sql_console_targets_results_transactions_context_cancel_
         .snapshot()
         .text()
         .to_string();
+    let selection = kode_core::Selection {
+        anchor: kode_core::ByteOffset(0),
+        head: kode_core::ByteOffset(buffer.len()),
+    };
+    app.state
+        .editor
+        .as_mut()
+        .unwrap()
+        .input
+        .state
+        .caret
+        .selection = selection;
     app.state.dispatch(&key(Key::Escape, false)).unwrap();
     until(&mut app, |app| {
         !app.state.sql.running.contains_key(&first_console)
@@ -678,6 +987,17 @@ async fn actual_java_h2_sql_console_targets_results_transactions_context_cancel_
         buffer
     );
     assert_eq!(app.state.focus.focused, focus);
+    assert_eq!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .input
+            .state
+            .caret
+            .selection,
+        selection
+    );
     let failed = sql_run(&mut app, "select * from MISSING_UI_TABLE", false).await;
     assert_eq!(failed.completion.unwrap().outcome, Outcome::Failed);
     assert_eq!(app.state.focus.focused, focus);
@@ -1313,4 +1633,1168 @@ async fn database_error_details_preserve_request_identity_full_copy_form_values_
     assert_eq!(app.state.focus.focused, original_focus);
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn package_source_opens_as_replaced_ephemeral_readonly_sql_history() {
+    let root = tempfile::tempdir().unwrap();
+    let workspace = root.path().join("workspace");
+    std::fs::create_dir(&workspace).unwrap();
+    let db = root.path().join("db-root");
+    let (mut app, clipboard) = make(&workspace, &db, None);
+    app.state.tabs.selected = DATABASE;
+    app.state.focus.focused = Some(app.state.database.tree.id);
+    let document = |text: &str| MetadataSourceDocument {
+        title: "PACKAGE — statement 1".into(),
+        kind: MetadataSourceKind::SqlSource,
+        text: text.into(),
+    };
+    app.state
+        .open_database_source("APP.PACKAGE v1".into(), vec![document("SELECT 'first'")])
+        .unwrap();
+    let first = app.state.editor.as_ref().unwrap();
+    let first_id = first.document_id();
+    assert_eq!(first.host.descriptor.role, HostRole::Historical);
+    assert!(first.host.descriptor.read_only);
+    assert_eq!(first.host.descriptor.save_target, SaveTarget::None);
+    assert_eq!(first.host.descriptor.execute, None::<ExecutionAction>);
+    assert!(matches!(
+        app.state.documents.document(first_id).unwrap().origin(),
+        DocumentOrigin::Virtual { owner, .. } if owner == "database-package-source"
+    ));
+    assert_eq!(
+        app.state
+            .documents
+            .document(first_id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "SELECT 'first'"
+    );
+    assert!(
+        app.state
+            .dispatch(&InputEvent::Paste("must not alter package source".into()))
+            .is_err()
+    );
+    assert!(app.state.dispatch(&key(Key::Character('s'), true)).is_err());
+    assert_eq!(
+        app.state
+            .documents
+            .document(first_id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "SELECT 'first'"
+    );
+    assert!(!root.path().join("APP.PACKAGE v1").exists());
+    app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+    app.state.dispatch(&key(Key::Character('c'), true)).unwrap();
+    assert_eq!(clipboard.local_text(), "SELECT 'first'");
+    app.state.dispatch(&key(Key::Character('f'), true)).unwrap();
+    app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("first".into()))
+        .unwrap();
+    app.state.dispatch(&key(Key::Enter, true)).unwrap();
+    until(&mut app, |app| {
+        app.state
+            .editor
+            .as_ref()
+            .and_then(|view| view.search.results.report.as_ref())
+            .is_some_and(|report| report.matches.len() == 1)
+    })
+    .await;
+    assert_eq!(
+        app.state
+            .documents
+            .document(first_id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "SELECT 'first'"
+    );
+
+    app.state.tabs.selected = DATABASE;
+    app.state.focus.focused = Some(app.state.database.tree.id);
+    app.state
+        .open_database_source("APP.PACKAGE v2".into(), vec![document("VALUES 'second'")])
+        .unwrap();
+    let second = app.state.editor.as_ref().unwrap();
+    let second_id = second.document_id();
+    assert_ne!(first_id, second_id);
+    assert_eq!(
+        app.state
+            .documents
+            .document(second_id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "VALUES 'second'"
+    );
+    let package_sources = app
+        .state
+        .documents
+        .ids()
+        .filter(|id| {
+            matches!(
+                app.state.documents.document(*id).unwrap().origin(),
+                DocumentOrigin::Virtual { owner, .. } if owner == "database-package-source"
+            )
+        })
+        .count();
+    assert_eq!(package_sources, 1);
+    app.state.focus.focused = app.state.editor.as_ref().map(|view| view.input.id);
+    app.state
+        .open_database_source("APP.PACKAGE stale".into(), vec![document("SELECT 'stale'")])
+        .unwrap();
+    assert_eq!(app.state.editor.as_ref().unwrap().document_id(), second_id);
+    assert!(app.state.notice.contains("focus changed"));
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn sql_search_ctrl_enter_finds_all_without_scheduling_query_execution() {
+    let root = tempfile::tempdir().unwrap();
+    let workspace = root.path().join("workspace");
+    std::fs::create_dir(&workspace).unwrap();
+    let db = root.path().join("db-root");
+    let (mut app, _) = make(&workspace, &db, None);
+    app.state.database.tree.replace_sources(vec![definition()]);
+    app.state
+        .open_database_console(
+            "fixture".into(),
+            "SELECT 'needle';\nSELECT 'needle';".into(),
+        )
+        .unwrap();
+    let console = app.state.active_sql().unwrap().to_string();
+    assert!(
+        app.state
+            .sql
+            .manager
+            .get(&console)
+            .unwrap()
+            .history
+            .is_empty()
+    );
+
+    app.state.dispatch(&key(Key::Character('f'), true)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("needle".into()))
+        .unwrap();
+    app.state.dispatch(&key(Key::Enter, true)).unwrap();
+    assert!(app.state.editor.as_ref().unwrap().search.visible);
+    assert!(!app.state.work.iter().any(|work| matches!(
+        work,
+        AppWork::Editor {
+            work: kode_tui::editor::host::EditorWork::Execute(_),
+            ..
+        }
+    )));
+    until(&mut app, |app| {
+        app.state
+            .editor
+            .as_ref()
+            .and_then(|view| view.search.results.report.as_ref())
+            .is_some_and(|report| report.matches.len() == 2)
+    })
+    .await;
+    assert!(
+        app.state
+            .sql
+            .manager
+            .get(&console)
+            .unwrap()
+            .history
+            .is_empty()
+    );
+    assert!(!app.state.sql.running.contains_key(&console));
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+#[ignore = "requires owned Oracle/MariaDB fixture credentials and a built Java helper"]
+async fn actual_vendor_package_source_menu_opens_readonly_editor_and_refreshes_after_cleanup() {
+    use kode_database::{
+        credentials::Secret,
+        drivers::Progress,
+        execution::{Options, Snapshot},
+        model::DatabaseObjectType,
+    };
+    use kode_tui::panels::database::object_menu::ObjectMenu;
+
+    async fn execute(
+        executor: &kode_database::execution::Executor,
+        source: &str,
+        sql: String,
+    ) -> Result<(), String> {
+        let (progress, _) = tokio::sync::watch::channel(Snapshot::default());
+        let result = executor
+            .execute(
+                source,
+                sql,
+                Options::default(),
+                progress,
+                &CancellationToken::new(),
+            )
+            .await
+            .map_err(|error| error.to_string())?;
+        if result.completion.as_ref().is_none_or(|final_result| {
+            final_result.outcome != kode_database::bridge::wire::Outcome::Completed
+        }) {
+            return Err("TUI package fixture SQL did not complete".into());
+        }
+        Ok(())
+    }
+
+    async fn selected_sql(app: &mut AppRuntime, sql: &str) {
+        let console = app.state.active_sql().unwrap().to_string();
+        let previous = app.state.sql.manager.get(&console).unwrap().history.len();
+        app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+        app.state.dispatch(&InputEvent::Paste(sql.into())).unwrap();
+        app.state
+            .editor
+            .as_mut()
+            .unwrap()
+            .input
+            .state
+            .caret
+            .selection = kode_core::Selection {
+            anchor: kode_core::ByteOffset(0),
+            head: kode_core::ByteOffset(sql.len()),
+        };
+        app.state.dispatch(&key(Key::Enter, true)).unwrap();
+        let deadline = Instant::now() + Duration::from_secs(8);
+        while app.state.sql.manager.get(&console).unwrap().history.len() == previous {
+            app.pump().unwrap();
+            paint(app);
+            assert!(
+                Instant::now() < deadline,
+                "Oracle selected SQL was not submitted"
+            );
+            tokio::time::sleep(Duration::from_millis(2)).await;
+        }
+        let manager = app.state.sql.manager.get(&console).unwrap();
+        let entry = manager.history.back().unwrap();
+        assert_eq!(
+            entry.sql,
+            kode_database::statement::for_driver(sql, kode_database::statement::Dialect::Oracle)
+        );
+        assert!(entry.success, "{}", app.state.notice);
+        assert_eq!(
+            app.state
+                .documents
+                .document(app.state.editor.as_ref().unwrap().document_id())
+                .unwrap()
+                .snapshot()
+                .text()
+                .as_ref(),
+            sql,
+            "driver adaptation must leave the user's editor text untouched"
+        );
+    }
+
+    async fn execute_script(app: &mut AppRuntime, sql: &str) {
+        let console = app.state.active_sql().unwrap().to_string();
+        let previous = app.state.sql.manager.get(&console).unwrap().history.len();
+        app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+        app.state.dispatch(&InputEvent::Paste(sql.into())).unwrap();
+        app.state
+            .dispatch(&InputEvent::Key(KeyInput {
+                key: Key::Enter,
+                modifiers: Modifiers {
+                    ctrl: true,
+                    shift: true,
+                    ..Default::default()
+                },
+                repeat: false,
+            }))
+            .unwrap();
+        let deadline = Instant::now() + Duration::from_secs(8);
+        while app.state.sql.manager.get(&console).unwrap().history.len() == previous {
+            app.pump().unwrap();
+            paint(app);
+            assert!(Instant::now() < deadline, "Oracle script did not finish");
+            tokio::time::sleep(Duration::from_millis(2)).await;
+        }
+        let manager = app.state.sql.manager.get(&console).unwrap();
+        let entry = manager.history.back().unwrap();
+        assert_eq!(entry.sql, sql);
+        assert!(entry.success, "{}", app.state.notice);
+        assert_eq!(
+            manager
+                .result
+                .as_ref()
+                .unwrap()
+                .completion
+                .as_ref()
+                .unwrap()
+                .outcome,
+            kode_database::bridge::wire::Outcome::Completed
+        );
+        assert_eq!(
+            app.state
+                .documents
+                .document(app.state.editor.as_ref().unwrap().document_id())
+                .unwrap()
+                .snapshot()
+                .text()
+                .as_ref(),
+            sql,
+            "script execution must leave the editor text untouched"
+        );
+    }
+
+    async fn execute_failing_script(app: &mut AppRuntime, sql: &str) {
+        let console = app.state.active_sql().unwrap().to_string();
+        let previous = app.state.sql.manager.get(&console).unwrap().history.len();
+        app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+        app.state.dispatch(&InputEvent::Paste(sql.into())).unwrap();
+        app.state
+            .dispatch(&InputEvent::Key(KeyInput {
+                key: Key::Enter,
+                modifiers: Modifiers {
+                    ctrl: true,
+                    shift: true,
+                    ..Default::default()
+                },
+                repeat: false,
+            }))
+            .unwrap();
+        let deadline = Instant::now() + Duration::from_secs(8);
+        while app.state.sql.manager.get(&console).unwrap().history.len() == previous {
+            app.pump().unwrap();
+            paint(app);
+            assert!(
+                Instant::now() < deadline,
+                "Oracle failing script did not finish"
+            );
+            tokio::time::sleep(Duration::from_millis(2)).await;
+        }
+        let manager = app.state.sql.manager.get(&console).unwrap();
+        assert_eq!(manager.history.back().unwrap().sql, sql);
+        let result = manager.result.as_ref().unwrap();
+        assert!(
+            result
+                .error
+                .as_ref()
+                .is_some_and(|error| !error.message.is_empty())
+                || result
+                    .completion
+                    .as_ref()
+                    .and_then(|completion| completion.error.as_ref())
+                    .is_some_and(|error| !error.message.is_empty()),
+            "Oracle script failure must retain a readable SQL error"
+        );
+    }
+
+    async fn cancel_query(app: &mut AppRuntime, sql: &str) {
+        let console = app.state.active_sql().unwrap().to_string();
+        let previous = app.state.sql.manager.get(&console).unwrap().history.len();
+        app.state.dispatch(&key(Key::Character('a'), true)).unwrap();
+        app.state.dispatch(&InputEvent::Paste(sql.into())).unwrap();
+        app.state.dispatch(&key(Key::Enter, true)).unwrap();
+        until(app, |app| {
+            app.state
+                .sql
+                .manager
+                .get(&console)
+                .and_then(|manager| manager.result.as_ref())
+                .is_some_and(|result| result.phase == kode_database::execution::Phase::Running)
+        })
+        .await;
+        app.state.dispatch(&key(Key::Escape, false)).unwrap();
+        until(app, |app| !app.state.sql.running.contains_key(&console)).await;
+        let manager = app.state.sql.manager.get(&console).unwrap();
+        assert_eq!(manager.history.len(), previous + 1);
+        assert_eq!(manager.history.back().unwrap().sql, sql);
+        let completion = manager
+            .result
+            .as_ref()
+            .unwrap()
+            .completion
+            .as_ref()
+            .unwrap();
+        assert_eq!(
+            completion.outcome,
+            kode_database::bridge::wire::Outcome::Cancelled,
+        );
+        assert_eq!(completion.error.as_ref().unwrap().vendor_code, 1013);
+    }
+
+    let vendor = std::env::var("KODE_TEST_PACKAGE_VENDOR").expect("vendor");
+    let version = std::env::var("KODE_TEST_PACKAGE_DRIVER_VERSION").expect("driver version");
+    let jdbc_url = std::env::var("KODE_TEST_PACKAGE_URL").expect("JDBC URL");
+    let username = std::env::var("KODE_TEST_PACKAGE_USER").expect("test username");
+    let password = std::env::var("KODE_TEST_PACKAGE_PASSWORD").expect("test password");
+    let helper = std::env::var_os("KODE_TEST_JDBC_HELPER")
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|| {
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../../jdbc-bridge/target/kode-jdbc-bridge.jar")
+        });
+    let root = tempfile::tempdir().unwrap();
+    let workspace = root.path().join("workspace");
+    std::fs::create_dir(&workspace).unwrap();
+    let db = root.path().join("database");
+    let plugins = std::env::var_os("KODE_RS_JDBC_HOME")
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|| db.join("plugins"));
+    let (display_name, driver_class, coordinates) = match vendor.as_str() {
+        "oracle" => (
+            "Oracle",
+            "oracle.jdbc.OracleDriver",
+            format!("com.oracle.database.jdbc:ojdbc11:{version}"),
+        ),
+        "mariadb" => (
+            "MariaDB",
+            "org.mariadb.jdbc.Driver",
+            format!("org.mariadb.jdbc:mariadb-java-client:{version}"),
+        ),
+        _ => panic!("unsupported native package vendor"),
+    };
+    let source = format!("u12-tui-{vendor}-{}", std::process::id());
+    let definition: DataSourceDefinition = serde_json::from_value(json!({
+        "id": source,
+        "name": display_name,
+        "driver": {
+            "id": vendor,
+            "displayName": display_name,
+            "driverClass": driver_class,
+            "coordinates": coordinates,
+            "providerId": vendor
+        },
+        "jdbcUrl": jdbc_url,
+        "username": username,
+        "autoCommit": true
+    }))
+    .unwrap();
+    DataSourceRepository::new(db.clone())
+        .upsert(definition.clone())
+        .unwrap();
+    std::fs::create_dir_all(&plugins).unwrap();
+    let (mut app, _) = make_installation(
+        &workspace,
+        &db,
+        Installation {
+            java: "java".into(),
+            helper_candidates: vec![helper],
+        },
+    );
+    app.state.dispatch(&alt4()).unwrap();
+    until(&mut app, |app| app.state.database.tree.sources.len() == 1).await;
+    app.state.splash = false;
+    let services = app
+        .database_services()
+        .expect("configured database services");
+    let (driver_progress, _) = tokio::sync::watch::channel(Progress::default());
+    services
+        .installer
+        .resolve(
+            &definition.driver,
+            driver_progress,
+            &CancellationToken::new(),
+        )
+        .await
+        .expect("install the selected live qualification driver");
+    let token = CancellationToken::new();
+    let mut created = false;
+    let mut created_table = false;
+    let mut opened = false;
+    let mut external_opened = false;
+    let external_source = format!("{source}-ddl");
+    let fixture_table = format!("KODE_RS_U13_{}", std::process::id());
+    let fixture = format!("KODE_RS_TUI_{}_界_%", std::process::id());
+    let result: Result<(), String> = async {
+        services
+            .connections
+            .open(
+                definition.clone(),
+                Some(Secret::new(password.clone())),
+                &token,
+            )
+            .await
+            .map_err(|error| error.to_string())?;
+        opened = true;
+        let mut external_definition = definition.clone();
+        external_definition.id = external_source.clone();
+        external_definition.name = format!("{display_name} external DDL session");
+        services
+            .connections
+            .open(
+                external_definition,
+                Some(Secret::new(password.clone())),
+                &token,
+            )
+            .await
+            .map_err(|error| error.to_string())?;
+        external_opened = true;
+        let session = services
+            .connections
+            .session(&source)
+            .map_err(|error| error.to_string())?;
+        let schema = session
+            .schema
+            .clone()
+            .or_else(|| session.catalog.clone())
+            .ok_or_else(|| "Connected session has no selected schema".to_owned())?;
+        if vendor == "mariadb" {
+            execute(
+                &services.executor,
+                &source,
+                "SET SESSION sql_mode='ORACLE'".into(),
+            )
+            .await?;
+            execute(
+                &services.executor,
+                &external_source,
+                "SET SESSION sql_mode='ORACLE'".into(),
+            )
+            .await?;
+        }
+        let slow_source_padding = (0..1400)
+            .map(|_| format!("/* {} */", "x".repeat(1020)))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let (specification, body) = if vendor == "oracle" {
+            (
+                format!("CREATE PACKAGE \"{fixture}\" AS FUNCTION calc(n NUMBER) RETURN NUMBER; FUNCTION calc(n VARCHAR2) RETURN VARCHAR2; PROCEDURE increment_value(n IN OUT NUMBER); END;"),
+                format!("CREATE PACKAGE BODY \"{fixture}\" AS\n{slow_source_padding}\nFUNCTION calc(n NUMBER) RETURN NUMBER IS BEGIN RETURN n + 1; END; FUNCTION calc(n VARCHAR2) RETURN VARCHAR2 IS BEGIN RETURN 'native-tui-source-界:' || n; END; PROCEDURE increment_value(n IN OUT NUMBER) IS BEGIN n := n + 1; END; END;"),
+            )
+        } else {
+            (
+                format!("CREATE PACKAGE \"{fixture}\" AS FUNCTION calc_int(n INT) RETURN INT; FUNCTION calc_text(n VARCHAR(32)) RETURN VARCHAR(32); PROCEDURE increment_value(n INOUT INT); END;"),
+                format!("CREATE PACKAGE BODY \"{fixture}\" AS\n{slow_source_padding}\nFUNCTION calc_int(n INT) RETURN INT AS BEGIN RETURN n + 1; END; FUNCTION calc_text(n VARCHAR(32)) RETURN VARCHAR(32) AS BEGIN RETURN 'native-tui-source-界:' || n; END; PROCEDURE increment_value(n INOUT INT) AS BEGIN SET n = n + 1; END; END;"),
+            )
+        };
+        execute(&services.executor, &external_source, specification).await?;
+        created = true;
+        execute(&services.executor, &external_source, body).await?;
+        if vendor == "oracle" {
+            execute(
+                &services.executor,
+                &external_source,
+                format!("CREATE TABLE {fixture_table} (id NUMBER)"),
+            )
+            .await?;
+            created_table = true;
+        }
+
+        app.state.database.tree.selected = 0;
+        app.state.dispatch(&key(Key::Character('r'), false)).unwrap();
+        until(&mut app, |app| {
+            app.state
+                .database
+                .tree
+                .lines
+                .iter()
+                .any(|line| line.label == "Loading metadata…")
+        })
+        .await;
+        app.state.dispatch(&key(Key::Character('r'), false)).unwrap();
+        until(&mut app, |app| {
+            !app.state
+                .database
+                .tree
+                .lines
+                .iter()
+                .any(|line| line.label == "Loading metadata…")
+                && app.state.database.tree.notice.starts_with("Loaded")
+        })
+        .await;
+        if created_table {
+            let schema_index = app
+                .state
+                .database
+                .tree
+                .lines
+                .iter()
+                .position(|line| {
+                    line.object.as_ref().is_some_and(|object| {
+                        object.object_type == DatabaseObjectType::Schema
+                            && object.name == schema
+                    })
+                })
+                .ok_or_else(|| "Refreshed Oracle tree did not expose the connected schema".to_owned())?;
+            app.state.database.tree.selected = schema_index;
+            app.state
+                .dispatch(&key(Key::Enter, false))
+                .map_err(|error| error.to_string())?;
+            until(&mut app, |app| {
+                app.state.database.tree.lines.iter().any(|line| {
+                    line.object.as_ref().is_some_and(|object| {
+                        object.object_type == DatabaseObjectType::Category
+                            && object.name == "Tables"
+                    })
+                }) && !app
+                    .state
+                    .database
+                    .tree
+                    .lines
+                    .iter()
+                    .any(|line| line.label == "Loading metadata…")
+            })
+            .await;
+            let table_category = app
+                .state
+                .database
+                .tree
+                .lines
+                .iter()
+                .position(|line| {
+                    line.object.as_ref().is_some_and(|object| {
+                        object.object_type == DatabaseObjectType::Category
+                            && object.name == "Tables"
+                    })
+                })
+                .ok_or_else(|| "Refreshed Oracle schema did not expose its Tables category".to_owned())?;
+            app.state.database.tree.selected = table_category;
+            app.state
+                .dispatch(&key(Key::Enter, false))
+                .map_err(|error| error.to_string())?;
+            until(&mut app, |app| {
+                app.state.database.tree.lines.iter().any(|line| {
+                    line.object.as_ref().is_some_and(|object| {
+                        object.object_type == DatabaseObjectType::Table
+                            && object.name == fixture_table
+                    })
+                }) && !app
+                    .state
+                    .database
+                    .tree
+                    .lines
+                    .iter()
+                    .any(|line| line.label == "Loading metadata…")
+            })
+            .await;
+        }
+        let mut expanded = std::collections::BTreeSet::new();
+        if created_table
+            && let Some(object) = app
+                .state
+                .database
+                .tree
+                .lines
+                .iter()
+                .filter_map(|line| line.object.as_ref())
+                .find(|object| {
+                    object.object_type == DatabaseObjectType::Schema && object.name == schema
+                })
+        {
+            expanded.insert(object.id.clone());
+        }
+        for _ in 0..8 {
+            if app.state.database.tree.lines.iter().any(|line| {
+                line.object.as_ref().is_some_and(|object| {
+                    object.object_type == DatabaseObjectType::Package && object.name == fixture
+                })
+            }) {
+                break;
+            }
+            let next = app
+                .state
+                .database
+                .tree
+                .lines
+                .iter()
+                .enumerate()
+                .find_map(|(index, line)| {
+                    let object = line.object.as_ref()?;
+                    (line.expandable
+                        && match object.object_type {
+                            DatabaseObjectType::Catalog => object.name == schema,
+                            DatabaseObjectType::Schema => object.name == schema,
+                            DatabaseObjectType::Category => object.name == "Packages",
+                            _ => true,
+                        }
+                        && expanded.insert(object.id.clone()))
+                    .then_some(index)
+                })
+                .ok_or_else(|| "No expandable catalog path to the package category".to_owned())?;
+            app.state.database.tree.selected = next;
+            let previous_count = app.state.database.tree.lines.len();
+            app.state.dispatch(&key(Key::Enter, false)).map_err(|e| e.to_string())?;
+            until(&mut app, |app| {
+                let lines = &app.state.database.tree.lines;
+                (lines.iter().any(|line| {
+                    line.object.as_ref().is_some_and(|object| {
+                        object.object_type == DatabaseObjectType::Package && object.name == fixture
+                    })
+                }) || app.state.database.tree.notice.contains("No ")
+                    || lines.len() != previous_count)
+                    && !lines.iter().any(|line| line.label == "Loading metadata…")
+            })
+            .await;
+        }
+        let package_index = app
+            .state
+            .database
+            .tree
+            .lines
+            .iter()
+            .position(|line| {
+                line.object.as_ref().is_some_and(|object| {
+                    object.object_type == DatabaseObjectType::Package && object.name == fixture
+                })
+            })
+            .ok_or_else(|| "Created package did not appear in the live TUI tree".to_owned())?;
+        let package = app.state.database.tree.lines[package_index]
+            .object
+            .as_ref()
+            .unwrap()
+            .clone();
+        if package.schema.as_deref() != Some(&schema)
+            || package.attributes.get("sourceAvailable").map(String::as_str) != Some("true")
+        {
+            return Err("TUI package lost its schema or source capability identity".into());
+        }
+
+        let source_request = kode_tui::panels::database::tree::DatabaseTree::request_for(&package)
+            .ok_or_else(|| "Live package has no source request".to_owned())?;
+        // Expand the real package through the application input path. The
+        // helper already checks members; this verifies they reach the TUI tree
+        // with their owner and overload identities intact.
+        app.state.database.tree.selected = package_index;
+        app.state
+            .dispatch(&key(Key::Enter, false))
+            .map_err(|error| error.to_string())?;
+        until(&mut app, |app| {
+            app.state.database.tree.lines.iter().any(|line| {
+                line.object.as_ref().is_some_and(|object| {
+                    object.attributes.get("packageName").map(String::as_str)
+                        == Some(fixture.as_str())
+                        && object.name.eq_ignore_ascii_case("increment_value")
+                })
+            }) && !app
+                .state
+                .database
+                .tree
+                .lines
+                .iter()
+                .any(|line| line.label == "Loading metadata…")
+        })
+        .await;
+        let members: Vec<_> = app
+            .state
+            .database
+            .tree
+            .lines
+            .iter()
+            .filter_map(|line| line.object.as_ref())
+            .filter(|object| {
+                object.attributes.get("packageName").map(String::as_str)
+                    == Some(fixture.as_str())
+            })
+            .collect();
+        let member_ids: std::collections::BTreeSet<_> =
+            members.iter().map(|object| object.id.as_str()).collect();
+        if members.len() != 3
+            || member_ids.len() != 3
+            || members.iter().any(|object| object.schema.as_deref() != Some(&schema))
+            || members
+                .iter()
+                .filter(|object| object.object_type == DatabaseObjectType::Function)
+                .count()
+                != 2
+            || members
+                .iter()
+                .filter(|object| object.object_type == DatabaseObjectType::Procedure)
+                .count()
+                != 1
+        {
+            return Err("Live package members lost their owner, type or overload identity in the TUI tree".into());
+        }
+        app.state.database.tree.selected = package_index;
+        app.state
+            .dispatch(&key(Key::Character('m'), false))
+            .map_err(|error| error.to_string())?;
+        let menu = app
+            .state
+            .database
+            .menu
+            .as_ref()
+            .ok_or_else(|| "Keyboard package action did not open its source menu".to_owned())?;
+        if menu.object.id != package.id
+            || !menu.actions.iter().any(|(label, _)| {
+                label == "View package DDL" || label == "View package source"
+            })
+        {
+            return Err("Keyboard package action opened the wrong source menu".into());
+        }
+        app.state
+            .dispatch(&key(Key::Escape, false))
+            .map_err(|error| error.to_string())?;
+        let area = Rect::new(0, 0, 110, 34);
+        let mut screen = Buffer::empty(area);
+        app.state
+            .render(area, &mut screen, &Theme::compiled())
+            .map_err(|error| error.to_string())?;
+        let (x, y) = (area.y..area.bottom())
+            .find_map(|y| {
+                (area.x..area.right().saturating_sub(7)).find_map(|x| {
+                    let cells: String = (0..8).map(|offset| screen[(x + offset, y)].symbol()).collect();
+                    (cells == "[source]").then_some((x, y))
+                })
+            })
+            .ok_or_else(|| "Live package source button was not visible".to_owned())?;
+        app.state
+            .dispatch(&InputEvent::Pointer(PointerInput {
+                x,
+                y,
+                action: PointerAction::Down(crossterm::event::MouseButton::Left),
+                modifiers: Modifiers::default(),
+            }))
+            .map_err(|error| error.to_string())?;
+        if app
+            .state
+            .database
+            .menu
+            .as_ref()
+            .is_none_or(|menu| menu.object.id != package.id)
+        {
+            return Err("Live package source button opened the wrong menu".into());
+        }
+        app.state
+            .database
+            .dispatch(&key(Key::Enter, false), &mut app.state.focus)
+            .map_err(|error| error.to_string())?;
+        let source_work = app
+            .state
+            .database
+            .take_intents()
+            .into_iter()
+            .find_map(|intent| match intent {
+                kode_tui::panels::database::controller::Intent::Work(work) => Some(*work),
+                _ => None,
+            })
+            .ok_or_else(|| "Package source action did not schedule its controller work".to_owned())?;
+        if !matches!(
+            &source_work.operation,
+            kode_tui::panels::database::controller::Operation::Source { .. }
+        ) {
+            return Err("Package source action scheduled the wrong operation".into());
+        }
+        let stale_source = services
+            .metadata
+            .source(&source, source_request.clone(), &CancellationToken::new())
+            .await
+            .map_err(|error| error.to_string())?;
+        // Match the cache-generation change performed by a metadata refresh before publication.
+        services.metadata.invalidate(&source, &source_request);
+        let stale_context_is_current = services.metadata.source_is_current(
+            &source,
+            &source_request,
+            &stale_source,
+        );
+        app.state.database.complete(
+            source_work.tag,
+            source_work.context(),
+            Ok(kode_tui::panels::database::controller::Report::Source(
+                stale_source,
+            )),
+            stale_context_is_current,
+            &mut app.state.focus,
+        );
+        if stale_context_is_current
+            || app.state.database.tree.notice
+                != "Package source context changed; reopen it from the current connection"
+            || app.state.database.take_intents().iter().any(|intent| {
+                matches!(
+                    intent,
+                    kode_tui::panels::database::controller::Intent::Source { .. }
+                )
+            })
+        {
+            return Err("Refreshed package metadata did not reject the stale source result".into());
+        }
+
+        app.state.tabs.selected = DATABASE;
+        app.state.focus.focused = Some(app.state.database.tree.id);
+        app.state.database.tree.selected = package_index;
+        app.state.database.menu = Some(ObjectMenu::new(source.clone(), package));
+        app.state.dispatch(&key(Key::Enter, false)).map_err(|e| e.to_string())?;
+        app.state.tabs.selected = kode_tui::app::panel::SETTINGS;
+        app.state.focus_panel();
+        until(&mut app, |app| {
+            app.state.database.tree.notice
+                == "Package source context changed; reopen it from the selected object"
+        })
+        .await;
+        if app.state.editor.is_some() {
+            return Err("Late package source completion replaced the newer Settings focus".into());
+        }
+
+        app.state.tabs.selected = DATABASE;
+        app.state.focus_panel();
+        let package = app.state.database.tree.lines[package_index]
+            .object
+            .as_ref()
+            .unwrap()
+            .clone();
+        app.state.database.menu = Some(ObjectMenu::new(source.clone(), package));
+        app.state.dispatch(&key(Key::Enter, false)).map_err(|e| e.to_string())?;
+        until(&mut app, |app| {
+            app.state.editor.as_ref().is_some_and(|editor| {
+                editor.host.descriptor.role == HostRole::Historical
+                    && editor.host.descriptor.read_only
+            })
+        })
+        .await;
+        let editor = app.state.editor.as_ref().unwrap();
+        if app.state.focus.focused != Some(editor.input.id) {
+            return Err("Native package-source action did not focus its read-only editor".into());
+        }
+        if editor.host.descriptor.save_target != SaveTarget::None
+            || editor.host.descriptor.execute.is_some()
+        {
+            return Err("Native package-source editor exposed save or execute".into());
+        }
+        let text = app
+            .state
+            .documents
+            .document(editor.document_id())
+            .map_err(|error| error.to_string())?
+            .snapshot()
+            .text()
+            .to_string();
+        if !text.contains("native-tui-source-界:") || !text.contains("RETURN n + 1") {
+            return Err("Native TUI editor did not display the actual package body".into());
+        }
+        let uppercase = text.to_ascii_uppercase();
+        if !uppercase.contains("PACKAGE")
+            || !uppercase.contains("FUNCTION")
+            || !uppercase.contains("INCREMENT_VALUE")
+        {
+            return Err("Native TUI editor did not display the package specification".into());
+        }
+        let source_document = editor.document_id();
+        let cancellation_package = app.state.database.tree.lines[package_index]
+            .object
+            .as_ref()
+            .unwrap()
+            .clone();
+        app.state.tabs.selected = DATABASE;
+        app.state.focus.focused = Some(app.state.database.tree.id);
+        app.state.database.tree.selected = package_index;
+        app.state.database.menu = Some(ObjectMenu::new(source.clone(), cancellation_package.clone()));
+        app.state.dispatch(&key(Key::Enter, false)).map_err(|e| e.to_string())?;
+        app.pump().map_err(|error| error.to_string())?;
+        tokio::time::sleep(Duration::from_millis(5)).await;
+        app.state.dispatch(&key(Key::Escape, false)).map_err(|e| e.to_string())?;
+        if app.state.database.tree.notice != "Package source request cancelled" {
+            return Err("Esc did not cancel the live package-source request".into());
+        }
+        let cancel_deadline = Instant::now() + Duration::from_millis(500);
+        while Instant::now() < cancel_deadline {
+            app.pump().map_err(|error| error.to_string())?;
+            paint(&mut app);
+            tokio::time::sleep(Duration::from_millis(5)).await;
+        }
+        if app.state.database.tree.notice != "Package source request cancelled"
+            || app.state.focus.focused != Some(app.state.database.tree.id)
+            || app.state.editor.as_ref().map(|view| view.document_id()) != Some(source_document)
+            || !app.state.database.take_intents().iter().all(|intent| {
+                !matches!(intent, kode_tui::panels::database::controller::Intent::Source { .. })
+            })
+        {
+            return Err("Cancelled live package-source completion replaced the editor or focus".into());
+        }
+        if vendor == "oracle" {
+            app.state
+                .open_database_console(source.clone(), String::new())
+                .map_err(|error| error.to_string())?;
+            selected_sql(&mut app, "SELECT 1 FROM DUAL;").await;
+            selected_sql(&mut app, "BEGIN NULL; END;").await;
+            execute_script(
+                &mut app,
+                &format!(
+                    "INSERT INTO {fixture_table} VALUES (1);\nBEGIN INSERT INTO {fixture_table} VALUES (2); END;\nSELECT COUNT(*) FROM {fixture_table};"
+                ),
+            )
+            .await;
+            let result = app
+                .state
+                .sql
+                .manager
+                .get(app.state.active_sql().unwrap())
+                .unwrap()
+                .result
+                .as_ref()
+                .unwrap()
+                .clone();
+            if !result.preview.result_sets.iter().any(|set| {
+                set.chunks.iter().flat_map(|chunk| chunk.iter()).any(|row| {
+                    matches!(row.first(), Some(kode_database::bridge::wire::Cell::Text { text, .. }) if text == "2")
+                })
+            }) {
+                return Err("Oracle script did not execute all statements before its final query".into());
+            }
+            execute_failing_script(
+                &mut app,
+                &format!(
+                    "INSERT INTO {fixture_table} VALUES (3); INSERT INTO KODE_RS_NO_TABLE_{} VALUES (9); INSERT INTO {fixture_table} VALUES (4);",
+                    std::process::id()
+                ),
+            )
+            .await;
+            selected_sql(&mut app, &format!("SELECT COUNT(*) FROM {fixture_table};")).await;
+            let result = app
+                .state
+                .sql
+                .manager
+                .get(app.state.active_sql().unwrap())
+                .unwrap()
+                .result
+                .as_ref()
+                .unwrap();
+            if !result.preview.result_sets.iter().any(|set| {
+                set.chunks.iter().flat_map(|chunk| chunk.iter()).any(|row| {
+                    matches!(row.first(), Some(kode_database::bridge::wire::Cell::Text { text, .. }) if text == "3")
+                })
+            }) {
+                return Err("Oracle script executed statements after its first failure".into());
+            }
+            sql_control(&mut app, 'a').await;
+            selected_sql(&mut app, &format!("INSERT INTO {fixture_table} VALUES (5);")).await;
+            sql_control(&mut app, 'r').await;
+            selected_sql(&mut app, &format!("SELECT COUNT(*) FROM {fixture_table};")).await;
+            let count = app
+                .state
+                .sql
+                .manager
+                .get(app.state.active_sql().unwrap())
+                .unwrap()
+                .result
+                .as_ref()
+                .unwrap();
+            if !count.preview.result_sets.iter().any(|set| {
+                set.chunks.iter().flat_map(|chunk| chunk.iter()).any(|row| {
+                    matches!(row.first(), Some(kode_database::bridge::wire::Cell::Text { text, .. }) if text == "3")
+                })
+            }) {
+                return Err("Oracle rollback left an uncommitted insert visible".into());
+            }
+            selected_sql(&mut app, &format!("INSERT INTO {fixture_table} VALUES (6);")).await;
+            sql_control(&mut app, 'c').await;
+            selected_sql(&mut app, &format!("SELECT COUNT(*) FROM {fixture_table};")).await;
+            let count = app
+                .state
+                .sql
+                .manager
+                .get(app.state.active_sql().unwrap())
+                .unwrap()
+                .result
+                .as_ref()
+                .unwrap();
+            if !count.preview.result_sets.iter().any(|set| {
+                set.chunks.iter().flat_map(|chunk| chunk.iter()).any(|row| {
+                    matches!(row.first(), Some(kode_database::bridge::wire::Cell::Text { text, .. }) if text == "4")
+                })
+            }) {
+                return Err("Oracle commit did not retain the inserted row".into());
+            }
+            cancel_query(
+                &mut app,
+                "SELECT SUM(DBMS_RANDOM.VALUE) FROM DUAL CONNECT BY LEVEL <= 1000000000",
+            )
+            .await;
+        }
+        Ok(())
+    }
+    .await;
+    let cleanup = if created {
+        let package = execute(
+            &services.executor,
+            &external_source,
+            format!("DROP PACKAGE \"{fixture}\""),
+        )
+        .await;
+        if vendor == "oracle" {
+            let table = execute(
+                &services.executor,
+                &external_source,
+                format!("DROP TABLE {fixture_table} PURGE"),
+            )
+            .await;
+            package.and(table)
+        } else {
+            package
+        }
+    } else {
+        Ok(())
+    };
+    let refreshed: Result<(), String> = if result.is_ok() && cleanup.is_ok() {
+        async {
+            app.state.tabs.selected = DATABASE;
+            app.state.focus_panel();
+            let category = app
+                .state
+                .database
+                .tree
+                .lines
+                .iter()
+                .position(|line| {
+                    line.object.as_ref().is_some_and(|object| {
+                        object.object_type == DatabaseObjectType::Category
+                            && object.name == "Packages"
+                    })
+                })
+                .ok_or_else(|| {
+                    "Package category disappeared before post-drop refresh".to_owned()
+                })?;
+            app.state.database.tree.selected = category;
+            app.state
+                .dispatch(&key(Key::Character('r'), false))
+                .map_err(|error| error.to_string())?;
+            if !app
+                .state
+                .database
+                .tree
+                .lines
+                .iter()
+                .any(|line| line.label == "Loading metadata…")
+            {
+                return Err("Package refresh did not start a metadata request".into());
+            }
+            until(&mut app, |app| {
+                app.state.database.tree.notice.starts_with("Loaded")
+                    && !app
+                        .state
+                        .database
+                        .tree
+                        .lines
+                        .iter()
+                        .any(|line| line.label == "Loading metadata…")
+            })
+            .await;
+            if app.state.database.tree.lines.iter().any(|line| {
+                line.object.as_ref().is_some_and(|object| {
+                    object.object_type == DatabaseObjectType::Package && object.name == fixture
+                })
+            }) {
+                return Err("Dropped package remained in the refreshed TUI tree".into());
+            }
+            Ok(())
+        }
+        .await
+    } else {
+        Ok(())
+    };
+    if external_opened {
+        let _ = services.connections.close(&external_source, &token).await;
+    }
+    if opened {
+        let _ = services.connections.close(&source, &token).await;
+    }
+    services.metadata.shutdown().await;
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+    cleanup.unwrap();
+    result.unwrap();
+    refreshed.unwrap();
 }

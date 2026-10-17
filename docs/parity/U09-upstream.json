@@ -1,5 +1,6 @@
 {
   "status": "passed",
+  "mode": "fresh-upstream-install",
   "cases": [
     {
       "id": "typescript-language-server",
@@ -9,7 +10,8 @@
       "commandProgram": "node",
       "serverName": null,
       "serverVersion": null,
-      "startupMillis": 84,
+      "installed": true,
+      "startupMillis": 72,
       "clientOptions": "production LspService defaults",
       "initialize": true,
       "didOpen": true,
@@ -25,7 +27,8 @@
       "commandProgram": "node",
       "serverName": null,
       "serverVersion": null,
-      "startupMillis": 402,
+      "installed": true,
+      "startupMillis": 312,
       "clientOptions": "production LspService defaults",
       "initialize": true,
       "didOpen": true,
@@ -41,7 +44,8 @@
       "commandProgram": "node",
       "serverName": null,
       "serverVersion": null,
-      "startupMillis": 166,
+      "installed": true,
+      "startupMillis": 155,
       "clientOptions": "production LspService defaults",
       "initialize": true,
       "didOpen": true,
@@ -57,7 +61,8 @@
       "commandProgram": "node",
       "serverName": null,
       "serverVersion": null,
-      "startupMillis": 129,
+      "installed": true,
+      "startupMillis": 112,
       "clientOptions": "production LspService defaults",
       "initialize": true,
       "didOpen": true,
@@ -73,7 +78,8 @@
       "commandProgram": "java",
       "serverName": "JDT Language Server (Standard)",
       "serverVersion": "1.62.0-SNAPSHOT",
-      "startupMillis": 3387,
+      "installed": true,
+      "startupMillis": 1875,
       "clientOptions": "production LspService defaults",
       "initialize": true,
       "didOpen": true,
@@ -89,7 +95,8 @@
       "commandProgram": "clangd",
       "serverName": "clangd",
       "serverVersion": "clangd version 23.1.0 (https://github.com/llvm/llvm-project ea7d852a70e8bdfaf601d6626a760f9771b2c4b4) linux+grpc x86_64-unknown-linux-gnu",
-      "startupMillis": 4,
+      "installed": true,
+      "startupMillis": 3,
       "clientOptions": "production LspService defaults",
       "initialize": true,
       "didOpen": true,
@@ -103,33 +110,8 @@
     "java": "Temurin 25.0.1+8 (pre-existing external test runtime)"
   },
   "qualification": "Fresh actual production HttpFetcher installs and LspService lifecycle using production timeout defaults on Linux x86_64",
-  "catalogSha256": "44c5cd27a2fb0f42322a3ba812a3e691649e9ebc682332bac8f1f000fa33c10f",
   "rustVersion": "1.99.1 (58cf8f9c3 2026-10-13), stable",
-  "replay": "fresh isolated upstream-04; 82.26 seconds; six actual upstream installs with production lifecycle defaults",
-  "postInstallReplays": [
-    {
-      "status": "passed",
-      "mode": "installed-replay",
-      "cases": [
-        {
-          "id": "jdtls",
-          "version": "1.62.0",
-          "platform": "linux",
-          "arch": "x86_64",
-          "commandProgram": "java",
-          "serverName": "JDT Language Server (Standard)",
-          "serverVersion": "1.62.0-SNAPSHOT",
-          "installed": false,
-          "startupMillis": 2542,
-          "clientOptions": "production LspService defaults",
-          "initialize": true,
-          "didOpen": true,
-          "shutdown": true,
-          "reaped": true,
-          "archiveSha256": "f587dafd8410633c2c2bf005e853a2bbb03cddee88933d49bfe6d9cb1cf09342"
-        }
-      ],
-      "purpose": "JDT configuration/data file URLs, preserving spaces and Unicode through Java/Equinox"
-    }
-  ]
+  "catalogSha256": "44c5cd27a2fb0f42322a3ba812a3e691649e9ebc682332bac8f1f000fa33c10f",
+  "replay": "Fresh isolated upstream-05 after Debian/TAR refactor and JDT file URL changes; production HttpFetcher and LspService defaults",
+  "durationSeconds": 232.49
 }

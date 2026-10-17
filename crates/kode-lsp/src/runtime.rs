@@ -6,28 +6,17 @@ use crate::{
 use kode_core::{DomainError, Result};
 use kode_platform::{
     jobs::CancellationToken,
-    process::{ProcessSpec, SystemProcessFactory, run_capture},
+    process::{ProcessFactory, ProcessOutput, ProcessSpec, run_capture},
 };
 use std::{path::Path, time::Duration};
 
 /// Blocking-worker entry point, like HttpFetcher. It never creates a runtime.
-pub fn verify(
+pub(crate) fn verify_with_factory(
     program: &Path,
     requirement: &RuntimeRequirement,
     cancel: &CancellationToken,
+    factory: &dyn ProcessFactory,
 ) -> Result<String> {
-    let runtime = tokio::runtime::Handle::try_current()
-        .map_err(|_| invalid("Runtime verification requires the application's blocking worker"))?;
-    runtime.block_on(probe(program, requirement, cancel))
-}
-async fn probe(
-    program: &Path,
-    requirement: &RuntimeRequirement,
-    cancel: &CancellationToken,
-) -> Result<String> {
-    if cancel.is_cancelled() {
-        return Err(DomainError::Cancelled);
-    }
     let mut spec = ProcessSpec::new(program);
     spec.args = vec![
         match requirement.kind {
@@ -36,8 +25,35 @@ async fn probe(
         }
         .into(),
     ];
+    let output = capture(
+        spec,
+        &format!("{} version check", requirement.kind.label()),
+        cancel,
+        factory,
+    )?;
+    parse_version(output, requirement)
+}
+pub(crate) fn capture(
+    spec: ProcessSpec,
+    label: &str,
+    cancel: &CancellationToken,
+    factory: &dyn ProcessFactory,
+) -> Result<ProcessOutput> {
+    let runtime = tokio::runtime::Handle::try_current()
+        .map_err(|_| invalid("Runtime verification requires the application's blocking worker"))?;
+    runtime.block_on(probe(spec, label, cancel, factory))
+}
+async fn probe(
+    spec: ProcessSpec,
+    label: &str,
+    cancel: &CancellationToken,
+    factory: &dyn ProcessFactory,
+) -> Result<ProcessOutput> {
+    if cancel.is_cancelled() {
+        return Err(DomainError::Cancelled);
+    }
     let local = CancellationToken::new();
-    let work = run_capture(spec, vec![], local.clone(), &SystemProcessFactory);
+    let work = run_capture(spec, vec![], local.clone(), factory);
     tokio::pin!(work);
     let output = tokio::select! {
         biased;
@@ -49,10 +65,13 @@ async fn probe(
         _ = tokio::time::sleep(Duration::from_secs(5)) => {
             local.cancel();
             let _ = work.await;
-            return Err(invalid(format!("{} version check timed out; check the configured runtime and retry", requirement.kind.label())));
+            return Err(invalid(format!("{label} timed out; check the configured runtime and retry")));
         },
         result = &mut work => result?,
     };
+    Ok(output)
+}
+fn parse_version(output: ProcessOutput, requirement: &RuntimeRequirement) -> Result<String> {
     let text = match requirement.kind {
         RuntimeKind::Node => std::str::from_utf8(&output.stdout)
             .ok()

@@ -142,6 +142,11 @@ public final class ConnectionService implements AutoCloseable {
         private String loginCatalog,loginSchema;
         private ObjectNode info;
         private volatile Runnable cancelActive;
+        // Protected by this session's monitor. Complete request futures only
+        // after clearing this flag, so a subsequent idle disconnect cannot
+        // race a driver abort against its normal close handshake.
+        private boolean inOperation=true;
+        private synchronized void idle(){inOperation=false;}
         Session(Opening opening){source=opening.source();attempt=opening.attempt();fingerprint=opening.fingerprint();redactor=opening.redactor();}
         private void owner(){if(Thread.currentThread()!=worker)throw new IllegalStateException("JDBC operation outside its owner");}
         private RpcException afterCloseError(Throwable failure){
@@ -186,7 +191,7 @@ public final class ConnectionService implements AutoCloseable {
         }
         private void loop(Opening opening){
             try{
-                try{connect(opening);opened.complete(snapshot());}
+                try{connect(opening);JsonNode state=snapshot();idle();opened.complete(state);}
                 catch(Throwable failure){
                     try{closeOwned();}catch(Throwable closeFailure){failure.addSuppressed(closeFailure);}
                     opened.completeExceptionally(afterCloseError(failure));
@@ -198,11 +203,14 @@ public final class ConnectionService implements AutoCloseable {
                     try{command=queue.take();}catch(InterruptedException ignored){continue;}
                     if(command==closeCommand){Thread.interrupted();try{closeOwned();closed.complete(FrameCodec.JSON.createObjectNode().put("closed",true));}catch(Throwable failure){closed.completeExceptionally(SqlErrors.error(failure,redactor,safeSnapshot(),false));}return;}
                     slots.release();
-                    if(closing()){command.future.completeExceptionally(rejected(SqlErrors.STALE_CONNECTION,"Connection closed before operation started"));continue;}
+                    boolean start;synchronized(this){start=!closing();if(start)inOperation=true;}
+                    if(!start){command.future.completeExceptionally(rejected(SqlErrors.STALE_CONNECTION,"Connection closed before operation started"));continue;}
                     Thread.interrupted();
-                    try{command.future.complete(command.work.run(this));}
-                    catch(Throwable failure){failed(failure);command.future.completeExceptionally(SqlErrors.error(failure,redactor,safeSnapshot(),false));}
-                    finally{cancelActive=null;}
+                    JsonNode value=null;RpcException error=null;
+                    try{value=command.work.run(this);}
+                    catch(Throwable failure){failed(failure);error=SqlErrors.error(failure,redactor,safeSnapshot(),false);}
+                    finally{cancelActive=null;idle();}
+                    if(error==null)command.future.complete(value);else command.future.completeExceptionally(error);
                 }
             }finally{
                 Command pending;while((pending=queue.poll())!=null)if(pending!=closeCommand){slots.release();pending.future.completeExceptionally(rejected(SqlErrors.STALE_CONNECTION,"Connection ended before operation started"));}
@@ -215,11 +223,11 @@ public final class ConnectionService implements AutoCloseable {
             if(!queue.offer(command)){slots.release();throw rejected(-32003,"Connection work queue exhausted");}return command.future;
         }
         private void requestClose(){
-            if(!closing.compareAndSet(false,true))return;
+            boolean busy;synchronized(this){if(!closing.compareAndSet(false,true))return;busy=inOperation;}
             Command queued;while((queued=queue.poll())!=null){slots.release();queued.future.completeExceptionally(rejected(SqlErrors.STALE_CONNECTION,"Connection closed before operation started"));}
             queue.add(closeCommand);Runnable cancel=cancelActive;if(cancel!=null)try{cancel.run();}catch(RuntimeException ignored){}
             Thread thread=worker;if(thread!=null)thread.interrupt();Connection owned=connection;
-            if(owned!=null)try{aborts.execute(()->{try{owned.abort(Runnable::run);}catch(SQLException|RuntimeException ignored){/* Owner still attempts close; it reports an unconfirmed close. */}});}catch(RejectedExecutionException ignored){}
+            if(owned!=null&&busy)try{aborts.execute(()->{try{owned.abort(Runnable::run);}catch(SQLException|RuntimeException ignored){/* Owner still attempts close; it reports an unconfirmed close. */}});}catch(RejectedExecutionException ignored){}
         }
         private RpcException restartError(){return new RpcException(SqlErrors.NEEDS_RESTART,"Connection close could not be confirmed; restart the helper",FrameCodec.JSON.createObjectNode().put("restartRequired",true));}
         private void closeOwned() throws Exception {

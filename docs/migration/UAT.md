@@ -19,11 +19,12 @@ M002 uses a selectable/copyable authorization URL for completing login in a GUI 
 | M005 | Double-click and Alt+double-click word selection | **done** | [U06](tasks/11-uat.md) |
 | M006 | File-tree picker buttons for path inputs | **done** | [U07](tasks/11-uat.md) |
 | B005 | Project-relative open-file labels with optional full paths | **done** | [U08](tasks/11-uat.md) |
-| B006 | Repair missing/failing language server installations | **in-progress** | [U09](tasks/11-uat.md) |
+| B006 | Repair missing/failing language server installations | **suspend** | [U09](tasks/11-uat.md) |
 | B007 | Alt+1..8 follow the current visual tab order | **done** | [U10](tasks/11-uat.md) |
 | M007 | Connection-type JDBC URL template dropdown | **done** | [U11](tasks/11-uat.md) |
-| M008 | Applicable database package listing and DDL | **todo** | [U12](tasks/11-uat.md) |
+| M008 | Applicable database package listing and DDL | **suspend** | [U12](tasks/11-uat.md) |
 | B008 | Ephemeral local OAuth callback instead of Postman redirect | **done** | [R10](tasks/08-rest.md) |
+| B009 | Oracle explorer refresh and selected/script statement terminators | **done** | [U13](tasks/11-uat.md) |
 
 E13 includes the new shared-editor interactions, Z03 includes the separate runtime artifact, and Z04 requires all UAT implementation tasks and OAuth acquisition. Completed earlier work retains its acceptance evidence; a new request does not imply reopening unrelated finished tasks.
 

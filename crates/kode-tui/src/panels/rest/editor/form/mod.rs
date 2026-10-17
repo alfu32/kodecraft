@@ -84,6 +84,10 @@ pub enum Intent {
         flow: JobTag,
         text: String,
     },
+    OAuthAccessToken {
+        flow: Option<JobTag>,
+        text: String,
+    },
     Send,
     ClearCookies,
     FormatBody,
@@ -208,6 +212,7 @@ struct RowCache {
 enum ModalPurpose {
     Row(Rows, usize),
     Redirect(JobTag),
+    AccessToken(Option<JobTag>),
     Display,
 }
 struct Modal {
@@ -469,29 +474,10 @@ impl Form {
                         .and_then(Value::as_str)
                         .unwrap_or("inherit")
                 )));
-                let mut choices = vec![("Inherit".into(), Action::Auth(None))];
-                choices.extend(
-                    kode_rest::auth::SCHEMES
-                        .iter()
-                        .map(|scheme| (scheme.label.into(), Action::Auth(Some(scheme.kind)))),
-                );
-                for group in choices.chunks(3) {
-                    rows.push(Row::Buttons(group.to_vec()));
-                }
                 let effective_kind = own
                     .and_then(|a| a.get("type"))
                     .and_then(Value::as_str)
                     .or_else(|| self.derived.auth.as_ref().map(|a| a.kind.as_str()));
-                if effective_kind.is_some_and(|kind| {
-                    matches!(
-                        kind,
-                        "digest" | "oauth1" | "oauth2" | "hawk" | "awsv4" | "ntlm" | "edgegrid"
-                    )
-                }) {
-                    rows.push(Row::Info(
-                        "Redirects are returned for review with this authentication type".into(),
-                    ));
-                }
                 if self.request
                     && effective_kind.is_some_and(|kind| matches!(kind, "oauth1" | "oauth2"))
                 {
@@ -523,15 +509,29 @@ impl Form {
                     if self.oauth.has_token {
                         controls.push(("Clear token".into(), Action::OAuth(OAuthAction::Clear)));
                     }
+                    if kind == "oauth2" {
+                        controls.push((
+                            "Paste access token".into(),
+                            Action::OAuth(OAuthAction::PasteToken),
+                        ));
+                    }
                     rows.push(Row::Buttons(controls));
-                    rows.push(Row::Wrapped(self.oauth.message.clone()));
                     if let Some(url) = &self.oauth.url {
-                        rows.push(Row::Wrapped(url.clone()));
-                        rows.push(Row::Buttons(vec![
+                        rows.push(Row::Info("Open the login URL in your browser".into()));
+                        let actions = vec![
                             ("Copy login URL".into(), Action::OAuth(OAuthAction::CopyUrl)),
                             ("View login URL".into(), Action::OAuth(OAuthAction::ViewUrl)),
-                        ]));
+                        ];
+                        rows.push(Row::Buttons(actions));
+                        rows.push(Row::Wrapped(format!("Login URL: {url}")));
                     }
+                    if self.oauth.flow.is_some() && self.oauth.callback.is_some() {
+                        rows.push(Row::Buttons(vec![(
+                            "Paste redirect URL".into(),
+                            Action::OAuth(OAuthAction::PasteRedirect),
+                        )]));
+                    }
+                    rows.push(Row::Wrapped(self.oauth.message.clone()));
                     if let Some(code) = &self.oauth.code {
                         rows.push(Row::Info(format!("Device code: {code}")));
                     }
@@ -543,12 +543,25 @@ impl Form {
                             rows.push(Row::Wrapped("Local HTTPS uses a temporary self-signed certificate; your browser may ask you to accept it. The provider must allow this redirect URI. For a remote browser, paste its complete redirect URL.".into()));
                         }
                     }
-                    if self.oauth.flow.is_some() && self.oauth.callback.is_some() {
-                        rows.push(Row::Buttons(vec![(
-                            "Paste redirect URL".into(),
-                            Action::OAuth(OAuthAction::PasteRedirect),
-                        )]));
-                    }
+                }
+                let mut choices = vec![("Inherit".into(), Action::Auth(None))];
+                choices.extend(
+                    kode_rest::auth::SCHEMES
+                        .iter()
+                        .map(|scheme| (scheme.label.into(), Action::Auth(Some(scheme.kind)))),
+                );
+                for group in choices.chunks(3) {
+                    rows.push(Row::Buttons(group.to_vec()));
+                }
+                if effective_kind.is_some_and(|kind| {
+                    matches!(
+                        kind,
+                        "digest" | "oauth1" | "oauth2" | "hawk" | "awsv4" | "ntlm" | "edgegrid"
+                    )
+                }) {
+                    rows.push(Row::Info(
+                        "Redirects are returned for review with this authentication type".into(),
+                    ));
                 }
                 self.entry_rows(model, Rows::Auth, &mut rows)?;
                 rows.push(Row::Buttons(vec![(

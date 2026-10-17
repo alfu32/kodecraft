@@ -1552,6 +1552,15 @@ impl AppRuntime {
                     ) => database
                         .metadata
                         .is_current(load.key.source(), &load.request, result),
+                    (
+                        crate::panels::database::controller::Context::Source {
+                            source,
+                            request,
+                            ..
+                        },
+                        Ok(crate::panels::database::controller::Report::Source(result)),
+                        Some(database),
+                    ) => database.metadata.source_is_current(source, request, result),
                     _ => true,
                 };
                 let sources_changed = matches!(

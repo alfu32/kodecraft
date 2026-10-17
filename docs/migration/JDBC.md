@@ -67,7 +67,9 @@ unknown methods and incompatible major protocol versions produce explicit errors
 | `connection.close` | Cancel/finish owned work, close connection, invalidate cache | D04 |
 | `connection.setContext` | Catalog/schema, read-only, autocommit with driver support checks | D04 |
 | `connection.commit`, `connection.rollback` | Serialize on the owning connection; preserve errors and transaction state | D04 |
-| `metadata.list` | Lazy metadata request using existing normalized object/request types | D06 |
+| `metadata.list` | Lazy metadata request with a unique `metadataJobId` and priority cancellation | D06, U12 |
+| `metadata.source` | Complete package source/DDL from the selected provider; connection context proof, bounded response and no SQL execution by the editor | U12 |
+| `metadata.cancel` | Priority cancellation for one metadata-list or package-source `metadataJobId`; acknowledgement is not completion | U12 |
 | `query.execute` | Execute SQL; stream all result sets/update counts/warnings in order | D05 |
 | `query.cancel` | Independent control request for one execution ID; acknowledgement is not completion | D05 |
 

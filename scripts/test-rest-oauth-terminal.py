@@ -97,12 +97,12 @@ def main():
                 def login(screen):
                     # Reassemble the actual wrapped URL displayed by the form.
                     lines = ["".join(row)[37:].strip() for row in screen.cells]
-                    start = next((i for i, line in enumerate(lines) if line.startswith(base_url)), None)
+                    start = next((i for i, line in enumerate(lines) if line.startswith("Login URL: ")), None)
                     if start is None:
                         return None
-                    parts = []
-                    for line in lines[start:]:
-                        if line.startswith("Copy login URL"):
+                    parts = [lines[start].removeprefix("Login URL: ")]
+                    for line in lines[start + 1:]:
+                        if line.startswith("Paste redirect URL"):
                             break
                         parts.append(line)
                     url = "".join(parts)
@@ -144,6 +144,18 @@ def main():
                             assert all(secret not in saved for secret in ["runtime-access", "runtime-rotated", "runtime-refresh", "code_verifier", "synthetic-password"])
                             assert not failures, failures
                             cases.append({"case": grant + "-refresh-send-nonpersistence", "browser": grant == "authorization_code", **result})
+                            if grant == "authorization_code":
+                                manual_actions = [
+                                    (b"REQUEST | OAuth", .15, editors.click("Auth", first=False)),
+                                    (b"Auth: oauth2", .15, editors.click("Paste access token")),
+                                    (b"Paste OAuth 2.0 access token", .15, b"\x01" + editors.paste("runtime-access") + b"\r"),
+                                    (b"Clear token", .15, b"\x1b[13;5u"),
+                                    (b"OAUTH_AUTHORIZED", .15, b"\x11"),
+                                ]
+                                manual = editors.terminal.run_case(project, base / "config", (width, 24), manual_actions, env_overrides=env)
+                                cases.append({"case": "paste-access-token-send-nonpersistence", **manual})
+                                saved = (project / ".kode-rs.json").read_text()
+                                assert "runtime-access" not in saved
                             def restarted(screen):
                                 visible = screen.text()
                                 assert b"Refresh token" not in visible and b"Clear token" not in visible
@@ -153,7 +165,7 @@ def main():
                             print(f"Passed OAuth {grant} at {width} columns", flush=True)
             finally:
                 browser.close()
-        assert len(logins) == 2 and len(hits) == 4 and grants.count("refresh_token") == 4
+        assert len(logins) == 2 and len(hits) == 6 and grants.count("refresh_token") == 4
         import socket
         for callback in callbacks:
             parsed = urlsplit(callback)

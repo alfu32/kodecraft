@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "date": "2026-10-17",
+  "test": "actual_vendor_package_source_menu_opens_readonly_editor_and_refreshes_after_cleanup",
+  "scope": "Live TUI package expansion through AppState input and the external JDBC helper",
+  "vendors": [
+    {
+      "vendor": "oracle",
+      "status": "passed",
+      "memberCount": 3,
+      "functions": 2,
+      "procedures": 1,
+      "distinctMemberIds": true,
+      "schemaAndPackageOwnership": true
+    },
+    {
+      "vendor": "mariadb",
+      "status": "passed",
+      "memberCount": 3,
+      "functions": 2,
+      "procedures": 1,
+      "distinctMemberIds": true,
+      "schemaAndPackageOwnership": true
+    }
+  ],
+  "fixtureCleanup": true,
+  "nativeDb2AndTiberoQualified": false
+}

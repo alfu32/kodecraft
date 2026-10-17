@@ -134,6 +134,13 @@ async fn actual_upstream_packages_install_initialize_and_shutdown_in_isolated_ro
         .unwrap()
         .unwrap();
         assert!(PathBuf::from(&command.args[0]).is_file());
+        // Preserve the production argv/cwd even when initialization fails, so
+        // native launcher problems can be diagnosed without rebuilding the recipe.
+        fs::write(
+            work.join(format!("launch-{id}.json")),
+            serde_json::to_vec_pretty(&json!({"args": command.args, "cwd": command.cwd})).unwrap(),
+        )
+        .unwrap();
         let service = LspService::new(workspace, None);
         let start = Instant::now();
         let client = service

@@ -1,0 +1,595 @@
+{
+  "status": "passed",
+  "mode": "emulated-arm64",
+  "nativeHardwareQualified": false,
+  "installed": true,
+  "architecture": "arm64",
+  "serverName": "clangd",
+  "serverVersion": "Ubuntu clangd version 23.1.4 (++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84) linux aarch64-unknown-linux-gnu",
+  "startupMillis": 339,
+  "clientOptions": "production defaults",
+  "initialize": true,
+  "didOpen": true,
+  "parsedWithoutDiagnostics": true,
+  "shutdown": true,
+  "reaped": true,
+  "hostLibrariesUsed": false,
+  "prepublicationLibraryCheck": true,
+  "prelaunchLibraryCheck": true,
+  "archiveSha256": "ea1848f21c9e306f13fd854bf2233b47df60e25f1bfc31cbf5f9a654fded1ee6",
+  "bundledHeaderDefinitions": [
+    "file:///tmp/kode-rs-u09-arm64-catalog-20261017/isolated:%20install%20roots%20%E7%95%8C/clangd/deps/libclang-common-23-dev/usr/lib/llvm-23/lib/clang/23/include/__stddef_size_t.h"
+  ],
+  "qualificationScope": "Production resources/lsp/servers.json Linux ARM64 clangd selection and fresh isolated installer/LSP execution under QEMU on Linux x86_64; this does not qualify native ARM64 hardware or Z03 artifacts",
+  "hostArchitecture": "x86_64",
+  "durationSeconds": 23.91,
+  "downloadCount": 19,
+  "combinedDownloadBytes": 72555470,
+  "installedFileBytes": 332313273,
+  "rootPathCoverage": [
+    "spaces",
+    "Unicode",
+    "colon"
+  ],
+  "emulator": {
+    "package": "qemu-user-static",
+    "version": "1:8.2.2+ds-0ubuntu1.18",
+    "sha256": "5bb397f66063efa349f6fd5cb3b68cd96f29edd0994e4ba5115cf0859a716bf0",
+    "source": "Ubuntu noble-updates signed APT metadata",
+    "archiveFilename": "pool/universe/q/qemu/qemu-user-static_8.2.2+ds-0ubuntu1.18_amd64.deb",
+    "toolVersion": "qemu-aarch64 version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)\nCopyright (c) 2003-2023 Fabrice Bellard and the QEMU Project developers\n",
+    "scope": "Private ARM64 server runtime qualification tool only; no system registration or package installation"
+  },
+  "libraryMappings": [
+    {
+      "soname": "libclang-cpp.so.23.1",
+      "path": "deps/libclang-cpp23/usr/lib/aarch64-linux-gnu/libclang-cpp.so.23.1"
+    },
+    {
+      "soname": "libLLVM.so.23.1",
+      "path": "deps/libllvm23/usr/lib/aarch64-linux-gnu/libLLVM.so.23.1"
+    },
+    {
+      "soname": "libstdc++.so.6",
+      "path": "deps/libstdc++6/usr/lib/aarch64-linux-gnu/libstdc++.so.6"
+    },
+    {
+      "soname": "libm.so.6",
+      "path": "deps/libc6/lib/aarch64-linux-gnu/libm.so.6"
+    },
+    {
+      "soname": "libgcc_s.so.1",
+      "path": "deps/libgcc-s1/lib/aarch64-linux-gnu/libgcc_s.so.1"
+    },
+    {
+      "soname": "libc.so.6",
+      "path": "deps/libc6/lib/aarch64-linux-gnu/libc.so.6"
+    },
+    {
+      "soname": "/lib/ld-linux-aarch64.so.1",
+      "path": "deps/libc6/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1"
+    },
+    {
+      "soname": "libffi.so.8",
+      "path": "deps/libffi8/usr/lib/aarch64-linux-gnu/libffi.so.8"
+    },
+    {
+      "soname": "libedit.so.2",
+      "path": "deps/libedit2/usr/lib/aarch64-linux-gnu/libedit.so.2"
+    },
+    {
+      "soname": "libz3.so.4",
+      "path": "deps/libz3-4/usr/lib/aarch64-linux-gnu/libz3.so.4"
+    },
+    {
+      "soname": "libz.so.1",
+      "path": "deps/zlib1g/lib/aarch64-linux-gnu/libz.so.1"
+    },
+    {
+      "soname": "libzstd.so.1",
+      "path": "deps/libzstd1/usr/lib/aarch64-linux-gnu/libzstd.so.1"
+    },
+    {
+      "soname": "libxml2.so.2",
+      "path": "deps/libxml2/usr/lib/aarch64-linux-gnu/libxml2.so.2"
+    },
+    {
+      "soname": "libtinfo.so.6",
+      "path": "deps/libtinfo6/lib/aarch64-linux-gnu/libtinfo.so.6"
+    },
+    {
+      "soname": "libbsd.so.0",
+      "path": "deps/libbsd0/usr/lib/aarch64-linux-gnu/libbsd.so.0"
+    },
+    {
+      "soname": "libicuuc.so.70",
+      "path": "deps/libicu70/usr/lib/aarch64-linux-gnu/libicuuc.so.70"
+    },
+    {
+      "soname": "liblzma.so.5",
+      "path": "deps/liblzma5/lib/aarch64-linux-gnu/liblzma.so.5"
+    },
+    {
+      "soname": "libmd.so.0",
+      "path": "deps/libmd0/usr/lib/aarch64-linux-gnu/libmd.so.0"
+    },
+    {
+      "soname": "libicudata.so.70",
+      "path": "deps/libicu70/usr/lib/aarch64-linux-gnu/libicudata.so.70"
+    }
+  ],
+  "loaderListSha256": "4a23dd5e85877c37088a2e9939a7e9fe46937988529037baf6d80ed6e82b87c6",
+  "sourceIndexes": [
+    {
+      "url": "https://apt.llvm.org/jammy/dists/llvm-toolchain-jammy-23/main/binary-arm64/Packages.gz",
+      "sha256": "72e5ec368c1ed05d3fb57bd3ecdfc4d23f7d6c3fc76cbcefe5ad65d469b77366"
+    },
+    {
+      "url": "https://ports.ubuntu.com/ubuntu-ports/dists/jammy/main/binary-arm64/Packages.xz",
+      "sha256": "b80d1f097198f4a2d80f84db0252263d902051a695040acbc085f033048bc9bb"
+    },
+    {
+      "url": "https://ports.ubuntu.com/ubuntu-ports/dists/jammy/universe/binary-arm64/Packages.xz",
+      "sha256": "23c1928b7ec0f6a3e396f48f43b6995bdd01a71dd843a6cc89aada0bdaba485d"
+    },
+    {
+      "url": "https://ports.ubuntu.com/ubuntu-ports/dists/jammy-updates/main/binary-arm64/Packages.xz",
+      "sha256": "4bd27b91f882a96d96a7fcf6ee5ee5661b3fb2ee9c2560761d023a9d935458bb"
+    },
+    {
+      "url": "https://ports.ubuntu.com/ubuntu-ports/dists/jammy-updates/universe/binary-arm64/Packages.xz",
+      "sha256": "c2dff4569fa16cc2f58ebec3f305f7f7ffb9717e99320632b16baf9ec148d5a2"
+    },
+    {
+      "url": "https://ports.ubuntu.com/ubuntu-ports/dists/jammy-security/main/binary-arm64/Packages.xz",
+      "sha256": "8ed5c776cb126d3c867cf2dcfbbc9c7dea35bc0c637f830e273a65945558a5bb"
+    },
+    {
+      "url": "https://ports.ubuntu.com/ubuntu-ports/dists/jammy-security/universe/binary-arm64/Packages.xz",
+      "sha256": "975aee7abc2158d50fdc54448bdf7c8b59cd452529d3d15f80afaeb3e2ebcd21"
+    }
+  ],
+  "archives": [
+    {
+      "package": "clangd-23",
+      "version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+      "architecture": "arm64",
+      "url": "https://apt.llvm.org/jammy/pool/main/l/llvm-toolchain-23/clangd-23_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb",
+      "sha256": "ea1848f21c9e306f13fd854bf2233b47df60e25f1bfc31cbf5f9a654fded1ee6",
+      "downloadBytes": 3946936,
+      "directory": ".",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/llvm-23/bin/clangd",
+          "usr/share/doc/clangd-23/copyright"
+        ]
+      },
+      "copyrightFrom": "clangd-23",
+      "copyrightFile": "usr/share/doc/clangd-23/copyright",
+      "copyrightSha256": "f680b175b51da0be13bd541c8813c9f11b46490a83fd6a1fda403edb1806203d"
+    },
+    {
+      "package": "libclang-common-23-dev",
+      "version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+      "architecture": "arm64",
+      "url": "https://apt.llvm.org/jammy/pool/main/l/llvm-toolchain-23/libclang-common-23-dev_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb",
+      "sha256": "76cb8128568910b284945e387da973b859625c2d6c79aa9b84d2e2b801426405",
+      "downloadBytes": 852928,
+      "directory": "deps/libclang-common-23-dev",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/llvm-23/lib/clang/23/include",
+          "usr/share/doc/libclang-common-23-dev/copyright"
+        ]
+      },
+      "copyrightFrom": "libclang-common-23-dev",
+      "copyrightFile": "deps/libclang-common-23-dev/usr/share/doc/libclang-common-23-dev/copyright",
+      "copyrightSha256": "f680b175b51da0be13bd541c8813c9f11b46490a83fd6a1fda403edb1806203d"
+    },
+    {
+      "package": "libclang-cpp23",
+      "version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+      "architecture": "arm64",
+      "url": "https://apt.llvm.org/jammy/pool/main/l/llvm-toolchain-23/libclang-cpp23_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb",
+      "sha256": "cc9004beb0cabf6cec3d222235b879bd3efe8b7928341cfd03a2ac1275a2c715",
+      "downloadBytes": 14488256,
+      "directory": "deps/libclang-cpp23",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/aarch64-linux-gnu/libclang-cpp.so.23.1",
+          "usr/share/doc/libclang-cpp23/copyright"
+        ]
+      },
+      "copyrightFrom": "libclang-cpp23",
+      "copyrightFile": "deps/libclang-cpp23/usr/share/doc/libclang-cpp23/copyright",
+      "copyrightSha256": "f680b175b51da0be13bd541c8813c9f11b46490a83fd6a1fda403edb1806203d"
+    },
+    {
+      "package": "libllvm23",
+      "version": "1:23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84",
+      "architecture": "arm64",
+      "url": "https://apt.llvm.org/jammy/pool/main/l/llvm-toolchain-23/libllvm23_23.1.4~++20261014054259+0cd28174a1f6-1~exp1~20261014054309.84_arm64.deb",
+      "sha256": "f85bc984348de55b270cf27f494df95afbf86837df667cf2cda8dd3d9fc100a1",
+      "downloadBytes": 32302396,
+      "directory": "deps/libllvm23",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/aarch64-linux-gnu/libLLVM.so.23.1",
+          "usr/share/doc/libllvm23/copyright"
+        ]
+      },
+      "copyrightFrom": "libllvm23",
+      "copyrightFile": "deps/libllvm23/usr/share/doc/libllvm23/copyright",
+      "copyrightSha256": "f680b175b51da0be13bd541c8813c9f11b46490a83fd6a1fda403edb1806203d"
+    },
+    {
+      "package": "libbsd0",
+      "version": "0.11.5-1",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libb/libbsd/libbsd0_0.11.5-1_arm64.deb",
+      "sha256": "19703bfe6fde9a161e42f5107451a46cc182a62dd0621a55d06aec7dc372991d",
+      "downloadBytes": 43662,
+      "directory": "deps/libbsd0",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/aarch64-linux-gnu/libbsd.so.0.11.5",
+          "usr/share/doc/libbsd0/copyright"
+        ],
+        "copies": [
+          {
+            "source": "usr/lib/aarch64-linux-gnu/libbsd.so.0.11.5",
+            "target": "usr/lib/aarch64-linux-gnu/libbsd.so.0"
+          }
+        ]
+      },
+      "copyrightFrom": "libbsd0",
+      "copyrightFile": "deps/libbsd0/usr/share/doc/libbsd0/copyright",
+      "copyrightSha256": "3761714adb9c45fa588b77b372d6e75dcc9e6822cc2d6baa712007241aec714e"
+    },
+    {
+      "package": "libc6",
+      "version": "2.35-0ubuntu3.15",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/g/glibc/libc6_2.35-0ubuntu3.15_arm64.deb",
+      "sha256": "dd88cc85dcfbac19c0c9b606676b7b1b87f851d75afa5c830fc5ba1293a30833",
+      "downloadBytes": 2709356,
+      "directory": "deps/libc6",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+          "lib/aarch64-linux-gnu/libc.so.6",
+          "lib/aarch64-linux-gnu/libm.so.6",
+          "usr/share/doc/libc6/copyright"
+        ]
+      },
+      "copyrightFrom": "libc6",
+      "copyrightFile": "deps/libc6/usr/share/doc/libc6/copyright",
+      "copyrightSha256": "d3c95b56fa33e28b57860580f0baf4e4f4de2a268a2b80f1d031a5191bade265"
+    },
+    {
+      "package": "libedit2",
+      "version": "3.1-20210910-1build1",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libe/libedit/libedit2_3.1-20210910-1build1_arm64.deb",
+      "sha256": "7445804608b7feef2484dd217203574323c49f2a6530d92b78bd65a2e5ab4657",
+      "downloadBytes": 95970,
+      "directory": "deps/libedit2",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/aarch64-linux-gnu/libedit.so.2.0.68",
+          "usr/share/doc/libedit2/copyright"
+        ],
+        "copies": [
+          {
+            "source": "usr/lib/aarch64-linux-gnu/libedit.so.2.0.68",
+            "target": "usr/lib/aarch64-linux-gnu/libedit.so.2"
+          }
+        ]
+      },
+      "copyrightFrom": "libedit2",
+      "copyrightFile": "deps/libedit2/usr/share/doc/libedit2/copyright",
+      "copyrightSha256": "2b53671050f6319be6fcdcafa434e8ccb8af629359b4afc83185867204f3927d"
+    },
+    {
+      "package": "libffi8",
+      "version": "3.4.2-4",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libf/libffi/libffi8_3.4.2-4_arm64.deb",
+      "sha256": "a0cdf938e8da19bd2252c681f80268609a32d06496a1f8d0ebe1fa41debec697",
+      "downloadBytes": 21338,
+      "directory": "deps/libffi8",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/aarch64-linux-gnu/libffi.so.8.1.0",
+          "usr/share/doc/libffi8/copyright"
+        ],
+        "copies": [
+          {
+            "source": "usr/lib/aarch64-linux-gnu/libffi.so.8.1.0",
+            "target": "usr/lib/aarch64-linux-gnu/libffi.so.8"
+          }
+        ]
+      },
+      "copyrightFrom": "libffi8",
+      "copyrightFile": "deps/libffi8/usr/share/doc/libffi8/copyright",
+      "copyrightSha256": "7258c8acc378030d8dbe1fcdf394e915769fa31dcbaf3d2991d9a79891f3bcdc"
+    },
+    {
+      "package": "libgcc-s1",
+      "version": "12.3.0-1ubuntu1~22.04.3",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/g/gcc-12/libgcc-s1_12.3.0-1ubuntu1~22.04.3_arm64.deb",
+      "sha256": "46626e1af6b159061e055f843654ee1f0f1e65fa280331ed47ee76ba1b1f6045",
+      "downloadBytes": 39702,
+      "directory": "deps/libgcc-s1",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "lib/aarch64-linux-gnu/libgcc_s.so.1"
+        ]
+      },
+      "copyrightFrom": "gcc-12-base",
+      "copyrightFile": "deps/gcc-12-base/usr/share/doc/gcc-12-base/copyright",
+      "copyrightSha256": "da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3"
+    },
+    {
+      "package": "libicu70",
+      "version": "70.1-2",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/i/icu/libicu70_70.1-2_arm64.deb",
+      "sha256": "ac68372cf4a976e6a206858fd9b28c68e49d37d650b9b8653270038a6e7bc174",
+      "downloadBytes": 10503646,
+      "directory": "deps/libicu70",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/aarch64-linux-gnu/libicudata.so.70.1",
+          "usr/lib/aarch64-linux-gnu/libicuuc.so.70.1",
+          "usr/share/doc/libicu70/copyright"
+        ],
+        "copies": [
+          {
+            "source": "usr/lib/aarch64-linux-gnu/libicudata.so.70.1",
+            "target": "usr/lib/aarch64-linux-gnu/libicudata.so.70"
+          },
+          {
+            "source": "usr/lib/aarch64-linux-gnu/libicuuc.so.70.1",
+            "target": "usr/lib/aarch64-linux-gnu/libicuuc.so.70"
+          }
+        ]
+      },
+      "copyrightFrom": "libicu70",
+      "copyrightFile": "deps/libicu70/usr/share/doc/libicu70/copyright",
+      "copyrightSha256": "170fd65a4a836530290d4b3f7572cafcf1c4d66e7357ae42d76861bbbecd4767"
+    },
+    {
+      "package": "liblzma5",
+      "version": "5.2.5-2ubuntu1.1",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/x/xz-utils/liblzma5_5.2.5-2ubuntu1.1_arm64.deb",
+      "sha256": "97f4c7e360aa229d3bf0a5b56b204652ce4f1704536dc0256c0e2537b356f397",
+      "downloadBytes": 98352,
+      "directory": "deps/liblzma5",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "lib/aarch64-linux-gnu/liblzma.so.5.2.5",
+          "usr/share/doc/liblzma5/copyright"
+        ],
+        "copies": [
+          {
+            "source": "lib/aarch64-linux-gnu/liblzma.so.5.2.5",
+            "target": "lib/aarch64-linux-gnu/liblzma.so.5"
+          }
+        ]
+      },
+      "copyrightFrom": "liblzma5",
+      "copyrightFile": "deps/liblzma5/usr/share/doc/liblzma5/copyright",
+      "copyrightSha256": "a2dc8fac0f496e1c58aff67018cf0c6b88336316afa5642f9335b71642e28aa8"
+    },
+    {
+      "package": "libmd0",
+      "version": "1.0.4-1build1",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libm/libmd/libmd0_1.0.4-1build1_arm64.deb",
+      "sha256": "6f87f19f71411a94ae370f7f9bcf4c7dfb5d4393f11de99634ac3137448ad678",
+      "downloadBytes": 23844,
+      "directory": "deps/libmd0",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/aarch64-linux-gnu/libmd.so.0.0.5",
+          "usr/share/doc/libmd0/copyright"
+        ],
+        "copies": [
+          {
+            "source": "usr/lib/aarch64-linux-gnu/libmd.so.0.0.5",
+            "target": "usr/lib/aarch64-linux-gnu/libmd.so.0"
+          }
+        ]
+      },
+      "copyrightFrom": "libmd0",
+      "copyrightFile": "deps/libmd0/usr/share/doc/libmd0/copyright",
+      "copyrightSha256": "4365ef6255ad553fce69dd4bc0e093472c5d0e41b8ea493a545cc926ce171aa6"
+    },
+    {
+      "package": "libstdc++6",
+      "version": "12.3.0-1ubuntu1~22.04.3",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/g/gcc-12/libstdc++6_12.3.0-1ubuntu1~22.04.3_arm64.deb",
+      "sha256": "59d244119e6129c7e9c0897491c0e210e925d15881b2dedcf8965ceb4fbf1aa3",
+      "downloadBytes": 660980,
+      "directory": "deps/libstdc++6",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/aarch64-linux-gnu/libstdc++.so.6.0.30"
+        ],
+        "copies": [
+          {
+            "source": "usr/lib/aarch64-linux-gnu/libstdc++.so.6.0.30",
+            "target": "usr/lib/aarch64-linux-gnu/libstdc++.so.6"
+          }
+        ]
+      },
+      "copyrightFrom": "gcc-12-base",
+      "copyrightFile": "deps/gcc-12-base/usr/share/doc/gcc-12-base/copyright",
+      "copyrightSha256": "da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3"
+    },
+    {
+      "package": "libtinfo6",
+      "version": "6.3-2ubuntu0.3",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/n/ncurses/libtinfo6_6.3-2ubuntu0.3_arm64.deb",
+      "sha256": "971b5fd1cf8f7d68ba00f40d8eec6474fae6a6adbe19883aa42dd2b74c672e4a",
+      "downloadBytes": 103622,
+      "directory": "deps/libtinfo6",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "lib/aarch64-linux-gnu/libtinfo.so.6.3",
+          "usr/share/doc/libtinfo6/copyright"
+        ],
+        "copies": [
+          {
+            "source": "lib/aarch64-linux-gnu/libtinfo.so.6.3",
+            "target": "lib/aarch64-linux-gnu/libtinfo.so.6"
+          }
+        ]
+      },
+      "copyrightFrom": "libtinfo6",
+      "copyrightFile": "deps/libtinfo6/usr/share/doc/libtinfo6/copyright",
+      "copyrightSha256": "f0974fb41778e23c94111ff90da0546de8971f8270c58877283d372e6bd7f17e"
+    },
+    {
+      "package": "libxml2",
+      "version": "2.9.13+dfsg-1ubuntu0.14",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libx/libxml2/libxml2_2.9.13+dfsg-1ubuntu0.14_arm64.deb",
+      "sha256": "1e85b731baabd51331d70a6392c652bc39fa2c231ff784555bd6a61631009387",
+      "downloadBytes": 728318,
+      "directory": "deps/libxml2",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/aarch64-linux-gnu/libxml2.so.2.9.13",
+          "usr/share/doc/libxml2/copyright"
+        ],
+        "copies": [
+          {
+            "source": "usr/lib/aarch64-linux-gnu/libxml2.so.2.9.13",
+            "target": "usr/lib/aarch64-linux-gnu/libxml2.so.2"
+          }
+        ]
+      },
+      "copyrightFrom": "libxml2",
+      "copyrightFile": "deps/libxml2/usr/share/doc/libxml2/copyright",
+      "copyrightSha256": "ee746b96cfa5be73c3ea3e4cfb1285e9b315d4c9267f99b2ee9c5d911d9fe3f4"
+    },
+    {
+      "package": "libzstd1",
+      "version": "1.4.8+dfsg-3build1",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libz/libzstd/libzstd1_1.4.8+dfsg-3build1_arm64.deb",
+      "sha256": "0102eb80384c2432c4be819663341a1c4e511d05f13ec1467643696531ec6491",
+      "downloadBytes": 311026,
+      "directory": "deps/libzstd1",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/aarch64-linux-gnu/libzstd.so.1.4.8",
+          "usr/share/doc/libzstd1/copyright"
+        ],
+        "copies": [
+          {
+            "source": "usr/lib/aarch64-linux-gnu/libzstd.so.1.4.8",
+            "target": "usr/lib/aarch64-linux-gnu/libzstd.so.1"
+          }
+        ]
+      },
+      "copyrightFrom": "libzstd1",
+      "copyrightFile": "deps/libzstd1/usr/share/doc/libzstd1/copyright",
+      "copyrightSha256": "8cf66791fbe72801cb1d701c832b7e395dad0000bb9699dc42df94b49d699e91"
+    },
+    {
+      "package": "zlib1g",
+      "version": "1:1.2.11.dfsg-2ubuntu9.2",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/z/zlib/zlib1g_1.2.11.dfsg-2ubuntu9.2_arm64.deb",
+      "sha256": "cfd99d1ca41e710fdd3f68bfdc4d36dd24e14377656764f00b215b89cf6976e8",
+      "downloadBytes": 57006,
+      "directory": "deps/zlib1g",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "lib/aarch64-linux-gnu/libz.so.1.2.11",
+          "usr/share/doc/zlib1g/copyright"
+        ],
+        "copies": [
+          {
+            "source": "lib/aarch64-linux-gnu/libz.so.1.2.11",
+            "target": "lib/aarch64-linux-gnu/libz.so.1"
+          }
+        ]
+      },
+      "copyrightFrom": "zlib1g",
+      "copyrightFile": "deps/zlib1g/usr/share/doc/zlib1g/copyright",
+      "copyrightSha256": "d77204eee882807240f6351c4f5ae2a4bcdb5b773ff77d10647b9b66b826b2fb"
+    },
+    {
+      "package": "libz3-4",
+      "version": "4.8.12-1",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/universe/z/z3/libz3-4_4.8.12-1_arm64.deb",
+      "sha256": "7e621d50221b74d6c8f2b339c99a6193d021474325aa25a54613adf67da40506",
+      "downloadBytes": 5352310,
+      "directory": "deps/libz3-4",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/lib/aarch64-linux-gnu/libz3.so.4",
+          "usr/share/doc/libz3-4/copyright"
+        ]
+      },
+      "copyrightFrom": "libz3-4",
+      "copyrightFile": "deps/libz3-4/usr/share/doc/libz3-4/copyright",
+      "copyrightSha256": "807f874c81a0dbce7d4e32b1a4e1ef1e094b9a3fe8579f34e60fda4f2077289c"
+    },
+    {
+      "package": "gcc-12-base",
+      "version": "12.3.0-1ubuntu1~22.04.3",
+      "architecture": "arm64",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/g/gcc-12/gcc-12-base_12.3.0-1ubuntu1~22.04.3_arm64.deb",
+      "sha256": "b2bc566681989941dd059d6391b01c41854857f26d83c53358287d620dfb0fd4",
+      "downloadBytes": 215822,
+      "directory": "deps/gcc-12-base",
+      "extract": {
+        "version": 1,
+        "paths": [
+          "usr/share/doc/gcc-12-base/copyright",
+          "usr/share/doc/gcc-12-base"
+        ]
+      },
+      "copyrightFrom": "gcc-12-base",
+      "copyrightFile": "deps/gcc-12-base/usr/share/doc/gcc-12-base/copyright",
+      "copyrightSha256": "da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3"
+    }
+  ],
+  "controlScriptsExecuted": false,
+  "archiveLinksMaterialized": false,
+  "sourceLicensesIncluded": true,
+  "catalogVersion": "23.1.4~20261014054259+0cd28174a1f6",
+  "catalogSha256": "32071e511365e42c3c12cb43e352f047e73a9a046faecbdf290310b88d7c2058",
+  "catalogSource": "resources/lsp/servers.json",
+  "test": "production_catalog_arm64_clangd_installs_resolves_libraries_and_runs_lsp_under_emulation",
+  "loaderList": "\tlinux-vdso.so.1 (0x0000400000810000)\n\tlibclang-cpp.so.23.1 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libclang-cpp23/usr/lib/aarch64-linux-gnu/libclang-cpp.so.23.1 (0x00004000019c0000)\n\tlibLLVM.so.23.1 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libllvm23/usr/lib/aarch64-linux-gnu/libLLVM.so.23.1 (0x0000400005580000)\n\tlibstdc++.so.6 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libstdc++6/usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x000040000e110000)\n\tlibm.so.6 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libc6/lib/aarch64-linux-gnu/libm.so.6 (0x000040000e350000)\n\tlibgcc_s.so.1 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libgcc-s1/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x000040000e3f0000)\n\tlibc.so.6 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libc6/lib/aarch64-linux-gnu/libc.so.6 (0x000040000e420000)\n\t/lib/ld-linux-aarch64.so.1 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/deps/libc6/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1 (0x00007d6054060000)\n\tlibffi.so.8 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libffi8/usr/lib/aarch64-linux-gnu/libffi.so.8 (0x000040000e5e0000)\n\tlibedit.so.2 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libedit2/usr/lib/aarch64-linux-gnu/libedit.so.2 (0x000040000e610000)\n\tlibz3.so.4 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libz3-4/usr/lib/aarch64-linux-gnu/libz3.so.4 (0x000040000e660000)\n\tlibz.so.1 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/zlib1g/lib/aarch64-linux-gnu/libz.so.1 (0x000040000f400000)\n\tlibzstd.so.1 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libzstd1/usr/lib/aarch64-linux-gnu/libzstd.so.1 (0x000040000f440000)\n\tlibxml2.so.2 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libxml2/usr/lib/aarch64-linux-gnu/libxml2.so.2 (0x000040000f510000)\n\tlibtinfo.so.6 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libtinfo6/lib/aarch64-linux-gnu/libtinfo.so.6 (0x000040000f710000)\n\tlibbsd.so.0 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libbsd0/usr/lib/aarch64-linux-gnu/libbsd.so.0 (0x000040000f760000)\n\tlibicuuc.so.70 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libicu70/usr/lib/aarch64-linux-gnu/libicuuc.so.70 (0x000040000f790000)\n\tliblzma.so.5 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/liblzma5/lib/aarch64-linux-gnu/liblzma.so.5 (0x000040000f9a0000)\n\tlibmd.so.0 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libmd0/usr/lib/aarch64-linux-gnu/libmd.so.0 (0x000040000f9f0000)\n\tlibicudata.so.70 => /tmp/kode-rs-u09-arm64-catalog-20261017/isolated: install roots 界/clangd/usr/lib/llvm-23/bin/../../../../deps/libicu70/usr/lib/aarch64-linux-gnu/libicudata.so.70 (0x000040000fa20000)\n",
+  "qualificationDate": "2026-10-17"
+}

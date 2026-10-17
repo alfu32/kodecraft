@@ -104,6 +104,7 @@ pub struct DatabaseTree {
     refresh_button: Rect,
     edit_hits: Vec<(Rect, String)>,
     session_hits: Vec<(Rect, Action)>,
+    object_hits: Vec<(Rect, Action)>,
 }
 impl Drop for DatabaseTree {
     fn drop(&mut self) {
@@ -162,6 +163,7 @@ impl DatabaseTree {
             refresh_button: Rect::default(),
             edit_hits: vec![],
             session_hits: vec![],
+            object_hits: vec![],
         })
     }
     pub fn take_actions(&mut self) -> Vec<Action> {
@@ -345,6 +347,7 @@ impl DatabaseTree {
             category: None,
             object_name: None,
             object_type: None,
+            object_id: None,
         };
         match object.object_type {
             Catalog => {
@@ -375,6 +378,9 @@ impl DatabaseTree {
             _ => {
                 request.object_name = Some(object.name.clone());
                 request.object_type = Some(object.object_type);
+                if object.object_type == Package {
+                    request.object_id = Some(object.id.clone());
+                }
             }
         }
         Some(request)
@@ -543,6 +549,7 @@ impl DatabaseTree {
                 category: None,
                 object_name: None,
                 object_type: None,
+                object_id: None,
             }),
         };
         let Some(request) = request else {
@@ -664,6 +671,7 @@ impl DatabaseTree {
         self.refresh_button = Rect::default();
         self.edit_hits.clear();
         self.session_hits.clear();
+        self.object_hits.clear();
         self.ensure_visible();
         let area = self.area;
         if area.is_empty() {
@@ -737,11 +745,20 @@ impl DatabaseTree {
             let edit = matches!(line.key, NodeKey::Source(_)) && !line.message && area.width >= 18;
             let session = matches!(line.key, NodeKey::Sessions(_) | NodeKey::Session { .. })
                 && area.width >= 14;
+            let package_menu = line.object.as_ref().is_some_and(|object| {
+                object.object_type == DatabaseObjectType::Package
+                    && object
+                        .attributes
+                        .get("sourceAvailable")
+                        .is_some_and(|value| value == "true")
+            }) && area.width >= 18;
             let width = area.width
                 - if edit {
                     7
                 } else if session {
                     6
+                } else if package_menu {
+                    9
                 } else {
                     0
                 };
@@ -769,6 +786,17 @@ impl DatabaseTree {
                 };
                 draw_text(hit, buffer, label, theme.style("lsp-button"));
                 self.session_hits.push((hit, action));
+            }
+            if package_menu {
+                let hit = Rect::new(area.right() - 8, y, 8, 1);
+                draw_text(hit, buffer, "[source]", theme.style("lsp-button"));
+                self.object_hits.push((
+                    hit,
+                    Action::Object {
+                        source: line.key.source().into(),
+                        object: line.object.as_ref().expect("package line").clone(),
+                    },
+                ));
             }
         }
     }
@@ -805,6 +833,15 @@ impl EventTarget for DatabaseTree {
                     return true;
                 }
                 PointerAction::Down(button) => {
+                    if button == MouseButton::Left
+                        && let Some((_, action)) = self
+                            .object_hits
+                            .iter()
+                            .find(|(hit, _)| hit.contains(Position::new(p.x, p.y)))
+                    {
+                        self.actions.push_back(action.clone());
+                        return true;
+                    }
                     if button == MouseButton::Left
                         && let Some((_, action)) = self
                             .session_hits
@@ -898,6 +935,17 @@ impl EventTarget for DatabaseTree {
             Key::Home => self.selected = 0,
             Key::End => self.selected = self.lines.len().saturating_sub(1),
             Key::Enter | Key::Right => self.activate(),
+            Key::Character('m') => {
+                if let Some(line) = self.lines.get(self.selected)
+                    && !line.message
+                    && let Some(object) = &line.object
+                {
+                    self.actions.push_back(Action::Object {
+                        source: line.key.source().into(),
+                        object: object.clone(),
+                    });
+                }
+            }
             Key::Left => {
                 if let Some(line) = self.lines.get(self.selected) {
                     self.expanded.remove(&line.key);

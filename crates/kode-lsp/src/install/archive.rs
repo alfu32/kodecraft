@@ -18,7 +18,7 @@ struct Extract<'a> {
     progress: &'a mut dyn FnMut(u64),
 }
 impl Extract<'_> {
-    fn keep(&mut self, name: &str, directory: bool) -> Result<bool> {
+    fn path(&mut self, name: &str) -> Result<PathBuf> {
         check(self.cancel)?;
         self.files += 1;
         if self.files > MAX_ARCHIVE_FILES {
@@ -28,6 +28,10 @@ impl Extract<'_> {
         if relative == Path::new("installed.json") {
             return Err(invalid("package contains reserved install manifest"));
         }
+        Ok(relative)
+    }
+    fn keep(&mut self, name: &str, directory: bool) -> Result<bool> {
+        let relative = self.path(name)?;
         Ok(self.paths.is_empty()
             || self.paths.iter().any(|path| {
                 relative.starts_with(path) || (directory && path.starts_with(&relative))
@@ -51,6 +55,32 @@ impl Extract<'_> {
             return Ok(());
         }
         let relative = relative_path(name)?;
+        self.write(&relative, directory, mode, size, input)
+    }
+    fn copy(&mut self, copy: &crate::package::ArchiveCopy) -> Result<()> {
+        let target = self.path(&copy.target)?;
+        let source = self.root.join(relative_path(&copy.source)?);
+        let mut input = kode_platform::files::open_regular_file(&source)?;
+        let metadata = input
+            .metadata()
+            .map_err(|e| io("inspect archive copy source", &source, e))?;
+        #[cfg(unix)]
+        let mode = {
+            use std::os::unix::fs::PermissionsExt;
+            Some(metadata.permissions().mode())
+        };
+        #[cfg(not(unix))]
+        let mode = None;
+        self.write(&target, false, mode, Some(metadata.len()), &mut input)
+    }
+    fn write(
+        &mut self,
+        relative: &Path,
+        directory: bool,
+        mode: Option<u32>,
+        size: Option<u64>,
+        input: &mut dyn Read,
+    ) -> Result<()> {
         let target = self.root.join(relative);
         if directory {
             fs::create_dir_all(&target)
@@ -122,7 +152,9 @@ pub(super) fn extract(
         .filter(|name| !name.is_empty())
         .ok_or_else(|| invalid("download URL has no package filename"))?;
     let lower = name.to_ascii_lowercase();
-    let paths = crate::package::extraction(&download.extra)?
+    let plan = crate::package::extraction(&download.extra)?;
+    let paths = plan
+        .as_ref()
         .map(|plan| {
             plan.paths
                 .iter()
@@ -191,6 +223,11 @@ pub(super) fn extract(
     } else {
         let mut file = File::open(package).map_err(|e| io("open raw package", package, e))?;
         extract.entry(name, false, None, None, &mut file)?;
+    }
+    if let Some(plan) = plan {
+        for copy in &plan.copies {
+            extract.copy(copy)?;
+        }
     }
     budget.bytes = extract.bytes;
     budget.files = extract.files;

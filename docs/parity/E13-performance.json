@@ -1,0 +1,348 @@
+{
+  "status": "measured",
+  "profile": "release",
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "architecture": "x86_64",
+  "os": "linux",
+  "cpuModel": "Intel(R) Xeon(R) W-11955M CPU @ 2.60GHz",
+  "unixSeconds": 1792214909,
+  "method": "median of fresh layout builds and repeated render_editor calls; includes 3 layout and 31 render samples per case",
+  "cases": [
+    {
+      "fixture": "empty",
+      "sourceBytes": 0,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 80,
+        "height": 24
+      },
+      "layoutRows": 1,
+      "layoutMedianMs": 0.00047599999999999997,
+      "renderMedianMs": 0.010754000000000001,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "empty",
+      "sourceBytes": 0,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 120,
+        "height": 40
+      },
+      "layoutRows": 1,
+      "layoutMedianMs": 0.000378,
+      "renderMedianMs": 0.023777999999999997,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "empty",
+      "sourceBytes": 0,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 20,
+        "height": 6
+      },
+      "layoutRows": 1,
+      "layoutMedianMs": 0.000315,
+      "renderMedianMs": 0.003584,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "bom",
+      "sourceBytes": 9,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 80,
+        "height": 24
+      },
+      "layoutRows": 2,
+      "layoutMedianMs": 0.000808,
+      "renderMedianMs": 0.012749,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "bom",
+      "sourceBytes": 9,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 120,
+        "height": 40
+      },
+      "layoutRows": 2,
+      "layoutMedianMs": 0.0005589999999999999,
+      "renderMedianMs": 0.026148,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "bom",
+      "sourceBytes": 9,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 20,
+        "height": 6
+      },
+      "layoutRows": 2,
+      "layoutMedianMs": 0.0005700000000000001,
+      "renderMedianMs": 0.006257,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "crlf",
+      "sourceBytes": 10,
+      "sourceLines": 2,
+      "viewport": {
+        "width": 80,
+        "height": 24
+      },
+      "layoutRows": 3,
+      "layoutMedianMs": 0.000709,
+      "renderMedianMs": 0.012783,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "crlf",
+      "sourceBytes": 10,
+      "sourceLines": 2,
+      "viewport": {
+        "width": 120,
+        "height": 40
+      },
+      "layoutRows": 3,
+      "layoutMedianMs": 0.000527,
+      "renderMedianMs": 0.027178,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "crlf",
+      "sourceBytes": 10,
+      "sourceLines": 2,
+      "viewport": {
+        "width": 20,
+        "height": 6
+      },
+      "layoutRows": 3,
+      "layoutMedianMs": 0.0007700000000000001,
+      "renderMedianMs": 0.00614,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "lf",
+      "sourceBytes": 8,
+      "sourceLines": 2,
+      "viewport": {
+        "width": 80,
+        "height": 24
+      },
+      "layoutRows": 3,
+      "layoutMedianMs": 0.000545,
+      "renderMedianMs": 0.012833,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "lf",
+      "sourceBytes": 8,
+      "sourceLines": 2,
+      "viewport": {
+        "width": 120,
+        "height": 40
+      },
+      "layoutRows": 3,
+      "layoutMedianMs": 0.000489,
+      "renderMedianMs": 0.026489,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "lf",
+      "sourceBytes": 8,
+      "sourceLines": 2,
+      "viewport": {
+        "width": 20,
+        "height": 6
+      },
+      "layoutRows": 3,
+      "layoutMedianMs": 0.000455,
+      "renderMedianMs": 0.005992000000000001,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "long-line-100k",
+      "sourceBytes": 100000,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 80,
+        "height": 24
+      },
+      "layoutRows": 1755,
+      "layoutMedianMs": 1.598351,
+      "renderMedianMs": 0.365902,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "long-line-100k",
+      "sourceBytes": 100000,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 120,
+        "height": 40
+      },
+      "layoutRows": 1031,
+      "layoutMedianMs": 0.662024,
+      "renderMedianMs": 1.1173540000000002,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "long-line-100k",
+      "sourceBytes": 100000,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 20,
+        "height": 6
+      },
+      "layoutRows": 5883,
+      "layoutMedianMs": 2.06827,
+      "renderMedianMs": 0.027342,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "many-lines-100k",
+      "sourceBytes": 500000,
+      "sourceLines": 100000,
+      "viewport": {
+        "width": 80,
+        "height": 24
+      },
+      "layoutRows": 100001,
+      "layoutMedianMs": 23.760375,
+      "renderMedianMs": 0.046560000000000004,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "many-lines-100k",
+      "sourceBytes": 500000,
+      "sourceLines": 100000,
+      "viewport": {
+        "width": 120,
+        "height": 40
+      },
+      "layoutRows": 100001,
+      "layoutMedianMs": 20.36909,
+      "renderMedianMs": 0.080746,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "many-lines-100k",
+      "sourceBytes": 500000,
+      "sourceLines": 100000,
+      "viewport": {
+        "width": 20,
+        "height": 6
+      },
+      "layoutRows": 100001,
+      "layoutMedianMs": 15.020851,
+      "renderMedianMs": 0.011181,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "no-final-newline",
+      "sourceBytes": 7,
+      "sourceLines": 2,
+      "viewport": {
+        "width": 80,
+        "height": 24
+      },
+      "layoutRows": 2,
+      "layoutMedianMs": 0.0017000000000000001,
+      "renderMedianMs": 0.01279,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "no-final-newline",
+      "sourceBytes": 7,
+      "sourceLines": 2,
+      "viewport": {
+        "width": 120,
+        "height": 40
+      },
+      "layoutRows": 2,
+      "layoutMedianMs": 0.000479,
+      "renderMedianMs": 0.025058999999999998,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "no-final-newline",
+      "sourceBytes": 7,
+      "sourceLines": 2,
+      "viewport": {
+        "width": 20,
+        "height": 6
+      },
+      "layoutRows": 2,
+      "layoutMedianMs": 0.00048699999999999997,
+      "renderMedianMs": 0.005624,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "unicode",
+      "sourceBytes": 14,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 80,
+        "height": 24
+      },
+      "layoutRows": 2,
+      "layoutMedianMs": 0.000791,
+      "renderMedianMs": 0.013427999999999999,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "unicode",
+      "sourceBytes": 14,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 120,
+        "height": 40
+      },
+      "layoutRows": 2,
+      "layoutMedianMs": 0.000606,
+      "renderMedianMs": 0.025120999999999997,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    },
+    {
+      "fixture": "unicode",
+      "sourceBytes": 14,
+      "sourceLines": 1,
+      "viewport": {
+        "width": 20,
+        "height": 6
+      },
+      "layoutRows": 3,
+      "layoutMedianMs": 0.000709,
+      "renderMedianMs": 0.007828,
+      "layoutSamples": 3,
+      "renderSamples": 31
+    }
+  ]
+}

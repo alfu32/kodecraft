@@ -1,0 +1,70 @@
+{
+  "status": "passed",
+  "mode": "native-oracle-helper",
+  "tuiQualified": false,
+  "product": "Oracle",
+  "productVersion": "Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free\nVersion 23.26.3.0.0",
+  "driverVersion": "23.26.3.0.0",
+  "driverClasspathDigest": "75c49e367ee1328a61db4d7d0f4153328458e374b872f4cdbf9d76da888abff9",
+  "helperSha256": "35328cbed66ea0aeb33ecabc3afd1f84e175b757a6d9dd96ffd09b14563c4cc6",
+  "packageListing": true,
+  "exactUnicodeWildcardName": true,
+  "schemaOwnershipVerified": true,
+  "overloadedFunctions": 2,
+  "procedures": 1,
+  "distinctMemberIds": true,
+  "ddlDocuments": [
+    {
+      "kind": "DDL",
+      "utf8Bytes": 212,
+      "sha256": "1b6f0c2bf4f98f73663009622de7b97d781d13aadc70593a6632f717bdcb2f20"
+    },
+    {
+      "kind": "DDL",
+      "utf8Bytes": 316,
+      "sha256": "fb72fdfcf837ff9723523701488f04d4019ccf26c620a63ae1e17affdff0c77f"
+    }
+  ],
+  "sourceContentsVerified": true,
+  "sourceContextRevision": 0,
+  "ownedPackageRemoved": true,
+  "helperReaped": true,
+  "durationSeconds": 7.89,
+  "rustDatabaseClient": {
+    "status": "passed",
+    "test": "actual_vendor_package_source_round_trip_through_rust_metadata_client",
+    "packageListing": true,
+    "packageMembers": true,
+    "sourceContextRevisionVerified": true,
+    "sourceBodyVerified": true,
+    "fixtureRemovedAfterRefresh": true,
+    "liveLog": "rust-oracle-live.log",
+    "verifiedOn": "2026-10-17",
+    "helperSha256": "35328cbed66ea0aeb33ecabc3afd1f84e175b757a6d9dd96ffd09b14563c4cc6"
+  },
+  "tuiPackageSourceAction": {
+    "status": "passed",
+    "test": "actual_vendor_package_source_menu_opens_readonly_editor_and_refreshes_after_cleanup",
+    "selectedSchemaVerified": true,
+    "sourceMenuActionDispatched": true,
+    "keyboardPackageMenuDispatched": true,
+    "visibleSourceButtonFixtureVerified": true,
+    "visibleSourceButtonNativeVerified": true,
+    "editorFocused": true,
+    "actualSpecificationAndBodyVerified": true,
+    "readOnlyEditor": true,
+    "saveDisabled": true,
+    "executeDisabled": true,
+    "ownedFixtureRemoved": true,
+    "liveLog": "tui-oracle-pointer-cells-20261017.log",
+    "verifiedOn": "2026-10-17",
+    "settingsFocusBarrierVerified": true,
+    "metadataRefreshBarrierVerified": true,
+    "helperSha256": "35328cbed66ea0aeb33ecabc3afd1f84e175b757a6d9dd96ffd09b14563c4cc6",
+    "escapeCancellationBarrierVerified": true,
+    "lateCancelledSourceDidNotReplaceEditor": true,
+    "editorFocusPreservedAfterCancellation": true
+  },
+  "helperVerifiedOn": "2026-10-17",
+  "tuiQualificationScope": "package-source-action-only; not complete U12 acceptance"
+}

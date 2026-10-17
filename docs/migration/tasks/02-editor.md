@@ -235,9 +235,9 @@ RestEditorView and RestKeyValueDialog integration sites.
 
 ## E13 — Complete editor interaction qualification
 
-**Status:** todo
+**Status:** suspend
 
-**Depends:** E09, E10, E11, E12, W04, W05, P03, D08, R07, G03, U01, U04, U06, U07.
+**Depends:** E09, E10, E11, E12, W04, W05, P03, D08, R07, G03, U01, U04, U06, U07, U13.
 **Owns:** `kode-tui/tests/editor_interactions/`, `docs/parity/editor-results.md`.
 **Read:** all UX rows and original editor/input/search/highlight/embedded-editor tests.
 
@@ -246,15 +246,20 @@ RestEditorView and RestKeyValueDialog integration sites.
    effects, focus, view/cell maps and cells, not screenshots alone.
 2. Run identical sequences through every real editor host. Exercise popup/search
    priority against host shortcuts, stale loads, resize, and background publications.
+   UX-106 now has SQL and REST Ctrl+Enter/find-all replays; extend this across the
+   remaining focused interactions and real host surfaces.
 3. Run PTY/manual terminal matrix, record performance on the fixture corpus, and
    close every UX row with evidence or a named blocking defect.
 
-**Open qualification defect (U09 terminal replay):** selecting Settings before the
-initial file load completes can lose focus when `install_main` installs the editor.
-Cover delayed main/image/hex opens against later panel/modal focus changes and
-retain the user's newer focus choice. U09's install replay waits for the initial
-file to render; it does not qualify this startup race.
+**Resolved qualification finding (U09 terminal replay):** selecting Settings before
+the initial file load completed could lose focus when `install_main` installed the
+editor. Main text, image and hex installation now transfer focus only if it still
+matches the focus captured when the open was requested. A delayed-startup replay
+verifies all three viewer kinds preserve later Settings panel or Project Search
+modal focus. The remaining
+cross-host, popup/search priority, stale-load, resize, background-publication,
+terminal and performance qualification is tracked in [E13 evidence](../../parity/E13.md).
 
-**Accept:** all UX-001–110 covered; no implemented Kotlin behavior missing and no
+**Accept:** all UX-001–117 covered; no implemented Kotlin behavior missing and no
    silent UX substitution. Rendering/typing remains responsive while Git, SQL,
    REST and indexing jobs run. E13 is a release blocker, not optional polish.

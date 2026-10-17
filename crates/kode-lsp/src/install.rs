@@ -6,7 +6,10 @@ use crate::{
     discovery::DiscoveryOptions,
 };
 use kode_core::{DomainError, RequestId, Result};
-use kode_platform::jobs::CancellationToken;
+use kode_platform::{
+    jobs::CancellationToken,
+    process::{ProcessFactory, SystemProcessFactory},
+};
 use sha2::{Digest, Sha256};
 use std::{
     fs::{self, File, OpenOptions},
@@ -227,7 +230,17 @@ impl InstallJob {
         &self,
         fetcher: &dyn PackageFetcher,
         cancel: &CancellationToken,
+        progress: impl FnMut(InstallProgress),
+    ) -> Result<InstallReceipt> {
+        self.run_with_process_factory(fetcher, cancel, progress, &SystemProcessFactory)
+    }
+    /// Same transaction with an explicit managed process factory, for platform qualification.
+    pub fn run_with_process_factory(
+        &self,
+        fetcher: &dyn PackageFetcher,
+        cancel: &CancellationToken,
         mut progress: impl FnMut(InstallProgress),
+        factory: &dyn ProcessFactory,
     ) -> Result<InstallReceipt> {
         validate_id(&self.entry.id)?;
         check(cancel)?;
@@ -252,7 +265,7 @@ impl InstallJob {
         let extraction = crate::package::extraction(&download.extra)?;
         if let Some(requirement) = plan.as_ref().and_then(|plan| plan.runtime.as_ref()) {
             let program = self.options.runtime_program(requirement)?;
-            crate::runtime::verify(&program, requirement, cancel)?;
+            crate::runtime::verify_with_factory(&program, requirement, cancel, factory)?;
         }
         let _lock = InstallLock::acquire(&self.options.install_root)?;
         let destination = self.options.directory(&self.entry.id)?;
@@ -443,7 +456,14 @@ impl InstallJob {
         staged_options.configured_commands.clear();
         let mut staged_entry = self.entry.clone();
         staged_entry.id = "contents".into();
-        staged_options.resolve_command(&staged_entry, Some(&manifest))?;
+        let staged_command = staged_options.resolve_command(&staged_entry, Some(&manifest))?;
+        if plan
+            .as_ref()
+            .is_some_and(|plan| plan.launcher == Some(crate::package::Launcher::Gnuelf))
+        {
+            crate::gnuelf::verify(&staged_command, cancel, factory)?;
+            crate::gnuelf::prepare(staged_command)?;
+        }
         let encoded = serde_json::to_vec_pretty(&manifest).map_err(|e| invalid(e.to_string()))?;
         if encoded.len() > crate::catalog::MAX_MANIFEST_BYTES {
             return Err(invalid(

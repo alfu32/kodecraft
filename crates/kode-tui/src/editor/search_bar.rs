@@ -140,10 +140,17 @@ impl SearchBar {
         std::mem::take(&mut self.effects)
     }
     pub fn open(&mut self, snapshot: &TextSnapshot, selected: &str) {
+        let query = if !selected.is_empty() {
+            escape_literal(selected)
+        } else if self.document == Some(snapshot.id) {
+            self.find.value.clone()
+        } else {
+            String::new()
+        };
         self.visible = true;
         self.document = Some(snapshot.id);
         self.focused = SearchField::Find;
-        self.find = TextField::new(escape_literal(selected));
+        self.find = TextField::new(query);
         self.find.framed = false;
         self.pending_action = None;
         self.pending_paste = None;

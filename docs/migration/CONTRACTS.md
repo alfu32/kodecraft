@@ -497,14 +497,19 @@ system decompressor dependency.
 
 An optional versioned `kodeRsExtract` plan selects at most 64 normalized relative
 path prefixes. Every entry still undergoes path and count checks; selected links
-remain forbidden. Unselected aliases may be skipped, never materialized. Devices
+remain forbidden. Unselected aliases may be skipped. An explicit `copies` list
+may create up to 64 regular files from already extracted regular files in the
+same archive root, without reading archive link targets. Copies reject unsafe,
+reserved, duplicate or existing targets and share extraction/entry budgets;
+missing or nonregular sources abort staging and retain the old install. Devices
 and sparse entries remain forbidden throughout. Dependencies have independent
 optional `extract` plans, so a primary archive's selection cannot filter its
 dependencies. Extraction plans are retained in manifests, and serialization above
 the 128 KiB reader bound is refused before publication, retaining the old install.
 
 U09 adds the versioned `kodeRsPackage` plan for checksum-pinned dependency archives,
-external Node/Java version requirements and the JDT launcher. Known plans validate
+external Node/Java version requirements, the JDT launcher and an isolated GNU ELF
+launcher. Known plans validate
 strictly; other catalog fields remain lossless. Dependencies share the primary
 archive's combined download/extraction/entry limits, never replace existing staged
 files, and publish in the same transaction. No package manager or lifecycle script
@@ -516,6 +521,18 @@ command also overrides its retained recipe; an installer command snapshot identi
 that change. JDT invokes Java directly and
 copies its configuration to a bounded, project-specific cache with separate data,
 leaving installed templates unchanged.
+
+The GNU ELF launcher invokes a bundled loader with an explicit library path and
+disabled system cache. Before publication and again before launch, a managed,
+cancellable five-second `--list` probe resolves the shared libraries, with server
+arguments removed from list mode. Failed checks, absent mappings or libraries
+outside the private install reject preparation. This checks the closure without
+running the server's main function. Bundled resource directories validate inside
+the staged install and become absolute only when preparing the launch command,
+so compiler working-directory changes cannot break header lookup; manifests
+retain relative paths. Explicit process factories support emulation
+qualification through the same transaction and launch preparation; emulation
+evidence is distinguished from native hardware qualification.
 
 LSP settings actions are acknowledged F03 jobs. Install/removal/lifecycle work is
 critical; its own cancel token aborts preparation, but a started publication finishes

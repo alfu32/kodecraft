@@ -26,7 +26,13 @@ impl Drop for Pending {
 pub(super) fn control(method: &str) -> bool {
     matches!(
         method,
-        "hello" | "ping" | "shutdown" | "query.cancel" | "driver.cancel" | "connection.close"
+        "hello"
+            | "ping"
+            | "shutdown"
+            | "query.cancel"
+            | "driver.cancel"
+            | "connection.close"
+            | "metadata.cancel"
     )
 }
 impl Client {

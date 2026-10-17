@@ -1,6 +1,10 @@
 use crossterm::event::MouseButton;
 use kode_core::{
-    DocumentId, DocumentOrigin, DomainError, JobTag,
+    DocumentId, DocumentOrigin, DomainError, JobTag, Result,
+    intelligence::{
+        CompletionItem, DocumentSnapshot, HighlightSpan, IntelligenceProvider, IntelligenceRequest,
+        NavigationTarget,
+    },
     services::{Clipboard, DocumentIo},
 };
 use kode_platform::{
@@ -40,6 +44,21 @@ struct FakeClock(AtomicU64);
 impl Clock for FakeClock {
     fn now_millis(&self) -> u64 {
         self.0.load(Ordering::SeqCst)
+    }
+}
+struct EmptyIntelligenceProvider;
+impl IntelligenceProvider for EmptyIntelligenceProvider {
+    fn definitions(&self, _: &IntelligenceRequest) -> Result<Vec<NavigationTarget>> {
+        Ok(vec![])
+    }
+    fn references(&self, _: &IntelligenceRequest) -> Result<Vec<NavigationTarget>> {
+        Ok(vec![])
+    }
+    fn completions(&self, _: &IntelligenceRequest) -> Result<Vec<CompletionItem>> {
+        Ok(vec![])
+    }
+    fn highlights(&self, _: &DocumentSnapshot) -> Result<Vec<HighlightSpan>> {
+        Ok(vec![])
     }
 }
 fn key(key: Key, ctrl: bool) -> InputEvent {
@@ -344,6 +363,96 @@ fn preview_edits_refresh_matches_after_debounce_and_ctrl_s_saves_while_fields_ha
     assert_eq!(
         documents.document(id).unwrap().snapshot().text().as_ref(),
         "prefix needle first\nneedle second\n"
+    );
+}
+
+#[test]
+fn modified_ctrl_click_in_nested_preview_reaches_navigation_at_global_cell() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    let text = "needle + needle\n";
+    put(root, "src/one.rs", text);
+    let mut documents = EditorDocuments::default();
+    let previous = FocusId(999);
+    let mut focus = FocusState {
+        focused: Some(previous),
+        ..Default::default()
+    };
+    let clipboard = Arc::new(ClipboardService::internal());
+    let clock = Arc::new(FakeClock::default());
+    let mut dialog = dialog(
+        root,
+        &documents,
+        &mut focus,
+        clipboard.clone(),
+        clock.clone(),
+    );
+    run_search(&mut dialog);
+    attach_selected(&mut dialog, &mut documents, &mut focus, clipboard, clock);
+    paint(&mut dialog, &documents, &focus);
+
+    let view = dialog.editor.as_mut().unwrap();
+    view.host.intelligence = Some(Arc::new(EmptyIntelligenceProvider));
+    let geometry = view.geometry(&documents, dialog.geometry.editor).unwrap();
+    let layout = view
+        .input
+        .layout(
+            documents.document(view.document_id()).unwrap(),
+            kode_tui::editor::input::InputViewport {
+                geometry,
+                folds: &[],
+            },
+        )
+        .unwrap();
+    let (row, column) = layout.position_to_cell(kode_core::ByteOffset(0)).unwrap();
+    let target = Position::new(
+        geometry.text.x + column as u16,
+        geometry.text.y + row as u16,
+    );
+    assert_eq!(
+        geometry.hit_test(&layout, 0, target.x, target.y),
+        kode_tui::editor::render::EditorHit::Text(kode_core::ByteOffset(0))
+    );
+    dialog.take_work();
+    let event = InputEvent::Pointer(PointerInput {
+        x: target.x,
+        y: target.y,
+        action: PointerAction::Down(MouseButton::Left),
+        modifiers: Modifiers {
+            ctrl: true,
+            alt: true,
+            shift: true,
+            meta: true,
+        },
+    });
+    assert!(dialog.dispatch(&event, &mut documents, &mut focus).unwrap());
+    assert!(dialog.editor.as_ref().unwrap().navigation.enabled);
+    assert_eq!(dialog.focused, SearchFocus::Editor);
+    assert_eq!(
+        focus.focused,
+        Some(dialog.editor.as_ref().unwrap().input.id)
+    );
+    let works = dialog.take_work();
+    let job = works
+        .into_iter()
+        .find_map(|work| match work {
+            ProjectSearchWork::Editor {
+                work: EditorWork::Navigation(job),
+                ..
+            } => Some(job),
+            _ => None,
+        })
+        .expect("nested editor receives the modified Ctrl-click");
+    assert_eq!(job.identifier.name, "needle");
+    assert_eq!(job.identifier.range.start, kode_core::ByteOffset(0));
+    assert_eq!(
+        documents
+            .document(dialog.editor.as_ref().unwrap().document_id())
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        text
     );
 }
 #[test]

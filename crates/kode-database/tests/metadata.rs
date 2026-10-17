@@ -91,6 +91,13 @@ fn count(factory: &FakeJava) -> usize {
         .filter(|line| *line == "metadata.list")
         .count()
 }
+fn cancel_count(factory: &FakeJava) -> usize {
+    std::fs::read_to_string(factory.pid.with_extension("requests"))
+        .unwrap_or_default()
+        .lines()
+        .filter(|line| *line == "metadata.cancel")
+        .count()
+}
 async fn wait_count(factory: &FakeJava, expected: usize) {
     tokio::time::timeout(Duration::from_secs(3), async {
         while count(factory) < expected {
@@ -316,6 +323,13 @@ async fn cancelled_or_dropped_waits_never_cache_and_shutdown_joins_native_work()
             cancel.cancel();
             assert_eq!(task.await.unwrap().unwrap_err().kind, Failure::Cancelled);
         }
+        tokio::time::timeout(Duration::from_secs(3), async {
+            while cancel_count(&factory) == 0 {
+                tokio::time::sleep(Duration::from_millis(5)).await;
+            }
+        })
+        .await
+        .unwrap();
         metadata.shutdown().await;
         assert!(metadata.cached("metadata-source", &blocked).is_none());
         connections.shutdown().await.unwrap();

@@ -335,11 +335,7 @@ impl AppState {
                                 .find(|source| source.id == console.state.data_source_id)
                         })
                         .map_or(kode_database::statement::Dialect::Standard, |source| {
-                            if matches!(source.driver.id.as_str(), "mysql" | "mariadb") {
-                                kode_database::statement::Dialect::MySql
-                            } else {
-                                kode_database::statement::Dialect::Standard
-                            }
+                            kode_database::statement::Dialect::from_driver_id(&source.driver.id)
                         });
                     self.work.push(AppWork::SqlHighlight {
                         tag,

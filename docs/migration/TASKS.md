@@ -1,6 +1,6 @@
 # Task index
 
-79 implementation tasks. Status is recorded in each task definition and synchronized with [the dashboard](../../DASHBOARD.md).
+80 implementation tasks. Status is recorded in each task definition and synchronized with [the dashboard](../../DASHBOARD.md).
 
 Pick a task only when all its listed prerequisites have implementation evidence. The card owns its outputs; shared contracts are in [CONTRACTS.md](CONTRACTS.md). Source and test ownership are in [SOURCE-MAP.tsv](SOURCE-MAP.tsv) and [TEST-MAP.tsv](TEST-MAP.tsv).
 
@@ -25,7 +25,7 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | E10 | [Definitions, usages and hover preview](tasks/02-editor.md) | E05, E06, F03 | [done](../parity/E10.md) |
 | E11 | [Highlight overlays and edit remapping](tasks/02-editor.md) | E05, E07, L02, L09 | [done](../parity/E11.md) |
 | E12 | [Reusable editor hosts and virtual/read-only documents](tasks/02-editor.md) | E04, E07, E08, F05 | [done](../parity/E12.md) |
-| E13 | [Complete editor interaction qualification](tasks/02-editor.md) | E09, E10, E11, E12, W04, W05, P03, D08, R07, G03, U01, U04, U06, U07 | todo |
+| E13 | [Complete editor interaction qualification](tasks/02-editor.md) | E09, E10, E11, E12, W04, W05, P03, D08, R07, G03, U01, U04, U06, U07, U13 | [suspend](../parity/E13.md) |
 | W01 | [Source roots, exclusions and project scanning](tasks/03-workspace.md) | F03 | [done](../parity/W01.md) |
 | W02 | [File tree, file actions, refresh and project panel](tasks/03-workspace.md) | W01, F05, E04 | [done](../parity/W02.md) |
 | W03 | [Legacy session import and Rust persistence](tasks/03-workspace.md) | E03, F03 | [done](../parity/W03.md) |
@@ -73,8 +73,8 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | D09 | [End-to-end external JDBC qualification](tasks/09-database.md) | D08, W03, W05 | [done](../parity/D09.md) |
 | Z01 | [Shell suspension and browser terminal serve mode](tasks/10-delivery.md) | W05, F04, F03 | [done](../parity/Z01.md) |
 | Z02 | [Settings, help, about and operational status](tasks/10-delivery.md) | W05, L09, P01, D07, F05 | [done](../parity/Z02.md) |
-| Z03 | [Reproducible build and distribution](tasks/10-delivery.md) | Z01, Z02, D02, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12 | [todo](../parity/Z03.md) |
-| Z04 | [Full functional parity and release qualification](tasks/10-delivery.md) | E13, L12, W05, V02, V03, G03, D09, R08, R10, Z03, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12 | todo |
+| Z03 | [Reproducible build and distribution](tasks/10-delivery.md) | Z01, Z02, D02, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12, U13 | [suspend](../parity/Z03.md) |
+| Z04 | [Full functional parity and release qualification](tasks/10-delivery.md) | E13, L12, W05, V02, V03, G03, D09, R08, R10, Z03, U01, U02, U03, U04, U05, U06, U07, U08, U09, U10, U11, U12, U13 | suspend |
 | U01 | [Finalized file and project search shortcuts](tasks/11-uat.md) | Z02, E07, W04 | [done](../parity/U01.md) |
 | U02 | [Readable database errors and diagnostics](tasks/11-uat.md) | D09, Z02 | [done](../parity/U02.md) |
 | U03 | [Optional downloadable Java runtime artifact](tasks/11-uat.md) | D09 | [done](../parity/U03.md) |
@@ -83,10 +83,11 @@ First task: **F01**. Then F02 establishes contracts, and F03 establishes runtime
 | U06 | [Word selection with double-click and Alt+double-click](tasks/11-uat.md) | U04 | [done](../parity/U06.md) |
 | U07 | [File-tree picker buttons for path fields](tasks/11-uat.md) | W05, D07, R07 | [done](../parity/U07.md) |
 | U08 | [Project-relative paths in the open-file list](tasks/11-uat.md) | W05, W03 | [done](../parity/U08.md) |
-| U09 | [Repair language server installations](tasks/11-uat.md) | P01, P02, Z02 | [in-progress](../parity/U09.md) |
+| U09 | [Repair language server installations](tasks/11-uat.md) | P01, P02, Z02 | [suspend](../parity/U09.md) |
 | U10 | [Panel shortcuts follow visual tab order](tasks/11-uat.md) | Z02 | [done](../parity/U10.md) |
 | U11 | [Connection-type JDBC URL template dropdown](tasks/11-uat.md) | D07 | [done](../parity/U11.md) |
-| U12 | [Database package listing and DDL](tasks/11-uat.md) | D09 | todo |
+| U12 | [Database package listing and DDL](tasks/11-uat.md) | D09 | [suspend](../parity/U12.md) |
+| U13 | [Oracle refresh and SQL statement terminators](tasks/11-uat.md) | D09 | [done](../parity/U13.md) |
 
 ## Execution checkpoints
 

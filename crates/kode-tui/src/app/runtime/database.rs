@@ -446,6 +446,7 @@ impl super::AppRuntime {
                     Operation::Close(source)=>{database.connections.close(&source,&cancel).await.map_err(|error|DomainError::Unsupported(error.to_string()))?;Report::Closed},
                     Operation::Test(draft)=>{let(result,warning)=database.test(draft,&cancel).await?;Report::Test{result,warning}},
                     Operation::Metadata(load)=>{if load.refresh{database.metadata.refresh_all(load.key.source());}Report::Metadata(database.metadata.introspect(load.key.source(),load.request,load.refresh,&cancel).await.map_err(|error|connection_error(error.into()))?)},
+                    Operation::Source{source,request,..}=>Report::Source(database.metadata.source(&source,request,&cancel).await.map_err(|error|connection_error(error.into()))?),
                     Operation::Resolve{spec,progress}=>Report::Installed(database.installer.resolve(&spec,progress,&cancel).await),
                     Operation::JavaRuntime{progress}=>Report::JavaRuntime(database.install_java_runtime(&cancel,progress).await?),
                     Operation::Recents(driver)=>Report::Recents(database.recents(&driver).await?),

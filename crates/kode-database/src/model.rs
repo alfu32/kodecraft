@@ -267,6 +267,10 @@ pub struct DatabaseCapabilities {
     pub procedures: bool,
     pub functions: bool,
     pub types: bool,
+    pub packages: bool,
+    pub package_members: bool,
+    pub package_source: bool,
+    pub package_ddl: bool,
     pub transactions: bool,
     pub savepoints: bool,
 }
@@ -280,6 +284,10 @@ impl Default for DatabaseCapabilities {
             procedures: true,
             functions: true,
             types: true,
+            packages: false,
+            package_members: false,
+            package_source: false,
+            package_ddl: false,
             transactions: true,
             savepoints: true,
         }
@@ -308,6 +316,9 @@ pub struct MetadataRequest {
     pub object_name: Option<String>,
     #[serde(default)]
     pub object_type: Option<DatabaseObjectType>,
+    /// Provider-specific stable identity for objects with multiple versions.
+    #[serde(default)]
+    pub object_id: Option<String>,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -317,6 +328,26 @@ pub struct MetadataResult {
     pub capabilities: Option<DatabaseCapabilities>,
     #[serde(default)]
     pub message: Option<String>,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum MetadataSourceKind {
+    Ddl,
+    Source,
+    SqlSource,
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MetadataSourceDocument {
+    pub title: String,
+    pub kind: MetadataSourceKind,
+    pub text: String,
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MetadataSourceResult {
+    pub context_revision: u64,
+    pub documents: Vec<MetadataSourceDocument>,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

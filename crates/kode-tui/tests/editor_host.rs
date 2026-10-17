@@ -1,7 +1,8 @@
 use crossterm::event::MouseButton;
+use kode_core::intelligence::CompletionItem;
 use kode_core::{
-    ByteOffset, DocumentId, DocumentOrigin, DomainError, JobTag, RequestId, Result, TextRange,
-    WorkspaceGeneration,
+    ByteOffset, DocumentId, DocumentOrigin, DomainError, JobTag, RequestId, Result, Selection,
+    TextRange, WorkspaceGeneration,
     commands::{EditorCommand, Movement},
     document::Document,
     editor::search::scan,
@@ -21,6 +22,7 @@ use kode_tui::{
         },
         loading::{prepare, schedule_save},
         popups::completion::{HostCompletionProvider, HostSuggestion, prepare as completions},
+        render::EditorHit,
     },
     focus::FocusState,
     input::terminal::*,
@@ -154,6 +156,477 @@ fn text(documents: &EditorDocuments, id: DocumentId) -> String {
         .to_string()
 }
 const AREA: Rect = Rect::new(15, 7, 80, 12);
+
+#[test]
+fn real_host_headers_and_gutters_track_metadata_dirty_state_and_resize() {
+    let (clipboard, _) = clipboard();
+    let mut documents = EditorDocuments::default();
+    for role in [
+        HostRole::File,
+        HostRole::CommitMessage,
+        HostRole::ProjectSearch,
+        HostRole::Sql,
+        HostRole::RestBody,
+        HostRole::RestHeaders,
+        HostRole::Environment,
+        HostRole::Response,
+        HostRole::RawRequest,
+        HostRole::Historical,
+    ] {
+        let mut descriptor = descriptor(role, &format!("header-{role:?}"));
+        descriptor.mime = Some("text/x-test".into());
+        descriptor.grammar = "syntax".into();
+        descriptor.language = Some("rust".into());
+        let label = if matches!(role, HostRole::File | HostRole::ProjectSearch) {
+            "/project/normal.rs".to_string()
+        } else {
+            descriptor.label.clone()
+        };
+        let id = if matches!(role, HostRole::File | HostRole::ProjectSearch) {
+            documents
+                .insert(
+                    Document::new(
+                        DocumentId::fresh().unwrap(),
+                        DocumentOrigin::File(PathBuf::from(&label)),
+                        Some("rust".into()),
+                        "one\ntwo",
+                    ),
+                    &descriptor,
+                    WorkspaceGeneration(1),
+                    None,
+                )
+                .unwrap()
+        } else {
+            documents
+                .create_virtual(&descriptor, WorkspaceGeneration(1), "one\ntwo")
+                .unwrap()
+        };
+        let mut view = EditorView::new(
+            id,
+            &documents,
+            QueuedEditorHost::new(descriptor.clone()),
+            WorkspaceGeneration(1),
+            clipboard.clone(),
+            Arc::new(ClockZero),
+        )
+        .unwrap();
+        let mut focus = focus(&view);
+        let editable = !descriptor.is_read_only();
+
+        for area in [Rect::new(2, 3, 100, 14), Rect::new(1, 1, 22, 7)] {
+            let mut buffer = Buffer::empty(area);
+            view.render(
+                &documents,
+                &focus,
+                area,
+                &mut buffer,
+                &Theme::compiled(),
+                &[],
+            )
+            .unwrap();
+            let geometry = view.geometry(&documents, area).unwrap();
+            let header: String = (geometry.header.x..geometry.header.right())
+                .map(|x| buffer[(x, geometry.header.y)].symbol())
+                .collect();
+            assert!(header.starts_with(' '), "{role:?}");
+            assert!(header.contains("[syntax]"), "{role:?} {area:?}");
+            assert!(
+                header.contains(&label[..label.len().min(8)]),
+                "{role:?} {area:?}"
+            );
+            assert_eq!(
+                buffer[(geometry.gutter.x, geometry.gutter.y)].symbol(),
+                "1",
+                "{role:?}"
+            );
+            assert_eq!(
+                buffer[(geometry.gutter.x, geometry.gutter.y + 1)].symbol(),
+                "2",
+                "{role:?}"
+            );
+        }
+
+        let edit = view.dispatch(
+            &plain(Key::Character('X')),
+            &mut documents,
+            &mut focus,
+            Rect::new(2, 3, 100, 14),
+        );
+        if editable {
+            assert!(edit.is_ok(), "{role:?}: {edit:?}");
+        } else {
+            assert!(matches!(edit, Err(DomainError::ReadOnly)), "{role:?}");
+        }
+        assert_eq!(
+            documents.document(id).unwrap().is_dirty(),
+            editable,
+            "{role:?}"
+        );
+        let area = Rect::new(2, 3, 100, 14);
+        let mut buffer = Buffer::empty(area);
+        view.render(
+            &documents,
+            &focus,
+            area,
+            &mut buffer,
+            &Theme::compiled(),
+            &[],
+        )
+        .unwrap();
+        let geometry = view.geometry(&documents, area).unwrap();
+        let header: String = (geometry.header.x..geometry.header.right())
+            .map(|x| buffer[(x, geometry.header.y)].symbol())
+            .collect();
+        assert!(
+            header.starts_with(if editable { '*' } else { ' ' }),
+            "{role:?}"
+        );
+        assert!(
+            header.contains(&format!("{label} [text/x-test] · rust")),
+            "{role:?}"
+        );
+        assert_eq!(
+            buffer[(geometry.gutter.x, geometry.gutter.y)].symbol(),
+            "1",
+            "{role:?}"
+        );
+        assert_eq!(
+            buffer[(geometry.gutter.x, geometry.gutter.y + 1)].symbol(),
+            "2",
+            "{role:?}"
+        );
+    }
+}
+
+#[test]
+fn real_host_overlay_priority_keeps_selection_search_transient_and_warning_visible() {
+    use kode_tui::editor::render::OverlaySpan;
+    use ratatui::style::{Color, Style};
+
+    let (clipboard, _) = clipboard();
+    let mut documents = EditorDocuments::default();
+    let source = "abcde\nabcde";
+    let theme = Theme::compiled();
+    for role in [
+        HostRole::File,
+        HostRole::CommitMessage,
+        HostRole::ProjectSearch,
+        HostRole::Sql,
+        HostRole::RestBody,
+        HostRole::RestHeaders,
+        HostRole::Environment,
+        HostRole::Response,
+        HostRole::RawRequest,
+        HostRole::Historical,
+    ] {
+        let mut view = virtual_view(
+            role,
+            &format!("overlay-{role:?}"),
+            source,
+            &mut documents,
+            clipboard.clone(),
+        );
+        let mut focus = focus(&view);
+        view.dispatch(&ctrl('f'), &mut documents, &mut focus, AREA)
+            .unwrap();
+        view.take_work();
+        view.dispatch(
+            &InputEvent::Paste("bc".into()),
+            &mut documents,
+            &mut focus,
+            AREA,
+        )
+        .unwrap();
+        view.dispatch(&execute(), &mut documents, &mut focus, AREA)
+            .unwrap();
+        let (tag, snapshot, query) = view
+            .take_work()
+            .into_iter()
+            .filter_map(|work| match work {
+                EditorWork::Search {
+                    tag,
+                    snapshot,
+                    query,
+                } => Some((tag, snapshot, query)),
+                _ => None,
+            })
+            .find(|(_, _, query)| query == "bc")
+            .expect("Find All schedules the current search");
+        view.complete_search(tag, scan(&snapshot, &query, || false), &mut documents, AREA)
+            .unwrap();
+        assert_eq!(
+            view.search.results.report.as_ref().unwrap().matches.len(),
+            2
+        );
+        view.input.state.caret.selection = Selection {
+            anchor: ByteOffset(1),
+            head: ByteOffset(3),
+        };
+        view.host.warnings = vec![kode_core::LineIndex(1)];
+        view.host.transient = Some(TransientHighlight {
+            revision: documents.document(view.document_id()).unwrap().revision(),
+            range: TextRange {
+                start: ByteOffset(3),
+                end: ByteOffset(4),
+            },
+        });
+        let overlays = [OverlaySpan {
+            range: TextRange {
+                start: ByteOffset(0),
+                end: ByteOffset(source.len()),
+            },
+            priority: 20,
+            style: Style::default().fg(Color::Yellow),
+        }];
+        let mut buffer = Buffer::empty(AREA);
+        view.render(&documents, &focus, AREA, &mut buffer, &theme, &overlays)
+            .unwrap();
+        let geometry = view.geometry(&documents, AREA).unwrap();
+        let document = documents.document(view.document_id()).unwrap();
+        let layout = view
+            .input
+            .layout(
+                document,
+                kode_tui::editor::input::InputViewport {
+                    geometry,
+                    folds: &[],
+                },
+            )
+            .unwrap();
+        let cell = |byte| {
+            let (row, column) = layout.position_to_cell(ByteOffset(byte)).unwrap();
+            &buffer[(
+                geometry.text.x + column as u16,
+                geometry.text.y + row as u16,
+            )]
+        };
+        assert_eq!(
+            cell(1).bg,
+            theme.style("code-selection").bg.unwrap(),
+            "{role:?}"
+        );
+        assert_eq!(
+            cell(3).bg,
+            theme.style("code-search-active").bg.unwrap(),
+            "{role:?}"
+        );
+        assert_eq!(cell(4).fg, Color::Yellow, "{role:?}");
+        assert_eq!(
+            cell(6).bg,
+            theme.style("code-search-active").bg.unwrap(),
+            "{role:?}"
+        );
+        assert_eq!(
+            cell(7).bg,
+            theme.style("code-search-match").bg.unwrap(),
+            "{role:?}"
+        );
+        assert_eq!(text(&documents, view.document_id()), source, "{role:?}");
+    }
+}
+
+#[test]
+fn real_host_roles_preserve_selection_and_cell_mapping_across_resizes() {
+    let (clipboard, _) = clipboard();
+    let mut documents = EditorDocuments::default();
+    let source = "lookup_界😀_value\nthird-line-with-wraps";
+    let target = ByteOffset(source.find('界').unwrap());
+
+    for role in [
+        HostRole::File,
+        HostRole::CommitMessage,
+        HostRole::ProjectSearch,
+        HostRole::Sql,
+        HostRole::RestBody,
+        HostRole::RestHeaders,
+        HostRole::Environment,
+        HostRole::Response,
+        HostRole::RawRequest,
+        HostRole::Historical,
+    ] {
+        let mut view = virtual_view(
+            role,
+            &format!("resize-{role:?}"),
+            source,
+            &mut documents,
+            clipboard.clone(),
+        );
+        let mut focus = focus(&view);
+        let selection = Selection {
+            anchor: ByteOffset(0),
+            head: ByteOffset("lookup".len()),
+        };
+        view.input.state.caret.selection = selection;
+
+        for area in [
+            Rect::new(4, 2, 32, 10),
+            Rect::new(0, 0, 18, 6),
+            Rect::new(1, 1, 90, 24),
+        ] {
+            let mut buffer = Buffer::empty(area);
+            view.render(
+                &documents,
+                &focus,
+                area,
+                &mut buffer,
+                &Theme::compiled(),
+                &[],
+            )
+            .unwrap();
+            assert_eq!(view.input.state.caret.selection, selection, "{role:?}");
+            assert_eq!(text(&documents, view.document_id()), source, "{role:?}");
+
+            let geometry = view.geometry(&documents, area).unwrap();
+            let document = documents.document(view.document_id()).unwrap();
+            let layout = view
+                .input
+                .layout(
+                    document,
+                    kode_tui::editor::input::InputViewport {
+                        geometry,
+                        folds: &[],
+                    },
+                )
+                .unwrap();
+            let (row, column) = layout.position_to_cell(target).unwrap();
+            assert!(row >= view.input.state.scroll_rows, "{role:?} {area:?}");
+            let y = geometry.text.y + (row - view.input.state.scroll_rows) as u16;
+            assert!(y < geometry.text.bottom(), "{role:?} {area:?}");
+            // Wide Unicode is displayed as a six-cell escape. Verify the
+            // actual rendered cells and both the scalar-start and interior-cell
+            // mappings, rather than deriving the expected symbol from layout.
+            for (offset, symbol) in "\\x754C".chars().enumerate() {
+                let x = geometry.text.x + column as u16 + offset as u16;
+                assert_eq!(
+                    buffer[(x, y)].symbol(),
+                    symbol.to_string(),
+                    "{role:?} {area:?}"
+                );
+                assert_eq!(
+                    geometry.hit_test(&layout, view.input.state.scroll_rows, x, y,),
+                    EditorHit::Text(if offset == 0 {
+                        target
+                    } else {
+                        ByteOffset(target.0 + '界'.len_utf8())
+                    }),
+                    "{role:?} {area:?} cell {offset}"
+                );
+            }
+        }
+        // Keep the focus owner stable as the same host is rendered at each size.
+        focus.focused = Some(view.input.id);
+    }
+}
+
+#[test]
+fn real_host_cell_map_covers_tabs_controls_unicode_combining_and_wrapped_scalars() {
+    use kode_tui::editor::display::Glyph;
+
+    let (clipboard, _) = clipboard();
+    let mut documents = EditorDocuments::default();
+    let source = "a\t\x01😀界e\u{301}b\nsecond line with wrapping";
+
+    for role in [
+        HostRole::File,
+        HostRole::CommitMessage,
+        HostRole::ProjectSearch,
+        HostRole::Sql,
+        HostRole::RestBody,
+        HostRole::RestHeaders,
+        HostRole::Environment,
+        HostRole::Response,
+        HostRole::RawRequest,
+        HostRole::Historical,
+    ] {
+        let mut view = virtual_view(
+            role,
+            &format!("cell-map-{role:?}"),
+            source,
+            &mut documents,
+            clipboard.clone(),
+        );
+        let focus = focus(&view);
+
+        for area in [
+            Rect::new(4, 2, 32, 10),
+            Rect::new(0, 0, 18, 8),
+            Rect::new(1, 1, 90, 24),
+        ] {
+            let mut buffer = Buffer::empty(area);
+            view.render(
+                &documents,
+                &focus,
+                area,
+                &mut buffer,
+                &Theme::compiled(),
+                &[],
+            )
+            .unwrap();
+            let geometry = view.geometry(&documents, area).unwrap();
+            let document = documents.document(view.document_id()).unwrap();
+            let layout = view
+                .input
+                .layout(
+                    document,
+                    kode_tui::editor::input::InputViewport {
+                        geometry,
+                        folds: &[],
+                    },
+                )
+                .unwrap();
+
+            for line in &layout.lines {
+                for run in &line.runs {
+                    let (row, column) = layout.position_to_cell(run.source.start).unwrap();
+                    assert!(row < geometry.text.height as usize, "{role:?} {area:?}");
+                    let y = geometry.text.y + row as u16;
+                    let symbols = run.glyph.text();
+                    let scalar = source
+                        .get(run.source.start.0..run.source.end.0)
+                        .unwrap()
+                        .chars()
+                        .next()
+                        .unwrap();
+                    assert_eq!(
+                        Glyph::for_scalar(scalar).text(),
+                        symbols,
+                        "{role:?} {area:?}"
+                    );
+
+                    for (offset, symbol) in symbols.chars().enumerate() {
+                        let x = geometry.text.x + (column + offset) as u16;
+                        assert_eq!(
+                            buffer[(x, y)].symbol(),
+                            symbol.to_string(),
+                            "{role:?} {area:?}"
+                        );
+                        assert_eq!(
+                            layout.cell_source(row, column + offset),
+                            Some(run.source),
+                            "{role:?} {area:?} source cell {offset}"
+                        );
+                        let expected_position = if offset == 0 {
+                            run.source.start
+                        } else {
+                            run.source.end
+                        };
+                        assert_eq!(
+                            layout.cell_to_position(row, column + offset),
+                            expected_position,
+                            "{role:?} {area:?} layout cell {offset}"
+                        );
+                        assert_eq!(
+                            geometry.hit_test(&layout, 0, x, y),
+                            EditorHit::Text(expected_position),
+                            "{role:?} {area:?} hit cell {offset}"
+                        );
+                    }
+                }
+            }
+            assert_eq!(text(&documents, view.document_id()), source, "{role:?}");
+        }
+    }
+}
 
 #[test]
 fn writable_sql_rest_and_environment_hosts_share_edit_history_language_and_callbacks() {
@@ -493,6 +966,107 @@ fn focused_search_ctrl_enter_takes_priority_before_sql_or_rest_host_execution() 
         assert!(work.iter().any(|work|matches!(work,EditorWork::Execute(execution) if execution.action == if role == HostRole::Sql { ExecutionAction::SqlSelectionOrStatement } else { ExecutionAction::SendRequest })));
         assert!(
             view.host
+                .take_events()
+                .iter()
+                .any(|event| matches!(event, HostEvent::Execute(_)))
+        );
+    }
+}
+
+#[test]
+fn ctrl_f_preempts_completion_popup_and_find_all_preempts_host_execution() {
+    let (clipboard, _) = clipboard();
+    let mut documents = EditorDocuments::default();
+    for role in [HostRole::Sql, HostRole::RestBody, HostRole::RestHeaders] {
+        let mut view = virtual_view(
+            role,
+            &format!("search-priority-{role:?}"),
+            "needle needle",
+            &mut documents,
+            clipboard.clone(),
+        );
+        let id = view.document_id();
+        let snapshot = documents.document(id).unwrap().snapshot();
+        view.input
+            .state
+            .caret
+            .move_to(&snapshot, ByteOffset(snapshot.len_bytes()), false)
+            .unwrap();
+        let completion = view.completion.begin(&snapshot, &view.input.state).unwrap();
+        assert!(
+            view.completion
+                .complete(
+                    completion.tag,
+                    Ok(vec![CompletionItem {
+                        label: "needleSuggestion".into(),
+                        insert_text: "needleSuggestion".into(),
+                        detail: None,
+                        kind: None,
+                        replacement_range: TextRange {
+                            start: ByteOffset(snapshot.len_bytes()),
+                            end: ByteOffset(snapshot.len_bytes()),
+                        },
+                        source: "fixture".into(),
+                    }]),
+                    &snapshot,
+                    &view.input.state,
+                    true,
+                )
+                .unwrap()
+        );
+        assert_eq!(view.completion.entries.len(), 1);
+
+        let mut focus = focus(&view);
+        view.dispatch(&ctrl('f'), &mut documents, &mut focus, AREA)
+            .unwrap();
+        assert!(view.search.visible);
+        assert!(view.input.state.search_has_focus);
+        assert!(view.completion.entries.is_empty());
+        view.take_work();
+        view.dispatch(
+            &InputEvent::Paste("needle".into()),
+            &mut documents,
+            &mut focus,
+            AREA,
+        )
+        .unwrap();
+        view.dispatch(&execute(), &mut documents, &mut focus, AREA)
+            .unwrap();
+        let work = view.take_work();
+        assert!(
+            !work
+                .iter()
+                .any(|work| matches!(work, EditorWork::Execute(_)))
+        );
+        let searches: Vec<_> = work
+            .into_iter()
+            .filter_map(|work| match work {
+                EditorWork::Search {
+                    tag,
+                    snapshot,
+                    query,
+                } => Some((tag, snapshot, query)),
+                _ => None,
+            })
+            .collect();
+        let (tag, snapshot, query) = searches
+            .into_iter()
+            .rev()
+            .find(|(_, _, query)| query == "needle")
+            .expect("Ctrl+Enter schedules Find All for the focused query");
+        view.complete_search(tag, scan(&snapshot, &query, || false), &mut documents, AREA)
+            .unwrap();
+        assert_eq!(
+            view.search.results.report.as_ref().unwrap().matches.len(),
+            2
+        );
+        assert_eq!(
+            documents.document(id).unwrap().snapshot().text().as_ref(),
+            "needle needle"
+        );
+        assert!(
+            !view
+                .host
                 .take_events()
                 .iter()
                 .any(|event| matches!(event, HostEvent::Execute(_)))

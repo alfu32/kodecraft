@@ -1,0 +1,70 @@
+{
+  "status": "passed",
+  "mode": "native-mariadb-helper",
+  "tuiQualified": false,
+  "product": "MariaDB",
+  "productVersion": "11.8.9-MariaDB-ubu2404",
+  "driverVersion": "3.5.10",
+  "driverClasspathDigest": "b765ef5cdb243366ac69899693585c86e46dbec7e31de8823751f074e27cd275",
+  "helperSha256": "35328cbed66ea0aeb33ecabc3afd1f84e175b757a6d9dd96ffd09b14563c4cc6",
+  "packageListing": true,
+  "exactUnicodeWildcardName": true,
+  "schemaOwnershipVerified": true,
+  "functions": 2,
+  "procedures": 1,
+  "distinctMemberIds": true,
+  "sourceContextRevision": 0,
+  "ddlDocuments": [
+    {
+      "kind": "DDL",
+      "utf8Bytes": 209,
+      "sha256": "cbb6d0c5f3ecda245faee201f02c01f81b93f36fc08f5ec6688e50cbdb19e2af"
+    },
+    {
+      "kind": "DDL",
+      "utf8Bytes": 316,
+      "sha256": "551cc11d80e7c4e1967154349e3a6198fe1ef7958a46a510cdd6ec72c03b89ff"
+    }
+  ],
+  "sourceContentsVerified": true,
+  "ownedPackageRemoved": true,
+  "helperReaped": true,
+  "durationSeconds": 2.4,
+  "rustDatabaseClient": {
+    "status": "passed",
+    "test": "actual_vendor_package_source_round_trip_through_rust_metadata_client",
+    "packageListing": true,
+    "packageMembers": true,
+    "sourceContextRevisionVerified": true,
+    "sourceBodyVerified": true,
+    "fixtureRemovedAfterRefresh": true,
+    "liveLog": "rust-mariadb-live.log",
+    "verifiedOn": "2026-10-17",
+    "helperSha256": "35328cbed66ea0aeb33ecabc3afd1f84e175b757a6d9dd96ffd09b14563c4cc6"
+  },
+  "tuiPackageSourceAction": {
+    "status": "passed",
+    "test": "actual_vendor_package_source_menu_opens_readonly_editor_and_refreshes_after_cleanup",
+    "selectedSchemaVerified": true,
+    "sourceMenuActionDispatched": true,
+    "keyboardPackageMenuDispatched": true,
+    "visibleSourceButtonFixtureVerified": true,
+    "visibleSourceButtonNativeVerified": true,
+    "editorFocused": true,
+    "actualSpecificationAndBodyVerified": true,
+    "readOnlyEditor": true,
+    "saveDisabled": true,
+    "executeDisabled": true,
+    "ownedFixtureRemoved": true,
+    "liveLog": "tui-mariadb-pointer-cells-20261017.log",
+    "verifiedOn": "2026-10-17",
+    "settingsFocusBarrierVerified": true,
+    "metadataRefreshBarrierVerified": true,
+    "helperSha256": "35328cbed66ea0aeb33ecabc3afd1f84e175b757a6d9dd96ffd09b14563c4cc6",
+    "escapeCancellationBarrierVerified": true,
+    "lateCancelledSourceDidNotReplaceEditor": true,
+    "editorFocusPreservedAfterCancellation": true
+  },
+  "helperVerifiedOn": "2026-10-17",
+  "tuiQualificationScope": "package-source-action-only; not complete U12 acceptance"
+}

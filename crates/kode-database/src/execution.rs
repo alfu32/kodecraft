@@ -47,6 +47,22 @@ pub struct Snapshot {
     pub cancel_status: Option<CancelStatus>,
     pub cancel_error: Option<BridgeError>,
 }
+impl Snapshot {
+    /// Appends one SQL script statement's outcome while preserving all prior
+    /// statement results and their bounded-preview retention permits.
+    pub fn append_statement(&mut self, mut next: Self) {
+        let mut preview = self.preview.as_ref().clone();
+        preview.append(&next.preview);
+        self.preview = Arc::new(preview);
+        self.execution_id = next.execution_id.take();
+        self.phase = next.phase;
+        self.completion = next.completion.take();
+        self.error = next.error.take();
+        self.unknown_outcome |= next.unknown_outcome;
+        self.cancel_status = next.cancel_status;
+        self.cancel_error = next.cancel_error.take();
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Options {
     pub max_rows: u32,

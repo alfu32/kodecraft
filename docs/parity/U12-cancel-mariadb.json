@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "vendor": "mariadb",
+  "mode": "native-active-package-source-cancel",
+  "product": "MariaDB",
+  "productVersion": "11.8.9-MariaDB-ubu2404",
+  "helperSha256": "e00ac600e95bf4b098dd7c0eb6db7f65eea20e37400d1b82f8295b96ddce8391",
+  "packageBytes": 1437908,
+  "activeStatementCancellation": {
+    "attempt": 1,
+    "statementAttached": true,
+    "status": "requested"
+  },
+  "resultSqlState": "57014",
+  "ownedPackageRemoved": true,
+  "helperReaped": true,
+  "durationSeconds": 3.2,
+  "verifiedOn": "2026-10-17"
+}

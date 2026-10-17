@@ -255,11 +255,7 @@ impl AppRuntime {
             ),
             ..Default::default()
         };
-        let dialect = if matches!(definition.driver.id.as_str(), "mysql" | "mariadb") {
-            Dialect::MySql
-        } else {
-            Dialect::Standard
-        };
+        let dialect = Dialect::from_driver_id(&definition.driver.id);
         let tag = self.state.tag()?;
         self.state.sql.manager.begin(&console, tag.request)?;
         let panel = self
@@ -285,17 +281,46 @@ impl AppRuntime {
         let submitted=self.jobs.submit(self.root_owner,tag,Delivery::Critical,move|scheduler_cancel|async move{
             let cancellation=worker_cancel.clone();
             let future=async move {
+                let is_script=execution.action==ExecutionAction::SqlScript;
+                let editor_text=execution.snapshot.text().to_string();
                 let targeted=tokio::task::spawn_blocking(move|| {
                     let text=execution.snapshot.text();
                     let range=execution.selection.range();
-                    let found=if execution.action==ExecutionAction::SqlScript { statement::script(&text,dialect) } else { statement::locate(&text,execution.selection.head.0,(!range.is_empty()).then_some(range.start.0..range.end.0),dialect)? };
-                    found.map(|found|found.sql.to_string()).ok_or_else(||DomainError::Unsupported("No executable SQL statement at the cursor".into()))
+                    if is_script {
+                        let statements=statement::script_statements(&text,dialect);
+                        if statements.is_empty() {
+                            return Err(DomainError::Unsupported("No executable SQL statement in script".into()));
+                        }
+                        Ok(statements.into_iter().map(|found|statement::for_driver(found.sql,dialect).into_owned()).collect::<Vec<_>>())
+                    } else {
+                        let found=statement::locate(&text,execution.selection.head.0,(!range.is_empty()).then_some(range.start.0..range.end.0),dialect)?;
+                        found.map(|found|vec![statement::for_driver(found.sql,dialect).into_owned()]).ok_or_else(||DomainError::Unsupported("No executable SQL statement at the cursor".into()))
+                    }
                 }).await.map_err(|_|DomainError::Unsupported("SQL targeting worker failed".into()))??;
-                let result=database.executor.execute(&source,targeted.clone(),options,progress,&worker_cancel).await;
+                let mut result=None;
+                for sql in &targeted {
+                    if worker_cancel.is_cancelled() {
+                        result=Some(failed(BridgeError::new(Failure::Cancelled,"SQL script execution cancelled")));
+                        break;
+                    }
+                    let snapshot=match database.executor.execute(&source,sql.clone(),options.clone(),progress.clone(),&worker_cancel).await {
+                        Ok(snapshot)=>snapshot,
+                        Err(error)=>failed(error),
+                    };
+                    let stop=snapshot.completion.as_ref().is_some_and(|completion| completion.outcome!=kode_database::bridge::wire::Outcome::Completed)
+                        || snapshot.error.is_some();
+                    if let Some(combined)=&mut result {
+                        combined.append_statement(snapshot);
+                    } else {
+                        result=Some(snapshot);
+                    }
+                    if stop { break; }
+                }
                 // Refresh generations prevent metadata requested during SQL from
                 // repopulating the tree after a schema-changing execution.
                 database.metadata.refresh_all(&source);
-                Ok(Output::Sql(QueryReport{sql:targeted,result:result.unwrap_or_else(failed)}))
+                let history_sql=if is_script { editor_text } else { targeted.into_iter().next().unwrap_or_default() };
+                Ok(Output::Sql(QueryReport{sql:history_sql,result:result.expect("non-empty execution target") }))
             };
             tokio::pin!(future);
             tokio::select!{biased;_=scheduler_cancel.cancelled()=>{cancellation.cancel();future.await},result=&mut future=>result}

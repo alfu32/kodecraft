@@ -1,12 +1,15 @@
 //! Lazy JDBC metadata with bounded native caching. No constructor or cache read
 //! starts Java. Cache identity includes connection epoch, context and revision.
+mod source;
 use crate::{
     bridge::client::{BridgeError, Failure},
     connections::{Connections, SessionInfo},
     model::{MetadataRequest, MetadataRequestKind, MetadataResult},
 };
+use kode_core::RequestId;
 use kode_platform::jobs::CancellationToken;
 use serde_json::json;
+pub use source::Source;
 use std::{
     collections::BTreeMap,
     sync::{Arc, Mutex},
@@ -167,6 +170,10 @@ impl Metadata {
             .try_acquire_owned()
             .map_err(|_| error(Failure::Busy, "Metadata request capacity exhausted"))?;
         let token = self.owner.shared.stop.child_token();
+        let job_id = RequestId::fresh()
+            .map_err(|_| error(Failure::Protocol, "Metadata request IDs exhausted"))?
+            .0
+            .to_string();
         struct Cancel(CancellationToken);
         impl Drop for Cancel {
             fn drop(&mut self) {
@@ -177,7 +184,7 @@ impl Metadata {
         let shared = self.owner.shared.clone();
         let mut task = self.owner.tasks.spawn(async move {
             let _slot = slot;
-            shared.load(key, request, generation, token).await
+            shared.load(key, request, generation, job_id, token).await
         });
         tokio::select! { biased;
             _ = cancel.cancelled() => { guard.0.cancel(); task.await },
@@ -207,6 +214,7 @@ impl Shared {
         key: Key,
         request: MetadataRequest,
         generation: u64,
+        job_id: String,
         token: CancellationToken,
     ) -> Result<Arc<MetadataResult>> {
         let client = self.connections.runtime().get(&token).await?;
@@ -216,10 +224,14 @@ impl Shared {
                     .capabilities
                     .iter()
                     .any(|method| method == "metadata.list")
+                || !info
+                    .capabilities
+                    .iter()
+                    .any(|method| method == "metadata.cancel")
         }) {
             return Err(error(
                 Failure::Unavailable,
-                "Current JDBC helper does not provide metadata for this connection",
+                "Current JDBC helper does not provide cancellable metadata for this connection",
             ));
         }
         if self.key(&key.source, &request)? != key {
@@ -229,22 +241,33 @@ impl Shared {
             .connections
             .session(&key.source)
             .map_err(|e| e.bridge)?;
-        let response = client
-            .request_with_timeout(
-                "metadata.list",
-                json!({"connectionId":key.connection,"request":request}),
-                false,
-                Duration::from_secs(60),
-                &token,
-            )
-            .await;
-        let value = match response {
-            Ok(value) => value,
-            Err(failure) => {
-                if failure.kind != Failure::Cancelled {
-                    self.connections.execution_failed(&session, failure.clone());
+        let request_token = CancellationToken::new();
+        let mut pending = Box::pin(client.request_with_timeout(
+            "metadata.list",
+            json!({"connectionId":key.connection,"metadataJobId":job_id,"request":request}),
+            false,
+            Duration::from_secs(60),
+            &request_token,
+        ));
+        let value = tokio::select! { biased;
+            _=token.cancelled()=>{
+                let cancel_token=CancellationToken::new();
+                let _=client.request_with_timeout(
+                    "metadata.cancel",
+                    json!({"metadataJobId":job_id}),
+                    false,
+                    Duration::from_secs(2),
+                    &cancel_token,
+                ).await;
+                let _=tokio::time::timeout(Duration::from_secs(18),&mut pending).await;
+                return Err(error(Failure::Cancelled,"Metadata request cancelled"));
+            },
+            result=&mut pending=>match result {
+                Ok(value)=>value,
+                Err(failure)=>{
+                    if failure.kind!=Failure::Cancelled { self.connections.execution_failed(&session,failure.clone()); }
+                    return Err(failure);
                 }
-                return Err(failure);
             }
         };
         if value
@@ -299,6 +322,10 @@ fn validate(request: &MetadataRequest) -> Result<()> {
         .into_iter()
         .flatten()
         .any(|s| s.len() > 4096 || s.contains('\0'))
+        || request
+            .object_id
+            .as_ref()
+            .is_some_and(|s| s.len() > 4096 || s.contains('\0'))
         || request.kind == MetadataRequestKind::Category && request.category.is_none()
         || request.kind == MetadataRequestKind::Object
             && (request.object_name.as_ref().is_none_or(String::is_empty)

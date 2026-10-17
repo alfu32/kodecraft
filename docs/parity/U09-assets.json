@@ -314,7 +314,7 @@
   },
   "clangdArchitectures": {
     "clangd-linux-23.1.0.zip": "ELF x86_64; actual initialize/shutdown passed",
-    "clangd-windows-23.1.0.zip": "PE AMD64; downloaded, digest/layout/header verified; native execution pending",
+    "clangd-windows-23.1.0.zip": "PE AMD64; official archive installed and actual native initialize/didOpen/shutdown/reap passed on Windows x86_64",
     "clangd-mac-23.1.0.zip": "Universal Mach-O x86_64 + arm64; downloaded, digest/layout/header verified; native execution pending"
   },
   "clangdLinuxLibraries": {
@@ -329,9 +329,9 @@
     ]
   },
   "pending": [
-    "Linux arm64 clangd library/resource closure, launcher and runtime",
-    "Windows arm64 clangd installer artifact/adapter",
-    "Native Windows and macOS install/start/shutdown qualification"
+    "Linux arm64 native hardware qualification and catalog activation (isolated closure and emulated runtime pass)",
+    "Windows arm64 clangd selection, bounded extraction, and native lifecycle qualification",
+    "Native macOS and remaining CPU install/start/shutdown qualification"
   ],
   "clangdWindowsLibraries": {
     "importedDlls": [
@@ -344,7 +344,7 @@
       "OLEAUT32.dll",
       "dbghelp.dll"
     ],
-    "inspection": "PE import table via objdump -p; imports are Windows system DLLs; native launch qualification pending"
+    "inspection": "PE import table via objdump -p; imports are Windows system DLLs. Actual Windows x86_64 install/initialize/didOpen/shutdown/reap passes with this archive."
   },
   "clangdMacLibraries": {
     "x86_64LoadCommandMinimum": "10.13",
@@ -500,5 +500,50 @@
     "configurationPresent": false,
     "nativeLauncherPluginPresent": false,
     "remaining": "Provide/qualify a Windows ARM64 launcher path or explicitly qualified external x64-JDK emulation requirements; no native Windows ARM64 JDT success is claimed"
+  },
+  "clangdLinuxArm64Closure": {
+    "status": "emulated-runtime-qualified",
+    "nativeHardwareQualified": false,
+    "catalogEnabled": true,
+    "catalog": "resources/lsp/servers.json",
+    "catalogVersion": "23.1.4~20261014054259+0cd28174a1f6",
+    "catalogSha256": "32071e511365e42c3c12cb43e352f047e73a9a046faecbdf290310b88d7c2058",
+    "report": "docs/parity/U09-arm64.json",
+    "archives": 19,
+    "combinedDownloadBytes": 72555470,
+    "runtime": "Private matching glibc loader and shared libraries; no host ARM64 libraries",
+    "verified": [
+      "Checksum-pinned production HTTP install",
+      "Prepublication and prelaunch ELF library checks",
+      "Production-default LSP initialize/didOpen/shutdown/reap under private QEMU",
+      "Diagnostic-free C parsing and definition into bundled Clang headers",
+      "Install paths with spaces, Unicode and colon"
+    ]
+  },
+  "clangdWindowsArm64": {
+    "status": "metadata-inspected; no standalone clangd asset",
+    "verifiedOn": "2026-10-17",
+    "releaseApi": "https://api.github.com/repos/clangd/clangd/releases/tags/23.1.0",
+    "releasePage": "https://github.com/clangd/clangd/releases/tag/23.1.0",
+    "standaloneWindowsArm64AssetPresent": false,
+    "officialLlvmOptions": [
+      {
+        "name": "clang+llvm-23.1.0-aarch64-pc-windows-msvc.tar.zst",
+        "downloadBytes": 424902634,
+        "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.0/clang%2Bllvm-23.1.0-aarch64-pc-windows-msvc.tar.zst",
+        "installerLimitBytes": 268435456,
+        "qualification": "Exceeds current bounded download limit; no selected Windows ARM64 clangd closure is qualified"
+      },
+      {
+        "name": "LLVM-23.1.0-woa64.msi",
+        "downloadBytes": 764403867,
+        "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.0/LLVM-23.1.0-woa64.msi",
+        "installerLimitBytes": 268435456,
+        "qualification": "Exceeds current bounded download limit and MSI is not an installer input format"
+      }
+    ],
+    "runtimeQualified": false,
+    "nativeHardwareQualified": false,
+    "remaining": "Evaluate a bounded official package extraction route or an acceptable standalone source, then verify the installed native ARM64 LSP lifecycle."
   }
 }

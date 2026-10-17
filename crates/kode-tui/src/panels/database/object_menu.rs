@@ -21,6 +21,8 @@ pub struct ObjectMenu {
     pub selected: usize,
     pub finished: bool,
     pub sql: Option<String>,
+    pub source_requested: bool,
+    source_action: Option<usize>,
     hits: Vec<Rect>,
     cancel: Rect,
 }
@@ -36,7 +38,34 @@ impl ObjectMenu {
             },
             _ => format!("-- DDL extraction is driver-specific for {name}"),
         };
-        let mut actions = vec![("Copy DDL".into(), ddl)];
+        let mut actions = if object.object_type == Package {
+            vec![]
+        } else {
+            vec![("Copy DDL".into(), ddl)]
+        };
+        let source_action = if object.object_type == Package
+            && object
+                .attributes
+                .get("sourceAvailable")
+                .is_some_and(|value| value == "true")
+        {
+            actions.push((
+                if object
+                    .attributes
+                    .get("ddlAvailable")
+                    .is_some_and(|value| value == "true")
+                {
+                    "View package DDL"
+                } else {
+                    "View package source"
+                }
+                .into(),
+                String::new(),
+            ));
+            Some(actions.len() - 1)
+        } else {
+            None
+        };
         match object.object_type {
             Table | View => actions.push(("Copy SELECT".into(), format!("SELECT * FROM {name};"))),
             Function => actions.push(("Copy CALL / SELECT".into(), format!("SELECT {name}();"))),
@@ -51,12 +80,18 @@ impl ObjectMenu {
             selected: 0,
             finished: false,
             sql: None,
+            source_requested: false,
+            source_action,
             hits: vec![],
             cancel: Rect::default(),
         }
     }
     fn choose(&mut self) {
-        self.sql = self.actions.get(self.selected).map(|a| a.1.clone());
+        if self.source_action == Some(self.selected) {
+            self.source_requested = true;
+        } else {
+            self.sql = self.actions.get(self.selected).map(|a| a.1.clone());
+        }
         self.finished = true;
     }
     pub fn render(&mut self, area: Rect, buffer: &mut Buffer, theme: &Theme) {

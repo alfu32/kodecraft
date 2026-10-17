@@ -279,3 +279,74 @@ fn catalog_validation_rejects_unsafe_or_unbounded_archive_selections() {
     }
     assert!(!root.path().join("install with spaces 界").exists());
 }
+
+#[test]
+fn declared_aliases_copy_only_extracted_regular_files_and_never_follow_archive_links() {
+    let root = tempfile::tempdir().unwrap();
+    let bytes = deb(&zstd(&tar(true, false)), "data.tar.zst");
+    let mut job = job(
+        root.path(),
+        &bytes,
+        Some(vec!["usr/lib/server", "usr/share/doc"]),
+    );
+    job.entry.versions[0].downloads[0].extra[kode_lsp::package::EXTRACT_KEY]["copies"] =
+        json!([{"source":"./usr/lib/server/clangd","target":"usr/bin/clangd"}]);
+    let receipt = job
+        .run(&Bytes(bytes.clone()), &CancellationToken::new(), |_| {})
+        .unwrap();
+    let alias = receipt.directory.join("usr/bin/clangd");
+    assert!(fs::symlink_metadata(&alias).unwrap().is_file());
+    assert_eq!(fs::read_to_string(alias).unwrap(), "server executable");
+    assert_eq!(
+        receipt.manifest.extra[kode_lsp::package::EXTRACT_KEY]["copies"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1
+    );
+    let before = fs::read(receipt.directory.join("installed.json")).unwrap();
+    for copy in [
+        json!({"source":"usr/share/doc/license","target":"usr/lib/server/clangd"}),
+        json!({"source":"usr/bin/clangd","target":"new-alias"}),
+        json!({"source":"absent","target":"new-alias"}),
+    ] {
+        let mut candidate = job.clone();
+        candidate.entry.versions[0].downloads[0].extra[kode_lsp::package::EXTRACT_KEY]["copies"] =
+            json!([copy]);
+        assert!(
+            candidate
+                .run(&Bytes(bytes.clone()), &CancellationToken::new(), |_| {})
+                .is_err()
+        );
+        assert_eq!(
+            fs::read(receipt.directory.join("installed.json")).unwrap(),
+            before
+        );
+        assert!(
+            !job.options
+                .install_root
+                .join(".kode-rs-install.lock")
+                .exists()
+        );
+    }
+}
+
+#[test]
+fn invalid_copy_paths_and_duplicate_targets_are_rejected_before_installation() {
+    let root = tempfile::tempdir().unwrap();
+    let bytes = deb(&tar(false, false), "data.tar");
+    let baseline = job(root.path(), &bytes, Some(vec!["usr"])).entry;
+    for copies in [
+        json!([{"source":"../escape","target":"alias"}]),
+        json!([{"source":"usr/lib/server/clangd","target":"../escape"}]),
+        json!([{"source":"usr/lib/server/clangd","target":"installed.json"}]),
+        json!([{"source":"./same","target":"same"}]),
+        json!([{"source":"one","target":"alias"},{"source":"two","target":"./alias"}]),
+        json!(vec![json!({"source":"one","target":"alias"}); 65]),
+    ] {
+        let mut entry = baseline.clone();
+        entry.versions[0].downloads[0].extra[kode_lsp::package::EXTRACT_KEY]["copies"] = copies;
+        assert!(Catalog::parse(&serde_json::to_vec(&json!({"servers":[entry]})).unwrap()).is_err());
+    }
+    assert!(!root.path().join("install with spaces 界").exists());
+}

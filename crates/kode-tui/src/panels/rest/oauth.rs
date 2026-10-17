@@ -13,6 +13,7 @@ pub enum Action {
     CopyUrl,
     ViewUrl,
     PasteRedirect,
+    PasteToken,
 }
 #[derive(Clone, Default, PartialEq, Eq)]
 pub struct View {
@@ -129,6 +130,9 @@ impl State {
             view.callback = progress.callback_url.clone();
             view.url = progress.authorization_url.clone();
             view.code = progress.user_code.clone();
+            if let Some(message) = self.messages.get(key) {
+                view.message = message.clone();
+            }
         }
         view
     }

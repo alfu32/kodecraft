@@ -32,6 +32,22 @@ struct Provider {
     requests: Arc<Mutex<Vec<Captured>>>,
     task: JoinHandle<()>,
 }
+
+#[test]
+fn pasted_access_tokens_are_runtime_only_bearer_credentials() {
+    let token = TokenSet::pasted_oauth2("  pasted-access-token  ".into()).unwrap();
+    let auth = token.execution_auth().unwrap();
+    assert_eq!(auth.kind, "oauth2");
+    assert_eq!(auth.fields["accessToken"], "pasted-access-token");
+    assert_eq!(auth.fields["headerPrefix"], "Bearer");
+    assert!(auth.runtime_token);
+    assert!(!token.can_refresh());
+    assert!(!format!("{token:?}").contains("pasted-access-token"));
+    for invalid in ["", "   ", "two words", "bad\nvalue", "é", "Bearer token"] {
+        assert!(TokenSet::pasted_oauth2(invalid.into()).is_err());
+    }
+    assert!(TokenSet::pasted_oauth2("a".repeat(64 * 1024 + 1)).is_err());
+}
 impl Drop for Provider {
     fn drop(&mut self) {
         self.task.abort();

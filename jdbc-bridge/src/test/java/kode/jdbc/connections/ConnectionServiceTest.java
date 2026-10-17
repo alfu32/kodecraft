@@ -119,6 +119,15 @@ public class ConnectionServiceTest {
             assertTrue(await(f.service.disconnect(object().put("connectionId",id))).path("closed").asBoolean());assertTrue(await(active).path("finished").asBoolean());assertTrue(error(queued).data.path("notStarted").asBoolean());assertEquals(1,track.closeCount.get());assertEquals(1,track.owners.size());
         }finally{TrackingDriver.tracks.remove(url);}
     }
+    @Test void disconnectAfterAnAcknowledgedOperationClosesNormallyWithoutConcurrentAbort() throws Exception {
+        String url="jdbc:tracked:mem:"+UUID.randomUUID();TrackingDriver.Track track=new TrackingDriver.Track();TrackingDriver.tracks.put(url,track);
+        try(Fixture f=new Fixture(TrackingDriver.class.getName())){
+            String id=await(f.service.open(f.params("idle").put("jdbcUrl",url).put("driverClass",TrackingDriver.class.getName()))).path("connectionId").asText();
+            assertTrue(await(f.service.submit(id,s->object().put("readComplete",true))).path("readComplete").asBoolean());
+            assertTrue(await(f.service.disconnect(object().put("connectionId",id))).path("closed").asBoolean());
+            assertEquals(1,track.closeCount.get());assertEquals(1,track.aborted.getCount());assertEquals(1,track.owners.size());
+        }finally{TrackingDriver.tracks.remove(url);}
+    }
     @Test void unconfirmedCloseIsAnErrorAndKeepsLoaderLeaseUntilHelperRestart() throws Exception {
         String url="jdbc:tracked:mem:"+UUID.randomUUID();TrackingDriver.Track track=new TrackingDriver.Track();track.failClose=true;TrackingDriver.tracks.put(url,track);
         try(Fixture f=new Fixture(TrackingDriver.class.getName())){

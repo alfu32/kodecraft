@@ -21,6 +21,35 @@ fn options(root: &Path) -> DiscoveryOptions {
         configured_commands: BTreeMap::new(),
     }
 }
+
+#[test]
+fn compiled_clangd_catalog_selects_the_pinned_arm64_closure_without_changing_other_targets() {
+    let catalog = Catalog::compiled().unwrap();
+    let clangd = catalog.entry("clangd").unwrap();
+
+    let (arm_version, arm_download) = clangd
+        .download(&Platform::new("linux", "aarch64"))
+        .expect("Linux ARM64 must select its pinned clangd closure");
+    assert_eq!(arm_version.version, "23.1.4~20261014054259+0cd28174a1f6");
+    assert_eq!(arm_download.arch, "arm64");
+    assert_eq!(
+        arm_download.sha256.as_deref(),
+        Some("ea1848f21c9e306f13fd854bf2233b47df60e25f1bfc31cbf5f9a654fded1ee6")
+    );
+    assert!(arm_download.extra.contains_key("kodeRsPackage"));
+
+    for (platform, expected_version) in [
+        (Platform::new("linux", "x86_64"), "23.1.0"),
+        (Platform::new("windows", "x86_64"), "23.1.0"),
+        (Platform::new("macos", "arm64"), "23.1.0"),
+    ] {
+        let (version, _) = clangd
+            .download(&platform)
+            .unwrap_or_else(|| panic!("missing clangd asset for {platform:?}"));
+        assert_eq!(version.version, expected_version, "{platform:?}");
+    }
+}
+
 fn executable(path: &Path) {
     fs::create_dir_all(path.parent().unwrap()).unwrap();
     fs::write(path, b"#!/bin/sh\nexit 0\n").unwrap();

@@ -1,3 +1,4 @@
+mod database_source;
 mod diagnostics;
 pub mod dispatch;
 pub mod effects;

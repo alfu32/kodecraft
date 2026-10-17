@@ -2,7 +2,7 @@
 
 ## Lazy metadata
 
-`metadata.list` takes `connectionId` and a normalized request (`ROOT`, `CATALOG`,
+`metadata.list` takes `connectionId`, a unique `metadataJobId` and a normalized request (`ROOT`, `CATALOG`,
 `SCHEMA`, `CATEGORY`, `OBJECT`). Category requests require `category`; object
 requests require `objectName` and `objectType`. Optional catalog/schema/name
 identifiers are at most 4,096 UTF-8 bytes and cannot contain NUL. The connection
@@ -33,8 +33,22 @@ schema effects. Refresh invalidates individual nodes or whole datasources and
 rejects replies started before that refresh. Reconnect/helper loss/context change
 cannot refill a newer tree from an older response. UI composition additionally
 checks `Metadata.is_current` immediately before publishing an async tree update.
-Cancellation/drop stops the native wait; JDBC metadata may continue on its owner
-until return, disconnect/abort or helper shutdown. Metadata is never replayed.
+Cancellation/drop sends a priority job cancellation and does not cache the result.
+Package source requests may carry `objectId` in addition to the display name. Providers
+use it when a name has multiple independently addressable versions (Db2 LUW binds
+schema, package name, version and `UNIQUE_ID` into this identity); clients treat it as
+opaque. Package source uses a distinct `metadataJobId` and the reserved `metadata.cancel` control operation; the helper
+schedules `Statement.cancel` off the connection owner and waits for that exact
+cancel call before closing/releasing its statement. Cancellation may arrive before
+the source request is dispatched; bounded tombstones preserve that ordering.
+The cancellation acknowledgement includes `statementAttached`, which reports
+whether the job had attached a JDBC statement when cancellation was accepted; it
+does not claim that the driver has finished cancelling that statement.
+Ordinary `metadata.list` carries a unique `metadataJobId`; cancellation uses the
+same priority `metadata.cancel` operation as package source. The helper cancels
+the active JDBC statement off the connection owner and waits for that call before
+closing its result set. Cancellation-before-dispatch is retained in bounded
+tombstones. Metadata is never replayed.
 
 Normative lifecycle/operation semantics: [JDBC.md](../../docs/migration/JDBC.md).
 Each frame is four unsigned big-endian length bytes followed by exactly that many

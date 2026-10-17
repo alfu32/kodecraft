@@ -97,6 +97,8 @@ def perform(message):
             state['contextRevision']+=1;state['stateRevision']+=1;result(id,state)
     elif method == 'test.release-metadata':
         metadata_release.set(); result(id,{'released':True})
+    elif method == 'metadata.cancel':
+        metadata_release.set(); result(id,{'status':'requested'})
     elif method == 'metadata.list':
         with connection_lock:
             pair=connections.get(params['connectionId'])
@@ -147,7 +149,7 @@ while True:
         if mode in ('poison','zero','oversize','truncated'):
             raw={'poison':b'driver-stdout','zero':b'\0\0\0\0','oversize':struct.pack('>I',8388609),'truncated':b'\0\0\0\x08{'}[mode]
             sys.stdout.buffer.write(raw);sys.stdout.buffer.flush();sys.exit(2)
-        send({'jsonrpc':'2.0','id':id,'result':{'protocolVersion':99 if mode=='wrong-version' else 1,'helperVersion':'fixture','javaVersion':'21.0.9','helperEpoch':epoch,'maxFrameBytes':8388608,'capabilities':['hello','ping','shutdown','query.cancel','query.execute','metadata.list']}},True)
+        send({'jsonrpc':'2.0','id':id,'result':{'protocolVersion':99 if mode=='wrong-version' else 1,'helperVersion':'fixture','javaVersion':'21.0.9','helperEpoch':epoch,'maxFrameBytes':8388608,'capabilities':['hello','ping','shutdown','query.cancel','query.execute','metadata.list','metadata.cancel']}},True)
         if mode=='slow-reader': time.sleep(0.5)
     elif method=='ping': result(id,{'status':'ok','helperEpoch':epoch})
     elif method=='shutdown': result(id,{'closing':True});break

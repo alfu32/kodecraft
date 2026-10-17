@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "ttyd_version": "ttyd version 1.7.4",
+  "desktop_clipboard_unavailable": true,
+  "chrome": "/usr/bin/google-chrome",
+  "cases": [
+    {
+      "transport": "loopback",
+      "status": "passed",
+      "cut_saved_empty": true,
+      "restored_exact_bytes": true,
+      "browser_clipboard_unchanged": true,
+      "child_reaped": true
+    },
+    {
+      "transport": "ssh-forwarded-loopback",
+      "status": "passed",
+      "cut_saved_empty": true,
+      "restored_exact_bytes": true,
+      "browser_clipboard_unchanged": true,
+      "child_reaped": true
+    }
+  ],
+  "passed": 2
+}

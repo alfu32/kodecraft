@@ -1,0 +1,209 @@
+{
+  "cases": [
+    {
+      "mode": "normal",
+      "size": [
+        80,
+        24
+      ],
+      "exit": 0,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "error",
+      "size": [
+        80,
+        24
+      ],
+      "exit": 1,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "panic",
+      "size": [
+        80,
+        24
+      ],
+      "exit": 101,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "normal",
+      "size": [
+        120,
+        40
+      ],
+      "exit": 0,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "error",
+      "size": [
+        120,
+        40
+      ],
+      "exit": 1,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "panic",
+      "size": [
+        120,
+        40
+      ],
+      "exit": 101,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "normal",
+      "size": [
+        20,
+        6
+      ],
+      "exit": 0,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "error",
+      "size": [
+        20,
+        6
+      ],
+      "exit": 1,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "panic",
+      "size": [
+        20,
+        6
+      ],
+      "exit": 101,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "normal",
+      "size": [
+        1,
+        1
+      ],
+      "exit": 0,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "error",
+      "size": [
+        1,
+        1
+      ],
+      "exit": 1,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "panic",
+      "size": [
+        1,
+        1
+      ],
+      "exit": 101,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": null,
+      "status": "passed"
+    },
+    {
+      "mode": "input",
+      "size": [
+        80,
+        24
+      ],
+      "exit": 0,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": "PageDown",
+      "status": "passed"
+    },
+    {
+      "mode": "input",
+      "size": [
+        80,
+        24
+      ],
+      "exit": 0,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": "ctrl: true",
+      "status": "passed"
+    },
+    {
+      "mode": "input",
+      "size": [
+        80,
+        24
+      ],
+      "exit": 0,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": "Paste(\"paste\ud83d\ude00\")",
+      "status": "passed"
+    },
+    {
+      "mode": "suspend",
+      "size": [
+        80,
+        24
+      ],
+      "exit": 0,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": "suspended-and-resumed",
+      "status": "passed"
+    },
+    {
+      "mode": "enhanced",
+      "size": [
+        80,
+        24
+      ],
+      "exit": 0,
+      "original_termios_restored": true,
+      "screen_cursor_paste_restored": true,
+      "expected": "enhanced:true",
+      "status": "passed"
+    }
+  ],
+  "passed": 17
+}

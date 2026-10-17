@@ -23,6 +23,71 @@
       "status": "passed"
     },
     {
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "resizes": [
+        [
+          60,
+          18
+        ],
+        [
+          100,
+          30
+        ]
+      ],
+      "case": "file-find-resize-edit-save",
+      "find_query_rendered": true,
+      "search_focus_restored": true,
+      "saved_editor_buffer_verified": true
+    },
+    {
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "case": "file-unicode-control-exact-save",
+      "bracketed_utf8_paste_verified": true,
+      "repeated_save_exact_bytes_verified": true
+    },
+    {
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "case": "file-clipboard-without-desktop",
+      "desktop_clipboard_unavailable": true,
+      "internal_copy_paste_verified": true
+    },
+    {
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "case": "editor-shell-suspend-resume-preserves-buffer",
+      "shell": "/bin/sh",
+      "shell_marker_verified": "KODE_SHELL_HOP_READY_7B",
+      "workspace_root_verified": true,
+      "saved_editor_buffer": "before-after-original\n"
+    },
+    {
       "case": "empty-folder-tiny-quit",
       "size": [
         20,
@@ -45,9 +110,71 @@
       "status": "passed"
     },
     {
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "case": "application-startup-quit-term-profile",
+      "terminal": "screen-256color"
+    },
+    {
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "case": "application-startup-quit-term-profile",
+      "terminal": "tmux-256color"
+    },
+    {
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "case": "application-startup-quit-term-profile",
+      "terminal": "vt100"
+    },
+    {
+      "size": [
+        100,
+        30
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed",
+      "case": "application-startup-quit-term-profile",
+      "terminal": "ansi"
+    },
+    {
+      "case": "application-exits-cleanly-inside-tmux",
+      "size": [
+        100,
+        30
+      ],
+      "terminal": "tmux-256color",
+      "pane_term_verified_by_wrapper": true,
+      "quit_delivered_by": "tmux send-keys C-q",
+      "exit": 0,
+      "outer_termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
       "case": "missing-target-help-version",
       "status": "passed"
     }
   ],
-  "passed": 5
+  "passed": 14
 }

@@ -13,6 +13,17 @@
       "status": "passed"
     },
     {
+      "case": "paste-access-token-send-nonpersistence",
+      "size": [
+        100,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
       "case": "authorization_code-restart-has-no-runtime-token",
       "size": [
         100,
@@ -59,6 +70,17 @@
       "status": "passed"
     },
     {
+      "case": "paste-access-token-send-nonpersistence",
+      "size": [
+        60,
+        24
+      ],
+      "exit": 0,
+      "termios_restored": true,
+      "modes_restored": true,
+      "status": "passed"
+    },
+    {
       "case": "authorization_code-restart-has-no-runtime-token",
       "size": [
         60,
@@ -93,7 +115,7 @@
       "status": "passed"
     }
   ],
-  "passed": 8,
+  "passed": 10,
   "pkce_verified": true,
   "postman_replaced": true,
   "listeners_released": true

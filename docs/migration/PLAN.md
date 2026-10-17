@@ -34,11 +34,12 @@ that `.gitmodules` management is already implemented. The SQL/JDBC module and th
 Postman-like REST/OpenAPI module are separate features and both are in scope.
 
 The user finalized the current UAT batch on 2026-10-16 and added it to this goal.
-[UAT tracking](UAT.md) maps all sixteen requests to implementation owners and
-evidence. R09/R10 own M002 authentication protocols and OAuth acquisition; U01–U12
+[UAT tracking](UAT.md) maps the requests to implementation owners and
+evidence. R09/R10 own M002 authentication protocols and OAuth acquisition; U01–U13
 cover finalized search shortcuts, readable JDBC errors, a separate downloadable
 jlink runtime, multiple cursors/selections, hex layouts/find, word double-click,
 path pickers, relative open-file labels, LSP installation, sidebar shortcuts, JDBC URL presets and database packages. R10 also owns B008: an ephemeral HTTPS localhost callback replacing Postman defaults. M001/B001 retain Z02/Z01 evidence.
+B009 adds Oracle refresh and SQL statement terminator corrections under U13.
 These are extensions/corrections to the frozen baseline, not deferred proposals.
 
 The user also requested the [full Z03 artifact matrix](Z03-ARTIFACT-MATRIX.md):

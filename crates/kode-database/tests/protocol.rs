@@ -136,3 +136,24 @@ async fn codec_writer_flushes_complete_frames_and_close_reports_eof() {
     assert!(reader.read().await.unwrap().is_none());
     task.await.unwrap();
 }
+
+#[test]
+fn package_source_and_metadata_cancel_responses_roundtrip_through_shared_types() {
+    use kode_database::{bridge::wire::CancelStatus, model::MetadataSourceResult};
+    let fixtures: Value = serde_json::from_slice(include_bytes!(
+        "../../../protocol/jdbc-v1/operation-fixtures.json"
+    ))
+    .unwrap();
+    let source: MetadataSourceResult =
+        serde_json::from_value(fixtures["responses"]["metadata.source"].clone()).unwrap();
+    assert_eq!(source.context_revision, 7);
+    assert_eq!(source.documents.len(), 1);
+    assert!(source.documents[0].text.contains("é界😀"));
+    assert_eq!(
+        serde_json::to_value(source).unwrap(),
+        fixtures["responses"]["metadata.source"]
+    );
+    let cancel: CancelStatus =
+        serde_json::from_value(fixtures["responses"]["metadata.cancel"]["status"].clone()).unwrap();
+    assert_eq!(cancel, CancelStatus::Requested);
+}

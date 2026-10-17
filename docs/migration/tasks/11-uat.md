@@ -176,7 +176,7 @@ and path-field integration across file/project, database and REST dialogs.
 
 ## U09 — Repair language server installations
 
-**Status:** in-progress
+**Status:** suspend
 
 **Depends:** P01, P02, Z02. **Owns:** shipped LSP catalog, download/package install
 adapters and Settings installation diagnostics. **UAT:** B006, images 5–8.
@@ -231,7 +231,7 @@ adapters and Settings installation diagnostics. **UAT:** B006, images 5–8.
 
 ## U12 — Database package listing and DDL
 
-**Status:** todo
+**Status:** suspend
 
 **Depends:** D09. **Owns:** JDBC helper metadata/DDL providers, bridge protocol and
 explorer package nodes/actions. **UAT:** M008.
@@ -246,3 +246,26 @@ explorer package nodes/actions. **UAT:** M008.
    actual DDL/source contents through the external helper and TUI; unsupported
    engines show accurate capability state. Record real vendor qualification and
    never count an unavailable database or fabricated DDL as a passing execution.
+
+## U13 — Oracle refresh and SQL statement terminators
+
+**Status:** done
+
+**Depends:** D09. **Owns:** metadata refresh invalidation, SQL selection/script
+boundaries and Oracle JDBC execution qualification. **UAT:** B009.
+
+1. Reproduce creation of a table from another connection, then refresh the current
+   explorer. Invalidate the relevant cached subtree and reject older in-flight
+   completions so committed external DDL becomes visible without reconnecting.
+2. Qualify single statements, explicit selections including their terminating
+   semicolon, multiple statements and PL/SQL blocks against Oracle. Preserve
+   internal block semicolons, comments, quotes and the user's exact editor text;
+   adapt only the statement sent to the driver where required.
+3. Cover schema/session ownership, refresh during loading, cancellation, errors,
+   transaction state and the existing non-Oracle statement behavior.
+
+**Accept:** actual Oracle JDBC and explorer replays show refreshed external DDL
+   and correct single/selected/script execution, including PL/SQL blocks. Failed
+   statements retain readable errors and are never automatically replayed.
+
+**Evidence:** [U13 Oracle qualification](../../parity/U13.md).

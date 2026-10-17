@@ -498,6 +498,88 @@ async fn checkout_reloads_clean_files_keeps_sidebar_focus_and_refuses_dirty_buff
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
 }
+
+#[tokio::test]
+async fn editor_selection_and_focus_survive_background_git_refresh() {
+    let base = tempfile::tempdir().unwrap();
+    let root = base.path().join("project");
+    fs::create_dir(&root).unwrap();
+    let repo = init(&root);
+    let mut app = make(&root, Some("Note.kt"));
+    ready(&mut app).await;
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    let document = app.state.editor.as_ref().unwrap().document_id();
+    let focus = app.state.editor.as_ref().unwrap().input.id;
+    app.state.focus.focused = Some(focus);
+
+    for index in 0..256 {
+        fs::write(root.join(format!("refresh-{index:03}.txt")), "untracked\n").unwrap();
+    }
+    app.state.git.request_refresh();
+    until(&mut app, |app| app.state.git.read.busy.is_some()).await;
+    assert_eq!(app.state.focus.focused, Some(focus));
+    app.state
+        .dispatch(&InputEvent::Paste("// typed during Git refresh\n".into()))
+        .unwrap();
+    let text = app
+        .state
+        .documents
+        .document(document)
+        .unwrap()
+        .snapshot()
+        .text()
+        .to_string();
+    assert!(text.contains("// typed during Git refresh"));
+    let selection = kode_core::Selection {
+        anchor: kode_core::ByteOffset(0),
+        head: kode_core::ByteOffset(text.len()),
+    };
+    app.state
+        .editor
+        .as_mut()
+        .unwrap()
+        .input
+        .state
+        .caret
+        .selection = selection;
+
+    until(&mut app, |app| {
+        app.state.git.read.busy.is_none()
+            && app
+                .state
+                .git
+                .read
+                .snapshot
+                .as_ref()
+                .is_some_and(|snapshot| snapshot.status.entries.len() >= 256)
+    })
+    .await;
+    assert_eq!(app.state.focus.focused, Some(focus));
+    assert_eq!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .input
+            .state
+            .caret
+            .selection,
+        selection
+    );
+    assert_eq!(
+        app.state
+            .documents
+            .document(document)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        text
+    );
+    assert!(repo.path().join("index").exists());
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
 #[tokio::test]
 async fn commit_acknowledgement_preserves_newer_typing_and_quit_drains_the_accepted_commit() {
     let directory = tempfile::tempdir().unwrap();

@@ -13,18 +13,45 @@ pub const EXTRACT_KEY: &str = "kodeRsExtract";
 pub struct ExtractionPlan {
     pub version: u32,
     pub paths: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub copies: Vec<ArchiveCopy>,
+}
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ArchiveCopy {
+    pub source: String,
+    pub target: String,
 }
 impl ExtractionPlan {
     fn validate(&self) -> Result<()> {
-        if self.version != 1 || self.paths.is_empty() || self.paths.len() > 64 {
+        if self.version != 1
+            || self.paths.is_empty()
+            || self.paths.len() > 64
+            || self.copies.len() > 64
+        {
             return Err(invalid(
-                "Extraction plan requires version 1 and 1..64 paths",
+                "Extraction plan requires version 1, 1..64 paths and at most 64 copies",
             ));
         }
         for path in &self.paths {
             let path = relative_path(path)?;
             if path.as_os_str().is_empty() {
                 return Err(invalid("Extraction paths must be nonempty relative paths"));
+            }
+        }
+        let mut targets = BTreeSet::new();
+        for copy in &self.copies {
+            let source = relative_path(&copy.source)?;
+            let target = relative_path(&copy.target)?;
+            if source.as_os_str().is_empty()
+                || target.as_os_str().is_empty()
+                || target == std::path::Path::new("installed.json")
+                || source == target
+                || !targets.insert(target)
+            {
+                return Err(invalid(
+                    "Archive copies require distinct, nonempty relative source/target files",
+                ));
             }
         }
         Ok(())
@@ -52,6 +79,7 @@ pub struct PackagePlan {
 #[serde(rename_all = "lowercase")]
 pub enum Launcher {
     Jdtls,
+    Gnuelf,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -140,6 +168,9 @@ pub fn plan(extra: &Extra) -> Result<Option<PackagePlan>> {
         return Err(invalid(
             "JDT LS launcher requires a Java runtime requirement",
         ));
+    }
+    if plan.launcher == Some(Launcher::Gnuelf) && plan.runtime.is_some() {
+        return Err(invalid("GNU ELF launcher uses its bundled runtime"));
     }
     let mut directories = BTreeSet::new();
     for dependency in &plan.dependencies {

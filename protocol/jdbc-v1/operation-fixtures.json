@@ -1,22 +1,234 @@
 {
-  "valid":[
-    {"jsonrpc":"2.0","id":"hello","method":"hello","params":{"protocolVersion":1,"clientVersion":"fixture","futureOptional":true}},
-    {"jsonrpc":"2.0","id":"ping","method":"ping","params":{}},
-    {"jsonrpc":"2.0","id":"shutdown","method":"shutdown","params":{}},
-    {"jsonrpc":"2.0","id":"resolve","method":"driver.resolve","params":{"resolutionId":"resolution-a","driver":{"id":"h2","driverClass":"org.h2.Driver","coordinates":"com.h2database:h2:2.3.232","providerId":"h2"}}},
-    {"jsonrpc":"2.0","id":"cancel-driver","method":"driver.cancel","params":{"resolutionId":"resolution-a"}},
-    {"jsonrpc":"2.0","id":"inspect","method":"driver.inspect","params":{"providerId":"synthetic","classpath":["/synthetic/driver-a.jar","/synthetic/dependency-b.jar"],"driverClass":"synthetic.Driver"}},
-    {"jsonrpc":"2.0","id":"inspect-installed","method":"driver.inspect","params":{"driver":{"id":"h2","driverClass":"org.h2.Driver","coordinates":"com.h2database:h2"}}},
-    {"jsonrpc":"2.0","id":"open","method":"connection.open","params":{"dataSourceId":"datasource-a","loaderId":"loader-a","driverClass":"org.h2.Driver","jdbcUrl":"jdbc:h2:mem:synthetic","properties":{"user":"synthetic","password":"synthetic-ephemeral-only"},"catalog":null,"schema":"PUBLIC","autoCommit":false,"readOnly":false}},
-    {"jsonrpc":"2.0","id":"test","method":"connection.test","params":{"dataSourceId":"datasource-a","loaderId":"loader-a","driverClass":"org.h2.Driver","jdbcUrl":"jdbc:h2:mem:synthetic","properties":{}}},
-    {"jsonrpc":"2.0","id":"close","method":"connection.close","params":{"connectionId":"connection-a"}},
-    {"jsonrpc":"2.0","id":"close-attempt","method":"connection.close","params":{"attemptId":"opening-a"}},
-    {"jsonrpc":"2.0","id":"close-source","method":"connection.close","params":{"dataSourceId":"datasource-a"}},
-    {"jsonrpc":"2.0","id":"context","method":"connection.setContext","params":{"connectionId":"connection-a","catalog":null,"schema":"PUBLIC","readOnly":true,"autoCommit":true}},
-    {"jsonrpc":"2.0","id":"commit","method":"connection.commit","params":{"connectionId":"connection-a"}},
-    {"jsonrpc":"2.0","id":"rollback","method":"connection.rollback","params":{"connectionId":"connection-a"}},
-    {"jsonrpc":"2.0","id":"metadata","method":"metadata.list","params":{"connectionId":"connection-a","request":{"kind":"SCHEMA","catalog":null,"schema":"PUBLIC","category":"TABLE","objectName":null,"objectType":null}}},
-    {"jsonrpc":"2.0","id":"execute","method":"query.execute","params":{"connectionId":"connection-a","executionId":"execution-a","sql":"select 'é界😀', null, ''","maxRows":500,"fetchSize":200}},
-    {"jsonrpc":"2.0","id":"cancel-query","method":"query.cancel","params":{"executionId":"execution-a"}}
-  ]
+  "valid": [
+    {
+      "jsonrpc": "2.0",
+      "id": "hello",
+      "method": "hello",
+      "params": {
+        "protocolVersion": 1,
+        "clientVersion": "fixture",
+        "futureOptional": true
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "ping",
+      "method": "ping",
+      "params": {}
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "shutdown",
+      "method": "shutdown",
+      "params": {}
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "resolve",
+      "method": "driver.resolve",
+      "params": {
+        "resolutionId": "resolution-a",
+        "driver": {
+          "id": "h2",
+          "driverClass": "org.h2.Driver",
+          "coordinates": "com.h2database:h2:2.3.232",
+          "providerId": "h2"
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "cancel-driver",
+      "method": "driver.cancel",
+      "params": {
+        "resolutionId": "resolution-a"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "inspect",
+      "method": "driver.inspect",
+      "params": {
+        "providerId": "synthetic",
+        "classpath": [
+          "/synthetic/driver-a.jar",
+          "/synthetic/dependency-b.jar"
+        ],
+        "driverClass": "synthetic.Driver"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "inspect-installed",
+      "method": "driver.inspect",
+      "params": {
+        "driver": {
+          "id": "h2",
+          "driverClass": "org.h2.Driver",
+          "coordinates": "com.h2database:h2"
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "open",
+      "method": "connection.open",
+      "params": {
+        "dataSourceId": "datasource-a",
+        "loaderId": "loader-a",
+        "driverClass": "org.h2.Driver",
+        "jdbcUrl": "jdbc:h2:mem:synthetic",
+        "properties": {
+          "user": "synthetic",
+          "password": "synthetic-ephemeral-only"
+        },
+        "catalog": null,
+        "schema": "PUBLIC",
+        "autoCommit": false,
+        "readOnly": false
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "test",
+      "method": "connection.test",
+      "params": {
+        "dataSourceId": "datasource-a",
+        "loaderId": "loader-a",
+        "driverClass": "org.h2.Driver",
+        "jdbcUrl": "jdbc:h2:mem:synthetic",
+        "properties": {}
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "close",
+      "method": "connection.close",
+      "params": {
+        "connectionId": "connection-a"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "close-attempt",
+      "method": "connection.close",
+      "params": {
+        "attemptId": "opening-a"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "close-source",
+      "method": "connection.close",
+      "params": {
+        "dataSourceId": "datasource-a"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "context",
+      "method": "connection.setContext",
+      "params": {
+        "connectionId": "connection-a",
+        "catalog": null,
+        "schema": "PUBLIC",
+        "readOnly": true,
+        "autoCommit": true
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "commit",
+      "method": "connection.commit",
+      "params": {
+        "connectionId": "connection-a"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "rollback",
+      "method": "connection.rollback",
+      "params": {
+        "connectionId": "connection-a"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "metadata",
+      "method": "metadata.list",
+      "params": {
+        "connectionId": "connection-a",
+        "metadataJobId": "metadata-list-a",
+        "request": {
+          "kind": "SCHEMA",
+          "catalog": null,
+          "schema": "PUBLIC",
+          "category": "TABLE",
+          "objectName": null,
+          "objectType": null
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "package-source",
+      "method": "metadata.source",
+      "params": {
+        "connectionId": "connection-a",
+        "metadataJobId": "metadata-job-a",
+        "request": {
+          "kind": "OBJECT",
+          "catalog": null,
+          "schema": "owner_界",
+          "objectName": "package_%",
+          "objectType": "PACKAGE",
+          "objectId": "[\"db2-package\",\"owner_界\",\"package_%\",\"VERSION_1\",\"0123456789ABCDEF\"]"
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "cancel-metadata",
+      "method": "metadata.cancel",
+      "params": {
+        "metadataJobId": "metadata-job-a"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "execute",
+      "method": "query.execute",
+      "params": {
+        "connectionId": "connection-a",
+        "executionId": "execution-a",
+        "sql": "select 'é界😀', null, ''",
+        "maxRows": 500,
+        "fetchSize": 200
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "cancel-query",
+      "method": "query.cancel",
+      "params": {
+        "executionId": "execution-a"
+      }
+    }
+  ],
+  "responses": {
+    "metadata.source": {
+      "contextRevision": 7,
+      "documents": [
+        {
+          "title": "owner_界.package_% — PACKAGE",
+          "kind": "DDL",
+          "text": "CREATE PACKAGE package_% AS\n  PROCEDURE copy_text(value VARCHAR(64));\nEND; -- literal: é界😀\n"
+        }
+      ]
+    },
+    "metadata.cancel": {
+      "status": "requested",
+      "statementAttached": false
+    }
+  }
 }

@@ -228,7 +228,11 @@ including request ownership, refresh, listener cleanup and non-persistence.
    Expose endpoint/client/scope/callback settings and token acquisition actions.
 2. Following the user's updated UAT instruction, display a selectable/copyable
    authorization URL so login can be completed in a GUI browser, including when
-   Kode runs remotely. Accept the matching callback or explicit pasted redirect;
+   Kode runs remotely. Keep the URL and its controls visible in the Auth tab, and
+   provide an immediately available button and masked text entry for an OAuth 2.0
+   access token obtained in the browser. Accept the matching callback, explicit
+   pasted redirect, or a token pasted for the current flow or directly for the
+   selected request;
    show pending/cancelled/error/success state without blocking the editor.
    B008 requires Kode's own ephemeral loopback callback instead of a Postman
    callback. Support the requested HTTPS localhost callback as well as native

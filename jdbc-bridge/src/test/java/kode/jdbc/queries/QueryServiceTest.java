@@ -75,9 +75,11 @@ public class QueryServiceTest {
                             if(track.mode.equals("unsupported"))throw new SQLFeatureNotSupportedException("Synthetic unsupported cancellation");
                             if(track.mode.equals("hanging")){while(track.releaseCancel.getCount()>0)try{track.releaseCancel.await();}catch(InterruptedException ignored){}return null;}
                             if(track.mode.equals("entry-race")){if(track.firstCancel.getCount()>0)track.firstCancel.countDown();else track.secondCancel.countDown();return null;}
+                            if(track.mode.equals("oracle-cancel")){track.firstCancel.countDown();return null;}
                         }
                         if(name.equals("execute")){track.entered.countDown();
                             if(ordinal==0&&track.mode.equals("entry-race")){track.firstCancel.await();track.secondCancel.await();throw new SQLException("Synthetic cancelled after execute entered","57014");}
+                            if(ordinal==0&&track.mode.equals("oracle-cancel")){track.firstCancel.await();throw new SQLException("Synthetic Oracle user requested cancel","72000",1013);}
                             if(ordinal==0&&(track.mode.equals("hanging")||track.mode.equals("unsupported")))track.releaseExecute.await();
                             if(track.mode.startsWith("mixed")){index.set(0);return true;}
                         }
@@ -108,6 +110,9 @@ public class QueryServiceTest {
     }
     @Test void cancellationRacingExecuteEntryRetriesOnlyItsOwnStatementAndCannotReachTheNext() throws Exception {
         try(Script script=new Script("entry-race")){Fixture f=script.fixture;Capture events=new Capture();CompletionStage<JsonNode> original=f.queries.execute(f.params("entry","select 1"),events);assertTrue(script.track.entered.await(2,TimeUnit.SECONDS));assertEquals("requested",await(f.queries.cancel("entry")).path("status").asText());JsonNode result=await(original);assertEquals("cancelled",result.path("outcome").asText());assertTrue(result.path("previewIncomplete").asBoolean());assertTrue(script.track.oldCancels.get()>=2);events.finalOrder(result);assertEquals("alreadyFinished",await(f.queries.cancel("entry")).path("status").asText());assertEquals("completed",f.execute("select 2",new Capture()).path("outcome").asText());assertEquals(0,script.track.newCancels.get());}
+    }
+    @Test void oracleUserRequestedCancellationVendorCodeIsReportedAsCancelled() throws Exception {
+        try(Script script=new Script("oracle-cancel")){Fixture f=script.fixture;Capture events=new Capture();CompletionStage<JsonNode> original=f.queries.execute(f.params("oracle-cancel","select 1"),events);assertTrue(script.track.entered.await(2,TimeUnit.SECONDS));assertEquals("requested",await(f.queries.cancel("oracle-cancel")).path("status").asText());JsonNode result=await(original);assertEquals("cancelled",result.path("outcome").asText());assertEquals(1013,result.path("error").path("vendorCode").asInt());events.finalOrder(result);}
     }
     @Test void unsupportedCancellationIsVisibleAndAStillRunningOperationKeepsItsOriginalFinal() throws Exception {
         try(Script script=new Script("unsupported")){Fixture f=script.fixture;CompletionStage<JsonNode> original=f.queries.execute(f.params("unsupported","select 1"),new Capture());assertTrue(script.track.entered.await(2,TimeUnit.SECONDS));assertEquals("unsupported",await(f.queries.cancel("unsupported")).path("status").asText());assertFalse(original.toCompletableFuture().isDone());script.track.releaseExecute.countDown();assertEquals("cancelled",await(original).path("outcome").asText());}

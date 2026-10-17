@@ -526,6 +526,7 @@ impl AppState {
                 }
                 Intent::OAuth(op) => self.rest_oauth_action(op)?,
                 Intent::OAuthRedirect { flow, text } => self.rest_oauth_redirect(flow, text),
+                Intent::OAuthAccessToken { flow, text } => self.rest_oauth_access_token(flow, text),
                 Intent::Send => {
                     if let Some(form) = &self.rest.form {
                         self.send_rest_request(form.path.clone())?;

@@ -90,6 +90,161 @@ fn fixture(root: &Path) -> (InstallJob, Packages) {
         ])),
     )
 }
+fn native_fixture(root: &Path, loader: &str) -> (InstallJob, Packages) {
+    let main = archive(&[
+        ("loader", &format!("#!/bin/sh\n{loader}\n")),
+        ("bin/server", "native server fixture"),
+        ("libfixture.so", "library fixture"),
+        ("headers/stddef.h", "bundled header fixture"),
+    ]);
+    let data = json!({"servers":[{"id":"native","name":"Native fixture","versions":[{"version":"1","downloads":[{
+        "url":"https://example.invalid/native.zip","sha256":format!("{:x}",Sha256::digest(&main)),
+        "command":["loader","--inhibit-cache","--library-path","$ORIGIN/../lib","bin/server","--resource-dir=headers","--server-argument"],
+        "kodeRsPackage":{"version":1,"launcher":"gnuelf"}
+    }]}]}]});
+    let entry = Catalog::parse(&serde_json::to_vec(&data).unwrap())
+        .unwrap()
+        .servers
+        .remove(0);
+    (
+        InstallJob {
+            entry,
+            options: options(root),
+        },
+        Packages(BTreeMap::from([(
+            "https://example.invalid/native.zip".into(),
+            main,
+        )])),
+    )
+}
+const PRIVATE_LIBRARIES: &str = "[ \"$1\" = --list ] && [ \"$#\" -eq 5 ] || exit 91\nprintf 'libfixture.so => %s/libfixture.so (0x1234)\\n' \"$PWD\"";
+
+#[tokio::test]
+async fn native_closure_is_checked_before_publication_and_launch_with_server_args_removed() {
+    let root = tempfile::tempdir().unwrap();
+    let (job, packages) = native_fixture(root.path(), PRIVATE_LIBRARIES);
+    tokio::task::spawn_blocking(move || {
+        let receipt = job
+            .run(&packages, &CancellationToken::new(), |_| {})
+            .unwrap();
+        let command = job
+            .options
+            .resolve_for_launch(
+                &job.entry,
+                Some(&receipt.manifest),
+                root.path(),
+                &CancellationToken::new(),
+            )
+            .unwrap();
+        assert_eq!(command.args.last().unwrap(), "--server-argument");
+        assert_eq!(
+            command.args[5],
+            format!(
+                "--resource-dir={}",
+                receipt
+                    .directory
+                    .join("headers")
+                    .canonicalize()
+                    .unwrap()
+                    .display()
+            )
+        );
+        assert_eq!(
+            receipt.manifest.command.as_ref().unwrap()[5],
+            "--resource-dir=headers"
+        );
+        fs::remove_file(receipt.directory.join("libfixture.so")).unwrap();
+        let error = job
+            .options
+            .resolve_for_launch(
+                &job.entry,
+                Some(&receipt.manifest),
+                root.path(),
+                &CancellationToken::new(),
+            )
+            .unwrap_err();
+        assert!(
+            error.to_string().contains("Native dependency is missing"),
+            "{error}"
+        );
+        let mut overridden = receipt.manifest;
+        overridden.command = Some(vec!["loader".into(), "--local-override".into()]);
+        assert!(
+            job.options
+                .resolve_for_launch(
+                    &job.entry,
+                    Some(&overridden),
+                    root.path(),
+                    &CancellationToken::new()
+                )
+                .is_ok()
+        );
+    })
+    .await
+    .unwrap();
+}
+
+#[tokio::test]
+async fn missing_or_external_native_library_preserves_previous_install() {
+    for loader in [
+        "printf 'libmissing.so: cannot open shared object file' >&2; exit 1",
+        "printf 'libfixture.so => /bin/sh (0x1234)\\n'",
+        "printf 'no mappings\\n'",
+    ] {
+        let root = tempfile::tempdir().unwrap();
+        let (job, packages) = native_fixture(root.path(), loader);
+        let old = job.options.directory("native").unwrap();
+        fs::create_dir_all(&old).unwrap();
+        fs::write(old.join("old"), "previous install").unwrap();
+        let install_root = job.options.install_root.clone();
+        let error = tokio::task::spawn_blocking(move || {
+            job.run(&packages, &CancellationToken::new(), |_| {})
+        })
+        .await
+        .unwrap()
+        .unwrap_err();
+        assert!(
+            error.to_string().contains("Native") || error.to_string().contains("native"),
+            "{error}"
+        );
+        assert_eq!(
+            fs::read_to_string(old.join("old")).unwrap(),
+            "previous install"
+        );
+        assert_eq!(fs::read_dir(&install_root).unwrap().count(), 1);
+    }
+}
+
+#[tokio::test]
+async fn native_library_probe_cancellation_joins_child_and_retains_previous_install() {
+    let root = tempfile::tempdir().unwrap();
+    let marker = root.path().join("probe-started");
+    let loader = format!("printf started > '{}'; sleep 30", marker.display());
+    let (job, packages) = native_fixture(root.path(), &loader);
+    let old = job.options.directory("native").unwrap();
+    fs::create_dir_all(&old).unwrap();
+    fs::write(old.join("old"), "previous install").unwrap();
+    let cancel = CancellationToken::new();
+    let child_cancel = cancel.clone();
+    let work = tokio::task::spawn_blocking(move || job.run(&packages, &child_cancel, |_| {}));
+    tokio::time::timeout(std::time::Duration::from_secs(3), async {
+        while !marker.exists() {
+            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .unwrap();
+    cancel.cancel();
+    let result = tokio::time::timeout(std::time::Duration::from_secs(2), work)
+        .await
+        .unwrap()
+        .unwrap();
+    assert!(matches!(result, Err(DomainError::Cancelled)));
+    assert_eq!(
+        fs::read_to_string(old.join("old")).unwrap(),
+        "previous install"
+    );
+}
 #[tokio::test]
 async fn dependency_closure_is_pinned_isolated_and_published_with_runtime_manifest() {
     let root = tempfile::tempdir().unwrap();

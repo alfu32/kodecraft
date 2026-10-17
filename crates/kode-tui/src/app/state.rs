@@ -261,6 +261,7 @@ pub struct AppState {
     pub captured_sequence: u64,
     pub pending_capture: Option<JobTag>,
     pub pending_open: Option<JobTag>,
+    pending_open_focus: Option<Option<FocusId>>,
     pub pending_picker: Option<JobTag>,
     pub(super) pending_picker_focus: Option<FocusId>,
     center_editor: bool,
@@ -354,6 +355,7 @@ impl AppState {
             captured_sequence: 0,
             pending_capture: None,
             pending_open: None,
+            pending_open_focus: None,
             pending_picker: None,
             pending_picker_focus: None,
             center_editor: false,
@@ -550,6 +552,10 @@ impl AppState {
         if self.closing || self.pending_open != Some(tag) {
             return Ok(false);
         }
+        let focus_unchanged = self
+            .pending_open_focus
+            .take()
+            .is_none_or(|focused| self.focus.focused == focused);
         self.pending_open = None;
         self.cache_main_view()?;
         if let Some(mut old) = self.editor.take() {
@@ -575,7 +581,9 @@ impl AppState {
             self.generation,
             self.image_settings,
         )?;
-        self.focus.focused = Some(view.id);
+        if focus_unchanged {
+            self.focus.focused = Some(view.id);
+        }
         self.image = Some(view);
         self.splash = false;
         self.notice.clear();
@@ -608,6 +616,10 @@ impl AppState {
         if self.closing || self.pending_open != Some(tag) {
             return Ok(false);
         }
+        let focus_unchanged = self
+            .pending_open_focus
+            .take()
+            .is_none_or(|focused| self.focus.focused == focused);
         self.pending_open = None;
         self.detach_image();
         self.cache_main_view()?;
@@ -632,7 +644,9 @@ impl AppState {
                 crate::viewers::hex::HexView::new(path.clone(), opened.mime, opened.bytes)?,
             ),
         };
-        self.focus.focused = Some(view.id);
+        if focus_unchanged {
+            self.focus.focused = Some(view.id);
+        }
         self.active_hex = Some(path.clone());
         self.splash = false;
         self.notice = opened
@@ -695,6 +709,7 @@ impl AppState {
                 self.clear_diff()?;
             }
             self.pending_open = Some(tag);
+            self.pending_open_focus = Some(self.focus.focused);
         }
         self.work.push(AppWork::Open {
             tag,
@@ -739,6 +754,10 @@ impl AppState {
         if self.closing || self.pending_open != Some(tag) {
             return Ok(false);
         }
+        let focus_unchanged = self
+            .pending_open_focus
+            .take()
+            .is_none_or(|focused| self.focus.focused == focused);
         self.pending_open = None;
         self.detach_image();
         if let Some(path) = self.active_hex.take()
@@ -804,7 +823,9 @@ impl AppState {
                     .map(|work| AppWork::Editor { owner, work }),
             );
         }
-        self.focus.focused = Some(view.input.id);
+        if focus_unchanged {
+            self.focus.focused = Some(view.input.id);
+        }
         self.splash = false;
         if let Some(path) = opened.recovery {
             self.notice = format!(
@@ -1012,6 +1033,9 @@ impl AppState {
                 Intent::Details { title, text } => self.show_diagnostic(title, text)?,
                 Intent::Work(work) => self.work.push(AppWork::Database(work)),
                 Intent::Console { source, sql } => self.open_database_console(source, sql)?,
+                Intent::Source { title, documents } => {
+                    self.open_database_source(title, documents)?
+                }
                 Intent::OpenSession(id) => {
                     if let Some(document) = self.sql_document(&id) {
                         self.open_database_session(document)?;

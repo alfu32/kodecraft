@@ -135,6 +135,6 @@ public final class QueryService implements AutoCloseable {
         }
         private void flush(String resultId,ArrayNode batch) throws Exception {ObjectNode event=object().put("type","rows").put("resultSetId",resultId);event.set("rows",batch);emit(event);}
     }
-    private static boolean isCancellation(Throwable error){SQLException sql=SqlErrors.find(error);return sql!=null&&Set.of("57014","HY008","70100").contains(sql.getSQLState()==null?"":sql.getSQLState());}
+    private static boolean isCancellation(Throwable error){SQLException sql=SqlErrors.find(error);return sql!=null&&(sql.getErrorCode()==1013||Set.of("57014","HY008","70100").contains(sql.getSQLState()==null?"":sql.getSQLState()));}
     @Override public synchronized void close(){if(!stopping.compareAndSet(false,true))return;for(Job job:active.values())job.cancel();cancels.shutdown();deadlines.shutdown();}
 }

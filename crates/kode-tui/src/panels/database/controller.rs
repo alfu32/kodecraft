@@ -18,7 +18,10 @@ use kode_database::{
     catalog::{DriverRegistry, UrlCatalog},
     connections::TestResult,
     drivers::{Installed, Progress},
-    model::{DataSourceDefinition, DriverSpec, MetadataResult},
+    model::{
+        DataSourceDefinition, DatabaseObject, DriverSpec, MetadataRequest, MetadataResult,
+        MetadataSourceDocument,
+    },
 };
 use kode_platform::jobs::CancellationToken;
 use ratatui::{
@@ -37,6 +40,11 @@ pub enum Operation {
     Close(String),
     Test(Draft),
     Metadata(Load),
+    Source {
+        source: String,
+        object: DatabaseObject,
+        request: MetadataRequest,
+    },
     Resolve {
         spec: DriverSpec,
         progress: watch::Sender<Progress>,
@@ -60,6 +68,11 @@ pub enum Context {
     Close,
     Test,
     Metadata(Load),
+    Source {
+        source: String,
+        object: DatabaseObject,
+        request: MetadataRequest,
+    },
     Resolve,
     JavaRuntime,
     Recents(String),
@@ -75,6 +88,15 @@ impl Work {
             Operation::Close(_) => Context::Close,
             Operation::Test(_) => Context::Test,
             Operation::Metadata(load) => Context::Metadata(load.clone()),
+            Operation::Source {
+                source,
+                object,
+                request,
+            } => Context::Source {
+                source: source.clone(),
+                object: object.clone(),
+                request: request.clone(),
+            },
             Operation::Resolve { .. } => Context::Resolve,
             Operation::JavaRuntime { .. } => Context::JavaRuntime,
             Operation::Recents(driver) => Context::Recents(driver.clone()),
@@ -94,6 +116,7 @@ pub enum Report {
         warning: Option<String>,
     },
     Metadata(Arc<MetadataResult>),
+    Source(Arc<kode_database::metadata::Source>),
     Installed(BridgeResult<Installed>),
     Recents(Vec<String>),
     JavaRuntime(String),
@@ -118,6 +141,10 @@ pub enum Intent {
     Console {
         source: String,
         sql: String,
+    },
+    Source {
+        title: String,
+        documents: Vec<MetadataSourceDocument>,
     },
     OpenSession(String),
     RemoveSession(String),
@@ -144,6 +171,7 @@ pub struct DatabasePanel {
     form_id: u64,
     modal_id: FocusId,
     previous: Option<Option<FocusId>>,
+    source_request: Option<JobTag>,
 }
 impl Drop for DatabasePanel {
     fn drop(&mut self) {
@@ -174,6 +202,7 @@ impl DatabasePanel {
             form_id: 0,
             modal_id: FocusId(RequestId::fresh()?.0),
             previous: None,
+            source_request: None,
         })
     }
     pub fn configure(&mut self, registry: Arc<DriverRegistry>, urls: Arc<UrlCatalog>) {
@@ -214,10 +243,21 @@ impl DatabasePanel {
                 format!("Install JDBC driver: {}", spec.display_name)
             }
             Operation::Metadata(load) => format!("Metadata: {}", load.key.source()),
+            Operation::Source { object, .. } => {
+                format!("Package source: {}", object.qualified_name)
+            }
             Operation::JavaRuntime { .. } => "Install optional Java runtime".into(),
             Operation::Recents(driver) => format!("JDBC URL suggestions: {driver}"),
         };
         self.labels.insert(tag, label);
+        if matches!(&operation, Operation::Source { .. }) {
+            if let Some(previous) = self.source_request.replace(tag)
+                && let Some(token) = self.pending.get(&previous)
+            {
+                token.cancel();
+            }
+            self.tree.notice = "Loading package source… Esc cancels".into();
+        }
         self.pending.insert(tag, cancel.clone());
         self.intents.push(Intent::Work(Box::new(Work {
             tag,
@@ -360,6 +400,18 @@ impl DatabasePanel {
         }
     }
     pub fn dispatch(&mut self, event: &InputEvent, focus: &mut FocusState) -> Result<()> {
+        if self.source_request.is_some()
+            && !self.has_modal()
+            && matches!(event,InputEvent::Key(input) if input.key==Key::Escape && !input.modifiers.ctrl && !input.modifiers.alt && !input.modifiers.meta)
+        {
+            if let Some(tag) = self.source_request.take()
+                && let Some(token) = self.pending.get(&tag)
+            {
+                token.cancel();
+            }
+            self.tree.notice = "Package source request cancelled".into();
+            return Ok(());
+        }
         if matches!(event,InputEvent::Key(input) if input.key==Key::Function(4) && !input.modifiers.ctrl && !input.modifiers.alt && !input.modifiers.meta)
         {
             self.details();
@@ -426,13 +478,21 @@ impl DatabasePanel {
         } else if let Some(menu) = &mut self.menu {
             menu.dispatch(event);
             if menu.finished {
-                if let Some(sql) = menu.sql.take() {
+                let mut menu = self.menu.take().expect("finished object menu");
+                if menu.source_requested {
+                    if let Some(request) = DatabaseTree::request_for(&menu.object) {
+                        self.work(Operation::Source {
+                            source: menu.source,
+                            object: menu.object,
+                            request,
+                        })?;
+                    }
+                } else if let Some(sql) = menu.sql.take() {
                     self.intents.push(Intent::Console {
                         source: menu.source.clone(),
                         sql,
                     });
                 }
-                self.menu = None;
             }
         } else if let Some(form) = &mut self.form {
             form.dispatch(event);
@@ -573,6 +633,17 @@ impl DatabasePanel {
             .labels
             .remove(&tag)
             .unwrap_or_else(|| "Database operation".into());
+        if matches!(&context, Context::Source { .. }) {
+            if self.source_request != Some(tag) {
+                return;
+            }
+            self.source_request = None;
+            if !current {
+                self.tree.notice =
+                    "Package source context changed; reopen it from the current connection".into();
+                return;
+            }
+        }
         if tag.workspace != self.tree.generation {
             return;
         }
@@ -600,6 +671,29 @@ impl DatabasePanel {
             return;
         }
         match result {
+            Ok(Report::Source(result)) => {
+                if let Context::Source { object, .. } = context {
+                    let selected = self
+                        .tree
+                        .lines
+                        .get(self.tree.selected)
+                        .and_then(|line| line.object.as_ref());
+                    if !self.has_modal()
+                        && focus.focused == Some(self.tree.id)
+                        && selected.is_some_and(|node| node.id == object.id)
+                    {
+                        self.intents.push(Intent::Source {
+                            title: object.qualified_name,
+                            documents: result.result.documents.clone(),
+                        });
+                        self.tree.notice = "Package source loaded".into();
+                    } else {
+                        self.tree.notice =
+                            "Package source context changed; reopen it from the selected object"
+                                .into();
+                    }
+                }
+            }
             Ok(Report::JavaRuntime(message)) => {
                 if let Some(dialog) = &mut self.java_runtime {
                     dialog.complete(tag, Ok(message.clone()));

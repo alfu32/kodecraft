@@ -129,6 +129,395 @@ fn editor_caret(app: &mut AppRuntime, offset: usize) {
         .unwrap();
     paint(app);
 }
+
+#[tokio::test]
+async fn delayed_initial_views_preserve_newer_panel_and_modal_focus() {
+    use kode_tui::app::panel;
+
+    let cases = ["text", "image", "hex"];
+    for case in cases {
+        for focus_mode in ["panel", "modal"] {
+            let directory = tempfile::tempdir().unwrap();
+            let root = directory.path();
+            let filename = match case {
+                "text" => {
+                    fs::write(root.join("initial.txt"), "initial text\n").unwrap();
+                    "initial.txt"
+                }
+                "image" => {
+                    let fixture = Path::new(env!("CARGO_MANIFEST_DIR"))
+                        .join("../../fixtures/images/checker.png");
+                    fs::copy(fixture, root.join("initial.png")).unwrap();
+                    "initial.png"
+                }
+                "hex" => {
+                    fs::write(root.join("initial.bin"), [0xff, 0xfe, 0, 65]).unwrap();
+                    "initial.bin"
+                }
+                _ => unreachable!(),
+            };
+            let mut app = make(root, Some(filename), Arc::new(FakeClock::default()));
+            let shortcut = if focus_mode == "panel" { '7' } else { 'f' };
+            app.state
+                .dispatch(&InputEvent::Key(KeyInput {
+                    key: Key::Character(shortcut),
+                    modifiers: Modifiers {
+                        alt: true,
+                        ..Default::default()
+                    },
+                    repeat: false,
+                }))
+                .unwrap();
+            let (expected_focus, expected_panel) = if focus_mode == "panel" {
+                (
+                    app.state.settings.focus_id(app.state.lsp_settings.id),
+                    panel::SETTINGS,
+                )
+            } else {
+                (
+                    app.state.search.as_ref().expect("project search modal").id,
+                    panel::FILES,
+                )
+            };
+            assert_eq!(app.state.tabs.selected, expected_panel);
+            let open_finished = |app: &AppRuntime| match case {
+                "text" => app.state.editor.is_some(),
+                "image" => app.state.image.is_some(),
+                "hex" => app.state.active_hex.is_some(),
+                _ => unreachable!(),
+            };
+            until(&mut app, open_finished).await;
+            assert_eq!(
+                app.state.focus.focused,
+                Some(expected_focus),
+                "delayed {case} open stole focus from the {focus_mode}"
+            );
+            assert_eq!(app.state.tabs.selected, expected_panel);
+            if focus_mode == "modal" {
+                app.state.dispatch(&key(Key::Escape, false)).unwrap();
+                assert!(app.state.search.is_none());
+            }
+            app.flush_before_leave().await.unwrap();
+            app.quiesce().await.unwrap();
+        }
+    }
+}
+
+#[tokio::test]
+async fn late_file_open_install_cannot_replace_a_newer_prepared_open() {
+    use kode_tui::app::{
+        state::OpenDestination,
+        workspace::{OpenRequest, prepare_open},
+    };
+    use kode_workspace::mime::ImageCapabilities;
+
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    let older_path = root.join("older.rs");
+    let newer_path = root.join("newer.rs");
+    fs::write(&older_path, "fn older() {}\n").unwrap();
+    fs::write(&newer_path, "fn newer() {}\n").unwrap();
+    let mut app = make(root, None, Arc::new(FakeClock::default()));
+    let older_request = OpenRequest {
+        path: older_path.clone(),
+        saved: None,
+        navigation: None,
+    };
+    app.state
+        .open(older_request.clone(), OpenDestination::Main)
+        .unwrap();
+    let older_tag = app.state.pending_open.unwrap();
+    let newer_request = OpenRequest {
+        path: newer_path.clone(),
+        saved: None,
+        navigation: None,
+    };
+    app.state
+        .open(newer_request.clone(), OpenDestination::Main)
+        .unwrap();
+    let newer_tag = app.state.pending_open.unwrap();
+    app.state
+        .work
+        .retain(|work| !matches!(work, AppWork::Open { .. }));
+
+    let images = ImageCapabilities::default();
+    let cancel = CancellationToken::new();
+    let older = prepare_open(
+        root,
+        older_request,
+        older_tag,
+        &app.state.detector,
+        &images,
+        &cancel,
+    )
+    .unwrap();
+    let newer = prepare_open(
+        root,
+        newer_request,
+        newer_tag,
+        &app.state.detector,
+        &images,
+        &cancel,
+    )
+    .unwrap();
+
+    assert!(app.state.install_main(newer_tag, newer).unwrap());
+    assert!(!app.state.install_main(older_tag, older).unwrap());
+    let view = app.state.editor.as_ref().expect("newer file remains open");
+    let document = app.state.documents.document(view.document_id()).unwrap();
+    assert_eq!(document.origin(), &DocumentOrigin::File(newer_path));
+    assert_eq!(document.snapshot().text().as_ref(), "fn newer() {}\n");
+    assert_eq!(view.host.descriptor.language.as_deref(), Some("rust"));
+    assert_eq!(view.input.state.caret.cursor(), kode_core::ByteOffset(0));
+
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn missing_file_preserves_dirty_editor_and_invalid_bytes_open_as_unsaved_hex() {
+    use kode_tui::app::{state::OpenDestination, workspace::OpenRequest};
+
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    fs::write(root.join("current.rs"), "fn current() {}\n").unwrap();
+    let invalid = root.join("invalid.rs");
+    fs::write(&invalid, [0xff, 0xfe]).unwrap();
+    let missing = root.join("missing.rs");
+    let mut app = make(root, Some("current.rs"), Arc::new(FakeClock::default()));
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    app.state
+        .dispatch(&InputEvent::Paste("draft ".into()))
+        .unwrap();
+    app.pump().unwrap();
+    let current_id = app.state.editor.as_ref().unwrap().document_id();
+    let current_view_id = app.state.editor.as_ref().unwrap().input.id;
+    let expected_text = app
+        .state
+        .documents
+        .document(current_id)
+        .unwrap()
+        .snapshot()
+        .text()
+        .to_string();
+    assert!(app.state.documents.document(current_id).unwrap().is_dirty());
+    app.state.notice.clear();
+    app.state
+        .open(
+            OpenRequest {
+                path: missing.clone(),
+                saved: None,
+                navigation: None,
+            },
+            OpenDestination::Main,
+        )
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.pending_open.is_none() && !app.state.notice.is_empty()
+    })
+    .await;
+    assert!(app.state.notice.contains("missing.rs"));
+    assert_eq!(app.state.editor.as_ref().unwrap().document_id(), current_id);
+    assert_eq!(app.state.editor.as_ref().unwrap().input.id, current_view_id);
+    assert_eq!(
+        app.state
+            .documents
+            .document(current_id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        expected_text
+    );
+    assert!(app.state.documents.document(current_id).unwrap().is_dirty());
+    assert_eq!(app.state.focus.focused, Some(current_view_id));
+    assert!(
+        app.state
+            .documents
+            .find_origin(&DocumentOrigin::File(missing))
+            .is_none()
+    );
+
+    app.state.notice.clear();
+    app.state
+        .open(
+            OpenRequest {
+                path: invalid.clone(),
+                saved: None,
+                navigation: None,
+            },
+            OpenDestination::Main,
+        )
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.pending_open.is_none() && app.state.active_hex.as_ref() == Some(&invalid)
+    })
+    .await;
+    assert_eq!(
+        app.state.active_hex_view().unwrap().buffer.bytes(),
+        [0xff, 0xfe]
+    );
+    assert!(app.state.notice.contains("UTF-8"));
+    assert!(app.state.notice.contains("binary saving is unavailable"));
+    assert_eq!(fs::read(&invalid).unwrap(), [0xff, 0xfe]);
+    assert!(app.state.documents.document(current_id).unwrap().is_dirty());
+    assert_eq!(
+        app.state
+            .documents
+            .document(current_id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        expected_text
+    );
+
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn file_save_persists_the_buffer_and_external_conflict_keeps_dirty_text() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    let path = root.join("save.rs");
+    fs::write(&path, "fn original() {}\n").unwrap();
+    let mut app = make(root, Some("save.rs"), Arc::new(FakeClock::default()));
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    paint(&mut app);
+    let id = app.state.editor.as_ref().unwrap().document_id();
+
+    app.state
+        .dispatch(&InputEvent::Paste("// saved ".into()))
+        .unwrap();
+    app.state.dispatch(&key(Key::Character('s'), true)).unwrap();
+    app.pump().unwrap();
+    until(&mut app, |app| {
+        !app.state.documents.document(id).unwrap().is_dirty()
+    })
+    .await;
+    let saved_text = app
+        .state
+        .documents
+        .document(id)
+        .unwrap()
+        .snapshot()
+        .text()
+        .to_string();
+    assert_eq!(fs::read_to_string(&path).unwrap(), saved_text);
+
+    app.state
+        .dispatch(&InputEvent::Paste("// local draft ".into()))
+        .unwrap();
+    let dirty_text = app
+        .state
+        .documents
+        .document(id)
+        .unwrap()
+        .snapshot()
+        .text()
+        .to_string();
+    assert!(app.state.documents.document(id).unwrap().is_dirty());
+    fs::write(&path, "// external writer\n").unwrap();
+    app.state.dispatch(&key(Key::Character('s'), true)).unwrap();
+    app.pump().unwrap();
+    until(&mut app, |app| app.state.documents.save_error(id).is_some()).await;
+
+    assert_eq!(fs::read_to_string(&path).unwrap(), "// external writer\n");
+    assert_eq!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        dirty_text
+    );
+    assert!(app.state.documents.document(id).unwrap().is_dirty());
+    assert!(app.state.notice.contains("save"), "{}", app.state.notice);
+    assert!(app.state.documents.save_error(id).is_some());
+
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn file_save_preserves_bom_crlf_and_missing_final_newline_on_repeated_saves() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    let path = root.join("format.txt");
+    fs::write(&path, b"\xef\xbb\xbfone\r\ntwo").unwrap();
+    let mut app = make(root, Some("format.txt"), Arc::new(FakeClock::default()));
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    paint(&mut app);
+    let id = app.state.editor.as_ref().unwrap().document_id();
+    editor_caret(&mut app, 8);
+    app.state.dispatch(&InputEvent::Paste("!".into())).unwrap();
+    app.state.dispatch(&key(Key::Character('s'), true)).unwrap();
+    until(&mut app, |app| {
+        !app.state.documents.document(id).unwrap().is_dirty()
+    })
+    .await;
+    assert_eq!(fs::read(&path).unwrap(), b"\xef\xbb\xbfone\r\ntwo!");
+
+    app.state.dispatch(&key(Key::Character('s'), true)).unwrap();
+    app.pump().unwrap();
+    until(&mut app, |app| {
+        !app.state.documents.document(id).unwrap().is_dirty()
+    })
+    .await;
+    assert_eq!(fs::read(&path).unwrap(), b"\xef\xbb\xbfone\r\ntwo!");
+
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn file_search_ctrl_enter_finds_all_without_changing_the_document() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    let source = "first needle\nsecond needle\n";
+    fs::write(root.join("search.txt"), source).unwrap();
+    let mut app = make(root, Some("search.txt"), Arc::new(FakeClock::default()));
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    let document = app.state.editor.as_ref().unwrap().document_id();
+
+    app.state.dispatch(&key(Key::Character('f'), true)).unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("needle".into()))
+        .unwrap();
+    app.state.dispatch(&key(Key::Enter, true)).unwrap();
+    assert!(app.state.editor.as_ref().unwrap().search.visible);
+    until(&mut app, |app| {
+        app.state
+            .editor
+            .as_ref()
+            .and_then(|view| view.search.results.report.as_ref())
+            .is_some_and(|report| report.matches.len() == 2)
+    })
+    .await;
+    assert_eq!(
+        app.state
+            .documents
+            .document(document)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        source
+    );
+    assert!(!app.state.work.iter().any(|work| matches!(
+        work,
+        AppWork::Editor {
+            work: kode_tui::editor::host::EditorWork::Execute(_),
+            ..
+        }
+    )));
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
 #[tokio::test]
 async fn editor_lsp_auto_start_completion_save_native_fallback_and_late_reply_keep_typing_and_focus()
  {
@@ -404,6 +793,57 @@ fn ctrl_click_editor(app: &mut AppRuntime, offset: usize) {
         }))
         .unwrap();
 }
+
+#[tokio::test]
+async fn alt_f_opens_centered_project_search_with_escaped_selection_and_extension_filter() {
+    use kode_core::{ByteOffset, Selection};
+
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    let source = "let value = a+b;\n";
+    fs::write(root.join("sample.rs"), source).unwrap();
+    let mut app = make(root, Some("sample.rs"), Arc::new(FakeClock::default()));
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    let start = source.find("a+b").unwrap();
+    app.state
+        .editor
+        .as_mut()
+        .unwrap()
+        .input
+        .state
+        .caret
+        .selection = Selection {
+        anchor: ByteOffset(start),
+        head: ByteOffset(start + "a+b".len()),
+    };
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('f'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    let search = app
+        .state
+        .search
+        .as_ref()
+        .expect("Alt+F opens project search");
+    assert_eq!(search.query.value, r"a\+b");
+    assert_eq!(search.filter.value, r"\.rs");
+    assert_eq!(app.state.focus.focused, Some(search.id));
+    paint(&mut app);
+    let modal = app.state.search.as_ref().unwrap().geometry.modal;
+    assert!(modal.width > 0 && modal.height > 0);
+    assert_eq!(modal.x + modal.width / 2, 50);
+    assert_eq!(modal.y + modal.height / 2, 15);
+    app.state.dispatch(&key(Key::Escape, false)).unwrap();
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
 #[tokio::test]
 async fn editor_lsp_definition_links_navigate_exact_unicode_bytes_and_empty_primary_uses_native_targets()
  {
@@ -1499,12 +1939,125 @@ async fn native_rescan_abort_waits_for_file_and_index_acknowledgement_without_pu
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
 }
+
+#[tokio::test]
+async fn editor_stays_responsive_and_keeps_selection_during_background_index_rebuild() {
+    use kode_intelligence::{facade::IntelligenceResources, service::IndexPhase};
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    fs::create_dir_all(root.join("src")).unwrap();
+    fs::write(root.join("src/Model.kt"), "class Saved\n").unwrap();
+    for index in 0..32 {
+        fs::write(
+            root.join(format!("src/Generated{index:03}.kt")),
+            format!("class Generated{index:03} {{ val value = {index} }}\n"),
+        )
+        .unwrap();
+    }
+    let clock = Arc::new(FakeClock::default());
+    let mut app = make(root, Some("src/Model.kt"), clock.clone());
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    app.start_intelligence(Arc::new(IntelligenceResources::compiled().unwrap()))
+        .await
+        .unwrap();
+    until(&mut app, |app| {
+        clock.0.fetch_add(10, Ordering::SeqCst);
+        app.intelligence()
+            .unwrap()
+            .status()
+            .is_ok_and(|status| status.phase == IndexPhase::Ready && status.files >= 33)
+    })
+    .await;
+
+    app.rebuild_index().unwrap();
+    app.pump().unwrap();
+    until(&mut app, |app| {
+        clock.0.fetch_add(10, Ordering::SeqCst);
+        app.intelligence().unwrap().status().is_ok_and(|status| {
+            matches!(
+                status.phase,
+                IndexPhase::Scanning
+                    | IndexPhase::Extracting
+                    | IndexPhase::Resolving
+                    | IndexPhase::Persisting
+            )
+        })
+    })
+    .await;
+    let indexing_status = app.intelligence().unwrap().status().unwrap();
+    assert!(
+        app.state
+            .intelligence_status
+            .contains(&format!("index {:?}", indexing_status.phase))
+    );
+    assert!(app.state.intelligence_status.contains("processed"));
+
+    let document = app.state.editor.as_ref().unwrap().document_id();
+    let editor_focus = app.state.editor.as_ref().unwrap().input.id;
+    assert_eq!(app.state.tabs.selected, kode_tui::app::panel::FILES);
+    assert_eq!(app.state.focus.focused, Some(editor_focus));
+    app.state
+        .dispatch(&InputEvent::Paste("// typed while indexing\n".into()))
+        .unwrap();
+    app.pump().unwrap();
+    let edited = app
+        .state
+        .documents
+        .document(document)
+        .unwrap()
+        .snapshot()
+        .text()
+        .to_string();
+    assert!(edited.contains("// typed while indexing"));
+    let view = app.state.editor.as_mut().unwrap();
+    view.input.state.caret.selection = kode_core::Selection {
+        anchor: kode_core::ByteOffset(0),
+        head: kode_core::ByteOffset(edited.len()),
+    };
+    let selection = view.input.state.caret.selection;
+    until(&mut app, |app| {
+        clock.0.fetch_add(10, Ordering::SeqCst);
+        let status = app.intelligence().unwrap().status().unwrap();
+        status.phase == IndexPhase::Ready && status.files >= 33
+    })
+    .await;
+    assert_eq!(app.state.focus.focused, Some(editor_focus));
+    assert_eq!(
+        app.state
+            .editor
+            .as_ref()
+            .unwrap()
+            .input
+            .state
+            .caret
+            .selection,
+        selection
+    );
+    assert_eq!(
+        app.state
+            .documents
+            .document(document)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        edited
+    );
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
 #[tokio::test]
 async fn real_shell_opens_edits_saves_flushes_and_restores_shared_dirty_session() {
+    use kode_core::{ByteOffset, Selection};
+
     let directory = tempfile::tempdir().unwrap();
     let root = directory.path();
     fs::create_dir(root.join("src")).unwrap();
-    fs::write(root.join("src/code.rs"), "original\n").unwrap();
+    fs::write(
+        root.join("src/code.rs"),
+        format!("original\n{}", "line\n".repeat(80)),
+    )
+    .unwrap();
     let clock = Arc::new(FakeClock::default());
     let mut app = make(root, Some("src/code.rs"), clock.clone());
     until(&mut app, |app| {
@@ -1527,20 +2080,58 @@ async fn real_shell_opens_edits_saves_flushes_and_restores_shared_dirty_session(
         !app.state.documents.document(id).unwrap().is_dirty()
     })
     .await;
+    let saved_text = format!("changed original\n{}", "line\n".repeat(80));
     assert_eq!(
         fs::read_to_string(root.join("src/code.rs")).unwrap(),
-        "changed original\n"
+        saved_text
     );
     app.state
         .dispatch(&InputEvent::Paste("draft ".into()))
         .unwrap();
+    app.state
+        .dispatch(&InputEvent::Paste("redo ".into()))
+        .unwrap();
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('u'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    let expected_text = format!("changed draft original\n{}", "line\n".repeat(80));
+    assert_eq!(
+        app.state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        expected_text
+    );
+    assert_eq!(
+        app.state.documents.document(id).unwrap().history_depth(),
+        (2, 1)
+    );
+    let selection = Selection {
+        anchor: ByteOffset(337),
+        head: ByteOffset(330),
+    };
+    {
+        let view = app.state.editor.as_mut().unwrap();
+        view.input.state.caret.selection = selection;
+        view.input.state.scroll_rows = 35;
+    }
     app.state.dispatch(&key(Key::Character('q'), true)).unwrap();
     app.flush_before_leave().await.unwrap();
     assert!(app.ready_to_leave());
     app.quiesce().await.unwrap();
     assert_eq!(
         fs::read_to_string(root.join("src/code.rs")).unwrap(),
-        "changed original\n"
+        saved_text
     );
     let mut restored = make(root, None, clock);
     until(&mut restored, |app| app.state.editor.is_some()).await;
@@ -1555,8 +2146,126 @@ async fn real_shell_opens_edits_saves_flushes_and_restores_shared_dirty_session(
             .snapshot()
             .text()
             .as_ref(),
-        "changed draft original\n"
+        expected_text
     );
+    let restored_view = restored.state.editor.as_ref().unwrap();
+    assert_eq!(restored_view.input.state.caret.selection, selection);
+    assert_eq!(restored_view.input.state.scroll_rows, 35);
+    assert_eq!(
+        restored_view.host.descriptor.language.as_deref(),
+        Some("rust")
+    );
+    assert_eq!(
+        restored
+            .state
+            .documents
+            .document(id)
+            .unwrap()
+            .history_depth(),
+        (2, 1)
+    );
+    restored
+        .state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('r'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    assert_eq!(
+        restored
+            .state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        format!("changed draft redo original\n{}", "line\n".repeat(80))
+    );
+    restored
+        .state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('u'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    assert_eq!(
+        restored
+            .state
+            .documents
+            .document(id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        expected_text
+    );
+    restored.flush_before_leave().await.unwrap();
+    restored.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn newer_disk_file_recovers_dirty_session_before_opening_external_content() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    fs::create_dir(root.join("src")).unwrap();
+    let path = root.join("src/file.rs");
+    fs::write(&path, "original\n").unwrap();
+    let mut app = make(root, Some("src/file.rs"), Arc::new(FakeClock::default()));
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    paint(&mut app);
+    let id = app.state.editor.as_ref().unwrap().document_id();
+    app.state
+        .dispatch(&InputEvent::Paste("unsaved user draft ".into()))
+        .unwrap();
+    app.pump().unwrap();
+    let dirty = app
+        .state
+        .documents
+        .document(id)
+        .unwrap()
+        .snapshot()
+        .text()
+        .to_string();
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+
+    std::thread::sleep(Duration::from_millis(20));
+    fs::write(&path, "external disk update\n").unwrap();
+    let mut restored = make(root, None, Arc::new(FakeClock::default()));
+    until(&mut restored, |app| app.state.editor.is_some()).await;
+    let restored_id = restored.state.editor.as_ref().unwrap().document_id();
+    let document = restored.state.documents.document(restored_id).unwrap();
+    assert_eq!(document.origin(), &DocumentOrigin::File(path.clone()));
+    assert_eq!(
+        document.snapshot().text().as_ref(),
+        "external disk update\n"
+    );
+    assert!(!document.is_dirty());
+
+    let recovery_dir = root.join(".kode-rs");
+    let recovery_path = fs::read_dir(&recovery_dir)
+        .unwrap()
+        .map(|entry| entry.unwrap().path())
+        .find(|path| {
+            path.file_name()
+                .and_then(|name| name.to_str())
+                .is_some_and(|name| name.starts_with("editor-recovery-"))
+        })
+        .expect("stale dirty state is written to a recovery file");
+    let recovered: kode_workspace::session::EditorStateV1 =
+        serde_json::from_slice(&fs::read(recovery_path).unwrap()).unwrap();
+    assert_eq!(recovered.history.current.text, dirty);
+    assert_eq!(fs::read_to_string(&path).unwrap(), "external disk update\n");
+
     restored.flush_before_leave().await.unwrap();
     restored.quiesce().await.unwrap();
 }
@@ -1659,7 +2368,7 @@ async fn full_file_path_preference_survives_save_project_switch_and_restart_with
     assert_eq!(app.state.files.active_path.as_ref(), Some(&source));
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
-    let mut restored = make(first.path(), None, clock);
+    let mut restored = make(first.path(), None, clock.clone());
     until(&mut restored, |app| app.state.editor.is_some()).await;
     assert!(restored.state.files.full_paths);
     assert_eq!(restored.state.files.active_path.as_ref(), Some(&source));
@@ -1679,6 +2388,42 @@ async fn full_file_path_preference_survives_save_project_switch_and_restart_with
     );
     restored.flush_before_leave().await.unwrap();
     restored.quiesce().await.unwrap();
+
+    let mut explicitly_targeted = make(first.path(), Some("tests/Note.txt"), clock);
+    until(&mut explicitly_targeted, |app| {
+        app.state.editor.as_ref().is_some_and(|view| {
+            matches!(
+                app.state.documents.document(view.document_id()).unwrap().origin(),
+                DocumentOrigin::File(path) if path == &other
+            )
+        })
+    })
+    .await;
+    assert_eq!(explicitly_targeted.state.project.root, first.path());
+    assert_eq!(
+        explicitly_targeted.state.files.active_path.as_ref(),
+        Some(&other)
+    );
+    assert_eq!(
+        explicitly_targeted
+            .state
+            .documents
+            .document(
+                explicitly_targeted
+                    .state
+                    .editor
+                    .as_ref()
+                    .unwrap()
+                    .document_id()
+            )
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "other\n"
+    );
+    explicitly_targeted.flush_before_leave().await.unwrap();
+    explicitly_targeted.quiesce().await.unwrap();
 }
 #[tokio::test]
 async fn project_changes_serialize_and_failed_persistence_keeps_workspace_and_dirty_buffers_open() {
@@ -1816,6 +2561,211 @@ async fn reopening_owned_missing_file_keeps_dirty_history_and_navigation_selects
     assert!(view.input.state.scroll_rows > 20);
     assert!(61 < view.input.state.scroll_rows + app.state.geometry.viewer.height as usize);
     assert_eq!(app.state.focus.focused, Some(view.input.id));
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn switching_files_restores_dirty_view_selection_history_scroll_and_language() {
+    use kode_core::{ByteOffset, Selection};
+    use kode_tui::app::{state::OpenDestination, workspace::OpenRequest};
+
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    let source = format!("{}target_identifier\n", "line\n".repeat(80));
+    fs::write(root.join("source.rs"), &source).unwrap();
+    fs::write(root.join("other.sql"), "select 1;\n").unwrap();
+    let mut app = make(root, Some("source.rs"), Arc::new(FakeClock::default()));
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    paint(&mut app);
+
+    let source_id = app.state.editor.as_ref().unwrap().document_id();
+    app.state
+        .dispatch(&InputEvent::Paste("draft ".into()))
+        .unwrap();
+    app.pump().unwrap();
+    let history = app
+        .state
+        .documents
+        .document(source_id)
+        .unwrap()
+        .history_depth();
+    let text = app
+        .state
+        .documents
+        .document(source_id)
+        .unwrap()
+        .snapshot()
+        .text();
+    let selection = Selection {
+        anchor: ByteOffset(330),
+        head: ByteOffset(337),
+    };
+    {
+        let view = app.state.editor.as_mut().unwrap();
+        view.input.state.caret.selection = selection;
+        view.input.state.scroll_rows = 40;
+    }
+
+    app.state
+        .open(
+            OpenRequest {
+                path: root.join("other.sql"),
+                saved: None,
+                navigation: None,
+            },
+            OpenDestination::Main,
+        )
+        .unwrap();
+    until(&mut app, |app| {
+        app.state.editor.as_ref().is_some_and(|view| {
+            view.document_id() != source_id
+                && view.host.descriptor.language.as_deref() == Some("sql")
+        })
+    })
+    .await;
+
+    app.state
+        .open(
+            OpenRequest {
+                path: root.join("source.rs"),
+                saved: None,
+                navigation: None,
+            },
+            OpenDestination::Main,
+        )
+        .unwrap();
+    until(&mut app, |app| {
+        app.state
+            .editor
+            .as_ref()
+            .is_some_and(|view| view.document_id() == source_id)
+    })
+    .await;
+
+    let document = app.state.documents.document(source_id).unwrap();
+    let view = app.state.editor.as_ref().unwrap();
+    assert_eq!(document.snapshot().text(), text);
+    assert_eq!(document.history_depth(), history);
+    assert!(document.is_dirty());
+    assert_eq!(view.input.state.caret.selection, selection);
+    assert_eq!(view.input.state.scroll_rows, 40);
+    assert_eq!(view.host.descriptor.language.as_deref(), Some("rust"));
+
+    app.flush_before_leave().await.unwrap();
+    app.quiesce().await.unwrap();
+}
+
+#[tokio::test]
+async fn runtime_rename_of_open_parent_keeps_document_identity_and_retargets_save() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    fs::create_dir(root.join("src")).unwrap();
+    fs::write(root.join("src/file.rs"), "disk\n").unwrap();
+    let mut app = make(root, Some("src/file.rs"), Arc::new(FakeClock::default()));
+    until(&mut app, |app| app.state.editor.is_some()).await;
+    paint(&mut app);
+
+    let document_id = app.state.editor.as_ref().unwrap().document_id();
+    app.state
+        .dispatch(&InputEvent::Paste("draft ".into()))
+        .unwrap();
+    app.pump().unwrap();
+    let edited = app
+        .state
+        .documents
+        .document(document_id)
+        .unwrap()
+        .snapshot()
+        .text()
+        .to_string();
+    let history = app
+        .state
+        .documents
+        .document(document_id)
+        .unwrap()
+        .history_depth();
+
+    let moved = root.join("new source/file.rs");
+    app.state.work.push(AppWork::FileAction {
+        tag: app.state.tag().unwrap(),
+        action: kode_workspace::tree::FileAction::Rename {
+            path: root.join("src"),
+            name: "new source".into(),
+        },
+    });
+    until(&mut app, |app| {
+        app.state
+            .documents
+            .document(document_id)
+            .is_ok_and(|document| document.origin() == &DocumentOrigin::File(moved.clone()))
+    })
+    .await;
+    assert_eq!(
+        app.state.documents.document(document_id).unwrap().origin(),
+        &DocumentOrigin::File(moved.clone())
+    );
+
+    assert_eq!(
+        app.state.editor.as_ref().unwrap().document_id(),
+        document_id
+    );
+    let document = app.state.documents.document(document_id).unwrap();
+    assert_eq!(document.snapshot().text().as_ref(), edited);
+    assert_eq!(document.history_depth(), history);
+    assert!(document.is_dirty());
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('u'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    assert_eq!(
+        app.state
+            .documents
+            .document(document_id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        "disk\n"
+    );
+    app.state
+        .dispatch(&InputEvent::Key(KeyInput {
+            key: Key::Character('r'),
+            modifiers: Modifiers {
+                alt: true,
+                ..Default::default()
+            },
+            repeat: false,
+        }))
+        .unwrap();
+    assert_eq!(
+        app.state
+            .documents
+            .document(document_id)
+            .unwrap()
+            .snapshot()
+            .text()
+            .as_ref(),
+        edited
+    );
+    app.state.dispatch(&key(Key::Character('s'), true)).unwrap();
+    until(&mut app, |app| {
+        !app.state
+            .documents
+            .document(document_id)
+            .unwrap()
+            .is_dirty()
+    })
+    .await;
+    assert_eq!(fs::read_to_string(&moved).unwrap(), edited);
+    assert!(!root.join("src/file.rs").exists());
+
     app.flush_before_leave().await.unwrap();
     app.quiesce().await.unwrap();
 }
