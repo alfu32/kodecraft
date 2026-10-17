@@ -72,6 +72,7 @@ def main():
                 if root + "/jdbc/kode-jdbc-bridge.jar" not in members or root + "/package-manifest.json" not in members:
                     raise ValueError(f"Portable archive lacks JDBC adapter or manifest: {name}")
                 verify_portable_manifest(archive.read(root + "/package-manifest.json"), root, args.version, args.tag, args.sha)
+    Path("target").mkdir(parents=True, exist_ok=True)
     Path("target/SHA256SUMS.txt").write_text("\n".join(checksums) + "\n")
     Path("target/release-notes.md").write_text(
         f"Kode {args.version}\n\nSource: `{args.sha}`.\n\n"
