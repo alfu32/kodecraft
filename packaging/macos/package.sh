@@ -17,4 +17,4 @@ test -f "$release_stage/$release_name/jdbc/kode-jdbc-bridge.jar"
 release_dmg="$release_assets/kode-$release_version-macos-${release_target%%-*}.dmg"
 hdiutil create -volname "Kode $release_version" -srcfolder "$release_stage/$release_name" -format UDZO -ov "$release_dmg"
 hdiutil verify "$release_dmg"
-shasum -a 256 "$release_dmg" > "$release_dmg.sha256"
+(cd "$release_assets" && shasum -a 256 "$(basename "$release_dmg")" > "$(basename "$release_dmg").sha256")
