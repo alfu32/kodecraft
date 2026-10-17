@@ -1,11 +1,12 @@
 # Z03 distribution continuation
 
-Z03 is **reopened / todo** for the user's [full six-target artifact matrix](Z03-ARTIFACT-MATRIX.md).
-Resume it after U01–U12. The Linux x86_64 archive/AppImage/Snap foundation below
-is qualified for the recorded artifacts. Other portable targets and MSI/MSIX/DMG,
-architecture variants and full release orchestration remain required. The matrix
-records the authorized Windows SSH host and project directory. Z04 owns the final
-assembled release audit/publication after the complete matrix passes.
+The historical local qualification notes below record the work leading up to the
+user's [full six-target artifact matrix](Z03-ARTIFACT-MATRIX.md). On 2026-10-17,
+manual GitHub Actions run [39053643210](https://github.com/alfu32/kodecraft/actions/runs/39053643210)
+successfully built, verified and published [release 0.2.8](https://github.com/alfu32/kodecraft/releases/tag/0.2.8)
+with 67 assets. The run passed the JDBC suite (79 tests), repository validation,
+all six native build/package jobs and the final exact-asset/checksum gate.
+Installed-runtime qualification remains separate and open.
 
 ## Implemented and qualified
 
@@ -62,10 +63,12 @@ assembled release audit/publication after the complete matrix passes.
   in an owned clean pinned container, using read-only source/registry mounts.
 - CI orchestrates stable/locked Rust checks, helper/JDBC tests, notice/native
   builds, installer reproducibility and actual AppImage/Snap/no-Java acceptance.
-  The optional JVM is built separately and attached with the full asset set to a
-  new draft, before publication. Published-release append/upload is removed.
+  The optional JVM is built separately and included with the complete asset set.
+  The 0.2.8 workflow run performed exact asset/checksum verification before
+  publishing; it does not append assets to an existing release.
   Thirteen [preflight/CLI integrity cases](../parity/Z03-release-preflight.json)
-  pass using actual artifacts and a mocked GitHub CLI; no real upload is claimed.
+  pass using actual artifacts and a mocked GitHub CLI; the actual upload is
+  recorded by the successful 0.2.8 run above.
 
 ## Acceptance and discovered startup fix
 
@@ -93,9 +96,11 @@ assembled release audit/publication after the complete matrix passes.
 - The container uses loopback host networking. Docker bridge/NAT traffic could not
   reach its confirmed listening socket locally; no bridge-network success or host
   network configuration change is claimed.
-- Optional Java remains separate under [U03](../parity/U03.md). No remote Actions
-  run, release upload or publication is inferred. Installer support is limited to
-  the actual locally qualified Linux x86_64 artifacts described above.
+- Optional Java remains separate under [U03](../parity/U03.md). The successful
+  remote release proves that all six platform builds and package formats can be
+  produced and pass the workflow's integrity gate. Installer installation,
+  upgrade/uninstall behavior and runtime acceptance remain limited to the locally
+  qualified cases described above.
 
 See [the distribution guide](../../packaging/README.md) for prerequisites and exact
 commands. Browser tests require Python Playwright, Chrome and (for SSH) OpenSSH;
@@ -115,13 +120,9 @@ that they work or that the former library resources were standalone releases.
 
 ## Final release boundaries
 
-Remote Actions execution and actual publication have not happened in this
-workspace. Workflows pass local actionlint 1.7.7 validation (shellcheck unavailable
-and disabled); Python compilation, credits/task checks and local artifact cases
-pass. The local build provenance correctly says `sourceDirty: true`, so these
-uncommitted-source assets are rejected for draft publication. Synthetic clean
-metadata exists only inside temporary preflight test copies.
-
-Z04 retains the final full parity/platform matrix and release execution after all
-editor and UAT tasks pass. Windows launcher execution and macOS/Windows/other
-architecture artifacts remain unqualified; no release artifacts are inferred.
+The full production matrix was remotely executed and published in release 0.2.8.
+Workflows also pass local actionlint 1.7.7 validation (shellcheck unavailable and
+disabled); Python compilation, credits/task checks and local artifact cases pass.
+The local build provenance correctly says `sourceDirty: true`; those local assets
+were not used for the published release. Windows/macOS install and runtime
+qualification remains open, as do the broader parity gates tracked by Z04.

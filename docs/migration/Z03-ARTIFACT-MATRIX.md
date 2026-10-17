@@ -10,12 +10,12 @@ The reference's JVM/jpackage build is not the Rust packaging implementation.
 
 | OS | CPU | Native target | Required application artifacts | Current evidence |
 |---|---|---|---|---|
-| Linux | x86_64 | `x86_64-unknown-linux-gnu` | Portable `.tar.gz` and `.zip`, AppImage, Snap `amd64` | Tar/AppImage/Snap foundation qualified locally; ZIP and post-Uxx rebuild pending |
-| Linux | arm64 | `aarch64-unknown-linux-gnu` | Portable `.tar.gz` and `.zip`, architecture-specific AppImage, Snap `arm64` | Pending native build/runtime qualification |
-| Windows | x86_64 | `x86_64-pc-windows-msvc` | Portable `.zip`, `.msi`, `.msix` | Pending native build/install/runtime qualification |
-| Windows | arm64 | `aarch64-pc-windows-msvc` | Portable `.zip`, `.msi`, `.msix` | Pending native build/install/runtime qualification |
-| macOS | x86_64 | `x86_64-apple-darwin` | Portable `.tar.gz`/`.zip`, `.dmg` | Pending native build/install/runtime qualification |
-| macOS | arm64 | `aarch64-apple-darwin` | Portable `.tar.gz`/`.zip`, `.dmg` | Pending native build/install/runtime qualification |
+| Linux | x86_64 | `x86_64-unknown-linux-gnu` | Portable `.tar.gz` and `.zip`, AppImage, Snap `amd64` | Built, verified and published in [0.2.8](https://github.com/alfu32/kodecraft/releases/tag/0.2.8); clean-install/runtime qualification remains separately tracked |
+| Linux | arm64 | `aarch64-unknown-linux-gnu` | Portable `.tar.gz` and `.zip`, architecture-specific AppImage, Snap `arm64` | Built, verified and published in [0.2.8](https://github.com/alfu32/kodecraft/releases/tag/0.2.8); clean-install/runtime qualification remains separately tracked |
+| Windows | x86_64 | `x86_64-pc-windows-msvc` | Portable `.zip`, `.msi`, `.msix` | Built, verified and published in [0.2.8](https://github.com/alfu32/kodecraft/releases/tag/0.2.8); installer/runtime qualification remains open |
+| Windows | arm64 | `aarch64-pc-windows-msvc` | Portable `.zip`, `.msi`, `.msix` | Built, verified and published in [0.2.8](https://github.com/alfu32/kodecraft/releases/tag/0.2.8); installer/runtime qualification remains open |
+| macOS | x86_64 | `x86_64-apple-darwin` | Portable `.tar.gz`/`.zip`, `.dmg` | Built, verified and published in [0.2.8](https://github.com/alfu32/kodecraft/releases/tag/0.2.8); install/runtime qualification remains open |
+| macOS | arm64 | `aarch64-apple-darwin` | Portable `.tar.gz`/`.zip`, `.dmg` | Built, verified and published in [0.2.8](https://github.com/alfu32/kodecraft/releases/tag/0.2.8); install/runtime qualification remains open |
 
 DMG is included in the implementation plan following the user's suggestion.
 AppImages must use matching architecture runtime/tool inputs. A universal macOS
@@ -36,7 +36,9 @@ paths with spaces, unrelated cwd, no-Java core, external-Java JDBC, browser mode
 upgrade/uninstall behavior for installers, and child cleanup. A successful cross
 compile or an artifact filename alone does not prove runtime support. Record
 signing/notarization and trust requirements with the actual installer results.
-Z04 retains the final assembled release audit and publication.
+Run [39053643210](https://github.com/alfu32/kodecraft/actions/runs/39053643210)
+completed the full build and asset gate and published the release. Z04 retains the
+broader functional parity and installed-runtime audit.
 
 The existing Linux draft adapter validates a fixed four-primary-artifact set.
 Replace that assumption with the complete architecture-aware manifest and exact
@@ -58,4 +60,4 @@ server qualification project is
 `C:/Users/alfu64/Development/kode-rs-u09-20261016-01`; an isolated stable GNU Rust
 toolchain is installed there without changing the user's PATH. This does not
 qualify Z03's MSVC application artifacts or another CPU. Z03 packaging, installer
-runs and remote release CI remain pending until the Uxx implementation finishes.
+runs are tracked separately from the successful remote build and publication.
