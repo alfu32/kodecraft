@@ -1946,7 +1946,7 @@ dependencies = [
 
 [[package]]
 name = "kode"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "clap",
  "kode-core",
@@ -1965,7 +1965,7 @@ dependencies = [
 
 [[package]]
 name = "kode-core"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "fancy-regex",
  "regex",
@@ -1979,7 +1979,7 @@ dependencies = [
 
 [[package]]
 name = "kode-database"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "base64 0.23.1",
  "futures-util",
@@ -1999,7 +1999,7 @@ dependencies = [
 
 [[package]]
 name = "kode-git"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "git2",
  "kode-core",
@@ -2011,7 +2011,7 @@ dependencies = [
 
 [[package]]
 name = "kode-intelligence"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "kode-core",
  "kode-platform",
@@ -2028,7 +2028,7 @@ dependencies = [
 
 [[package]]
 name = "kode-lsp"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "flate2",
  "futures-util",
@@ -2049,7 +2049,7 @@ dependencies = [
 
 [[package]]
 name = "kode-platform"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "arboard",
  "futures-util",
@@ -2069,7 +2069,7 @@ dependencies = [
 
 [[package]]
 name = "kode-rest"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "aws-credential-types",
  "aws-sigv4",
@@ -2114,7 +2114,7 @@ dependencies = [
 
 [[package]]
 name = "kode-syntax"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "indexmap",
  "kode-core",
@@ -2155,7 +2155,7 @@ dependencies = [
 
 [[package]]
 name = "kode-tui"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "base64 0.23.1",
  "crossterm",
@@ -2182,7 +2182,7 @@ dependencies = [
 
 [[package]]
 name = "kode-workspace"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "ignore",
  "infer",

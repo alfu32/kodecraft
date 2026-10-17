@@ -20,6 +20,8 @@ $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
 $Msi = Join-Path $Assets "kode-$Version-windows-$Arch.msi"
 wix build (Join-Path $PSScriptRoot 'kode.wxs') -arch $Arch -d "Version=$Version" -d "Stage=$Payload" -o $Msi
 if ($LASTEXITCODE -ne 0 -or -not (Test-Path $Msi)) { throw 'MSI build failed' }
+# WiX emits debug symbol files beside the installer; they are build outputs, not release assets.
+Get-ChildItem -Path $Assets -Filter '*.wixpdb' -File | Remove-Item -Force
 
 # The MSIX contains the same portable payload and a full-trust console entry point.
 $MsixStage = Join-Path $Root "target\msix-package-$Arch"
