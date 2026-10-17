@@ -45,7 +45,7 @@ def main():
         "schemaVersion": 1,
         "target": args.target,
         "version": version,
-        "tag": f"v{version}",
+        "tag": version,
         "sourceRevision": os.environ.get("KODE_BUILD_SHA") or subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "javaRuntime": "external; JDBC adapter jar included",
         "browserTerminalBundled": False,

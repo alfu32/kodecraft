@@ -158,8 +158,8 @@ installation is changed. The VM, SSH keys, ports and overlay are cleaned up.
 The single [Release workflow](../.github/workflows/distribution.yaml) runs only
 through GitHub Actions **Run workflow**. Select the branch in GitHub, or enter a
 branch/tag as `source_ref`; the CLI equivalent is `gh workflow run distribution.yaml
---ref work -f source_ref=v0.1.2`. The chosen source must have the same version in
-`Cargo.toml` and `jdbc-bridge/pom.xml`. An existing matching `v<version>` tag must
+--ref work -f source_ref=0.2.2`. The chosen source must have the same version in
+`Cargo.toml` and `jdbc-bridge/pom.xml`. An existing matching `<version>` tag must
 identify that source commit. If the branch has no matching tag, the workflow
 creates one only after the full matrix passes.
 
@@ -179,7 +179,7 @@ the separate Java runtime ZIP/manifest/checksum and `build-source.json` under an
 input directory, then run:
 
 ```sh
-python3 scripts/release-assets.py --directory /path/to/incoming --output /new/empty/review --tag v0.1.0 --source-revision FULL_GIT_COMMIT
+python3 scripts/release-assets.py --directory /path/to/incoming --output /new/empty/review --tag 0.1.0 --source-revision FULL_GIT_COMMIT
 ```
 
 The review rejects dirty/stale source, a mismatched version, altered assets,

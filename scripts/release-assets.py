@@ -20,7 +20,7 @@ def prepare(directory, destination, tag, revision):
         raise ValueError('Release review output must be a new or empty directory')
     if destination.resolve().is_relative_to(directory.resolve()):
         raise ValueError('Release review output must be outside the asset input directory')
-    if not re.fullmatch(r'v[0-9]+\.[0-9]+\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?',tag) or not re.fullmatch(r'[a-f0-9]{40}',revision):
+    if not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?',tag) or not re.fullmatch(r'[a-f0-9]{40}',revision):
         raise ValueError('Invalid release tag or source revision')
     files={}
     for path in sorted(directory.rglob('*')):
@@ -46,7 +46,7 @@ def prepare(directory, destination, tag, revision):
     with tempfile.TemporaryDirectory(prefix='kode-release-review-') as temporary:
         package,manifest=payload(archive,Path(temporary))
         manifest_sha=sha((package/'package-manifest.json').read_bytes())
-        if tag!='v'+manifest['version']:raise ValueError('Release tag does not match the compiled package version')
+        if tag!=manifest['version']:raise ValueError('Release tag does not match the compiled package version')
         if provenance['binarySha256']!=manifest['files']['kode']['sha256']:
             raise ValueError('Build provenance does not describe this executable')
     base_metadata=archive.name.removesuffix('.tar.gz')+'.manifest.json'

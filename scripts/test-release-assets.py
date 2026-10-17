@@ -35,7 +35,7 @@ def main():
                 if path.is_file():shutil.copyfile(path,inputs/path.name)
         provenance=json.loads(args.provenance.read_text())
         version=next(inputs.glob('*.AppImage')).name.removeprefix('kode-').removesuffix('-x86_64.AppImage')
-        tag='v'+version
+        tag=version
         # Real local dirty provenance must be rejected. The harness's positive
         # path changes this field in a temporary copy only, with no upload.
         provenance['sourceDirty']=True
@@ -53,7 +53,7 @@ def main():
         review=release.prepare(inputs,root/'valid-review',tag,revision)
         assert len(review['assets'])==13 and len(list((root/'valid-review').iterdir()))==16
         cases.append({'case':'complete-actual-assets-synthetic-clean-source','status':'passed','assets':13})
-        rejected('wrong-version','compiled package version',release_tag='v99.0.0')
+        rejected('wrong-version','compiled package version',release_tag='99.0.0')
         provenance['sourceRevision']='0'*40;source.write_text(json.dumps(provenance))
         rejected('different-source','source revision differs')
         provenance['sourceRevision']=revision;source.write_text(json.dumps(provenance))

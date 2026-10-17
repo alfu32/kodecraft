@@ -30,7 +30,7 @@ def main():
     parser.add_argument("--tag", required=True)
     parser.add_argument("--sha", required=True)
     args = parser.parse_args()
-    if args.tag != "v" + args.version:
+    if args.tag != args.version:
         raise ValueError("Release tag and package version differ")
     expected = {f"kode-jdbc-bridge-{args.version}.jar"}
     for target, installers in TARGETS.items():
