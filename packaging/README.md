@@ -158,7 +158,7 @@ installation is changed. The VM, SSH keys, ports and overlay are cleaned up.
 The single [Release workflow](../.github/workflows/distribution.yaml) runs only
 through GitHub Actions **Run workflow**. Select the branch in GitHub, or enter a
 branch/tag as `source_ref`; the CLI equivalent is `gh workflow run distribution.yaml
---ref work -f source_ref=0.2.4`. The chosen source must have the same version in
+--ref work -f source_ref=0.2.5`. The chosen source must have the same version in
 `Cargo.toml` and `jdbc-bridge/pom.xml`. An existing matching `<version>` tag must
 identify that source commit. If the branch has no matching tag, the workflow
 creates one only after the full matrix passes.

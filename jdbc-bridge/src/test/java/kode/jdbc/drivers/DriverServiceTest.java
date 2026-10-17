@@ -26,7 +26,7 @@ class DriverServiceTest {
     static class Server implements AutoCloseable {
         final HttpServer server=HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(),0),0);
         final ExecutorService executor=Executors.newFixedThreadPool(2,Thread.ofPlatform().daemon(true).name("jdbc-fixture-http-",0).factory());
-        final AtomicInteger requests=new AtomicInteger();final CountDownLatch started=new CountDownLatch(1),release=new CountDownLatch(1);
+        final AtomicInteger requests=new AtomicInteger();final CountDownLatch started=new CountDownLatch(1),release=new CountDownLatch(1),disconnected=new CountDownLatch(1);
         Server(byte[] bytes,boolean block,boolean truncated) throws IOException {
             server.setExecutor(executor);server.createContext("/driver.jar",exchange->{
                 requests.incrementAndGet();exchange.sendResponseHeaders(200,bytes.length+(truncated?100:0));
@@ -34,7 +34,7 @@ class DriverServiceTest {
                     int first=Math.min(8192,bytes.length);output.write(bytes,0,first);output.flush();started.countDown();
                     if(block)try{release.await(5,TimeUnit.SECONDS);}catch(InterruptedException ignored){Thread.currentThread().interrupt();}
                     if(!truncated)output.write(bytes,first,bytes.length-first);
-                }catch(IOException expectedOnCancel){}finally{exchange.close();if(truncated)server.stop(0);}
+                }catch(IOException expectedOnCancel){disconnected.countDown();}finally{exchange.close();if(truncated)server.stop(0);}
             });server.start();
         }
         String url(){return "http://"+server.getAddress().getHostString()+":"+server.getAddress().getPort()+"/driver.jar";}
@@ -86,8 +86,8 @@ class DriverServiceTest {
     }
     @Test void independentCancellationAbortsAStalledBodyAndCleansOnlyItsTemporaryInstall() throws Exception {
         try(Server server=new Server(Files.readAllBytes(DriverFixtures.h2()),true,false);DriverService service=new DriverService(root.resolve("cache"),null)){
-            var future=service.resolve(request("cancel",vendor(server.url())),null);assertTrue(server.started.await(3,TimeUnit.SECONDS));assertEquals("requested",service.cancel("cancel").toCompletableFuture().get().path("status").asText());
-            assertEquals(-32800,failure(future).code);try(var files=Files.list(root.resolve("cache"))){assertEquals(0,files.count());}
+            var future=service.resolve(request("cancel",vendor(server.url())),null);assertTrue(server.started.await(3,TimeUnit.SECONDS));assertEquals("requested",service.cancel("cancel").toCompletableFuture().get().path("status").asText());server.release.countDown();
+            assertEquals(-32800,failure(future).code);assertTrue(server.disconnected.await(2,TimeUnit.SECONDS),"cancel closes stalled response body");try(var files=Files.list(root.resolve("cache"))){assertEquals(0,files.count());}
             assertEquals("alreadyFinished",service.cancel("cancel").toCompletableFuture().get().path("status").asText());
         }
     }

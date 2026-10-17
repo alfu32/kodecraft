@@ -32,7 +32,10 @@ public final class DriverDownloads {
                 if(received.statusCode()<200||received.statusCode()>=300){received.body().close();throw new RpcException(-32010,"Vendor download failed with HTTP "+received.statusCode());}
                 long expected=received.headers().firstValueAsLong("Content-Length").orElse(-1);
                 if(expected>InstallStore.MAX_JAR){received.body().close();throw new RpcException(-32010,"Vendor driver exceeds 1 GiB");}
-                try(InputStream input=received.body();var abort=control.abortOnCancel(()->{try{input.close();}catch(IOException ignored){}});OutputStream output=Files.newOutputStream(target,StandardOpenOption.CREATE_NEW)){
+                try(InputStream input=received.body();var abort=control.abortOnCancel(()->{
+                    response.cancel(true);
+                    try{input.close();}catch(IOException ignored){}
+                });OutputStream output=Files.newOutputStream(target,StandardOpenOption.CREATE_NEW)){
                     long count=0;byte[] bytes=new byte[65536];int read;
                     while((read=input.read(bytes))!=-1){control.check();count+=read;if(count>InstallStore.MAX_JAR)throw new RpcException(-32010,"Vendor driver exceeds 1 GiB");output.write(bytes,0,read);control.progress("download",count,expected);}
                     if(expected>=0&&count!=expected)throw new RpcException(-32010,"Vendor driver download was truncated");
