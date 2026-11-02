@@ -1,2 +1,4 @@
 # Acceptance fixtures include exact CRLF/BOM and binary bytes.
 fixtures/** -text whitespace=cr-at-eol
+# Partner Center exports this as UTF-8 with CRLF; keep it exactly as imported.
+packaging/msstore/*.csv -text

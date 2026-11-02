@@ -65,3 +65,5 @@ Task status lives in the cards. Change it with `python3 scripts/tasks.py <ID> <s
 ## Releases
 
 Releases run only through the manual GitHub Actions workflow (`.github/workflows/distribution.yaml`; `gh workflow run distribution.yaml --ref work -f source_ref=<version>`). The version must match in `Cargo.toml` and `jdbc-bridge/pom.xml`, and tags are the bare version with no `v` prefix. A version bump also touches `Cargo.lock` and the example in `packaging/README.md`. Build and qualification details are in `packaging/README.md` and `docs/migration/Z03-ARTIFACT-MATRIX.md`.
+
+Store publishing is in `packaging/STORES.md`. The MSIX identity comes from `packaging/msstore-info.txt`; its package version is the release version with the major number plus 1, because the Microsoft Store rejects a leading 0. `packaging/msstore/` is imported into Partner Center as a folder, so it must keep its name and hold one CSV plus only the assets that CSV references. README screenshots live in `packaging/msstore/screenshots/`.

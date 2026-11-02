@@ -2,7 +2,7 @@
 
 **A full code editor and IDE that runs in your terminal.** Open a project over SSH or locally and get a mouse-aware editor with code intelligence, search, Git, database and REST clients, plus image and hex viewers, all without leaving the terminal.
 
-![Kode editing a Kotlin project, with the file tree on the left and a folded function, semantic highlighting and a Braille minimap in the editor](docs/ascii-screenshots/terminal-svg/editor.svg)
+![Kode editing a Kotlin project, with the file tree on the left and a folded function, semantic highlighting and a Braille minimap in the editor](packaging/msstore/screenshots/editor.png)
 
 ## Highlights
 
@@ -14,15 +14,13 @@
 
 ## Get started
 
-Download a build from the [releases page](https://github.com/alfu32/kodecraft/releases):
-
-| Platform | Packages |
+| Platform | Get it from |
 |---|---|
-| Linux | `.tar.gz` / `.zip`, AppImage, Snap |
-| macOS | `.tar.gz` / `.zip`, DMG |
-| Windows | `.zip` / `.tar.gz`, MSI, MSIX |
+| Windows | **Microsoft Store** as kodecraft (coming soon), or an MSI or `.zip` from the [releases page](https://github.com/alfu32/kodecraft/releases) |
+| Linux | [**Snap Store**](https://snapcraft.io/kode-rs) with `sudo snap install kode-rs --edge`, or an AppImage or archive from the [releases page](https://github.com/alfu32/kodecraft/releases) |
+| macOS | DMG or archive from the [releases page](https://github.com/alfu32/kodecraft/releases) |
 
-Windows and macOS installers are currently unsigned, so your system may warn you the first time. Install the Snap with `sudo snap install --dangerous ./kode-rs_*.snap`. The x86_64 Linux build needs glibc 2.39 or newer (Ubuntu 24.04).
+Windows and macOS installers from the releases page are currently unsigned, so your system may warn you the first time. The x86_64 Linux archives need glibc 2.39 or newer (Ubuntu 24.04).
 
 Then open a folder or a file:
 
@@ -30,7 +28,7 @@ Then open a folder or a file:
 kode /path/to/project
 ```
 
-To build from source, install the latest stable Rust and run `cargo run -p kode -- /path/to/project`.
+The Microsoft Store version also starts from the Start menu and answers to `koders` and `kd`, and the Snap's command is `kode-rs`. To build from source, install the latest stable Rust and run `cargo run -p kode -- /path/to/project`.
 
 Press **Ctrl+S** to save, **Ctrl+Q** to save your workspace and quit, and **Alt+8** to open Help, which lists every shortcut. **Ctrl+T** drops you into a shell in the project folder; type `exit` to come back.
 
@@ -45,7 +43,7 @@ Press **Ctrl+S** to save, **Ctrl+Q** to save your workspace and quit, and **Alt+
 
 The same editor is used everywhere: source files, SQL consoles, REST bodies, environments and commit messages.
 
-![Every occurrence of "status" selected with multiple cursors, ready to be edited together](docs/ascii-screenshots/terminal-svg/multicursor.svg)
+![The find bar with every occurrence of "status" selected with multiple cursors, ready to be edited together](packaging/msstore/screenshots/multicursor.png)
 
 **Multiple cursors and selections**
 
@@ -78,11 +76,9 @@ Click a marker in the gutter to fold a block, and click the minimap to jump to t
 
 Press **Ctrl+Space** to complete, hover over a name to preview its definition, and **Ctrl+click** to jump to a definition or list its usages. These work across files and include your unsaved edits.
 
-![Completion popup listing the members of an Order object after typing "order."](docs/ascii-screenshots/terminal-svg/completion.svg)
+![Completion popup listing the members of an Order object after typing "order."](packaging/msstore/screenshots/completion.png)
 
-![Hovering over discountCents shows its definition from another file](docs/ascii-screenshots/terminal-svg/definition.svg)
-
-![Ctrl+click on a function declaration lists where it is used across the project](docs/ascii-screenshots/terminal-svg/usages.svg)
+![Hovering over discountCents shows its definition from another file](packaging/msstore/screenshots/definition.png)
 
 ### Languages
 
@@ -118,9 +114,7 @@ Installing servers is best tested on x86_64 Linux so far.
 
 ## Search
 
-**In the current window: Ctrl+F.** Find and replace with regular expressions and `$1`-style capture groups.
-
-![Find bar with the regular expression \w+Cents and all eight matches highlighted](docs/ascii-screenshots/terminal-svg/find-replace.svg)
+**In the current window: Ctrl+F.** Find and replace with regular expressions and `$1`-style capture groups. The [multiple cursors](#editing) screenshot shows the find bar.
 
 | Action | Keys |
 |---|---|
@@ -131,13 +125,13 @@ Installing servers is best tested on x86_64 Linux so far.
 
 **Across the project: Alt+F.** Search every text file in the project, including hidden and ignored ones, and narrow it down with a file-name filter. Results open in an editor right inside the dialog, so you can fix what you find and save with **Ctrl+S**. Replacing applies to the file you have open, not to the whole project.
 
-![Project search dialog with a list of matches above an embedded editor](docs/ascii-screenshots/terminal-svg/project-search.svg)
+![Project search dialog with a list of matches above an embedded editor](packaging/msstore/screenshots/project-search.png)
 
 ## Git
 
 Open **Git** with **Alt+3** to stage and unstage changes, write commits, switch local branches, create tags and browse history. Open any change as a side-by-side or unified diff, and restore a single chunk from the diff.
 
-![Git panel with changed files, commit box and history beside a side-by-side diff](docs/ascii-screenshots/terminal-svg/git.svg)
+![Git panel with changed files, commit box and history beside a side-by-side diff](packaging/msstore/screenshots/git.png)
 
 Kode works with your local repository. Use the shell (**Ctrl+T**) for push, pull and fetch.
 
@@ -145,7 +139,7 @@ Kode works with your local repository. Use the shell (**Ctrl+T**) for push, pull
 
 Open **Database** with **Alt+4** to connect to anything with a JDBC driver, such as PostgreSQL, MySQL, MariaDB, Oracle, SQLite or H2. Kode can fetch drivers from Maven or use your own JAR files.
 
-![SQL console with a schema tree on the left and a query in the editor](docs/ascii-screenshots/terminal-svg/terminal-2.svg)
+![SQL console with a query and its results, beside the schema tree of a connected database](packaging/msstore/screenshots/database.png)
 
 - Browse catalogs, schemas, tables, views, functions and types, plus packages and their source on Oracle and MariaDB.
 - Run the current statement or selection with **Ctrl+Enter**, or the whole script with **Ctrl+Shift+Enter**. **Escape** cancels a running query.
@@ -158,7 +152,7 @@ Databases are the only feature that needs Java (version 21 or newer). Everything
 
 Open **REST** with **Alt+5** to work with API collections in the terminal.
 
-![REST panel with a request collection, a JSON request body and a formatted 201 response](docs/ascii-screenshots/terminal-svg/rest.svg)
+![REST panel with a request collection, a JSON request body and a formatted 201 response](packaging/msstore/screenshots/rest.png)
 
 - Import and export **Postman** collections, and import **OpenAPI** definitions.
 - Send **HTTP**, **Server-Sent Events** and **WebSocket** requests with **Ctrl+Enter**.
@@ -172,7 +166,7 @@ Postman scripts are kept when you import and export, but they aren't run.
 
 Open an image from the file tree to view it right in the terminal. Kode supports PNG, JPEG, WebP, GIF (first frame), BMP, TGA, DDS, PSD and Krita files.
 
-![A photo of a cat rendered in terminal cells by the image viewer](docs/ascii-screenshots/terminal-svg/terminal-4.svg)
+![A Mandelbrot image displayed in the terminal by the image viewer](packaging/msstore/screenshots/image.png)
 
 Press **Enter** to cycle through four rendering modes, **Left / Right** to change the width, and **M** for grayscale and contrast controls.
 
@@ -180,7 +174,7 @@ Press **Enter** to cycle through four rendering modes, **Left / Right** to chang
 
 Binary files open in a hex view with a choice of 8, 16 or 32 bytes per row (**F8**).
 
-![Hex view of a gzip archive showing offsets and bytes](docs/ascii-screenshots/terminal-svg/terminal-6.svg)
+![Hex view of a binary file showing offsets, bytes and text](packaging/msstore/screenshots/hex.png)
 
 - **Find** with **Ctrl+F**, by text or hex bytes such as `00 FF 41`. **Tab** switches between them, and **F3** repeats the search.
 - **Edit** by selecting bytes and using **Alt+C / X / V** to copy, cut and paste, or **Delete** to remove them.
@@ -210,8 +204,8 @@ Use `--public` or `--host` to listen on other addresses, and `--credential user:
 
 ## Project status
 
-Kode is a Rust rewrite of an earlier Kotlin version. Feature work is largely done, with final editor and release qualification still open. Progress is tracked on the [dashboard](DASHBOARD.md). Contributors should start with the [migration plan](docs/migration/PLAN.md) and the [packaging guide](packaging/README.md).
+Kode is a Rust rewrite of an earlier Kotlin version. Feature work is largely done, with final editor and release qualification still open. Progress is tracked on the [dashboard](DASHBOARD.md). Contributors should start with the [migration plan](docs/migration/PLAN.md) and the [packaging guide](packaging/README.md). Maintainers can publish with the [store guide](packaging/STORES.md).
 
-## License
+## License and privacy
 
-[MIT](LICENSE.md)
+[MIT](LICENSE.md). Kode collects no personal data: see the [privacy policy](PRIVACY.md).
