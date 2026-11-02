@@ -1,265 +1,217 @@
-# kode-rs
+# Kode
 
-LSP Install fixture / request 35
+**A full code editor and IDE that runs in your terminal.** Open a project over SSH or locally and get a mouse-aware editor with code intelligence, search, Git, database and REST clients, plus image and hex viewers, all without leaving the terminal.
 
+![Kode editing a Kotlin project, with the file tree on the left and a folded function, semantic highlighting and a Braille minimap in the editor](docs/ascii-screenshots/terminal-svg/editor.svg)
 
-![terminal-1.svg](docs/ascii-screenshots/terminal-svg/terminal-1.svg)
+## Highlights
 
+- **Works anywhere a terminal does**, on Linux, macOS and Windows, on x86_64 and arm64.
+- **Understands your code without any setup.** Highlighting, completion, go-to-definition and usages work out of the box, with no language server or Java required.
+- **A real editor:** multiple cursors, regex find and replace, folding, a minimap, and full mouse support.
+- **Tools in one window:** Git, SQL databases and REST APIs, all edited with the same editor.
+- **Picks up where you left off:** open files, cursor positions, undo history and even unsaved changes survive a restart.
 
+## Get started
 
-![terminal-2.svg](docs/ascii-screenshots/terminal-svg/terminal-2.svg)
+Download a build from the [releases page](https://github.com/alfu32/kodecraft/releases):
 
-Planned Rust migration of the Kode terminal IDE. The implementation reference is
-`../kode`, commit `7d3e5953ec2de75f2b5e9c44fb3e65549d39ec68` (audited 2026-10-14).
+| Platform | Packages |
+|---|---|
+| Linux | `.tar.gz` / `.zip`, AppImage, Snap |
+| macOS | `.tar.gz` / `.zip`, DMG |
+| Windows | `.zip` / `.tar.gz`, MSI, MSIX |
 
-Implementation is underway. [DASHBOARD.md](DASHBOARD.md) records all 79 task statuses,
-ongoing work and links to acceptance evidence. Open a file or folder with
-`cargo run -p kode -- /path/to/project`; Ctrl+S saves and Ctrl+Q saves workspace
-state and quits. The shell includes file/project panels, search, text editing,
-hex inspection, portable image viewing, syntax/semantic highlighting and native
-completion/navigation, local Git operations and diff views, SQL/JDBC and REST.
-The remaining [finalized UAT requests](docs/migration/UAT.md), final editor
-qualification and release work continue in dependency order.
-`cargo check --workspace`, `--help` and `--version` work on stable Rust.
-The Rust application is a TUI. JDBC runs in an **external JVM**;
-the Rust process does not embed a JVM.
+Windows and macOS installers are currently unsigned, so your system may warn you the first time. Install the Snap with `sudo snap install --dangerous ./kode-rs_*.snap`. The x86_64 Linux build needs glibc 2.39 or newer (Ubuntu 24.04).
 
-Ctrl+T opens your shell in the workspace directory. Type `exit` to return to the
-editor; terminal modes, caret and unsaved buffers are retained. Browser terminal
-mode is `kode serve [--port 11045] [folder] [-- <ttyd arguments>]`. It binds
-`127.0.0.1` by default; use `--public` or `--host` for another bind address and
-`--credential user:password` for Basic authentication. Install `ttyd` on PATH,
-place its executable beside `kode`, or set `KODE_TTYD` to its executable path.
-`python3 scripts/build-ttyd.py` builds a pinned standalone ttyd executable and
-records provenance; native development libraries listed by its `--help` are
-required. Linux x86_64 GNU archive builds now include the standalone ttyd, its
-relative native library closure, and full dependency notices. Build and acceptance
-commands are in [the distribution guide](packaging/README.md). The manual
-[release workflow](.github/workflows/distribution.yaml) builds portable Linux,
-Windows and macOS archives on x86_64 and arm64, architecture-specific Linux
-AppImages and Snaps, Windows MSI/MSIX, macOS DMGs, the standalone JDBC adapter
-JAR, and optional Java runtimes. A release is published only after the complete
-matrix succeeds. [Z03 tracks qualification](docs/migration/Z03-ARTIFACT-MATRIX.md).
-`--resources DIRECTORY` within `serve` selects the child IDE's resource override.
-Remaining arguments after `--` pass literally to ttyd; an unknown option also
-starts forwarding, matching the original CLI.
+Then open a folder or a file:
 
-For remote access, keep the loopback bind and use
-`ssh -L 11045:127.0.0.1:11045 remote-host`, then open
-`http://127.0.0.1:11045`. Browser tabs reserve shortcuts such as Ctrl+T/Ctrl+W;
-`google-chrome --app=http://127.0.0.1:11045` is the existing app-window workaround.
-Classic terminal keyboard encodings can also merge Ctrl+Enter with Enter; use
-the SQL Execute and REST Send buttons in those terminals. Browser clipboard
-paste and xterm selection copy remain available. ttyd notice logs are suppressed
-when credentials are supplied because its notices include a reversible Basic
-auth token; explicitly forwarding a higher ttyd `--debug` level enables those logs.
+```sh
+kode /path/to/project
+```
 
-REST OAuth acquisition is available in each request's Auth tab. Choose OAuth 1.0
-or OAuth 2.0, fill the OAuth settings and use Acquire token. Copy the displayed
-login URL into a GUI browser. Kode receives the callback at
-`https://localhost:<free-port>/callback`; the temporary self-signed certificate
-may require browser acceptance, and the provider must allow that redirect URI.
-Remote sessions can paste the complete redirect URL instead. Refresh and Clear
-are explicit actions; acquired tokens are kept only for the current workspace
-session and are omitted from saved collections and exports.
+To build from source, install the latest stable Rust and run `cargo run -p kode -- /path/to/project`.
 
-Files → Recent shows project-relative paths by default, including directories
-that distinguish equal filenames. Outside-project files stay absolute. Click
-`[paths:rel]` / `[paths:full]`, or press **P** while Files is focused, to toggle
-full paths. Each project remembers this display preference; file identity and
-save targets stay the same.
+Press **Ctrl+S** to save, **Ctrl+Q** to save your workspace and quit, and **Alt+8** to open Help, which lists every shortcut. **Ctrl+T** drops you into a shell in the project folder; type `exit` to come back.
 
-Shared text editors support multiple cursors: **Alt+left-click** adds a cursor
-or removes one already there, **Alt+drag** adds a selection, and
-**Ctrl+Shift+Up/Down** adds a cursor on the previous/next visual row. **Alt+Enter**
-in file find selects every occurrence and returns to editing. Typing, deletion,
-paste and undo/redo operate on the whole selection set. Copy/cut joins selected
-text in source order with newlines; paste repeats the full clipboard at each
-selection. **Escape** keeps the primary cursor; a plain click starts one cursor.
-File, SQL, REST and environment editors share these controls. Read-only previews
-allow selection and copying while preserving their mutation guard.
+| Key | Panel | | Key | Panel |
+|---|---|---|---|---|
+| **Alt+1** | Files | | **Alt+5** | REST |
+| **Alt+2** | Project | | **Alt+6** | About |
+| **Alt+3** | Git | | **Alt+7** | Settings |
+| **Alt+4** | Database | | **Alt+8** | Help |
 
-**Double-click** selects a Unicode word; **Alt+double-click** adds that word to
-the existing selections, with its cursor at the end. Clicks pair within 350 ms;
-a third click starts a new pair. Whitespace and punctuation follow Unicode word
-segments, and blank space beyond a line keeps a caret. Tabs and escaped Unicode
-glyphs select the source under the pointer. Word analysis runs on a worker;
-navigation, typing or resizing cancels an unfinished selection.
+## Editing
 
-Path fields offer **Browse** (a compact **[...]** button in narrow views) and
-**Alt+P**: REST Postman/OpenAPI import, Postman export, SQL Save, Local JAR(s),
-binary request bodies and multipart file rows. The chooser supports a typed path,
-parent navigation with **F4**, a file tree, and new save filenames. **Tab** cycles
-its controls; **Enter** activates the focused control, and **Escape** cancels.
-Selecting changes the field; submit the owning dialog to import, export or save.
-For Local JAR(s), Browse replaces the entry at the caret and preserves the rest
-of the native classpath. In a multipart file row it replaces a single source or
-adds to an existing JSON source array. Workspace, source-root and exclusion
-selectors use the same chooser and retain their project configuration rules.
+The same editor is used everywhere: source files, SQL consoles, REST bodies, environments and commit messages.
 
-The hex viewer offers **8 / 16 / 32** bytes per row in its header; **F8** cycles
-layouts while retaining the byte selection and scroll anchor. **Ctrl+F** opens
-find. **Tab** switches literal UTF-8 text and hex bytes (`00 FF 41` or `00FF41`);
-Enter / Shift+Enter finds the next / previous match and wraps at the ends.
-F3 / Shift+F3 repeats from the byte view. Escape closes find and cancels its
-worker; Stop cancels while keeping the field open. Large searches run off the
-UI thread. Alt+C/X/V retains the private raw-byte clipboard; the find field uses
-the text clipboard. Byte edits remain temporary and cannot be saved to disk.
+![Every occurrence of "status" selected with multiple cursors, ready to be edited together](docs/ascii-screenshots/terminal-svg/multicursor.svg)
 
-![terminal-3.svg](docs/ascii-screenshots/terminal-svg/terminal-3.svg)
+**Multiple cursors and selections**
 
-The external JDBC protocol/bootstrap/supervisor is available as a backend. Build
-and test it with `bash scripts/test-jdbc-bridge.sh` using Java 21 and Maven; the
-packaged helper needs only Java at runtime. `KODE_JAVA` selects Java and
-`KODE_JDBC_HELPER` selects the helper JAR. Ordinary editor startup requires neither.
-If Java is missing or too old, **F5 Get Java** in Databases or the connection
-form offers a separate optional runtime download. Download, Cancel, Retry and
-Hide keep the operation explicit; a hidden download continues while you edit.
-After installation, retry Test or Connect explicitly. Configured/local Java takes
-precedence, and startup never fetches runtime metadata. The Linux x86_64 GNU
-runtime is qualified; other platform assets remain unavailable until qualified.
-`KODE_RUNTIME_RELEASE_URL` selects an alternative latest-release metadata endpoint
-for a mirror or local fixture. Downloads verify archive and file checksums before
-atomic installation under the database home's `java-runtime` directory.
-Driver resolution/loading now supports Maven, local multi-JAR and manual vendor
-sources, versioned install manifests and isolated loaders. The backend supports
-temporary connection tests, shared datasource connections, context changes and
-commit/rollback through serialized JDBC owners. SQL execution streams typed,
-bounded previews and supports independent cancellation; helper failure retains
-received rows and never replays SQL. Open **Databases** with Alt+4: `n` creates a
-datasource, F2 edits, `c` connects/disconnects, `r` refreshes metadata, `R` explicitly
-restarts the database service and `s` opens a SQL editor. The connection dialog
-uses Alt+T to test, Alt+D to install a driver and Ctrl+S to save. Click Templates
-beside JDBC URL, or press Down in that field, for the current type's recent URLs
-and standard templates. Changing type preserves a typed URL; Escape cancels
-the menu. Passwords are masked and stored separately from
-public definitions. SQL consoles share the editor: Ctrl+Enter executes the current
-statement or selection, Ctrl+Shift+Enter executes the script, Escape requests
-cancellation, and Ctrl+Alt+A/C/R changes shared autocommit/commit/rollback state.
-Ctrl+S exports a guarded `.sql` file; unsaved console buffers and context bindings
-also survive workspace restarts. Click Catalog/Schema to bind a console. Results
-keep their own focus; Alt+Arrows/PageUp/PageDown scroll and Alt+Tab switches result
-sets/messages while the editor stays focused. Hover Execute to preview its target.
-Press F4 or click Details to read complete wrapped database/SQL diagnostics. Use
-arrows, PageUp/PageDown, Home/End or the mouse wheel to scroll; Ctrl+C or Copy
-copies the full redacted message, and Escape restores the previous view.
-End-to-end JDBC qualification is recorded in [D09](docs/parity/D09.md).
-After a helper crash, check the database outcome, then use Alt+4, `R` to restart
-the service and `c` to reconnect. Previous SQL is retained and never replayed.
+| Action | Keys |
+|---|---|
+| Add or remove a cursor | **Alt+click** |
+| Add a selection | **Alt+drag** |
+| Add a cursor on the row above or below | **Ctrl+Shift+Up / Down** |
+| Select a word / add a word to the selection | **Double-click** / **Alt+double-click** |
+| Select every match of a search | **Alt+Enter** in the find bar |
+| Back to one cursor | **Escape** |
 
-![terminal-4.svg](docs/ascii-screenshots/terminal-svg/terminal-4.svg)
+Typing, deleting, pasting and undo apply to every selection at once.
 
+**Moving around**
 
-Open **REST** with Alt+5. `/` filters the collection; `n` adds a request, `f` a
-folder, `m` opens actions, `i` imports Postman, `e` exports and `r` runs/stops the
-selected request or folder. The actions menu also imports OpenAPI into a folder.
-Tab selects environments: `n` creates, `c` copies, F2 renames and Space activates.
-Environment values use the shared editor and survive restart, including comments
-and unfinished lines. Drag the environment divider to resize it. Open a request
-for method/URL controls and params/auth/headers/body/variables/settings/raw tabs.
-Ctrl+Enter sends or stops; Ctrl+Tab switches request tabs from an editor. Header
-names complete with Ctrl+Space. Request edits, comments and unfinished headers
-survive restart. Responses have Body/Headers/Cookies/Raw/Transaction tabs, a
-draggable divider and optional display formatting. Format body explicitly changes
-the editable body and supports undo. Folder/collection runs show selectable
-per-request progress and outcomes. F7 opens run history; click or Enter an outcome
-to inspect it, and use Stop/Run again to control the selected run. Panel sizes and
-Pretty preferences survive restart; runtime responses and cookies do not.
-Postman scripts are preserved without execution. The Auth tab now offers No Auth,
-API Key, Bearer, Basic, Digest, OAuth 1.0, OAuth 2.0, Hawk, AWS Signature, NTLM and
-Akamai EdgeGrid. Click a credential row to edit it; Reveal secrets controls masking.
-OAuth acquisition and browser callbacks are qualified in [R10](docs/parity/R10.md).
-OAuth 1.0 uses HMAC-SHA1, AWS uses SigV4, Hawk supports SHA256/384/512,
-and NTLM uses NTLMv2. Advanced-auth 3xx responses remain visible for explicit review;
-credentials/signatures do not automatically follow redirects. Digest/NTLM work
-with HTTP/SSE; their WebSocket upgrade negotiation has an explicit error. Protocol
-qualification is recorded in [R09](docs/parity/R09.md).
+| Action | Keys |
+|---|---|
+| Move by character, line or page | **Arrows**, **Home / End**, **PageUp / PageDown** |
+| Move by word | **Ctrl+Left / Right** |
+| Extend the selection | Add **Shift** to any of the above |
+| Select all | **Ctrl+A** |
+| Undo / redo | **Alt+U** / **Alt+R** |
+| Copy / cut / paste | **Ctrl+C / X / V** or **Alt+C / X / V** |
+| Switch between panel and editor | **F6** |
 
-![terminal-5.svg](docs/ascii-screenshots/terminal-svg/terminal-5.svg)
+Click a marker in the gutter to fold a block, and click the minimap to jump to that part of the file.
 
-Ctrl+Space requests completion and Ctrl-click follows definitions/usages.
-The Project panel provides `r` rescan, `b` rebuild index and `c` clear index.
-Indexing runs on bounded workers, uses unsaved buffers and persists its cache in
-`.kode-rs/index.sqlite` without Java or language servers. `KODE_CODEINTEL_PATH`
-can select a custom definitions catalog. Kotlin/C have specialized extraction;
-other languages use conservative AST or explicit regex fallback capabilities.
+## Code intelligence
 
-![terminal-6.svg](docs/ascii-screenshots/terminal-svg/terminal-6.svg)
+Press **Ctrl+Space** to complete, hover over a name to preview its definition, and **Ctrl+click** to jump to a definition or list its usages. These work across files and include your unsaved edits.
 
+![Completion popup listing the members of an Order object after typing "order."](docs/ascii-screenshots/terminal-svg/completion.svg)
 
-Open **Settings** with Alt+7 for language-server discovery and installation.
-Tab or the LSP/Index buttons switch between language servers and native cache
-controls. In Index, `r` rescans, `b` rebuilds and `c` clears the rebuildable Rust
-cache. The panel shows scan/extract/resolve/persist progress and scrolls with
-Up/Down/Page/Home/End or the mouse wheel. These controls leave user JDBC databases
-and dirty editor buffers intact.
-Use `f` to refresh, Enter to install/update, `y` to remove, and Escape to cancel.
-F4 Details opens the full operation error or selected server details. The dialog
-wraps text, scrolls with arrows/Page/Home/End, and copies all text with Ctrl+C.
-`KODE_LSP_CATALOG` selects a custom catalog and `KODE_LSP_HOME` selects the install
-root. Existing local executables and manifest command arrays are supported.
-The shipped TypeScript server needs Node.js 22.22.2 or newer; HTML, CSS and JSON
-servers need Node.js 18 or newer. Their pinned packages install inside the selected
-LSP root without global npm installs or package lifecycle scripts. The pinned
-JDT LS milestone needs Java 25 or newer; select it with `JAVA_HOME` or PATH.
-JDT configuration and data are kept separately for each project. These runtimes
-remain optional: native editing and intelligence do not require Node or Java.
-Use `s` to start/stop and `r` to restart a server. Running state follows the actual
-initialized child; workspace changes and exit stop and reap owned servers.
-Opening a file attempts to start its first matching local server in the background;
-it never installs a package. Current non-empty LSP definitions, references and
-completion take precedence; missing, crashed, empty or failing servers use native
-intelligence. Highlighting and definition previews retain native styling.
+![Hovering over discountCents shows its definition from another file](docs/ascii-screenshots/terminal-svg/definition.svg)
 
+![Ctrl+click on a function declaration lists where it is used across the project](docs/ascii-screenshots/terminal-svg/usages.svg)
 
+### Languages
 
-Sidebar tabs run horizontally in source order: Files, Project, Git, Database,
-REST, About, Settings, Help. Existing numbered shortcuts retain their actions:
-Alt+1 Files, Alt+2 Project, Alt+3 Git, Alt+4 Database, Alt+5 REST, Alt+6 About,
-Alt+7 Settings, Alt+8 Help. Ctrl+F opens file find/replace; Alt+F opens project search.
-Ctrl+Alt+F and Ctrl+Shift+F remain project-search aliases when delivered by the
-terminal host. Neither is required for project search.
+Kode's built-in analysis goes deeper for some languages than others:
 
-Help scrolls and is generated from the same command catalog used by reducers.
-About shows the version, MIT license, source links, dependency credits and loaded
-languages; Tab switches between its independently scrollable lists. The wide
-status line and native index settings show actual loop/draw FPS, process resident
-memory and CPU normalized across available logical CPUs. Samples run in background
-jobs without Java. Idle terminal fixtures measured two draws per second; input
-and worker notifications trigger immediate redraws. See [Z02](docs/parity/Z02.md).
-`python3 scripts/credits.py --check --offline` checks the checked-in dependency
-credits against Cargo.lock; omit `--check` to regenerate after dependency changes.
+| Level | Languages | What you get |
+|---|---|---|
+| **Deep** | Kotlin, C | Dedicated analysis of declarations, scopes, imports and types, for the most precise completion and navigation |
+| **Syntax tree** | C++, Go, JavaScript, JSX, TypeScript, TSX, Python, PHP, Ruby, Bash, Swift, CSS, JSON | Parsed highlighting, plus symbols, scopes and navigation from the syntax tree |
+| **Syntax tree + patterns** | C#, D, Lua, Markdown, OCaml, Pascal, Perl, SQL, Svelte, YAML, Zig | The same parsing, with symbols topped up by language-specific patterns |
+| **Patterns** | Java, Rust, Dart, PowerShell, R, MATLAB, Scala, Objective-C, Visual Basic, Groovy, Julia, Haskell | Keyword highlighting, with symbols found by language-specific patterns |
+| **Keywords** | 200+ more, including HTML, Vue, Elixir, Terraform, Dockerfile and TOML | Keyword highlighting and basic symbol detection |
 
-Open **Git** with Alt+3. Space stages/unstages the selected status row; `a` stages
-all rows and `A` unstages them. Tab enters the shared commit-message editor,
-Ctrl+Enter commits, and Ctrl+Tab cycles sections. Outside that editor, `b` selects
-a local branch, `t` creates a tag, and `T` explicitly creates or moves a tag on the
-selected commit. Enter expands history; `m` copies its message into the draft.
-Checkout preserves local changes and refuses dirty file or binary buffers.
-Enter on a status row opens its diff in the main pane. `c` toggles context, `v`
-switches side-by-side/unified presentation, and Enter/`r` or a center arrow restores
-the selected unstaged text chunk. Previews support shared selection, copy and find;
-staged/historical comparisons are read-only. Leaving Git restores the ordinary viewer.
+This analysis is fast and works offline, but it isn't a compiler, so treat its answers as a strong guide.
 
-Use the latest Rust **stable** toolchain (`rustup update stable`). This workspace
-selects `stable` through `rust-toolchain.toml`, as requested. Dependency versions
-are captured in `Cargo.lock`; validation reports record the exact compiler used.
+### Language servers
 
-## Start here
+For compiler-grade results, add a language server in **Settings** (**Alt+7**). Kode finds servers you already have, and can install, update, start and stop those in its catalog. When a server has an answer it takes priority, and if it's missing or fails, Kode falls back to its built-in analysis.
 
-1. Read [scope and architecture](docs/migration/PLAN.md).
-2. Read [shared contracts](docs/migration/CONTRACTS.md) before implementing a component.
-3. Pick a ready task in the [task index](docs/migration/TASKS.md), then read its linked card.
-4. For editor work, also read the [editor interaction contract](docs/migration/EDITOR-UX.md).
-5. For database work, also read the [external JDBC protocol](docs/migration/JDBC.md).
+| Language | Server |
+|---|---|
+| Rust | rust-analyzer |
+| Go | gopls |
+| Python | Python LSP Server |
+| Lua | Lua Language Server |
+| Java | Eclipse JDT LS (needs Java 25+) |
+| Kotlin | Kotlin Language Server |
+| JavaScript, TypeScript | TypeScript Language Server (needs Node.js 22.22.2+) |
+| HTML, CSS, JSON | VS Code language servers (need Node.js 18+) |
+| C, C++, Objective-C | clangd |
 
-Supporting documents:
+Installing servers is best tested on x86_64 Linux so far.
 
-- [Crate research and selection](docs/migration/CRATES.md)
-- [Compatibility, fixtures, and release acceptance](docs/migration/COMPATIBILITY.md)
-- [Complete Kotlin source allocation](docs/migration/SOURCE-MAP.tsv)
-- [Agent handoff procedure](docs/migration/HANDOFF.md)
+## Search
 
-The task index is the execution ledger. No task is complete merely because a crate
-was selected or a screen can render. Completion includes the behavior and UX
-checks in its card and the relevant acceptance matrix.
+**In the current window: Ctrl+F.** Find and replace with regular expressions and `$1`-style capture groups.
+
+![Find bar with the regular expression \w+Cents and all eight matches highlighted](docs/ascii-screenshots/terminal-svg/find-replace.svg)
+
+| Action | Keys |
+|---|---|
+| Next match | **Enter** |
+| Highlight all matches | **Ctrl+Enter** |
+| Turn all matches into cursors | **Alt+Enter** |
+| Replace one / replace all | **Ctrl+R** / **Ctrl+Shift+R** |
+
+**Across the project: Alt+F.** Search every text file in the project, including hidden and ignored ones, and narrow it down with a file-name filter. Results open in an editor right inside the dialog, so you can fix what you find and save with **Ctrl+S**. Replacing applies to the file you have open, not to the whole project.
+
+![Project search dialog with a list of matches above an embedded editor](docs/ascii-screenshots/terminal-svg/project-search.svg)
+
+## Git
+
+Open **Git** with **Alt+3** to stage and unstage changes, write commits, switch local branches, create tags and browse history. Open any change as a side-by-side or unified diff, and restore a single chunk from the diff.
+
+![Git panel with changed files, commit box and history beside a side-by-side diff](docs/ascii-screenshots/terminal-svg/git.svg)
+
+Kode works with your local repository. Use the shell (**Ctrl+T**) for push, pull and fetch.
+
+## Databases
+
+Open **Database** with **Alt+4** to connect to anything with a JDBC driver, such as PostgreSQL, MySQL, MariaDB, Oracle, SQLite or H2. Kode can fetch drivers from Maven or use your own JAR files.
+
+![SQL console with a schema tree on the left and a query in the editor](docs/ascii-screenshots/terminal-svg/terminal-2.svg)
+
+- Browse catalogs, schemas, tables, views, functions and types, plus packages and their source on Oracle and MariaDB.
+- Run the current statement or selection with **Ctrl+Enter**, or the whole script with **Ctrl+Shift+Enter**. **Escape** cancels a running query.
+- Scroll through results as they stream in, and control autocommit, commit and rollback from the console.
+- Passwords are stored separately from connection definitions.
+
+Databases are the only feature that needs Java (version 21 or newer). Everything else runs without it. If Java is missing, press **F5** to download an optional runtime where one is available, or point `KODE_JAVA` at your own.
+
+## REST client
+
+Open **REST** with **Alt+5** to work with API collections in the terminal.
+
+![REST panel with a request collection, a JSON request body and a formatted 201 response](docs/ascii-screenshots/terminal-svg/rest.svg)
+
+- Import and export **Postman** collections, and import **OpenAPI** definitions.
+- Send **HTTP**, **Server-Sent Events** and **WebSocket** requests with **Ctrl+Enter**.
+- Authenticate with API keys, Bearer, Basic, Digest, OAuth 1.0, OAuth 2.0, Hawk, AWS Signature, NTLM or Akamai EdgeGrid. OAuth sign-in gives you a login URL to open in any browser.
+- Switch between variable environments, run whole folders, and review past runs with **F7**.
+- Inspect response body, headers, cookies, raw traffic and the full transaction.
+
+Postman scripts are kept when you import and export, but they aren't run.
+
+## Images
+
+Open an image from the file tree to view it right in the terminal. Kode supports PNG, JPEG, WebP, GIF (first frame), BMP, TGA, DDS, PSD and Krita files.
+
+![A photo of a cat rendered in terminal cells by the image viewer](docs/ascii-screenshots/terminal-svg/terminal-4.svg)
+
+Press **Enter** to cycle through four rendering modes, **Left / Right** to change the width, and **M** for grayscale and contrast controls.
+
+## Binary files
+
+Binary files open in a hex view with a choice of 8, 16 or 32 bytes per row (**F8**).
+
+![Hex view of a gzip archive showing offsets and bytes](docs/ascii-screenshots/terminal-svg/terminal-6.svg)
+
+- **Find** with **Ctrl+F**, by text or hex bytes such as `00 FF 41`. **Tab** switches between them, and **F3** repeats the search.
+- **Edit** by selecting bytes and using **Alt+C / X / V** to copy, cut and paste, or **Delete** to remove them.
+
+Byte edits stay in memory: Kode can't save binary files yet, so your file on disk is never changed.
+
+## Use it in a browser
+
+`kode serve` serves the same interface through [ttyd](https://github.com/tsl0922/ttyd), which is included in the x86_64 Linux archives. On other builds, install it yourself.
+
+```sh
+kode serve --port 11045 /path/to/project
+```
+
+It only listens on your own machine by default. To reach a remote machine, use an SSH tunnel and open `http://127.0.0.1:11045`:
+
+```sh
+ssh -L 11045:127.0.0.1:11045 remote-host
+```
+
+Use `--public` or `--host` to listen on other addresses, and `--credential user:password` to require a login.
+
+## Terminal tips
+
+- Some terminals can't tell **Ctrl+Enter** from **Enter**. Use the **Execute** and **Send** buttons there instead.
+- Browsers keep shortcuts such as **Ctrl+T** and **Ctrl+W** for themselves. An app window avoids this: `google-chrome --app=http://127.0.0.1:11045`.
+
+## Project status
+
+Kode is a Rust rewrite of an earlier Kotlin version. Feature work is largely done, with final editor and release qualification still open. Progress is tracked on the [dashboard](DASHBOARD.md). Contributors should start with the [migration plan](docs/migration/PLAN.md) and the [packaging guide](packaging/README.md).
+
+## License
+
+[MIT](LICENSE.md)

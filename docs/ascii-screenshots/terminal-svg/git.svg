@@ -1,0 +1,411 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1252.5" height="710.0" viewBox="0 0 1252.5 710.0">
+<rect width="100%" height="100%" fill="#0F1424"/>
+<rect x="10.00" y="10.00" width="116.00" height="15" fill="#242C44"/>
+<text x="17.25" y="21.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#A5B2FF" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Files</text>
+<text x="68.00" y="21.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#A5B2FF" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Project</text>
+<rect x="126.00" y="10.00" width="36.25" height="15" fill="#3C4678"/>
+<text x="133.25" y="21.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#DD9E00" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Git</text>
+<rect x="162.25" y="10.00" width="275.50" height="15" fill="#242C44"/>
+<text x="169.50" y="21.85" textLength="58.00" lengthAdjust="spacingAndGlyphs" fill="#A5B2FF" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Database</text>
+<text x="242.00" y="21.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#A5B2FF" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">REST</text>
+<text x="285.50" y="21.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#A5B2FF" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">About</text>
+<text x="336.25" y="21.85" textLength="58.00" lengthAdjust="spacingAndGlyphs" fill="#A5B2FF" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Settings</text>
+<text x="408.75" y="21.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#A5B2FF" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Help</text>
+<text x="437.75" y="21.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="10.00" width="797.50" height="15" fill="#3F4E7E"/>
+<text x="445.00" y="21.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Diff</text>
+<text x="481.25" y="21.85" textLength="145.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">src/shop/Customer.kt</text>
+<text x="633.50" y="21.85" textLength="72.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">(unstaged)</text>
+<text x="713.25" y="21.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[c]</text>
+<text x="742.25" y="21.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">context</text>
+<text x="800.25" y="21.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[v]</text>
+<text x="829.25" y="21.85" textLength="87.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">side-by-side</text>
+<text x="923.50" y="21.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<text x="938.00" y="21.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Enter/r</text>
+<text x="996.00" y="21.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">restore</text>
+<text x="1054.00" y="21.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">chunk</text>
+<rect x="10.00" y="25.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="10.00" y="36.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[r]</text>
+<text x="39.00" y="36.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[b]</text>
+<text x="68.00" y="36.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[t]</text>
+<text x="97.00" y="36.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[T]</text>
+<text x="437.75" y="36.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="25.00" width="7.25" height="15" fill="#B6B9C5"/>
+<rect x="452.25" y="25.00" width="14.50" height="15" fill="#3F4E7E"/>
+<text x="452.25" y="36.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">1</text>
+<rect x="466.75" y="25.00" width="384.25" height="15" fill="#1A2237"/>
+<text x="466.75" y="36.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">package</text>
+<text x="524.75" y="36.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">shop</text>
+<text x="836.50" y="36.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<rect x="851.00" y="25.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="858.25" y="36.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">1</text>
+<rect x="872.75" y="25.00" width="369.75" height="15" fill="#1A2237"/>
+<text x="872.75" y="36.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">package</text>
+<text x="930.75" y="36.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">shop</text>
+<rect x="10.00" y="40.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="10.00" y="51.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Branch:</text>
+<text x="68.00" y="51.85" textLength="108.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">refs/heads/main</text>
+<text x="437.75" y="51.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="40.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="452.25" y="51.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">2</text>
+<rect x="466.75" y="40.00" width="384.25" height="15" fill="#1A2237"/>
+<text x="836.50" y="51.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<rect x="851.00" y="40.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="858.25" y="51.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">2</text>
+<rect x="872.75" y="40.00" width="369.75" height="15" fill="#1A2237"/>
+<rect x="10.00" y="55.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="10.00" y="66.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[</text>
+<text x="24.50" y="66.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">]</text>
+<text x="39.00" y="66.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">M</text>
+<text x="68.00" y="66.85" textLength="145.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">src/shop/Checkout.kt</text>
+<text x="437.75" y="66.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="55.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="452.25" y="66.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">3</text>
+<rect x="466.75" y="55.00" width="384.25" height="15" fill="#1A2237"/>
+<text x="466.75" y="66.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">class</text>
+<text x="510.25" y="66.85" textLength="87.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Customer(val</text>
+<text x="604.50" y="66.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">name:</text>
+<text x="648.00" y="66.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">String,</text>
+<text x="706.00" y="66.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">val</text>
+<text x="735.00" y="66.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">email:</text>
+<text x="785.75" y="66.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">String</text>
+<text x="836.50" y="66.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<rect x="851.00" y="55.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="858.25" y="66.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">3</text>
+<rect x="872.75" y="55.00" width="369.75" height="15" fill="#1A2237"/>
+<text x="872.75" y="66.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">class</text>
+<text x="916.25" y="66.85" textLength="87.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Customer(val</text>
+<text x="1010.50" y="66.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">name:</text>
+<text x="1054.00" y="66.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">String,</text>
+<text x="1112.00" y="66.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">val</text>
+<text x="1141.00" y="66.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">email:</text>
+<text x="1191.75" y="66.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">String,</text>
+<rect x="10.00" y="70.00" width="427.75" height="15" fill="#243250"/>
+<text x="10.00" y="81.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#FFBF55" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[</text>
+<text x="24.50" y="81.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#FFBF55" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">]</text>
+<text x="39.00" y="81.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#FFBF55" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">M</text>
+<text x="68.00" y="81.85" textLength="145.00" lengthAdjust="spacingAndGlyphs" fill="#FFBF55" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">src/shop/Customer.kt</text>
+<text x="437.75" y="81.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="70.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="466.75" y="70.00" width="384.25" height="15" fill="#1A2237"/>
+<text x="466.75" y="81.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">,</text>
+<text x="481.25" y="81.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">val</text>
+<text x="510.25" y="81.85" textLength="101.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">loyaltyPoints:</text>
+<text x="619.00" y="81.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Int</text>
+<text x="648.00" y="81.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">=</text>
+<text x="662.50" y="81.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">0)</text>
+<text x="684.25" y="81.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">{</text>
+<text x="836.50" y="81.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<rect x="851.00" y="70.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="872.75" y="70.00" width="369.75" height="15" fill="#1A2237"/>
+<text x="880.00" y="81.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">val</text>
+<text x="909.00" y="81.85" textLength="101.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">loyaltyPoints:</text>
+<text x="1017.75" y="81.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Int</text>
+<text x="1046.75" y="81.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">=</text>
+<text x="1061.25" y="81.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">0)</text>
+<text x="1083.00" y="81.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">{</text>
+<rect x="10.00" y="85.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="96.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="85.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="452.25" y="96.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">4</text>
+<rect x="466.75" y="85.00" width="384.25" height="15" fill="#1A2237"/>
+<text x="495.75" y="96.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">fun</text>
+<text x="524.75" y="96.85" textLength="166.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">discountCents(subtotal:</text>
+<text x="698.75" y="96.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Long):</text>
+<text x="749.50" y="96.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Long</text>
+<text x="785.75" y="96.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">=</text>
+<text x="836.50" y="96.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<rect x="851.00" y="85.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="858.25" y="96.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">4</text>
+<rect x="872.75" y="85.00" width="369.75" height="15" fill="#1A2237"/>
+<text x="901.75" y="96.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">fun</text>
+<text x="930.75" y="96.85" textLength="166.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">discountCents(subtotal:</text>
+<text x="1104.75" y="96.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Long):</text>
+<text x="1155.50" y="96.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Long</text>
+<text x="1191.75" y="96.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">=</text>
+<rect x="10.00" y="100.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="111.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="100.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="452.25" y="111.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">5</text>
+<rect x="466.75" y="100.00" width="384.25" height="15" fill="#2F4B70"/>
+<text x="524.75" y="111.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">if</text>
+<text x="546.50" y="111.85" textLength="101.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">(loyaltyPoints</text>
+<text x="655.25" y="111.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">&gt;=</text>
+<text x="677.00" y="111.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">1000)</text>
+<text x="720.50" y="111.85" textLength="58.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">subtotal</text>
+<text x="785.75" y="111.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">/</text>
+<text x="800.25" y="111.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">10</text>
+<text x="822.00" y="111.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">e&gt;&gt;</text>
+<rect x="851.00" y="100.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="858.25" y="111.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">5</text>
+<rect x="872.75" y="100.00" width="369.75" height="15" fill="#2F4B70"/>
+<text x="930.75" y="111.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">if</text>
+<text x="952.50" y="111.85" textLength="79.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">(isLoyal())</text>
+<text x="1039.50" y="111.85" textLength="58.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">subtotal</text>
+<text x="1104.75" y="111.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">/</text>
+<text x="1119.25" y="111.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">5</text>
+<text x="1133.75" y="111.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">else</text>
+<text x="1170.00" y="111.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">0L</text>
+<rect x="10.00" y="115.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="126.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="115.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="466.75" y="115.00" width="384.25" height="15" fill="#2F4B70"/>
+<text x="466.75" y="126.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">lse</text>
+<text x="495.75" y="126.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">0L</text>
+<text x="836.50" y="126.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<rect x="851.00" y="115.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="872.75" y="115.00" width="369.75" height="15" fill="#2F4B70"/>
+<rect x="10.00" y="130.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="141.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="130.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="452.25" y="141.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">6</text>
+<rect x="466.75" y="130.00" width="384.25" height="15" fill="#1A2237"/>
+<text x="836.50" y="141.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<rect x="851.00" y="130.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="858.25" y="141.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">6</text>
+<rect x="872.75" y="130.00" width="369.75" height="15" fill="#1A2237"/>
+<rect x="10.00" y="145.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="156.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="145.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="452.25" y="156.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">7</text>
+<rect x="466.75" y="145.00" width="384.25" height="15" fill="#1A2237"/>
+<text x="495.75" y="156.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">fun</text>
+<text x="524.75" y="156.85" textLength="72.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">isLoyal():</text>
+<text x="604.50" y="156.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Boolean</text>
+<text x="662.50" y="156.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">=</text>
+<text x="677.00" y="156.85" textLength="94.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">loyaltyPoints</text>
+<text x="778.50" y="156.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">&gt;=</text>
+<text x="800.25" y="156.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">1000</text>
+<text x="836.50" y="156.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<rect x="851.00" y="145.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="858.25" y="156.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">7</text>
+<rect x="872.75" y="145.00" width="369.75" height="15" fill="#1A2237"/>
+<text x="901.75" y="156.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">fun</text>
+<text x="930.75" y="156.85" textLength="72.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">isLoyal():</text>
+<text x="1010.50" y="156.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Boolean</text>
+<text x="1068.50" y="156.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">=</text>
+<text x="1083.00" y="156.85" textLength="94.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">loyaltyPoints</text>
+<text x="1184.50" y="156.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">&gt;=</text>
+<text x="1206.25" y="156.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">1000</text>
+<rect x="10.00" y="160.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="171.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="160.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="452.25" y="171.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">8</text>
+<rect x="466.75" y="160.00" width="384.25" height="15" fill="#1A2237"/>
+<text x="836.50" y="171.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<rect x="851.00" y="160.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="858.25" y="171.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">8</text>
+<rect x="872.75" y="160.00" width="369.75" height="15" fill="#1A2237"/>
+<rect x="10.00" y="175.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="186.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="175.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="452.25" y="186.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">9</text>
+<rect x="466.75" y="175.00" width="384.25" height="15" fill="#1A2237"/>
+<text x="495.75" y="186.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">fun</text>
+<text x="524.75" y="186.85" textLength="101.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">displayName():</text>
+<text x="633.50" y="186.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">String</text>
+<text x="684.25" y="186.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">=</text>
+<text x="698.75" y="186.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">&quot;$name</text>
+<text x="749.50" y="186.85" textLength="65.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">&lt;$email&gt;&quot;</text>
+<text x="836.50" y="186.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<rect x="851.00" y="175.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="858.25" y="186.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">9</text>
+<rect x="872.75" y="175.00" width="369.75" height="15" fill="#1A2237"/>
+<text x="901.75" y="186.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">fun</text>
+<text x="930.75" y="186.85" textLength="101.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">displayName():</text>
+<text x="1039.50" y="186.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">String</text>
+<text x="1090.25" y="186.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">=</text>
+<text x="1104.75" y="186.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">&quot;$name</text>
+<text x="1155.50" y="186.85" textLength="65.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">&lt;$email&gt;&quot;</text>
+<rect x="10.00" y="190.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="201.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="190.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="445.00" y="201.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">10</text>
+<rect x="466.75" y="190.00" width="384.25" height="15" fill="#1A2237"/>
+<text x="466.75" y="201.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">}</text>
+<text x="836.50" y="201.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<rect x="851.00" y="190.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="851.00" y="201.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">10</text>
+<rect x="872.75" y="190.00" width="369.75" height="15" fill="#1A2237"/>
+<text x="872.75" y="201.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">}</text>
+<rect x="10.00" y="205.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="216.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="205.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="220.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="231.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="220.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="235.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="10.00" y="246.85" textLength="427.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">───────────────────────────────────────────────────────────</text>
+<text x="437.75" y="246.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="235.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="250.00" width="427.75" height="15" fill="#3F4E7E"/>
+<text x="17.25" y="261.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Commit</text>
+<text x="68.00" y="261.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">message</text>
+<text x="126.00" y="261.85" textLength="87.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[text/plain]</text>
+<text x="220.25" y="261.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">·</text>
+<text x="234.75" y="261.85" textLength="72.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">plain-text</text>
+<text x="437.75" y="261.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="250.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="265.00" width="21.75" height="15" fill="#3F4E7E"/>
+<text x="10.00" y="276.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">1</text>
+<rect x="31.75" y="265.00" width="268.25" height="15" fill="#1A2237"/>
+<rect x="300.00" y="265.00" width="137.75" height="15" fill="#3F4E7E"/>
+<text x="300.00" y="276.85" textLength="137.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀</text>
+<text x="437.75" y="276.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="265.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="280.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="31.75" y="280.00" width="406.00" height="15" fill="#1A2237"/>
+<text x="437.75" y="291.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="280.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="295.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="31.75" y="295.00" width="406.00" height="15" fill="#1A2237"/>
+<text x="437.75" y="306.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="295.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="310.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="31.75" y="310.00" width="406.00" height="15" fill="#1A2237"/>
+<text x="437.75" y="321.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="310.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="325.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="31.75" y="325.00" width="406.00" height="15" fill="#1A2237"/>
+<text x="437.75" y="336.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="325.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="340.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="31.75" y="340.00" width="406.00" height="15" fill="#1A2237"/>
+<text x="437.75" y="351.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="340.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="355.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="31.75" y="355.00" width="406.00" height="15" fill="#1A2237"/>
+<text x="437.75" y="366.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="355.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="370.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="31.75" y="370.00" width="406.00" height="15" fill="#1A2237"/>
+<text x="437.75" y="381.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="370.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="385.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="31.75" y="385.00" width="406.00" height="15" fill="#1A2237"/>
+<text x="437.75" y="396.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="385.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="400.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="31.75" y="400.00" width="406.00" height="15" fill="#1A2237"/>
+<text x="437.75" y="411.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="400.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="415.00" width="21.75" height="15" fill="#3F4E7E"/>
+<rect x="31.75" y="415.00" width="406.00" height="15" fill="#1A2237"/>
+<text x="437.75" y="426.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="415.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="430.00" width="427.75" height="15" fill="#FFBF55"/>
+<text x="10.00" y="441.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#0F1424" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[</text>
+<text x="24.50" y="441.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#0F1424" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Commit</text>
+<text x="75.25" y="441.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#0F1424" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">]</text>
+<text x="89.75" y="441.85" textLength="72.50" lengthAdjust="spacingAndGlyphs" fill="#0F1424" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Ctrl+Enter</text>
+<text x="437.75" y="441.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="430.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="445.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="10.00" y="456.85" textLength="427.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">───────────────────────────────────────────────────────────</text>
+<text x="437.75" y="456.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="445.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="460.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="10.00" y="471.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Commits</text>
+<text x="437.75" y="471.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="460.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="475.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="10.00" y="486.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[+]</text>
+<text x="39.00" y="486.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">docs:</text>
+<text x="82.50" y="486.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">add</text>
+<text x="111.50" y="486.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">API</text>
+<text x="140.50" y="486.85" textLength="72.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">collection</text>
+<text x="437.75" y="486.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="475.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="490.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="10.00" y="501.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[+]</text>
+<text x="39.00" y="501.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">chore:</text>
+<text x="89.75" y="501.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">ignore</text>
+<text x="140.50" y="501.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">editor</text>
+<text x="191.25" y="501.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">state</text>
+<text x="437.75" y="501.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="490.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="505.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="10.00" y="516.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[+]</text>
+<text x="39.00" y="516.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">feat:</text>
+<text x="82.50" y="516.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">add</text>
+<text x="111.50" y="516.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">loyal</text>
+<text x="155.00" y="516.85" textLength="58.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">customer</text>
+<text x="220.25" y="516.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">check</text>
+<text x="437.75" y="516.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="505.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="520.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="10.00" y="531.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[+]</text>
+<text x="39.00" y="531.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">feat:</text>
+<text x="82.50" y="531.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">order</text>
+<text x="126.00" y="531.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">model</text>
+<text x="169.50" y="531.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">and</text>
+<text x="198.50" y="531.85" textLength="58.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">checkout</text>
+<text x="437.75" y="531.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="520.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="535.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="546.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="535.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="550.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="561.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="550.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="565.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="576.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="565.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="580.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="591.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="580.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="595.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="606.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="595.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="610.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="621.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="610.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="625.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="636.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="625.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="640.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="651.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="640.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="655.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="437.75" y="666.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="655.00" width="797.50" height="15" fill="#1A2237"/>
+<rect x="10.00" y="670.00" width="427.75" height="15" fill="#1A2134"/>
+<text x="10.00" y="681.85" textLength="87.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Tab/Ctrl+Tab</text>
+<text x="104.25" y="681.85" textLength="58.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">sections</text>
+<text x="437.75" y="681.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#202B4E" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">│</text>
+<rect x="445.00" y="670.00" width="797.50" height="15" fill="#3F4E7E"/>
+<text x="445.00" y="681.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[c]</text>
+<text x="474.00" y="681.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">context</text>
+<text x="532.00" y="681.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<text x="546.50" y="681.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">[v]</text>
+<text x="575.50" y="681.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">view</text>
+<text x="611.75" y="681.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<text x="626.25" y="681.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Enter/r</text>
+<text x="684.25" y="681.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">restore</text>
+<text x="742.25" y="681.85" textLength="58.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">selected</text>
+<text x="807.50" y="681.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">chunk</text>
+<text x="10.00" y="696.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">3</text>
+<text x="24.50" y="696.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">files</text>
+<text x="68.00" y="696.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">scanned</text>
+<text x="126.00" y="696.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<text x="140.50" y="696.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Ctrl+Q</text>
+<text x="191.25" y="696.85" textLength="29.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">quit</text>
+<text x="227.50" y="696.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<text x="242.00" y="696.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">index</text>
+<text x="285.50" y="696.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Ready</text>
+<text x="329.00" y="696.85" textLength="21.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">r2:</text>
+<text x="358.00" y="696.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">3</text>
+<text x="372.50" y="696.85" textLength="36.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">files</text>
+<text x="416.00" y="696.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">/</text>
+<text x="430.50" y="696.85" textLength="14.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">48</text>
+<text x="452.25" y="696.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">symbols</text>
+<text x="510.25" y="696.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">|</text>
+<text x="524.75" y="696.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">3</text>
+<text x="539.25" y="696.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">/</text>
+<text x="553.75" y="696.85" textLength="7.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">3</text>
+<text x="568.25" y="696.85" textLength="65.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">processed</text>
+<text x="1003.25" y="696.85" textLength="50.75" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Loop:58</text>
+<text x="1061.25" y="696.85" textLength="43.50" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">Draw:6</text>
+<text x="1112.00" y="696.85" textLength="65.25" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">RSS:77MiB</text>
+<text x="1184.50" y="696.85" textLength="58.00" lengthAdjust="spacingAndGlyphs" fill="#B6B9C5" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="12">CPU:1.2%</text>
+</svg>
