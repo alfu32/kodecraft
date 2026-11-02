@@ -91,6 +91,39 @@ pub fn resolve_target(path: &Path, current_dir: &Path) -> Result<StartupTarget> 
     )))
 }
 
+/// The folder to open when a Microsoft Store install starts without a target. Its Start
+/// menu tile passes no arguments, and printing help would close the console straight away.
+pub fn packaged_start_folder() -> Option<PathBuf> {
+    start_folder_for(
+        &std::env::current_exe().ok()?,
+        &std::env::current_dir().ok()?,
+        std::env::var_os("USERPROFILE")
+            .map(PathBuf::from)
+            .as_deref(),
+        std::env::var_os("SystemRoot").map(PathBuf::from).as_deref(),
+    )
+}
+fn start_folder_for(
+    executable: &Path,
+    current_dir: &Path,
+    home: Option<&Path>,
+    system_root: Option<&Path>,
+) -> Option<PathBuf> {
+    let lower = |path: &Path| path.to_string_lossy().to_lowercase();
+    const PACKAGES: &str = "\\windowsapps\\";
+    if !lower(executable).contains(PACKAGES) {
+        return None;
+    }
+    // A terminal alias keeps its folder. The tile starts in a system or package folder.
+    let cwd = lower(current_dir);
+    let unrelated =
+        cwd.contains(PACKAGES) || system_root.is_some_and(|root| cwd.starts_with(&lower(root)));
+    Some(match home {
+        Some(home) if unrelated => home.to_path_buf(),
+        _ => current_dir.to_path_buf(),
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -154,6 +187,32 @@ mod tests {
                 resolve_target(Path::new("alias.rs"), root).unwrap().file,
                 Some(file)
             );
+        }
+    }
+    #[test]
+    fn store_install_opens_a_folder_only_when_started_without_a_target() {
+        let packaged = Path::new(
+            r"C:\Program Files\WindowsApps\K3D0.kodecraft_1.2.10.0_x64__tfmtd4yrk952g\kode.exe",
+        );
+        let home = Path::new(r"C:\Users\ada");
+        let root = Path::new(r"C:\Windows");
+        let start = |executable, cwd: &str, home| {
+            start_folder_for(executable, Path::new(cwd), home, Some(root))
+        };
+        let project = r"C:\Users\ada\project";
+        assert_eq!(start(packaged, project, Some(home)), Some(project.into()));
+        for tile_cwd in [
+            r"C:\WINDOWS\system32",
+            r"C:\Program Files\WindowsApps\K3D0.kodecraft_1.2.10.0_x64__tfmtd4yrk952g\",
+        ] {
+            assert_eq!(start(packaged, tile_cwd, Some(home)), Some(home.into()));
+        }
+        assert_eq!(
+            start(packaged, r"C:\Windows\system32", None),
+            Some(r"C:\Windows\system32".into())
+        );
+        for portable in [r"C:\Tools\kode\kode.exe", "/home/ada/WindowsApps/kode"] {
+            assert_eq!(start(Path::new(portable), project, Some(home)), None);
         }
     }
 }

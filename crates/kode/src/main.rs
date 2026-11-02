@@ -6,7 +6,10 @@ use cli::{Cli, Command};
 #[tokio::main]
 async fn main() {
     use clap::CommandFactory;
-    let cli = Cli::parse();
+    let mut cli = Cli::parse();
+    if cli.target.is_none() && cli.command.is_none() {
+        cli.target = cli::packaged_start_folder();
+    }
     match cli.command {
         Some(Command::Version) => println!("{}", env!("CARGO_PKG_VERSION")),
         Some(Command::Serve { .. }) => {
