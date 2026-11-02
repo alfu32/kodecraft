@@ -35,7 +35,11 @@ The app is **kodecraft** (Store ID `9NG04V0XN51S`). Its identity comes from [`ms
 >
 > Select a file in the tree on the left to open it. Press Alt+1 to Alt+8 to switch panels, Alt+8 for Help, and Ctrl+Q to quit.
 >
+> kodecraft starts other programs only as part of its features: the user's shell when they press Ctrl+T, and language servers and the database helper when they turn those on. That's why the Windows App Certification Kit's optional "Blocked executables" check lists references such as cmd, powershell and bash.
+>
 > No account or test data is needed. Database connections need Java 21 or newer and a database to connect to, and the REST panel needs a server to call. All other features work offline.
+
+The last Certification Kit run had no required failures. Its two optional findings are that blocked executables check, and DPI awareness, which doesn't apply to a console app.
 
 **Updating the listing:** edit the `default` column of the CSV in `msstore`, then import the folder again. Up to 10 desktop screenshots are allowed, as PNG files of at least 1366 x 768. Leave "What's new" blank for the first submission. After the first import, Partner Center's exported CSV replaces image paths with URLs, so keep this copy as the source.
 
