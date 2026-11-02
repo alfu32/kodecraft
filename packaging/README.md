@@ -120,8 +120,8 @@ mount helper. The second uses the runtime's extraction mode when FUSE is
 unavailable. Both use the packaged helper and ttyd next to the actual executable;
 they retain the glibc 2.39 minimum. No root installation is required.
 
-The development Snap is named **kode-rs**, uses **strict** confinement and core24,
-and has grade `devel`. It can coexist with the original `kode` Snap. Installing
+The Snap is named **kode-rs**, uses **strict** confinement and core24,
+and has grade `stable`. It can coexist with the original `kode` Snap. Installing
 this local, checksummed artifact requires a working host snapd:
 
 ```sh

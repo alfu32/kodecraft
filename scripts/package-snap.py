@@ -34,15 +34,55 @@ def main():
         # Snapd supplies HOME. Keep Kode's mutable state in the revision-neutral
         # app data area and preserve the source Snap's ordinary interfaces.
         metadata = f'''name: kode-rs
+title: Kode
 version: '{version}'
-summary: Terminal-first native code editor
+summary: A full code editor and IDE that runs in your terminal
 description: |
-  Native Kode editor with Git, REST and external-Java JDBC.
-  Java is downloaded separately when explicitly requested.
+  Kode is a full code editor and IDE that runs in your terminal. Open a project
+  locally or over SSH and get a mouse-aware editor with code intelligence, search,
+  Git, database and REST clients, plus image and hex viewers, all in one window.
+
+  Understands your code without any setup. Highlighting, completion, go to
+  definition and find usages work straight away, across files and including your
+  unsaved edits. Analysis is deepest for Kotlin and C, followed by C++, Go,
+  JavaScript, TypeScript, Python, PHP, Ruby, Bash, Swift, C#, Lua, SQL, Zig and
+  more. Java, Rust and others get pattern-based symbols, and more than 200 other
+  languages and file types get keyword highlighting. Add a language server for
+  compiler-grade results.
+
+  A real editor. Multiple cursors and selections, word-by-word navigation,
+  folding, a minimap, undo and redo, and full mouse support. Turn every search
+  match into a cursor with Alt+Enter.
+
+  Find anything. Press Ctrl+F to find and replace in the current window with
+  regular expressions. Press Alt+F to search the whole project and edit the
+  results right inside the search dialog.
+
+  Git. Stage changes, write commits, switch local branches, create tags, browse
+  history, read side-by-side or unified diffs, and restore a single chunk.
+
+  Databases. Run SQL and browse schemas on anything with a JDBC driver. Database
+  connections need Java 21 or newer; everything else works without Java.
+
+  REST client. Import and export Postman collections, import OpenAPI, and send
+  HTTP, Server-Sent Events and WebSocket requests with OAuth, AWS Signature, NTLM
+  and other authentication.
+
+  Images and binary files. View images in the terminal, and inspect binary files
+  in a hex view. Byte edits stay in memory, because binary files can't be saved yet.
+
+  Picks up where you left off. Open files, undo history and even unsaved changes
+  survive a restart.
+
+  Run it with: kode-rs /path/to/project
+links:
+  website: [https://github.com/alfu32/kodecraft]
+  source-code: [https://github.com/alfu32/kodecraft]
+  issues: [https://github.com/alfu32/kodecraft/issues]
 base: core24
 architectures: [{snap_arch}]
 confinement: strict
-grade: devel
+grade: stable
 license: MIT
 apps:
   kode-rs:
@@ -65,7 +105,7 @@ apps:
         artifact = args.output / f"kode-rs_{version}_{snap_arch}.snap"
         if not artifact.is_file():
             raise ValueError("Snapcraft did not produce the expected artifact: " + result.stdout[-1000:])
-        publish(artifact,{"format":"snap","target":manifest["target"],"base":"core24","confinement":"strict","grade":"devel","javaRuntimeBundled":False,"payloadArchiveSha256":sha(args.archive.read_bytes()),"payloadManifestSha256":sha((package / "package-manifest.json").read_bytes()),"packer":args.packer,"packerVersion":subprocess.check_output([args.packer,"--version"],text=True).strip()})
+        publish(artifact,{"format":"snap","target":manifest["target"],"base":"core24","confinement":"strict","grade":"stable","javaRuntimeBundled":False,"payloadArchiveSha256":sha(args.archive.read_bytes()),"payloadManifestSha256":sha((package / "package-manifest.json").read_bytes()),"packer":args.packer,"packerVersion":subprocess.check_output([args.packer,"--version"],text=True).strip()})
 
 
 if __name__ == "__main__":
