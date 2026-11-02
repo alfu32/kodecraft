@@ -110,6 +110,9 @@ jobs:
         with:
           toolchain: stable
           targets: ${{ matrix.target }}
+      # Before the JDBC adapter download, which also goes into target/.
+      - name: Clean Cargo build output
+        run: cargo clean
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
