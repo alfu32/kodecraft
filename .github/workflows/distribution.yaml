@@ -144,6 +144,10 @@ jobs:
         if: matrix.os == 'windows'
         shell: pwsh
         run: ./packaging/windows/package.ps1 -Arch '${{ matrix.arch }}' -Version '${{ needs.prepare.outputs.version }}'
+      - name: Install the MSIX and check its Store identity and commands
+        if: matrix.os == 'windows'
+        shell: pwsh
+        run: ./packaging/windows/verify-msix.ps1 -Arch '${{ matrix.arch }}' -Version '${{ needs.prepare.outputs.version }}'
       - name: Build DMG
         if: matrix.os == 'macos'
         run: bash packaging/macos/package.sh '${{ needs.prepare.outputs.version }}' '${{ matrix.target }}'

@@ -1,0 +1,16 @@
+Package/Identity/Name
+K3D0.kodecraft 
+Package/Identity/Publisher
+CN=7F0CBC95-8035-4AF2-9B17-C38D58351CE5 
+Package/Properties/PublisherDisplayName
+K3D0 
+Package Family Name (PFN)
+K3D0.kodecraft_tfmtd4yrk952g 
+Package SID
+S-1-15-2-1053854636-2669409767-817126481-527196058-900442409-2829913801-1170413058 
+Store ID
+9NG04V0XN51S 
+Store deep link
+Available after the product is live
+Web Store URL
+Available after the product is live
