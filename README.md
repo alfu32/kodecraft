@@ -135,6 +135,13 @@ Open **Git** with **Alt+3** to stage and unstage changes, write commits, switch 
 
 Kode works with your local repository. Use the shell (**Ctrl+T**) for push, pull and fetch.
 
+The Snap's sandbox can't read `~/.gitconfig`, so give it your commit name and email once:
+
+```sh
+mkdir -p ~/snap/kode-rs/common/.config/git
+cp ~/.gitconfig ~/snap/kode-rs/common/.config/git/config
+```
+
 ## Databases
 
 Open **Database** with **Alt+4** to connect to anything with a JDBC driver, such as PostgreSQL, MySQL, MariaDB, Oracle, SQLite or H2. Kode can fetch drivers from Maven or use your own JAR files.

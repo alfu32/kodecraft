@@ -22,6 +22,24 @@ pub(crate) fn error(root: &Path, operation: &str, error: git2::Error) -> DomainE
         ),
     }
 }
+/// Ignores the system Git config when it exists but can't be read, as in a strict Snap.
+/// libgit2 otherwise refuses to open any repository. Call once at startup, before any
+/// other Git use, because this changes libgit2's global search path.
+pub fn skip_unreadable_system_config() {
+    let Ok(path) = git2::Config::find_system() else {
+        return;
+    };
+    if std::fs::File::open(&path)
+        .is_err_and(|failure| failure.kind() == std::io::ErrorKind::PermissionDenied)
+    {
+        // SAFETY: called from `main` before any thread uses libgit2.
+        #[allow(unsafe_code)]
+        let cleared = unsafe { git2::opts::set_search_path(git2::ConfigLevel::System, "") };
+        if let Err(failure) = cleared {
+            eprintln!("Could not skip the unreadable system Git config: {failure}");
+        }
+    }
+}
 pub fn discover(start: &Path, cancel: &CancellationToken) -> Result<Option<RepositoryLocation>> {
     check(cancel)?;
     let path = if start.is_file() {

@@ -6,6 +6,7 @@ use cli::{Cli, Command};
 #[tokio::main]
 async fn main() {
     use clap::CommandFactory;
+    kode_git::repository::skip_unreadable_system_config();
     let mut cli = Cli::parse();
     if cli.target.is_none() && cli.command.is_none() {
         cli.target = cli::packaged_start_folder();

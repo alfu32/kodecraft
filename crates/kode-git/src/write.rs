@@ -324,10 +324,15 @@ fn unstage(
         warnings,
     ))
 }
+const SNAP_IDENTITY_HELP: &str = "the Snap can't read ~/.gitconfig. In a terminal, run: mkdir -p ~/snap/kode-rs/common/.config/git && cp ~/.gitconfig ~/snap/kode-rs/common/.config/git/config";
 fn signature(repo: &Repository) -> Result<Signature<'static>> {
-    let signature = repo
-        .signature()
-        .map_err(|failure| error(repo.path(), "read configured Git identity", failure))?;
+    let signature = repo.signature().map_err(|cause| {
+        if std::env::var_os("SNAP_NAME").is_some() {
+            failure("read configured Git identity", SNAP_IDENTITY_HELP)
+        } else {
+            error(repo.path(), "read configured Git identity", cause)
+        }
+    })?;
     if signature.name_bytes().iter().all(u8::is_ascii_whitespace)
         || signature.email_bytes().iter().all(u8::is_ascii_whitespace)
     {

@@ -31,7 +31,7 @@ cargo build -p kode
 python3 scripts/test-git-terminal.py       # scripts/test-*-terminal.py, one per feature; KODE_TERMINAL_BINARY overrides the binary
 ```
 
-The toolchain follows the latest `stable` (`rust-version` is 1.99), so run `rustup update stable` if the build rejects the compiler. `unsafe_code` is forbidden across the workspace.
+The toolchain follows the latest `stable` (`rust-version` is 1.99), so run `rustup update stable` if the build rejects the compiler. `unsafe_code` is forbidden across the workspace, apart from one libgit2 search path call in `kode-git`.
 
 ## Architecture
 
