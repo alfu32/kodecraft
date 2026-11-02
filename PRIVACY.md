@@ -32,7 +32,7 @@ Tokens from an OAuth sign-in are kept in memory only, and are lost when you clos
 
 Anyone who can read these files can read what's in them, so treat them like the credentials they hold. **Don't commit or share `.kode-rs.json` or `.kode-rs.json.previous`**, for example by adding them to your project's `.gitignore`.
 
-Kode's settings folder is `%APPDATA%\kode-rs` on Windows and `~/.config/kode-rs` on Linux, or the equivalent inside the app's private storage for Microsoft Store and Snap installs.
+Kode's settings folder is `%APPDATA%\kode-rs` on Windows, `~/Library/Application Support/kode-rs` on macOS and `~/.config/kode-rs` on Linux, or the equivalent inside the app's private storage for Microsoft Store and Snap installs.
 
 ## Who receives your information
 
