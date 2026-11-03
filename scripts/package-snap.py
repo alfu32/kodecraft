@@ -33,6 +33,8 @@ def main():
         version = manifest["version"]
         # Snapd supplies HOME. Keep Kode's mutable state in the revision-neutral
         # app data area and preserve the source Snap's ordinary interfaces.
+        # URLs stay in block lists: the Store's older YAML parser rejects a colon
+        # inside an unquoted [flow, list], though snap pack and current PyYAML accept it.
         metadata = f'''name: kode-rs
 title: Kode
 version: '{version}'
@@ -76,9 +78,12 @@ description: |
 
   Run it with: kode-rs /path/to/project
 links:
-  website: [https://github.com/alfu32/kodecraft]
-  source-code: [https://github.com/alfu32/kodecraft]
-  issues: [https://github.com/alfu32/kodecraft/issues]
+  website:
+    - https://github.com/alfu32/kodecraft
+  source-code:
+    - https://github.com/alfu32/kodecraft
+  issues:
+    - https://github.com/alfu32/kodecraft/issues
 base: core24
 architectures: [{snap_arch}]
 confinement: strict
